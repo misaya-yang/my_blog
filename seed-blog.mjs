@@ -24,6 +24,7 @@ const posts = [
     slug: "evq-cosh-frequency-allocation",
     contentPath: "./dfrope_blog_post.md",
     status: "draft",
+    visibility: "hidden",
     excerpt:
       "EVQ-Cosh treats RoPE inverse frequencies as a finite spectral allocation problem and derives a closed-form initialization rule for rotary channels.",
     tags: [
@@ -39,6 +40,7 @@ const posts = [
     slug: "isohc-fixed-vector-isometric-residual-mixing",
     contentPath: "./isohc_blog_en.md",
     status: "published",
+    visibility: "public",
     excerpt:
       "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.",
     tags: [
@@ -121,6 +123,7 @@ async function seed() {
           content,
           excerpt,
           status,
+          visibility,
           category_id,
           author_id,
           published_at,
@@ -132,6 +135,7 @@ async function seed() {
           ${content},
           ${postSeed.excerpt},
           ${postSeed.status},
+          ${postSeed.visibility},
           ${category.id},
           ${owner.id},
           ${postSeed.status === "published" ? new Date() : null},
@@ -142,6 +146,7 @@ async function seed() {
           content = EXCLUDED.content,
           excerpt = EXCLUDED.excerpt,
           status = EXCLUDED.status,
+          visibility = EXCLUDED.visibility,
           category_id = EXCLUDED.category_id,
           author_id = EXCLUDED.author_id,
           published_at = EXCLUDED.published_at,

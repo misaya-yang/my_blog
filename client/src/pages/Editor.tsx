@@ -465,6 +465,7 @@ export default function Editor() {
           tagIds: selectedTags,
           coverImage: coverImage || undefined,
           status: "draft",
+          visibility: "admin",
         });
         if (result) {
           setPostId(result.id);
@@ -508,6 +509,7 @@ export default function Editor() {
           tagIds: selectedTags,
           coverImage: coverImage || undefined,
           status: "published",
+          visibility: "public",
         });
       } else {
         await createPost.mutateAsync({
@@ -519,6 +521,7 @@ export default function Editor() {
           tagIds: selectedTags,
           coverImage: coverImage || undefined,
           status: "published",
+          visibility: "public",
         });
       }
 

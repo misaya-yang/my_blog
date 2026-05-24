@@ -26,6 +26,7 @@ const manage: TranslationDict = {
   "manage.table.title": { en: "Title", zh: "标题" },
   "manage.table.category": { en: "Category", zh: "分类" },
   "manage.table.status": { en: "Status", zh: "状态" },
+  "manage.table.visibility": { en: "Visibility", zh: "权限" },
   "manage.table.views": { en: "Views", zh: "浏览量" },
   "manage.table.createdAt": { en: "Created At", zh: "创建时间" },
   "manage.table.actions": { en: "Actions", zh: "操作" },
@@ -33,6 +34,9 @@ const manage: TranslationDict = {
   // Status badges
   "manage.status.published": { en: "Published", zh: "已发布" },
   "manage.status.draft": { en: "Draft", zh: "草稿" },
+  "manage.visibility.hidden": { en: "Hidden", zh: "隐藏" },
+  "manage.visibility.admin": { en: "Admin", zh: "Admin可见" },
+  "manage.visibility.public": { en: "Public", zh: "全可见" },
 
   // Dropdown actions
   "manage.action.view": { en: "View", zh: "查看" },

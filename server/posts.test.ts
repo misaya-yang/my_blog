@@ -1,7 +1,8 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 import { ENV } from "./_core/env";
+import * as db from "./db";
 
 type AuthenticatedUser = NonNullable<TrpcContext["user"]>;
 
@@ -14,6 +15,7 @@ const seededPost = {
     "EVQ-Cosh treats RoPE inverse frequencies as a finite spectral allocation problem.",
   coverImage: null,
   status: "published" as const,
+  visibility: "public" as const,
   categoryId: 1,
   authorId: 1,
   viewCount: 0,
@@ -22,11 +24,21 @@ const seededPost = {
   updatedAt: new Date("2026-01-01T00:00:00.000Z"),
 };
 
+const adminVisiblePost = {
+  ...seededPost,
+  id: 2,
+  title: "Owner Draft",
+  slug: "owner-draft",
+  status: "draft" as const,
+  visibility: "admin" as const,
+  publishedAt: null,
+};
+
 vi.mock("./db", () => ({
   getPosts: vi.fn(async () => [seededPost]),
   getPostsCount: vi.fn(async () => 1),
   getPostBySlug: vi.fn(async (slug: string) =>
-    slug === seededPost.slug ? seededPost : null
+    slug === seededPost.slug ? seededPost : slug === adminVisiblePost.slug ? adminVisiblePost : null
   ),
   incrementViewCount: vi.fn(async () => undefined),
   getCategories: vi.fn(async () => [
@@ -55,7 +67,9 @@ vi.mock("./db", () => ({
     title: "Owner Draft",
     slug: "owner-draft",
     status: "draft",
+    visibility: "admin",
   })),
+  updatePost: vi.fn(async () => undefined),
   setPostTags: vi.fn(async () => undefined),
 }));
 
@@ -164,6 +178,10 @@ function getCookiePair(setCookie: string) {
 }
 
 describe("posts router", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("should list published posts for anonymous users", async () => {
     const { ctx } = createAnonymousContext();
     const caller = appRouter.createCaller(ctx);
@@ -178,6 +196,9 @@ describe("posts router", () => {
     expect(result).toHaveProperty('posts');
     expect(result).toHaveProperty('total');
     expect(Array.isArray(result.posts)).toBe(true);
+    expect(db.getPosts).toHaveBeenCalledWith(
+      expect.objectContaining({ status: "published", visibility: "public" })
+    );
   });
 
   it("should get post by slug", async () => {
@@ -189,6 +210,30 @@ describe("posts router", () => {
     expect(result).toBeDefined();
     expect(result?.title).toContain("EVQ-Cosh");
     expect(result?.status).toBe("published");
+  });
+
+  it("hides admin-visible posts from anonymous readers", async () => {
+    const { ctx } = createAnonymousContext();
+    const caller = appRouter.createCaller(ctx);
+
+    await expect(caller.posts.getBySlug("owner-draft")).rejects.toThrow("Post not found");
+  });
+
+  it("allows admins to preview admin-visible posts", async () => {
+    const { ctx, setCookies } = createCookieCaptureContext();
+    const caller = appRouter.createCaller(ctx);
+    await caller.auth.adminLogin({ password: process.env.ADMIN_PASSWORD || "admin123" });
+
+    const adminCookie = getCookiePair(
+      setCookies.find((cookie) => cookie.startsWith("admin_session="))!
+    );
+    const { ctx: adminCtx } = createCookieContext(adminCookie);
+    const adminCaller = appRouter.createCaller(adminCtx);
+
+    await expect(adminCaller.posts.getBySlug("owner-draft")).resolves.toMatchObject({
+      slug: "owner-draft",
+      visibility: "admin",
+    });
   });
 });
 
@@ -240,6 +285,7 @@ describe("auth router", () => {
         slug: "visitor-draft",
         content: "Nope",
         status: "draft",
+        visibility: "admin",
         tagIds: [],
       })
     ).rejects.toThrow();
@@ -281,11 +327,13 @@ describe("auth router", () => {
         slug: "owner-draft",
         content: "Draft content",
         status: "draft",
+        visibility: "admin",
         tagIds: [],
       })
     ).resolves.toMatchObject({
       title: "Owner Draft",
       status: "draft",
+      visibility: "admin",
     });
   });
 });
@@ -301,6 +349,7 @@ describe("owner-only operations", () => {
         slug: "test-post",
         content: "Test content",
         status: "draft",
+        visibility: "admin",
         tagIds: [],
       })
     ).rejects.toThrow();

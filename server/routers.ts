@@ -38,6 +38,8 @@ const adminProcedure = publicProcedure.use(async ({ ctx, next }) => {
   return next({ ctx: { ...ctx, isAdmin: true } });
 });
 
+const postVisibilityInput = z.enum(["hidden", "admin", "public"]);
+
 export const appRouter = router({
   system: systemRouter,
   
@@ -125,6 +127,7 @@ export const appRouter = router({
       .input(
         z.object({
           status: z.enum(["draft", "published"]).optional(),
+          visibility: postVisibilityInput.optional(),
           categoryId: z.number().optional(),
           search: z.string().optional(),
           limit: z.number().default(10),
@@ -138,10 +141,12 @@ export const appRouter = router({
         const posts = await db.getPosts({
           ...input,
           status: isAdmin && input.includeUnpublished ? undefined : input.status || "published",
+          visibility: isAdmin && input.includeUnpublished ? input.visibility : "public",
         });
         const total = await db.getPostsCount({
           ...input,
           status: isAdmin && input.includeUnpublished ? undefined : input.status || "published",
+          visibility: isAdmin && input.includeUnpublished ? input.visibility : "public",
         });
         return { posts, total };
       }),
@@ -153,11 +158,12 @@ export const appRouter = router({
         if (!post) {
           throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
         }
-        if (post.status !== "published" && !(await verifyAdminSession(ctx.req))) {
+        const isAdmin = await verifyAdminSession(ctx.req);
+        if ((post.status !== "published" || post.visibility !== "public") && !isAdmin) {
           throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
         }
         // Increment view count
-        if (post.status === "published") {
+        if (post.status === "published" && post.visibility === "public") {
           await db.incrementViewCount(post.id);
         }
         return post;
@@ -173,6 +179,7 @@ export const appRouter = router({
           coverImage: z.string().optional(),
           categoryId: z.number().optional(),
           status: z.enum(["draft", "published"]),
+          visibility: postVisibilityInput.optional(),
           tagIds: z.array(z.number()),
         })
       )
@@ -182,6 +189,7 @@ export const appRouter = router({
         const postId = await db.createPost({
           ...postData,
           authorId: 1,
+          visibility: input.visibility ?? (input.status === "published" ? "public" : "admin"),
           publishedAt: input.status === "published" ? new Date() : null,
         });
         // Add tags if provided
@@ -202,15 +210,21 @@ export const appRouter = router({
           coverImage: z.string().optional(),
           categoryId: z.number().optional(),
           status: z.enum(["draft", "published"]).optional(),
+          visibility: postVisibilityInput.optional(),
           tagIds: z.array(z.number()).optional(),
         })
       )
       .mutation(async ({ input }) => {
-        const { id, ...updateData } = input;
-        return await db.updatePost(id, {
+        const { id, tagIds, ...updateData } = input;
+        await db.updatePost(id, {
           ...updateData,
           ...(input.status === "published" ? { publishedAt: new Date() } : {}),
+          ...(input.status === "draft" ? { publishedAt: null } : {}),
         });
+        if (tagIds) {
+          await db.setPostTags(id, tagIds);
+        }
+        return await db.getPostById(id);
       }),
 
     delete: adminProcedure

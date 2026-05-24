@@ -149,6 +149,7 @@ export async function deletePost(id: number) {
 
 export async function getPosts(params: {
   status?: "draft" | "published";
+  visibility?: "hidden" | "admin" | "public";
   categoryId?: number;
   authorId?: number;
   search?: string;
@@ -163,6 +164,7 @@ export async function getPosts(params: {
 
   const conditions = [];
   if (params.status) conditions.push(eq(posts.status, params.status));
+  if (params.visibility) conditions.push(eq(posts.visibility, params.visibility));
   if (params.categoryId) conditions.push(eq(posts.categoryId, params.categoryId));
   if (params.authorId) conditions.push(eq(posts.authorId, params.authorId));
   if (params.search) {
@@ -205,6 +207,7 @@ export async function incrementViewCount(id: number) {
 
 export async function getPostsCount(params: {
   status?: "draft" | "published";
+  visibility?: "hidden" | "admin" | "public";
   categoryId?: number;
   authorId?: number;
   search?: string;
@@ -214,6 +217,7 @@ export async function getPostsCount(params: {
 
   const conditions = [];
   if (params.status) conditions.push(eq(posts.status, params.status));
+  if (params.visibility) conditions.push(eq(posts.visibility, params.visibility));
   if (params.categoryId) conditions.push(eq(posts.categoryId, params.categoryId));
   if (params.authorId) conditions.push(eq(posts.authorId, params.authorId));
   if (params.search) {

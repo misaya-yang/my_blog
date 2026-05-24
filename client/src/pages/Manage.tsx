@@ -38,13 +38,27 @@ import {
   Trash2,
   Eye,
   EyeOff,
+  Globe2,
+  ShieldCheck,
   Loader2,
   FileText,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
 
+type PostVisibility = "hidden" | "admin" | "public";
+
+const visibilityOptions: Array<{
+  value: PostVisibility;
+  labelKey: string;
+  icon: LucideIcon;
+}> = [
+  { value: "hidden", labelKey: "manage.visibility.hidden", icon: EyeOff },
+  { value: "admin", labelKey: "manage.visibility.admin", icon: ShieldCheck },
+  { value: "public", labelKey: "manage.visibility.public", icon: Globe2 },
+];
 
 export default function Manage() {
   const { isAdmin, loading: authLoading } = useAuth();
@@ -101,6 +115,14 @@ export default function Manage() {
     updateMutation.mutate({
       id: post.id,
       status: post.status === "published" ? "draft" : "published",
+    });
+  };
+
+  const setVisibility = (post: any, visibility: PostVisibility) => {
+    if (post.visibility === visibility) return;
+    updateMutation.mutate({
+      id: post.id,
+      visibility,
     });
   };
 
@@ -196,6 +218,7 @@ export default function Manage() {
                   <TableHead className="w-[400px] text-slate-300">{t("manage.table.title")}</TableHead>
                   <TableHead className="text-slate-300">{t("manage.table.category")}</TableHead>
                   <TableHead className="text-slate-300">{t("manage.table.status")}</TableHead>
+                  <TableHead className="min-w-[280px] text-slate-300">{t("manage.table.visibility")}</TableHead>
                   <TableHead className="text-slate-300">{t("manage.table.views")}</TableHead>
                   <TableHead className="text-slate-300">{t("manage.table.createdAt")}</TableHead>
                   <TableHead className="w-[70px] text-slate-300">{t("manage.table.actions")}</TableHead>
@@ -228,6 +251,32 @@ export default function Manage() {
                       >
                         {post.status === "published" ? t("manage.status.published") : t("manage.status.draft")}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="inline-grid grid-cols-3 rounded-md border border-sky-200/15 bg-slate-950/50 p-1">
+                        {visibilityOptions.map((option) => {
+                          const Icon = option.icon;
+                          const active = (post.visibility ?? "admin") === option.value;
+                          return (
+                            <button
+                              key={option.value}
+                              type="button"
+                              aria-pressed={active}
+                              title={t(option.labelKey)}
+                              disabled={updateMutation.isPending}
+                              onClick={() => setVisibility(post, option.value)}
+                              className={`flex h-8 min-w-0 items-center justify-center gap-1.5 rounded px-2 text-xs font-medium transition ${
+                                active
+                                  ? "bg-sky-400/20 text-sky-100 shadow-[0_0_18px_rgba(56,189,248,0.18)]"
+                                  : "text-slate-400 hover:bg-slate-800/80 hover:text-slate-100"
+                              }`}
+                            >
+                              <Icon className="h-3.5 w-3.5 shrink-0" />
+                              <span className="hidden sm:inline">{t(option.labelKey)}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </TableCell>
                     <TableCell className="text-slate-300">{post.viewCount}</TableCell>
                     <TableCell>

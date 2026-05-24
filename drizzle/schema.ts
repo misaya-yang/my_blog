@@ -11,6 +11,7 @@ import {
 
 export const userRole = pgEnum("user_role", ["user", "admin"]);
 export const postStatus = pgEnum("post_status", ["draft", "published"]);
+export const postVisibility = pgEnum("post_visibility", ["hidden", "admin", "public"]);
 
 /**
  * Core user table backing auth flow.
@@ -48,6 +49,7 @@ export const posts = pgTable("posts", {
   excerpt: text("excerpt"),
   coverImage: varchar("cover_image", { length: 512 }),
   status: postStatus("status").default("draft").notNull(),
+  visibility: postVisibility("visibility").default("admin").notNull(),
   categoryId: integer("category_id"),
   authorId: integer("author_id").notNull(),
   viewCount: integer("view_count").default(0).notNull(),
