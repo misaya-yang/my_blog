@@ -124,14 +124,25 @@ If using the Vercel dashboard, import this repository, keep the build command as
 
 ## Post-Deploy Checks
 
-Current production alias:
+Current production domains:
 
+- https://misaya.online
+- https://www.misaya.online
 - https://my-blog-jade-ten-50.vercel.app
 
-Latest verified deployment after the space-style UI redesign:
+Custom domain DNS is hosted in Aliyun/HiChina (`dns17.hichina.com`, `dns18.hichina.com`). Keep these records pointed at Vercel:
 
-- Inspect: https://vercel.com/zedpl28174-3992s-projects/my-blog/FEMnR4UGwpHeAuMXNYCbK7ft5P9Z
-- Deployment URL: https://my-blog-nv1k8bhtu-zedpl28174-3992s-projects.vercel.app
+```text
+@    A    76.76.21.21
+www  A    76.76.21.21
+```
+
+The `yang.misaya.online` record is managed separately and is not part of the Vercel blog deployment.
+
+Latest verified deployment after the space-style UI redesign and custom domain cutover:
+
+- Deployment URL: https://my-blog-61cs31tcf-zedpl28174-3992s-projects.vercel.app
+- Vercel deployment id: `dpl_HFotzLwkixChb67cNRBAf6Wy71na`
 
 Open the production URL and verify:
 
