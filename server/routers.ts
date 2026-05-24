@@ -1,9 +1,9 @@
-import { COOKIE_NAME } from "@shared/const";
-import { getSessionCookieOptions } from "./_core/cookies";
-import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
+import { COOKIE_NAME } from "../shared/const.js";
+import { getSessionCookieOptions } from "./_core/cookies.js";
+import { systemRouter } from "./_core/systemRouter.js";
+import { publicProcedure, router } from "./_core/trpc.js";
 import { z } from "zod";
-import * as db from "./db";
+import * as db from "./db.js";
 import { TRPCError } from "@trpc/server";
 // Simple cookie serialization helper
 function serializeCookie(name: string, value: string, options: any): string {
@@ -15,6 +15,10 @@ function serializeCookie(name: string, value: string, options: any): string {
   str += `; Secure`;
   str += `; SameSite=none`;
   return str;
+}
+
+function setHeader(res: unknown, name: string, value: string) {
+  (res as { setHeader(headerName: string, headerValue: string): void }).setHeader(name, value);
 }
 
 // Simple admin authentication using environment variable
@@ -71,7 +75,8 @@ export const appRouter = router({
         const sessionToken = Buffer.from(JSON.stringify(sessionData)).toString("base64");
         const cookieOptions = getSessionCookieOptions(ctx.req);
         
-        ctx.res.setHeader(
+        setHeader(
+          ctx.res,
           "Set-Cookie",
           serializeCookie(ADMIN_SESSION_COOKIE, sessionToken, {
             ...cookieOptions,
@@ -85,7 +90,8 @@ export const appRouter = router({
     // Admin logout
     adminLogout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.setHeader(
+      setHeader(
+        ctx.res,
         "Set-Cookie",
           serializeCookie(ADMIN_SESSION_COOKIE, "", {
           ...cookieOptions,

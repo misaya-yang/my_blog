@@ -1,40 +1,52 @@
-import { drizzle } from 'drizzle-orm/mysql2';
-import { eq } from 'drizzle-orm';
-import { posts } from './drizzle/schema';
-import { readFileSync } from 'fs';
+import "dotenv/config";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import postgres from "postgres";
 
-const db = drizzle(process.env.DATABASE_URL!);
+const DATABASE_URL = process.env.DATABASE_URL;
 
-async function updateArticles() {
-  // Read the new blog articles
-  const dfropeContent = readFileSync('/home/ubuntu/ai-tech-blog/dfrope_blog_en.md', 'utf-8');
-  const isohcContent = readFileSync('/home/ubuntu/ai-tech-blog/isohc_blog_en.md', 'utf-8');
-
-  // Update DFRoPE article
-  await db.update(posts)
-    .set({
-      title: 'Dynamic Frequency RoPE: My Journey to Solving Long-Sequence Transformers',
-      content: dfropeContent,
-      excerpt: 'When I first started working with Transformers on long sequences, I quickly ran into a fundamental problem: how do we help these models understand position in sequences that are much longer than what they were trained on? In this post, I share how I developed Dynamic Frequency RoPE (DF-RoPE).',
-    })
-    .where(eq(posts.slug, 'dynamic-frequency-rope'));
-
-  console.log('DFRoPE article updated!');
-
-  // Update IsoHC article
-  await db.update(posts)
-    .set({
-      title: 'IsoHC: How I Solved the Stability Crisis in Hyper-Connections',
-      content: isohcContent,
-      excerpt: 'When I first encountered Hyper-Connections, I was excited by its potential. But as I scaled up my experiments, training became unstable at depth. In this post, I share how I developed IsoHC—a new manifold constraint that preserves both global stream mean and ℓ₂ energy along residuals.',
-    })
-    .where(eq(posts.slug, 'isohc-stability-crisis'));
-
-  console.log('IsoHC article inserted!');
-  console.log('Articles updated successfully!');
+if (!DATABASE_URL) {
+  throw new Error("DATABASE_URL not found");
 }
 
-updateArticles().then(() => process.exit(0)).catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+const sql = postgres(DATABASE_URL, { prepare: false });
+
+async function updateArticles() {
+  const dfropeContent = readFileSync(path.resolve("dfrope_blog_en.md"), "utf-8");
+  const isohcContent = readFileSync(path.resolve("isohc_blog_en.md"), "utf-8");
+
+  await sql`
+    UPDATE posts
+    SET
+      title = ${"Dynamic Frequency RoPE: My Journey to Solving Long-Sequence Transformers"},
+      content = ${dfropeContent},
+      excerpt = ${"When I first started working with Transformers on long sequences, I quickly ran into a fundamental problem: how do we help these models understand position in sequences that are much longer than what they were trained on? In this post, I share how I developed Dynamic Frequency RoPE (DF-RoPE)."},
+      updated_at = now()
+    WHERE slug = ${"dynamic-frequency-rope"}
+  `;
+
+  console.log("DFRoPE article updated!");
+
+  await sql`
+    UPDATE posts
+    SET
+      title = ${"IsoHC: How I Solved the Stability Crisis in Hyper-Connections"},
+      content = ${isohcContent},
+      excerpt = ${"When I first encountered Hyper-Connections, I was excited by its potential. But as I scaled up my experiments, training became unstable at depth. In this post, I share how I developed IsoHC-a new manifold constraint that preserves both global stream mean and l2 energy along residuals."},
+      updated_at = now()
+    WHERE slug = ${"isohc-stability-crisis"}
+  `;
+
+  console.log("IsoHC article updated!");
+}
+
+updateArticles()
+  .finally(() => sql.end())
+  .then(() => {
+    console.log("Articles updated successfully!");
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

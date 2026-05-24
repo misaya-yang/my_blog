@@ -1,10 +1,11 @@
-import mysql from 'mysql2/promise';
+import "dotenv/config";
+import postgres from "postgres";
 
 async function fixRemaining() {
-  const conn = await mysql.createConnection(process.env.DATABASE_URL);
+  const sql = postgres(process.env.DATABASE_URL, { prepare: false });
   
   try {
-    const [posts] = await conn.execute('SELECT id, title, content FROM posts');
+    const posts = await sql`SELECT id, title, content FROM posts`;
     
     for (const post of posts) {
       let content = post.content;
@@ -22,10 +23,7 @@ async function fixRemaining() {
       });
       
       if (content !== original) {
-        await conn.execute(
-          'UPDATE posts SET content = ? WHERE id = ?',
-          [content, post.id]
-        );
+        await sql`UPDATE posts SET content = ${content}, updated_at = now() WHERE id = ${post.id}`;
         console.log(`✅ Fixed remaining issues in post ${post.id}: ${post.title}`);
       } else {
         console.log(`⏭️  No remaining issues in post ${post.id}`);
@@ -33,7 +31,7 @@ async function fixRemaining() {
     }
     
     // Verify final state
-    const [verifyPosts] = await conn.execute('SELECT id, title, content FROM posts');
+    const verifyPosts = await sql`SELECT id, title, content FROM posts`;
     for (const post of verifyPosts) {
       const content = post.content;
       const singleBlocks = (content.match(/\n\$\n/g) || []).length;
@@ -47,7 +45,7 @@ async function fixRemaining() {
     
     console.log('\n✅ All done!');
   } finally {
-    await conn.end();
+    await sql.end();
   }
 }
 

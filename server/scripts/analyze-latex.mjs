@@ -1,8 +1,9 @@
-import mysql from 'mysql2/promise';
+import "dotenv/config";
+import postgres from "postgres";
 
 async function analyze() {
-  const conn = await mysql.createConnection(process.env.DATABASE_URL);
-  const [posts] = await conn.execute('SELECT id, title, content, view_count FROM posts');
+  const sql = postgres(process.env.DATABASE_URL, { prepare: false });
+  const posts = await sql`SELECT id, title, content, view_count FROM posts`;
   
   for (const post of posts) {
     console.log(`\n=== Post ${post.id}: ${post.title} (views: ${post.view_count}) ===`);
@@ -51,7 +52,7 @@ async function analyze() {
     console.log(`List formula issues: ${listIssues}`);
   }
   
-  await conn.end();
+  await sql.end();
 }
 
 analyze();

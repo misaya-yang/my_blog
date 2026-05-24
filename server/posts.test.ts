@@ -1,9 +1,52 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 import { ENV } from "./_core/env";
 
 type AuthenticatedUser = NonNullable<TrpcContext["user"]>;
+
+const seededPost = {
+  id: 1,
+  title: "Dynamic Frequency RoPE: 长序列Transformer的积分频率调制",
+  slug: "dynamic-frequency-rope",
+  content: "Seeded post content",
+  excerpt: "Seeded excerpt",
+  coverImage: null,
+  status: "published" as const,
+  categoryId: 1,
+  authorId: 1,
+  viewCount: 0,
+  publishedAt: new Date("2026-01-01T00:00:00.000Z"),
+  createdAt: new Date("2026-01-01T00:00:00.000Z"),
+  updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+};
+
+vi.mock("./db", () => ({
+  getPosts: vi.fn(async () => [seededPost]),
+  getPostsCount: vi.fn(async () => 1),
+  getPostBySlug: vi.fn(async (slug: string) =>
+    slug === seededPost.slug ? seededPost : null
+  ),
+  incrementViewCount: vi.fn(async () => undefined),
+  getCategories: vi.fn(async () => [
+    {
+      id: 1,
+      name: "深度学习",
+      slug: "deep-learning",
+      description: "深度学习、神经网络和Transformer架构相关研究",
+      createdAt: new Date("2026-01-01T00:00:00.000Z"),
+      updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+    },
+  ]),
+  getTags: vi.fn(async () => [
+    {
+      id: 1,
+      name: "Transformer",
+      slug: "transformer",
+      createdAt: new Date("2026-01-01T00:00:00.000Z"),
+    },
+  ]),
+}));
 
 // Create context for the blog owner
 function createOwnerContext(): { ctx: TrpcContext } {

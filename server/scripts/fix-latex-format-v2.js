@@ -1,10 +1,11 @@
-import mysql from 'mysql2/promise';
+import "dotenv/config";
+import postgres from "postgres";
 
 async function fixLatexFormat() {
-  const conn = await mysql.createConnection(process.env.DATABASE_URL);
+  const sql = postgres(process.env.DATABASE_URL, { prepare: false });
   
   try {
-    const [posts] = await conn.execute('SELECT id, title, content FROM posts');
+    const posts = await sql`SELECT id, title, content FROM posts`;
     
     for (const post of posts) {
       let content = post.content;
@@ -42,10 +43,7 @@ async function fixLatexFormat() {
       });
       
       if (content !== originalContent) {
-        await conn.execute(
-          'UPDATE posts SET content = ?, updated_at = NOW() WHERE id = ?',
-          [content, post.id]
-        );
+        await sql`UPDATE posts SET content = ${content}, updated_at = now() WHERE id = ${post.id}`;
         console.log(`✅ Fixed LaTeX format in post ${post.id}: ${post.title}`);
         
         // 显示修改的示例
@@ -77,7 +75,7 @@ async function fixLatexFormat() {
     console.error('❌ Error:', error);
     throw error;
   } finally {
-    await conn.end();
+    await sql.end();
   }
 }
 

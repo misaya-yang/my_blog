@@ -1,5 +1,6 @@
 import { and, desc, eq, like, or, sql } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/mysql2";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import { 
   categories, 
   Category, 
@@ -16,18 +17,24 @@ import {
   Tag,
   tags,
   users 
-} from "../drizzle/schema";
-import { ENV } from './_core/env';
+} from "../drizzle/schema.js";
+import { ENV } from './_core/env.js';
 
 let _db: ReturnType<typeof drizzle> | null = null;
+let _client: ReturnType<typeof postgres> | null = null;
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
-  if (!_db && process.env.DATABASE_URL) {
+  if (!_db && ENV.databaseUrl) {
     try {
-      _db = drizzle(process.env.DATABASE_URL);
+      _client = postgres(ENV.databaseUrl, {
+        max: 5,
+        prepare: false,
+      });
+      _db = drizzle(_client);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
+      _client = null;
       _db = null;
     }
   }
@@ -84,7 +91,8 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       updateSet.lastSignedIn = new Date();
     }
 
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
+    await db.insert(users).values(values).onConflictDoUpdate({
+      target: users.openId,
       set: updateSet,
     });
   } catch (error) {
@@ -109,8 +117,8 @@ export async function getUserByOpenId(openId: string) {
 export async function createPost(post: InsertPost) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(posts).values(post);
-  return result[0].insertId;
+  const result = await db.insert(posts).values(post).returning({ id: posts.id });
+  return result[0].id;
 }
 
 export async function getPostById(id: number) {
@@ -217,7 +225,7 @@ export async function getPostsCount(params: {
     );
   }
 
-  let query = db.select({ count: sql<number>`count(*)` }).from(posts);
+  let query = db.select({ count: sql<number>`count(*)`.mapWith(Number) }).from(posts);
   if (conditions.length > 0) {
     query = query.where(and(...conditions)) as typeof query;
   }
@@ -230,8 +238,8 @@ export async function getPostsCount(params: {
 export async function createCategory(category: InsertCategory) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(categories).values(category);
-  return result[0].insertId;
+  const result = await db.insert(categories).values(category).returning({ id: categories.id });
+  return result[0].id;
 }
 
 export async function getCategories() {
@@ -263,8 +271,8 @@ export async function deleteCategory(id: number) {
 export async function createTag(tag: InsertTag) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(tags).values(tag);
-  return result[0].insertId;
+  const result = await db.insert(tags).values(tag).returning({ id: tags.id });
+  return result[0].id;
 }
 
 export async function getTags() {
@@ -327,8 +335,8 @@ export async function setPostTags(postId: number, tagIds: number[]) {
 export async function createPostVersion(version: InsertPostVersion) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(postVersions).values(version);
-  return result[0].insertId;
+  const result = await db.insert(postVersions).values(version).returning({ id: postVersions.id });
+  return result[0].id;
 }
 
 export async function getPostVersions(postId: number, limit = 10) {

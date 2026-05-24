@@ -1,6 +1,6 @@
-import { drizzle } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
-import fs from "fs";
+import "dotenv/config";
+import fs from "node:fs";
+import postgres from "postgres";
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -9,58 +9,46 @@ if (!DATABASE_URL) {
   process.exit(1);
 }
 
-const db = drizzle(DATABASE_URL);
+const sql = postgres(DATABASE_URL, { prepare: false });
 
-// Read the blog post
 const blogContent = fs.readFileSync("./dfrope_blog_post.md", "utf-8");
-
-// Extract excerpt (first 200 characters)
-const excerpt = blogContent.substring(0, 200).replace(/[#*\n]/g, " ").trim() + "...";
+const excerpt = `${blogContent.substring(0, 200).replace(/[#*\n]/g, " ").trim()}...`;
 
 async function seed() {
   console.log("Starting seed...");
 
   try {
-    // Get owner user ID
     const ownerOpenId = process.env.OWNER_OPEN_ID;
     if (!ownerOpenId) {
       console.error("OWNER_OPEN_ID not found");
       process.exit(1);
     }
 
-    const connection = await mysql.createConnection(DATABASE_URL);
-    
-    // Get user
-    const [users] = await connection.query(
-      "SELECT id FROM users WHERE openId = ? LIMIT 1",
-      [ownerOpenId]
-    );
+    const [owner] = await sql`
+      INSERT INTO users ("openId", name, role, "lastSignedIn")
+      VALUES (${ownerOpenId}, ${process.env.OWNER_NAME || "Admin"}, 'admin', now())
+      ON CONFLICT ("openId") DO UPDATE SET
+        name = EXCLUDED.name,
+        role = 'admin',
+        "lastSignedIn" = now()
+      RETURNING id
+    `;
 
-    let userId;
-    if (users.length === 0) {
-      console.log("Creating owner user...");
-      const [result] = await connection.query(
-        "INSERT INTO users (openId, name, role, lastSignedIn) VALUES (?, ?, ?, NOW())",
-        [ownerOpenId, process.env.OWNER_NAME || "Admin", "admin"]
-      );
-      userId = result.insertId;
-    } else {
-      userId = users[0].id;
-    }
+    console.log("User ID:", owner.id);
 
-    console.log("User ID:", userId);
+    const [category] = await sql`
+      INSERT INTO categories (name, slug, description)
+      VALUES (${"深度学习"}, ${"deep-learning"}, ${"深度学习、神经网络和Transformer架构相关研究"})
+      ON CONFLICT (slug) DO UPDATE SET
+        name = EXCLUDED.name,
+        description = EXCLUDED.description,
+        updated_at = now()
+      RETURNING id
+    `;
 
-    // Create category
-    console.log("Creating category...");
-    const [categoryResult] = await connection.query(
-      "INSERT INTO categories (name, slug, description) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)",
-      ["深度学习", "deep-learning", "深度学习、神经网络和Transformer架构相关研究"]
-    );
-    const categoryId = categoryResult.insertId;
+    console.log("Category ID:", category.id);
 
-    // Create tags
-    console.log("Creating tags...");
-    const tags = [
+    const seedTags = [
       { name: "Transformer", slug: "transformer" },
       { name: "位置编码", slug: "position-encoding" },
       { name: "RoPE", slug: "rope" },
@@ -68,49 +56,67 @@ async function seed() {
     ];
 
     const tagIds = [];
-    for (const tag of tags) {
-      const [tagResult] = await connection.query(
-        "INSERT INTO tags (name, slug) VALUES (?, ?) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)",
-        [tag.name, tag.slug]
-      );
-      tagIds.push(tagResult.insertId);
+    for (const tag of seedTags) {
+      const [createdTag] = await sql`
+        INSERT INTO tags (name, slug)
+        VALUES (${tag.name}, ${tag.slug})
+        ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name
+        RETURNING id
+      `;
+      tagIds.push(createdTag.id);
     }
 
-    // Create post
-    console.log("Creating blog post...");
-    const [postResult] = await connection.query(
-      "INSERT INTO posts (title, slug, content, excerpt, status, category_id, author_id, published_at, view_count) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)",
-      [
-        "Dynamic Frequency RoPE: 长序列Transformer的积分频率调制",
-        "dynamic-frequency-rope",
-        blogContent,
+    const [post] = await sql`
+      INSERT INTO posts (
+        title,
+        slug,
+        content,
         excerpt,
-        "published",
-        categoryId,
-        userId,
-        0,
-      ]
-    );
-    const postId = postResult.insertId;
+        status,
+        category_id,
+        author_id,
+        published_at,
+        view_count
+      )
+      VALUES (
+        ${"Dynamic Frequency RoPE: 长序列Transformer的积分频率调制"},
+        ${"dynamic-frequency-rope"},
+        ${blogContent},
+        ${excerpt},
+        'published',
+        ${category.id},
+        ${owner.id},
+        now(),
+        0
+      )
+      ON CONFLICT (slug) DO UPDATE SET
+        title = EXCLUDED.title,
+        content = EXCLUDED.content,
+        excerpt = EXCLUDED.excerpt,
+        status = EXCLUDED.status,
+        category_id = EXCLUDED.category_id,
+        author_id = EXCLUDED.author_id,
+        updated_at = now()
+      RETURNING id
+    `;
 
-    // Link tags to post
-    console.log("Linking tags to post...");
+    await sql`DELETE FROM post_tags WHERE post_id = ${post.id}`;
     for (const tagId of tagIds) {
-      await connection.query(
-        "INSERT INTO post_tags (post_id, tag_id) VALUES (?, ?)",
-        [postId, tagId]
-      );
+      await sql`
+        INSERT INTO post_tags (post_id, tag_id)
+        VALUES (${post.id}, ${tagId})
+        ON CONFLICT DO NOTHING
+      `;
     }
 
-    await connection.end();
-
-    console.log("✅ Seed completed successfully!");
-    console.log("Post ID:", postId);
-    console.log("Category ID:", categoryId);
+    console.log("Seed completed successfully!");
+    console.log("Post ID:", post.id);
     console.log("Tag IDs:", tagIds);
   } catch (error) {
-    console.error("❌ Seed failed:", error);
+    console.error("Seed failed:", error);
     process.exit(1);
+  } finally {
+    await sql.end();
   }
 }
 

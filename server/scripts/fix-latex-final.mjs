@@ -1,10 +1,11 @@
-import mysql from 'mysql2/promise';
+import "dotenv/config";
+import postgres from "postgres";
 
 async function fixLatex() {
-  const conn = await mysql.createConnection(process.env.DATABASE_URL);
+  const sql = postgres(process.env.DATABASE_URL, { prepare: false });
   
   try {
-    const [posts] = await conn.execute('SELECT id, title, content FROM posts');
+    const posts = await sql`SELECT id, title, content FROM posts`;
     
     for (const post of posts) {
       let content = post.content;
@@ -23,10 +24,7 @@ async function fixLatex() {
       // Pattern: - $formula$ text -> keep as is (already correct after step 1)
       
       if (content !== original) {
-        await conn.execute(
-          'UPDATE posts SET content = ? WHERE id = ?',
-          [content, post.id]
-        );
+        await sql`UPDATE posts SET content = ${content}, updated_at = now() WHERE id = ${post.id}`;
         console.log(`✅ Fixed post ${post.id}: ${post.title}`);
         
         // Verify the fix
@@ -50,7 +48,7 @@ async function fixLatex() {
     
     console.log('\n✅ All posts processed!');
   } finally {
-    await conn.end();
+    await sql.end();
   }
 }
 
