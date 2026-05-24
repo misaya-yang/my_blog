@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { SpaceBackdrop } from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -99,10 +100,10 @@ function ToolbarButton({
           type="button"
           onClick={onClick}
           disabled={disabled}
-          className={`p-2 rounded-md transition-all duration-150 ${
+          className={`rounded-md p-2 transition-all duration-150 ${
             active
-              ? "bg-primary text-primary-foreground shadow-sm"
-              : "hover:bg-muted text-muted-foreground hover:text-foreground"
+              ? "bg-blue-500 text-white shadow-[0_0_18px_rgb(59_130_246_/_0.28)]"
+              : "text-slate-400 hover:bg-sky-400/10 hover:text-white"
           } ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
         >
           {children}
@@ -122,7 +123,7 @@ function ToolbarButton({
 
 // 分隔符组件
 function ToolbarDivider() {
-  return <div className="w-px h-6 bg-border mx-1" />;
+  return <div className="mx-1 h-6 w-px bg-sky-200/10" />;
 }
 
 export default function Editor() {
@@ -541,21 +542,23 @@ export default function Editor() {
   // 认证检查
   if (authLoading || postLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="space-page flex items-center justify-center">
+        <SpaceBackdrop subtle />
+        <Loader2 className="relative z-10 h-8 w-8 animate-spin text-sky-300" />
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <FileText className="w-16 h-16 mx-auto text-muted-foreground" />
-          <h2 className="text-xl font-semibold">作者权限限定</h2>
-          <p className="text-muted-foreground">只有管理员会话可以进入写作台</p>
+      <div className="space-page flex items-center justify-center">
+        <SpaceBackdrop subtle />
+        <div className="glass-panel relative z-10 space-y-4 p-8 text-center">
+          <FileText className="mx-auto h-16 w-16 text-sky-300" />
+          <h2 className="text-xl font-semibold text-white">作者权限限定</h2>
+          <p className="text-slate-400">只有管理员会话可以进入写作台</p>
           <a href={"/login"}>
-            <Button>进入登录页</Button>
+            <Button className="bg-blue-500 text-white hover:bg-blue-400">进入登录页</Button>
           </a>
         </div>
       </div>
@@ -563,27 +566,28 @@ export default function Editor() {
   }
 
   return (
-    <div className={`min-h-screen bg-background flex flex-col ${isFullscreen ? "fixed inset-0 z-50" : ""}`}>
+    <div className={`relative flex min-h-screen flex-col overflow-hidden bg-[#060b16] text-slate-100 ${isFullscreen ? "fixed inset-0 z-50" : ""}`}>
+      <SpaceBackdrop subtle />
       {/* 顶部工具栏 */}
-      <header className="h-14 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-4 shrink-0">
+      <header className="relative z-10 flex h-14 shrink-0 items-center justify-between border-b border-sky-200/10 bg-slate-950/80 px-4 backdrop-blur-xl">
         <div className="flex items-center gap-4">
           <RouterLink href="/">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
+            <Button variant="ghost" size="sm" className="gap-2 text-slate-300 hover:bg-sky-400/10 hover:text-white">
+              <ArrowLeft className="h-4 w-4" />
               <span className="hidden sm:inline">返回</span>
             </Button>
           </RouterLink>
           
-          <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="hidden items-center gap-2 text-sm text-slate-400 md:flex">
             {lastSaved && (
               <>
-                <Check className="w-3.5 h-3.5 text-green-500" />
+                <Check className="h-3.5 w-3.5 text-cyan-300" />
                 <span>已保存于 {lastSaved.toLocaleTimeString()}</span>
               </>
             )}
             {isSaving && (
               <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 <span>保存中...</span>
               </>
             )}
@@ -592,21 +596,21 @@ export default function Editor() {
 
         <div className="flex items-center gap-2">
           {/* 字数统计 */}
-          <div className="hidden sm:flex items-center gap-3 text-sm text-muted-foreground mr-2">
+          <div className="mr-2 hidden items-center gap-3 text-sm text-slate-400 sm:flex">
             <span className="flex items-center gap-1">
-              <Type className="w-3.5 h-3.5" />
+              <Type className="h-3.5 w-3.5" />
               {wordCount} 字
             </span>
             <span className="flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" />
+              <Clock className="h-3.5 w-3.5" />
               约 {readingTime} 分钟
             </span>
             <span className="hidden items-center gap-1 lg:flex">
-              <Hash className="w-3.5 h-3.5" />
+              <Hash className="h-3.5 w-3.5" />
               {equationCount} 公式
             </span>
             <span className="hidden items-center gap-1 lg:flex">
-              <Code className="w-3.5 h-3.5" />
+              <Code className="h-3.5 w-3.5" />
               {codeBlockCount} 代码块
             </span>
           </div>
@@ -631,10 +635,10 @@ export default function Editor() {
           <Sheet open={showSettings} onOpenChange={setShowSettings}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="sm">
-                <Settings className="w-4 h-4" />
+              <Settings className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[400px] sm:w-[540px]">
+            <SheetContent className="w-[400px] border-sky-200/15 bg-slate-950 text-slate-100 sm:w-[540px]">
               <SheetHeader>
                 <SheetTitle>文章设置</SheetTitle>
                 <SheetDescription>设置文章的分类、标签和其他属性</SheetDescription>
@@ -719,12 +723,12 @@ export default function Editor() {
             size="sm"
             onClick={() => handleSaveDraft()}
             disabled={isSaving}
-            className="gap-2"
+            className="glass-button gap-2"
           >
             {isSaving ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <Save className="w-4 h-4" />
+              <Save className="h-4 w-4" />
             )}
             <span className="hidden sm:inline">保存草稿</span>
           </Button>
@@ -733,12 +737,12 @@ export default function Editor() {
             size="sm"
             onClick={handlePublish}
             disabled={isPublishing}
-            className="gap-2"
+            className="gap-2 bg-blue-500 text-white hover:bg-blue-400"
           >
             {isPublishing ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <Send className="w-4 h-4" />
+              <Send className="h-4 w-4" />
             )}
             发布
           </Button>
@@ -746,7 +750,7 @@ export default function Editor() {
       </header>
 
       {/* 格式工具栏 */}
-      <div className="h-12 border-b border-border bg-muted/30 flex items-center px-4 gap-1 overflow-x-auto shrink-0">
+      <div className="relative z-10 flex h-12 shrink-0 items-center gap-1 overflow-x-auto border-b border-sky-200/10 bg-slate-950/55 px-4 backdrop-blur-xl">
         <ToolbarButton onClick={() => insertBlock("# ", "标题")} tooltip="一级标题" shortcut="Ctrl+1">
           <Heading1 className="w-4 h-4" />
         </ToolbarButton>
@@ -807,11 +811,11 @@ export default function Editor() {
       </div>
 
       {/* 主编辑区域 */}
-      <div className="flex-1 flex overflow-hidden bg-background">
-        <aside className="hidden w-64 shrink-0 border-r border-border/70 bg-muted/20 p-4 xl:block">
+      <div className="relative z-10 flex flex-1 overflow-hidden">
+        <aside className="hidden w-64 shrink-0 border-r border-sky-200/10 bg-slate-950/45 p-4 backdrop-blur-xl xl:block">
           <div className="mb-4">
-            <p className="text-sm font-semibold">研究片段</p>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+            <p className="text-sm font-semibold text-white">研究片段</p>
+            <p className="mt-1 text-xs leading-5 text-slate-400">
               快速插入论文式结构，保持主张和证据边界清楚。
             </p>
           </div>
@@ -821,40 +825,40 @@ export default function Editor() {
                 key={snippet.label}
                 type="button"
                 onClick={() => insertSnippet(snippet.value)}
-                className="w-full border border-border/70 bg-background px-3 py-2 text-left transition-colors hover:border-primary/60 hover:bg-accent/50"
+                className="w-full rounded-lg border border-sky-200/10 bg-slate-950/45 px-3 py-2 text-left transition-colors hover:border-sky-300/45 hover:bg-sky-400/10"
               >
-                <span className="block text-sm font-medium">{snippet.label}</span>
-                <span className="mt-1 block text-xs text-muted-foreground">{snippet.hint}</span>
+                <span className="block text-sm font-medium text-white">{snippet.label}</span>
+                <span className="mt-1 block text-xs text-slate-400">{snippet.hint}</span>
               </button>
             ))}
           </div>
 
-          <div className="mt-6 border-t border-border/70 pt-4 text-xs text-muted-foreground">
+          <div className="mt-6 border-t border-sky-200/10 pt-4 text-xs text-slate-400">
             <div className="flex items-center justify-between py-1">
               <span>公式</span>
-              <span className="font-mono text-foreground">{equationCount}</span>
+              <span className="font-mono text-white">{equationCount}</span>
             </div>
             <div className="flex items-center justify-between py-1">
               <span>代码块</span>
-              <span className="font-mono text-foreground">{codeBlockCount}</span>
+              <span className="font-mono text-white">{codeBlockCount}</span>
             </div>
             <div className="flex items-center justify-between py-1">
               <span>阅读</span>
-              <span className="font-mono text-foreground">{readingTime} min</span>
+              <span className="font-mono text-white">{readingTime} min</span>
             </div>
           </div>
         </aside>
 
         {/* 编辑器 */}
-        <div className={`min-w-0 flex flex-col ${showPreview ? "flex-1 border-r border-border" : "w-full"}`}>
+        <div className={`min-w-0 flex flex-col ${showPreview ? "flex-1 border-r border-sky-200/10" : "w-full"}`}>
           {/* 标题输入 */}
-          <div className="border-b border-border/70 bg-card/70 p-4">
+          <div className="border-b border-sky-200/10 bg-slate-950/35 p-4 backdrop-blur-xl">
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="输入文章标题..."
-              className="w-full bg-transparent text-2xl font-semibold leading-tight outline-none placeholder:text-muted-foreground/50"
+              className="w-full bg-transparent font-serif text-2xl font-semibold leading-tight text-white outline-none placeholder:text-slate-500"
             />
           </div>
 
@@ -876,7 +880,7 @@ export default function Editor() {
 - [链接](url) 和 ![图片](url)
 - > 引用
 - - 列表"
-              className="h-full w-full resize-none border-none bg-transparent p-5 font-mono text-sm leading-7 outline-none placeholder:text-muted-foreground/40"
+              className="h-full w-full resize-none border-none bg-slate-950/20 p-5 font-mono text-sm leading-7 text-slate-200 outline-none placeholder:text-slate-600"
               style={{ minHeight: "100%" }}
             />
           </div>
@@ -886,13 +890,13 @@ export default function Editor() {
         {showPreview && (
           <div 
             ref={previewRef}
-            className="min-w-0 flex-1 overflow-y-auto bg-card/40"
+            className="min-w-0 flex-1 overflow-y-auto bg-slate-950/38 backdrop-blur-xl"
           >
             <div className="mx-auto max-w-3xl p-8">
               {title && (
-                <h1 className="mb-6 text-3xl font-semibold leading-tight">{title}</h1>
+                <h1 className="mb-6 font-serif text-3xl font-semibold leading-tight text-white">{title}</h1>
               )}
-              <article className="prose prose-slate dark:prose-invert max-w-none">
+              <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:font-serif prose-headings:text-white prose-p:text-slate-300 prose-li:text-slate-300 prose-a:text-sky-300">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm, remarkMath]}
                   rehypePlugins={[rehypeKatex, rehypeHighlight]}
@@ -906,7 +910,7 @@ export default function Editor() {
                       const match = /language-(\w+)/.exec(className || "");
                       const isInline = !match;
                       return isInline ? (
-                        <code className="px-1.5 py-0.5 rounded bg-muted font-mono text-sm" {...props}>
+                        <code className="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-sm" {...props}>
                           {children}
                         </code>
                       ) : (
@@ -927,7 +931,7 @@ export default function Editor() {
 
       {/* 链接对话框 */}
       <Dialog open={showLinkDialog} onOpenChange={setShowLinkDialog}>
-        <DialogContent>
+        <DialogContent className="border-sky-200/15 bg-slate-950 text-slate-100">
           <DialogHeader>
             <DialogTitle>插入链接</DialogTitle>
             <DialogDescription>输入链接地址和显示文本</DialogDescription>
@@ -961,7 +965,7 @@ export default function Editor() {
 
       {/* 图片对话框 */}
       <Dialog open={showImageDialog} onOpenChange={setShowImageDialog}>
-        <DialogContent>
+        <DialogContent className="border-sky-200/15 bg-slate-950 text-slate-100">
           <DialogHeader>
             <DialogTitle>插入图片</DialogTitle>
             <DialogDescription>输入图片地址</DialogDescription>

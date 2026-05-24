@@ -128,10 +128,10 @@ Current production alias:
 
 - https://my-blog-jade-ten-50.vercel.app
 
-Latest verified deployment after the EVQ/IsoHC content update:
+Latest verified deployment after the space-style UI redesign:
 
-- Inspect: https://vercel.com/zedpl28174-3992s-projects/my-blog/8kjX39ewxBUhL7b4TnzCHJYSUiTe
-- Deployment URL: https://my-blog-hj6ehecl7-zedpl28174-3992s-projects.vercel.app
+- Inspect: https://vercel.com/zedpl28174-3992s-projects/my-blog/FEMnR4UGwpHeAuMXNYCbK7ft5P9Z
+- Deployment URL: https://my-blog-nv1k8bhtu-zedpl28174-3992s-projects.vercel.app
 
 Open the production URL and verify:
 

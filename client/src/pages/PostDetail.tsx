@@ -1,16 +1,13 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { ResearchWaveVisual, SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
 import {
   BookOpen,
   Calendar,
   Eye,
-  Moon,
-  Sun,
   User,
-  Share2,
   Edit,
-  ArrowLeft,
   Copy,
   Check,
   Mail,
@@ -19,8 +16,7 @@ import {
   Linkedin,
   MessageCircle,
 } from "lucide-react";
-import { Link, useParams, useLocation } from "wouter";
-import { useTheme } from "@/contexts/ThemeContext";
+import { Link, useParams } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
@@ -35,10 +31,8 @@ import { toast } from "sonner";
 
 export default function PostDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const { isAdmin, isAuthenticated, displayName } = useAuth();
-  const { theme, toggleTheme } = useTheme();
-  const { language, toggleLanguage, t } = useLanguage();
-  const [, setLocation] = useLocation();
+  const { isAdmin } = useAuth();
+  const { language, t } = useLanguage();
   const [activeHeading, setActiveHeading] = useState<string>("");
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [readingProgress, setReadingProgress] = useState(0);
@@ -144,21 +138,23 @@ export default function PostDetail() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="space-page flex items-center justify-center">
+        <SpaceBackdrop subtle />
+        <div className="relative z-10 h-10 w-10 animate-spin rounded-full border-b-2 border-sky-300"></div>
       </div>
     );
   }
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">
+      <div className="space-page flex items-center justify-center">
+        <SpaceBackdrop subtle />
+        <div className="glass-panel relative z-10 p-8 text-center">
+          <h1 className="mb-4 text-2xl font-bold text-white">
             {t("post.notFound")}
           </h1>
           <Link href="/">
-            <Button variant="outline">{t("post.backHome")}</Button>
+            <Button variant="outline" className="glass-button">{t("post.backHome")}</Button>
           </Link>
         </div>
       </div>
@@ -168,110 +164,58 @@ export default function PostDetail() {
   const readingTime = calculateReadingTime(post.content || "");
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="space-page text-foreground">
+      <SpaceBackdrop subtle />
       {/* Reading Progress Bar */}
       <div
-        className="fixed top-0 left-0 h-1 bg-primary z-[60] transition-all duration-150"
+        className="fixed left-0 top-0 z-[60] h-1 bg-gradient-to-r from-blue-500 via-sky-300 to-cyan-300 transition-all duration-150"
         style={{ width: `${readingProgress}%` }}
       />
 
-      {/* Header */}
-      <header className="border-b border-border/40 sticky top-0 bg-background/80 backdrop-blur-md z-50">
-        <div className="container flex items-center justify-between h-16 px-6">
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 text-lg font-semibold text-foreground hover:text-primary transition-colors"
-          >
-            <span className="grid h-8 w-8 place-items-center border border-border/80 bg-card text-xs font-semibold">
-              MY
-            </span>
-            <span>Misaya Research</span>
-          </Link>
+      <SiteHeader backHref="/" backLabel={t("nav.back")} compact />
 
-          <nav className="flex items-center gap-1.5">
-            <Link href="/">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-sm text-muted-foreground gap-1.5"
-              >
-                <ArrowLeft className="h-3.5 w-3.5" />
-                {t("nav.back")}
-              </Button>
-            </Link>
-            <div className="w-px h-5 bg-border/60 mx-1" />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleLanguage}
-              className="text-xs font-medium px-2.5"
-            >
-              {language === "en" ? "中文" : "EN"}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="h-9 w-9"
-            >
-              {theme === "dark" ? (
-                <Sun className="h-4 w-4" />
-              ) : (
-                <Moon className="h-4 w-4" />
-              )}
-            </Button>
-            {isAuthenticated ? (
-              <Button size="sm" variant="ghost" className="text-sm">
-                <User className="h-3.5 w-3.5 mr-1.5" />
-                {isAdmin ? t("nav.admin") : displayName || t("nav.user")}
-              </Button>
-            ) : (
-              <a href="/login">
-                <Button size="sm" variant="outline" className="text-sm">
-                  {t("nav.login")}
-                </Button>
-              </a>
-            )}
-          </nav>
-        </div>
-      </header>
-
-      <div className="container max-w-7xl py-10 px-6">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="container relative z-10 max-w-7xl px-4 py-8 sm:px-6 md:py-12">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
           {/* Main Content */}
-          <article className="max-w-3xl">
+          <article className="glass-panel max-w-4xl p-5 sm:p-8 lg:p-10">
             {/* Post Header */}
-            <div className="mb-10">
-              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-5 leading-tight">
+            <div className="mb-8">
+              <div className="mb-5">
+                <ResearchWaveVisual
+                  variant={post.slug?.includes("isohc") ? "orbit" : "wave"}
+                  className="h-[240px] sm:h-[300px]"
+                />
+              </div>
+              <h1 className="mb-5 font-serif text-4xl font-semibold leading-tight text-white md:text-6xl">
                 {post.title}
               </h1>
 
               {/* Author Info */}
-              <div className="flex flex-wrap items-center gap-3 mb-5 pb-5 border-b border-border/40">
+              <div className="mb-5 flex flex-wrap items-center gap-3 border-b border-sky-200/10 pb-5">
                 <div className="flex items-center gap-2 text-sm">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium text-foreground">Misaya Yang</span>
+                  <User className="h-4 w-4 text-sky-300" />
+                  <span className="font-medium text-white">Misaya Yang</span>
                 </div>
-                <div className="w-px h-4 bg-border/60" />
+                <div className="h-4 w-px bg-sky-200/20" />
                 <a
                   href="https://scholar.google.com/citations?user=6X9HlDAAAAAJ"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+                  className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sky-200"
                 >
                   <GraduationCap className="h-3.5 w-3.5" />
                   Scholar
                 </a>
                 <button
                   onClick={copyEmail}
-                  className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+                  className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sky-200"
                 >
                   <Mail className="h-3.5 w-3.5" />
                   Email
                 </button>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
+              <div className="mb-6 flex flex-wrap items-center gap-4 text-sm text-slate-400">
                 <span className="flex items-center gap-1.5">
                   <Calendar className="h-4 w-4" />
                   {post.publishedAt
@@ -299,7 +243,7 @@ export default function PostDetail() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs h-8 gap-1.5"
+                  className="glass-button h-8 gap-1.5 text-xs"
                   onClick={() => handleShare("twitter")}
                 >
                   <Twitter className="h-3.5 w-3.5" />
@@ -308,7 +252,7 @@ export default function PostDetail() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs h-8 gap-1.5"
+                  className="glass-button h-8 gap-1.5 text-xs"
                   onClick={() => handleShare("linkedin")}
                 >
                   <Linkedin className="h-3.5 w-3.5" />
@@ -317,7 +261,7 @@ export default function PostDetail() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs h-8 gap-1.5"
+                  className="glass-button h-8 gap-1.5 text-xs"
                   onClick={() => handleShare("wechat")}
                 >
                   <MessageCircle className="h-3.5 w-3.5" />
@@ -326,7 +270,7 @@ export default function PostDetail() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs h-8 gap-1.5"
+                  className="glass-button h-8 gap-1.5 text-xs"
                   onClick={() => handleShare("copy")}
                 >
                   <Copy className="h-3.5 w-3.5" />
@@ -337,7 +281,7 @@ export default function PostDetail() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-xs h-8 gap-1.5"
+                      className="glass-button h-8 gap-1.5 text-xs"
                     >
                       <Edit className="h-3.5 w-3.5" />
                       {t("post.edit")}
@@ -359,7 +303,7 @@ export default function PostDetail() {
             )}
 
             {/* Post Content */}
-            <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-p:leading-relaxed prose-li:leading-relaxed prose-pre:relative prose-a:text-primary prose-a:no-underline hover:prose-a:underline">
+            <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-headings:font-serif prose-headings:text-white prose-p:leading-relaxed prose-p:text-slate-300 prose-li:text-slate-300 prose-pre:relative prose-a:text-sky-300 prose-a:no-underline hover:prose-a:underline">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkMath]}
                 rehypePlugins={[rehypeKatex, rehypeHighlight]}
@@ -370,7 +314,7 @@ export default function PostDetail() {
                     return (
                       <h1
                         id={index >= 0 ? headings[index].id : undefined}
-                        className="text-3xl font-bold mt-12 mb-5"
+                        className="mb-5 mt-12 text-3xl font-semibold"
                         {...props}
                       >
                         {children}
@@ -383,7 +327,7 @@ export default function PostDetail() {
                     return (
                       <h2
                         id={index >= 0 ? headings[index].id : undefined}
-                        className="text-2xl font-bold mt-10 mb-4 pb-2 border-b border-border/40"
+                        className="mb-4 mt-10 border-b border-sky-200/10 pb-2 text-2xl font-semibold"
                         {...props}
                       >
                         {children}
@@ -396,7 +340,7 @@ export default function PostDetail() {
                     return (
                       <h3
                         id={index >= 0 ? headings[index].id : undefined}
-                        className="text-xl font-semibold mt-8 mb-3"
+                        className="mb-3 mt-8 text-xl font-semibold"
                         {...props}
                       >
                         {children}
@@ -416,7 +360,7 @@ export default function PostDetail() {
                         {code && (
                           <button
                             onClick={() => copyCode(code, codeId)}
-                            className="absolute top-3 right-3 p-2 rounded-md bg-muted/80 hover:bg-muted transition-colors opacity-0 group-hover:opacity-100"
+                            className="absolute right-3 top-3 rounded-md bg-slate-900/80 p-2 opacity-0 transition-colors hover:bg-slate-800 group-hover:opacity-100"
                           >
                             {copiedCode === codeId ? (
                               <Check className="h-4 w-4 text-green-500" />
@@ -435,11 +379,11 @@ export default function PostDetail() {
             </div>
 
             {/* Author Footer */}
-            <div className="mt-16 pt-8 border-t border-border/40">
+            <div className="mt-16 border-t border-sky-200/10 pt-8">
               <div className="flex items-start gap-4">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Misaya Yang</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <h3 className="mb-2 text-lg font-semibold text-white">Misaya Yang</h3>
+                  <p className="mb-4 text-sm text-slate-400">
                     Researcher focusing on Deep Learning, Transformers, Large Language Models, and Position Encoding.
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -448,7 +392,7 @@ export default function PostDetail() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <Button size="sm" variant="outline" className="gap-2 h-8">
+                      <Button size="sm" variant="outline" className="glass-button h-8 gap-2">
                         <GraduationCap className="h-4 w-4" />
                         Google Scholar
                       </Button>
@@ -456,7 +400,7 @@ export default function PostDetail() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="gap-2 h-8"
+                      className="glass-button h-8 gap-2"
                       onClick={copyEmail}
                     >
                       <Mail className="h-4 w-4" />
@@ -470,8 +414,8 @@ export default function PostDetail() {
 
           {/* Table of Contents */}
           <aside className="hidden lg:block">
-            <div className="sticky top-20">
-              <h3 className="text-sm font-semibold text-foreground mb-4 uppercase">
+            <div className="glass-panel sticky top-24 p-5">
+              <h3 className="section-title mb-4">
                 {t("post.toc")}
               </h3>
               <nav className="space-y-2">
@@ -481,8 +425,8 @@ export default function PostDetail() {
                     href={`#${heading.id}`}
                     className={`block text-sm transition-colors ${
                       activeHeading === heading.id
-                        ? "text-primary font-medium"
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "text-sky-200 font-medium"
+                        : "text-slate-400 hover:text-white"
                     }`}
                     style={{ paddingLeft: `${(heading.level - 1) * 0.75}rem` }}
                     onClick={(e) => {

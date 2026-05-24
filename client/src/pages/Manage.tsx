@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -29,7 +30,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { trpc } from "@/lib/trpc";
 import {
-  ArrowLeft,
   Plus,
   Search,
   MoreHorizontal,
@@ -105,11 +105,12 @@ export default function Manage() {
   // 未登录提示
   if (!authLoading && !isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <h2 className="text-2xl font-bold">请先登录</h2>
-          <p className="text-muted-foreground">你需要登录后才能管理文章</p>
-          <Button asChild>
+      <div className="space-page flex items-center justify-center">
+        <SpaceBackdrop subtle />
+        <div className="glass-panel relative z-10 space-y-4 p-8 text-center">
+          <h2 className="text-2xl font-bold text-white">请先登录</h2>
+          <p className="text-slate-400">你需要登录后才能管理文章</p>
+          <Button asChild className="bg-blue-500 text-white hover:bg-blue-400">
             <a href={"/login"}>登录</a>
           </Button>
         </div>
@@ -120,53 +121,50 @@ export default function Manage() {
   // 加载中
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="space-page flex items-center justify-center">
+        <SpaceBackdrop subtle />
+        <Loader2 className="relative z-10 h-8 w-8 animate-spin text-sky-300" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container flex items-center justify-between h-16">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="w-4 h-4" />
-              <span>返回研究索引</span>
-            </Link>
-            <div className="h-6 w-px bg-border" />
-            <h1 className="text-lg font-semibold">Research CMS</h1>
+    <div className="space-page">
+      <SpaceBackdrop subtle />
+      <SiteHeader active="write" backHref="/" backLabel="返回研究索引" compact />
+
+      <main className="container relative z-10 px-4 py-8 sm:px-6">
+        <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <div className="signal-chip mb-5">
+              <FileText className="h-4 w-4" />
+              Research CMS
+            </div>
+            <h2 className="font-serif text-4xl font-semibold text-white">文章后台</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-400">
+              用来快速检查草稿、发布状态、阅读量和需要继续打磨的研究笔记。
+            </p>
           </div>
 
-          <Button asChild>
+          <Button asChild className="bg-blue-500 text-white hover:bg-blue-400">
             <Link href="/write">
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="mr-2 h-4 w-4" />
               撰写文章
             </Link>
           </Button>
         </div>
-      </header>
 
-      <main className="container py-8">
-        <div className="mb-7 max-w-2xl">
-          <h2 className="text-2xl font-semibold">文章后台</h2>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            用来快速检查草稿、发布状态、阅读量和需要继续打磨的研究笔记。
-          </p>
-        </div>
-
-        <div className="flex items-center gap-4 mb-6">
+        <div className="glass-panel mb-6 flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input
               placeholder="搜索文章..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
+              className="border-sky-200/15 bg-slate-950/40 pl-10 text-white placeholder:text-slate-500"
             />
           </div>
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-slate-400">
             共 {postsData?.total || 0} 篇文章
           </div>
         </div>
@@ -174,41 +172,41 @@ export default function Manage() {
         {/* 文章列表 */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <Loader2 className="h-8 w-8 animate-spin text-sky-300" />
           </div>
         ) : postsData?.posts.length === 0 ? (
-          <div className="text-center py-12">
-            <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">暂无文章</h3>
-            <p className="text-muted-foreground mb-4">开始撰写你的第一篇文章吧</p>
-            <Button asChild>
+          <div className="glass-panel py-12 text-center">
+            <FileText className="mx-auto mb-4 h-12 w-12 text-sky-300" />
+            <h3 className="mb-2 text-lg font-medium text-white">暂无文章</h3>
+            <p className="mb-4 text-slate-400">开始撰写你的第一篇文章吧</p>
+            <Button asChild className="bg-blue-500 text-white hover:bg-blue-400">
               <Link href="/write">
-                <Plus className="w-4 h-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 撰写文章
               </Link>
             </Button>
           </div>
         ) : (
-          <div className="border border-border/70 bg-card/40">
+          <div className="glass-panel overflow-hidden">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[400px]">标题</TableHead>
-                  <TableHead>分类</TableHead>
-                  <TableHead>状态</TableHead>
-                  <TableHead>浏览量</TableHead>
-                  <TableHead>创建时间</TableHead>
-                  <TableHead className="w-[70px]">操作</TableHead>
+                <TableRow className="border-sky-200/10 hover:bg-transparent">
+                  <TableHead className="w-[400px] text-slate-300">标题</TableHead>
+                  <TableHead className="text-slate-300">分类</TableHead>
+                  <TableHead className="text-slate-300">状态</TableHead>
+                  <TableHead className="text-slate-300">浏览量</TableHead>
+                  <TableHead className="text-slate-300">创建时间</TableHead>
+                  <TableHead className="w-[70px] text-slate-300">操作</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {postsData?.posts.map((post) => (
-                  <TableRow key={post.id}>
+                  <TableRow key={post.id} className="border-sky-200/10 hover:bg-sky-400/5">
                     <TableCell>
                       <div className="space-y-1">
                         <Link
                           href={`/post/${post.slug}`}
-                          className="font-medium hover:text-primary line-clamp-1"
+                          className="line-clamp-1 font-medium text-white hover:text-sky-200"
                         >
                           {post.title}
                         </Link>
@@ -219,7 +217,7 @@ export default function Manage() {
                     </TableCell>
                     <TableCell>
                       {categoriesMap.get(post.categoryId ?? 0) || (
-                        <span className="text-muted-foreground">未分类</span>
+                        <span className="text-slate-500">未分类</span>
                       )}
                     </TableCell>
                     <TableCell>
@@ -229,7 +227,7 @@ export default function Manage() {
                         {post.status === "published" ? "已发布" : "草稿"}
                       </Badge>
                     </TableCell>
-                    <TableCell>{post.viewCount}</TableCell>
+                    <TableCell className="text-slate-300">{post.viewCount}</TableCell>
                     <TableCell>
                       {new Date(post.createdAt).toLocaleDateString("zh-CN")}
                     </TableCell>
