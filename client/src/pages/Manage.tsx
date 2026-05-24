@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,7 @@ import { toast } from "sonner";
 
 export default function Manage() {
   const { isAdmin, loading: authLoading } = useAuth();
+  const { language, t } = useLanguage();
   const [, navigate] = useLocation();
   const [search, setSearch] = useState("");
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -65,12 +67,12 @@ export default function Manage() {
   // 删除文章
   const deleteMutation = trpc.posts.delete.useMutation({
     onSuccess: () => {
-      toast.success("文章已删除");
+      toast.success(t("manage.toast.deleted"));
       refetch();
       setDeleteId(null);
     },
     onError: (error) => {
-      toast.error(error.message || "删除失败");
+      toast.error(error.message || t("manage.toast.deleteFailed"));
     },
   });
 
@@ -81,11 +83,11 @@ export default function Manage() {
   // 切换发布状态
   const updateMutation = trpc.posts.update.useMutation({
     onSuccess: () => {
-      toast.success("状态已更新");
+      toast.success(t("manage.toast.statusUpdated"));
       refetch();
     },
     onError: (error) => {
-      toast.error(error.message || "更新失败");
+      toast.error(error.message || t("manage.toast.updateFailed"));
     },
   });
 
@@ -108,10 +110,10 @@ export default function Manage() {
       <div className="space-page flex items-center justify-center">
         <SpaceBackdrop subtle />
         <div className="glass-panel relative z-10 space-y-4 p-8 text-center">
-          <h2 className="text-2xl font-bold text-white">请先登录</h2>
-          <p className="text-slate-400">你需要登录后才能管理文章</p>
+          <h2 className="text-2xl font-bold text-white">{t("manage.pleaseLogin")}</h2>
+          <p className="text-slate-400">{t("manage.loginRequired")}</p>
           <Button asChild className="bg-blue-500 text-white hover:bg-blue-400">
-            <a href={"/login"}>登录</a>
+            <a href={"/login"}>{t("manage.loginBtn")}</a>
           </Button>
         </div>
       </div>
@@ -131,25 +133,25 @@ export default function Manage() {
   return (
     <div className="space-page">
       <SpaceBackdrop subtle />
-      <SiteHeader active="write" backHref="/" backLabel="返回研究索引" compact />
+      <SiteHeader active="write" backHref="/" backLabel={t("manage.backLabel")} compact />
 
       <main className="container relative z-10 px-4 py-8 sm:px-6">
         <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <div className="signal-chip mb-5">
               <FileText className="h-4 w-4" />
-              Research CMS
+              {t("manage.cmsLabel")}
             </div>
-            <h2 className="font-serif text-4xl font-semibold text-white">文章后台</h2>
+            <h2 className="font-serif text-4xl font-semibold text-white">{t("manage.pageTitle")}</h2>
             <p className="mt-3 text-sm leading-6 text-slate-400">
-              用来快速检查草稿、发布状态、阅读量和需要继续打磨的研究笔记。
+              {t("manage.pageSubtitle")}
             </p>
           </div>
 
           <Button asChild className="bg-blue-500 text-white hover:bg-blue-400">
             <Link href="/write">
               <Plus className="mr-2 h-4 w-4" />
-              撰写文章
+              {t("manage.writeArticle")}
             </Link>
           </Button>
         </div>
@@ -158,14 +160,14 @@ export default function Manage() {
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input
-              placeholder="搜索文章..."
+              placeholder={t("manage.searchPlaceholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="border-sky-200/15 bg-slate-950/40 pl-10 text-white placeholder:text-slate-500"
             />
           </div>
           <div className="text-sm text-slate-400">
-            共 {postsData?.total || 0} 篇文章
+            {t("manage.articleCount", { count: postsData?.total || 0 })}
           </div>
         </div>
 
@@ -177,12 +179,12 @@ export default function Manage() {
         ) : postsData?.posts.length === 0 ? (
           <div className="glass-panel py-12 text-center">
             <FileText className="mx-auto mb-4 h-12 w-12 text-sky-300" />
-            <h3 className="mb-2 text-lg font-medium text-white">暂无文章</h3>
-            <p className="mb-4 text-slate-400">开始撰写你的第一篇文章吧</p>
+            <h3 className="mb-2 text-lg font-medium text-white">{t("manage.noArticles")}</h3>
+            <p className="mb-4 text-slate-400">{t("manage.noArticlesHint")}</p>
             <Button asChild className="bg-blue-500 text-white hover:bg-blue-400">
               <Link href="/write">
                 <Plus className="mr-2 h-4 w-4" />
-                撰写文章
+                {t("manage.writeArticle")}
               </Link>
             </Button>
           </div>
@@ -191,12 +193,12 @@ export default function Manage() {
             <Table>
               <TableHeader>
                 <TableRow className="border-sky-200/10 hover:bg-transparent">
-                  <TableHead className="w-[400px] text-slate-300">标题</TableHead>
-                  <TableHead className="text-slate-300">分类</TableHead>
-                  <TableHead className="text-slate-300">状态</TableHead>
-                  <TableHead className="text-slate-300">浏览量</TableHead>
-                  <TableHead className="text-slate-300">创建时间</TableHead>
-                  <TableHead className="w-[70px] text-slate-300">操作</TableHead>
+                  <TableHead className="w-[400px] text-slate-300">{t("manage.table.title")}</TableHead>
+                  <TableHead className="text-slate-300">{t("manage.table.category")}</TableHead>
+                  <TableHead className="text-slate-300">{t("manage.table.status")}</TableHead>
+                  <TableHead className="text-slate-300">{t("manage.table.views")}</TableHead>
+                  <TableHead className="text-slate-300">{t("manage.table.createdAt")}</TableHead>
+                  <TableHead className="w-[70px] text-slate-300">{t("manage.table.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -217,19 +219,19 @@ export default function Manage() {
                     </TableCell>
                     <TableCell>
                       {categoriesMap.get(post.categoryId ?? 0) || (
-                        <span className="text-slate-500">未分类</span>
+                        <span className="text-slate-500">{t("common.uncategorized")}</span>
                       )}
                     </TableCell>
                     <TableCell>
                       <Badge
                         variant={post.status === "published" ? "default" : "secondary"}
                       >
-                        {post.status === "published" ? "已发布" : "草稿"}
+                        {post.status === "published" ? t("manage.status.published") : t("manage.status.draft")}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-slate-300">{post.viewCount}</TableCell>
                     <TableCell>
-                      {new Date(post.createdAt).toLocaleDateString("zh-CN")}
+                      {new Date(post.createdAt).toLocaleDateString(language === "zh" ? "zh-CN" : "en-US")}
                     </TableCell>
                     <TableCell>
                       <DropdownMenu>
@@ -242,25 +244,25 @@ export default function Manage() {
                           <DropdownMenuItem asChild>
                             <Link href={`/post/${post.slug}`}>
                               <Eye className="w-4 h-4 mr-2" />
-                              查看
+                              {t("manage.action.view")}
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
                             <Link href={`/write/${post.slug}`}>
                               <Edit className="w-4 h-4 mr-2" />
-                              编辑
+                              {t("manage.action.edit")}
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => togglePublish(post)}>
                             {post.status === "published" ? (
                               <>
                                 <EyeOff className="w-4 h-4 mr-2" />
-                                取消发布
+                                {t("manage.action.unpublish")}
                               </>
                             ) : (
                               <>
                                 <Eye className="w-4 h-4 mr-2" />
-                                发布
+                                {t("manage.action.publish")}
                               </>
                             )}
                           </DropdownMenuItem>
@@ -270,7 +272,7 @@ export default function Manage() {
                             onClick={() => setDeleteId(post.id)}
                           >
                             <Trash2 className="w-4 h-4 mr-2" />
-                            删除
+                            {t("manage.action.delete")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -287,18 +289,18 @@ export default function Manage() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>确认删除</AlertDialogTitle>
+            <AlertDialogTitle>{t("manage.deleteTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              此操作不可撤销，文章将被永久删除。
+              {t("manage.deleteDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogCancel>{t("manage.deleteCancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              删除
+              {t("manage.deleteConfirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

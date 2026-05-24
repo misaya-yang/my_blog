@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { SpaceBackdrop } from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -128,6 +129,7 @@ function ToolbarDivider() {
 
 export default function Editor() {
   const { isAdmin, loading: authLoading } = useAuth();
+  const { t } = useLanguage();
   const params = useParams<{ slug?: string }>();
   const [, navigate] = useLocation();
   const isEditing = !!params.slug;
@@ -174,7 +176,7 @@ export default function Editor() {
 
   // 字数统计
   const wordCount = useMemo(() => {
-    const text = content.replace(/[#*`\[\]()>\-_~|]/g, "").trim();
+    const text = content.replace(/[#*`\[\]()>-_~|]/g, "").trim();
     const chinese = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
     const english = (text.match(/[a-zA-Z]+/g) || []).length;
     return chinese + english;
@@ -322,7 +324,7 @@ export default function Editor() {
 
     const start = textarea.selectionStart;
     const selectedText = content.substring(start, textarea.selectionEnd);
-    const codeBlock = `\n\`\`\`javascript\n${selectedText || "// 在此输入代码"}\n\`\`\`\n`;
+    const codeBlock = `\n\`\`\`javascript\n${selectedText || t("editor.codeBlockPlaceholder")}\n\`\`\`\n`;
     
     const newContent = 
       content.substring(0, start) + 
@@ -334,9 +336,9 @@ export default function Editor() {
     setTimeout(() => {
       textarea.focus();
       const codeStart = start + 15; // 跳过 \n```javascript\n
-      textarea.setSelectionRange(codeStart, codeStart + (selectedText.length || 12));
+      textarea.setSelectionRange(codeStart, codeStart + (selectedText.length || t("editor.codeBlockPlaceholder").length));
     }, 0);
-  }, [content]);
+  }, [content, t]);
 
   const insertSnippet = useCallback((snippet: string) => {
     const textarea = textareaRef.current;
@@ -358,37 +360,37 @@ export default function Editor() {
   const researchSnippets = useMemo(
     () => [
       {
-        label: "主张",
-        hint: "Claim / evidence / caveat",
+        label: t("editor.snippet.claim"),
+        hint: t("editor.snippet.claimHint"),
         value: "\n\n> **Claim.** \n>\n> **Evidence.** \n>\n> **Caveat.** \n",
       },
       {
-        label: "定理",
-        hint: "Theorem block",
+        label: t("editor.snippet.theorem"),
+        hint: t("editor.snippet.theoremHint"),
         value: "\n\n### Theorem\n\n**Statement.** \n\n**Proof sketch.** \n",
       },
       {
-        label: "命题",
-        hint: "Proposition block",
+        label: t("editor.snippet.proposition"),
+        hint: t("editor.snippet.propositionHint"),
         value: "\n\n### Proposition\n\n**Assumptions.** \n\n**Result.** \n\n**Why it matters.** \n",
       },
       {
-        label: "实验",
-        hint: "Setup / metric / result",
+        label: t("editor.snippet.experiment"),
+        hint: t("editor.snippet.experimentHint"),
         value: "\n\n### Experiment\n\n- **Setup:** \n- **Metric:** \n- **Result:** \n- **Interpretation:** \n",
       },
       {
-        label: "公式",
-        hint: "Display math",
+        label: t("editor.snippet.formula"),
+        hint: t("editor.snippet.formulaHint"),
         value: "\n\n$$\n\n$$\n",
       },
       {
-        label: "图注",
-        hint: "Figure note",
+        label: t("editor.snippet.figure"),
+        hint: t("editor.snippet.figureHint"),
         value: "\n\n![Figure description](https://)\n\n*Figure.* \n",
       },
     ],
-    []
+    [t]
   );
 
   // 插入链接
@@ -404,7 +406,7 @@ export default function Editor() {
   // 插入图片
   const insertImage = useCallback(() => {
     if (!imageUrl) return;
-    const alt = imageAlt || "图片";
+    const alt = imageAlt || t("editor.imagePreview");
     const imageMarkdown = `\n![${alt}](${imageUrl})\n`;
     
     const textarea = textareaRef.current;
@@ -420,12 +422,12 @@ export default function Editor() {
     setImageUrl("");
     setImageAlt("");
     setShowImageDialog(false);
-  }, [imageUrl, imageAlt, content]);
+  }, [imageUrl, imageAlt, content, t]);
 
   // 保存草稿
   const handleSaveDraft = useCallback(async (silent = false) => {
     if (!title.trim()) {
-      if (!silent) toast.error("请输入文章标题");
+      if (!silent) toast.error(t("editor.toast.titleRequired"));
       return;
     }
 
@@ -470,22 +472,22 @@ export default function Editor() {
       }
       
       setLastSaved(new Date());
-      if (!silent) toast.success("草稿已保存");
+      if (!silent) toast.success(t("editor.toast.draftSaved"));
     } catch (error) {
-      if (!silent) toast.error("保存失败，请重试");
+      if (!silent) toast.error(t("editor.toast.saveFailed"));
     } finally {
       setIsSaving(false);
     }
-  }, [title, content, excerpt, categoryId, selectedTags, coverImage, postId, createPost, updatePost, saveVersion]);
+  }, [title, content, excerpt, categoryId, selectedTags, coverImage, postId, createPost, updatePost, saveVersion, t]);
 
   // 发布文章
   const handlePublish = useCallback(async () => {
     if (!title.trim()) {
-      toast.error("请输入文章标题");
+      toast.error(t("editor.toast.titleRequired"));
       return;
     }
     if (!content.trim()) {
-      toast.error("请输入文章内容");
+      toast.error(t("editor.toast.contentRequired"));
       return;
     }
 
@@ -520,14 +522,14 @@ export default function Editor() {
         });
       }
 
-      toast.success("文章已发布！");
+      toast.success(t("editor.toast.published"));
       navigate("/");
     } catch (error) {
-      toast.error("发布失败，请重试");
+      toast.error(t("editor.toast.publishFailed"));
     } finally {
       setIsPublishing(false);
     }
-  }, [title, content, excerpt, categoryId, selectedTags, coverImage, postId, createPost, updatePost, navigate]);
+  }, [title, content, excerpt, categoryId, selectedTags, coverImage, postId, createPost, updatePost, navigate, t]);
 
   // 同步滚动
   const handleEditorScroll = useCallback(() => {
@@ -555,10 +557,10 @@ export default function Editor() {
         <SpaceBackdrop subtle />
         <div className="glass-panel relative z-10 space-y-4 p-8 text-center">
           <FileText className="mx-auto h-16 w-16 text-sky-300" />
-          <h2 className="text-xl font-semibold text-white">作者权限限定</h2>
-          <p className="text-slate-400">只有管理员会话可以进入写作台</p>
+          <h2 className="text-xl font-semibold text-white">{t("editor.authRequired")}</h2>
+          <p className="text-slate-400">{t("editor.authDescription")}</p>
           <a href={"/login"}>
-            <Button className="bg-blue-500 text-white hover:bg-blue-400">进入登录页</Button>
+            <Button className="bg-blue-500 text-white hover:bg-blue-400">{t("editor.goToLogin")}</Button>
           </a>
         </div>
       </div>
@@ -574,7 +576,7 @@ export default function Editor() {
           <RouterLink href="/">
             <Button variant="ghost" size="sm" className="gap-2 text-slate-300 hover:bg-sky-400/10 hover:text-white">
               <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">返回</span>
+              <span className="hidden sm:inline">{t("editor.back")}</span>
             </Button>
           </RouterLink>
           
@@ -582,13 +584,13 @@ export default function Editor() {
             {lastSaved && (
               <>
                 <Check className="h-3.5 w-3.5 text-cyan-300" />
-                <span>已保存于 {lastSaved.toLocaleTimeString()}</span>
+                <span>{t("editor.savedAt")} {lastSaved.toLocaleTimeString()}</span>
               </>
             )}
             {isSaving && (
               <>
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                <span>保存中...</span>
+                <span>{t("editor.saving")}</span>
               </>
             )}
           </div>
@@ -599,26 +601,26 @@ export default function Editor() {
           <div className="mr-2 hidden items-center gap-3 text-sm text-slate-400 sm:flex">
             <span className="flex items-center gap-1">
               <Type className="h-3.5 w-3.5" />
-              {wordCount} 字
+              {wordCount} {t("editor.wordCount")}
             </span>
             <span className="flex items-center gap-1">
               <Clock className="h-3.5 w-3.5" />
-              约 {readingTime} 分钟
+              {t("editor.readingTimeApprox", { time: readingTime })}
             </span>
             <span className="hidden items-center gap-1 lg:flex">
               <Hash className="h-3.5 w-3.5" />
-              {equationCount} 公式
+              {equationCount} {t("editor.equationCount")}
             </span>
             <span className="hidden items-center gap-1 lg:flex">
               <Code className="h-3.5 w-3.5" />
-              {codeBlockCount} 代码块
+              {codeBlockCount} {t("editor.codeBlockCount")}
             </span>
           </div>
 
           <ToolbarButton
             onClick={() => setShowPreview(!showPreview)}
             active={showPreview}
-            tooltip={showPreview ? "隐藏预览" : "显示预览"}
+            tooltip={showPreview ? t("editor.togglePreviewHide") : t("editor.togglePreviewShow")}
             shortcut="Ctrl+E"
           >
             {showPreview ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -626,7 +628,7 @@ export default function Editor() {
 
           <ToolbarButton
             onClick={() => setIsFullscreen(!isFullscreen)}
-            tooltip={isFullscreen ? "退出全屏" : "全屏模式"}
+            tooltip={isFullscreen ? t("editor.exitFullscreen") : t("editor.enterFullscreen")}
             shortcut="Esc"
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -640,33 +642,33 @@ export default function Editor() {
             </SheetTrigger>
             <SheetContent className="w-[400px] border-sky-200/15 bg-slate-950 text-slate-100 sm:w-[540px]">
               <SheetHeader>
-                <SheetTitle>文章设置</SheetTitle>
-                <SheetDescription>设置文章的分类、标签和其他属性</SheetDescription>
+                <SheetTitle>{t("editor.settingsTitle")}</SheetTitle>
+                <SheetDescription>{t("editor.settingsDescription")}</SheetDescription>
               </SheetHeader>
               <div className="mt-6 space-y-6">
                 {/* 摘要 */}
                 <div className="space-y-2">
-                  <Label>文章摘要</Label>
+                  <Label>{t("editor.excerptLabel")}</Label>
                   <Textarea
                     value={excerpt}
                     onChange={(e) => setExcerpt(e.target.value)}
-                    placeholder="输入文章摘要，留空将自动截取正文前200字"
+                    placeholder={t("editor.excerptPlaceholder")}
                     rows={3}
                   />
                 </div>
 
                 {/* 封面图 */}
                 <div className="space-y-2">
-                  <Label>封面图片</Label>
+                  <Label>{t("editor.coverImageLabel")}</Label>
                   <Input
                     value={coverImage}
                     onChange={(e) => setCoverImage(e.target.value)}
-                    placeholder="输入图片URL"
+                    placeholder={t("editor.coverImagePlaceholder")}
                   />
                   {coverImage && (
                     <img 
                       src={coverImage} 
-                      alt="封面预览" 
+                      alt={t("editor.coverPreview")}
                       className="w-full h-32 object-cover rounded-lg mt-2"
                     />
                   )}
@@ -674,13 +676,13 @@ export default function Editor() {
 
                 {/* 分类 */}
                 <div className="space-y-2">
-                  <Label>分类</Label>
+                  <Label>{t("editor.categoryLabel")}</Label>
                   <Select
                     value={categoryId?.toString() || ""}
                     onValueChange={(v) => setCategoryId(v ? parseInt(v) : null)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="选择分类" />
+                      <SelectValue placeholder={t("editor.categoryPlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       {categories?.map((cat) => (
@@ -694,7 +696,7 @@ export default function Editor() {
 
                 {/* 标签 */}
                 <div className="space-y-2">
-                  <Label>标签</Label>
+                  <Label>{t("editor.tagsLabel")}</Label>
                   <div className="flex flex-wrap gap-2">
                     {tags?.map((tag) => (
                       <Badge
@@ -730,7 +732,7 @@ export default function Editor() {
             ) : (
               <Save className="h-4 w-4" />
             )}
-            <span className="hidden sm:inline">保存草稿</span>
+            <span className="hidden sm:inline">{t("editor.saveDraft")}</span>
           </Button>
 
           <Button
@@ -744,68 +746,68 @@ export default function Editor() {
             ) : (
               <Send className="h-4 w-4" />
             )}
-            发布
+            {t("editor.publish")}
           </Button>
         </div>
       </header>
 
       {/* 格式工具栏 */}
       <div className="relative z-10 flex h-12 shrink-0 items-center gap-1 overflow-x-auto border-b border-sky-200/10 bg-slate-950/55 px-4 backdrop-blur-xl">
-        <ToolbarButton onClick={() => insertBlock("# ", "标题")} tooltip="一级标题" shortcut="Ctrl+1">
+        <ToolbarButton onClick={() => insertBlock("# ", t("editor.placeholder.heading"))} tooltip={t("editor.toolbar.heading1")} shortcut="Ctrl+1">
           <Heading1 className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => insertBlock("## ", "标题")} tooltip="二级标题" shortcut="Ctrl+2">
+        <ToolbarButton onClick={() => insertBlock("## ", t("editor.placeholder.heading"))} tooltip={t("editor.toolbar.heading2")} shortcut="Ctrl+2">
           <Heading2 className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => insertBlock("### ", "标题")} tooltip="三级标题" shortcut="Ctrl+3">
+        <ToolbarButton onClick={() => insertBlock("### ", t("editor.placeholder.heading"))} tooltip={t("editor.toolbar.heading3")} shortcut="Ctrl+3">
           <Heading3 className="w-4 h-4" />
         </ToolbarButton>
 
         <ToolbarDivider />
 
-        <ToolbarButton onClick={() => insertFormat("**", "**", "粗体文本")} tooltip="粗体" shortcut="Ctrl+B">
+        <ToolbarButton onClick={() => insertFormat("**", "**", t("editor.placeholder.bold"))} tooltip={t("editor.toolbar.bold")} shortcut="Ctrl+B">
           <Bold className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => insertFormat("*", "*", "斜体文本")} tooltip="斜体" shortcut="Ctrl+I">
+        <ToolbarButton onClick={() => insertFormat("*", "*", t("editor.placeholder.italic"))} tooltip={t("editor.toolbar.italic")} shortcut="Ctrl+I">
           <Italic className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => insertFormat("~~", "~~", "删除文本")} tooltip="删除线">
+        <ToolbarButton onClick={() => insertFormat("~~", "~~", t("editor.placeholder.strikethrough"))} tooltip={t("editor.toolbar.strikethrough")}>
           <Strikethrough className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => insertFormat("`", "`", "代码")} tooltip="行内代码">
+        <ToolbarButton onClick={() => insertFormat("`", "`", t("editor.placeholder.code"))} tooltip={t("editor.toolbar.inlineCode")}>
           <Code className="w-4 h-4" />
         </ToolbarButton>
 
         <ToolbarDivider />
 
-        <ToolbarButton onClick={() => insertBlock("- ", "列表项")} tooltip="无序列表">
+        <ToolbarButton onClick={() => insertBlock("- ", t("editor.placeholder.listItem"))} tooltip={t("editor.toolbar.bulletList")}>
           <List className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => insertBlock("1. ", "列表项")} tooltip="有序列表">
+        <ToolbarButton onClick={() => insertBlock("1. ", t("editor.placeholder.listItem"))} tooltip={t("editor.toolbar.orderedList")}>
           <ListOrdered className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => insertBlock("> ", "引用内容")} tooltip="引用">
+        <ToolbarButton onClick={() => insertBlock("> ", t("editor.placeholder.quote"))} tooltip={t("editor.toolbar.quote")}>
           <Quote className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => insertFormat("\n---\n", "")} tooltip="分隔线">
+        <ToolbarButton onClick={() => insertFormat("\n---\n", "")} tooltip={t("editor.toolbar.divider")}>
           <Minus className="w-4 h-4" />
         </ToolbarButton>
 
         <ToolbarDivider />
 
-        <ToolbarButton onClick={() => setShowLinkDialog(true)} tooltip="插入链接" shortcut="Ctrl+K">
+        <ToolbarButton onClick={() => setShowLinkDialog(true)} tooltip={t("editor.toolbar.link")} shortcut="Ctrl+K">
           <LinkIcon className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => setShowImageDialog(true)} tooltip="插入图片">
+        <ToolbarButton onClick={() => setShowImageDialog(true)} tooltip={t("editor.toolbar.image")}>
           <ImageIcon className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={insertCodeBlock} tooltip="代码块">
+        <ToolbarButton onClick={insertCodeBlock} tooltip={t("editor.toolbar.codeBlock")}>
           <FileText className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => insertFormat("$", "$", "E=mc^2")} tooltip="行内公式">
+        <ToolbarButton onClick={() => insertFormat("$", "$", "E=mc^2")} tooltip={t("editor.toolbar.inlineMath")}>
           <span className="text-xs font-mono">∑</span>
         </ToolbarButton>
-        <ToolbarButton onClick={() => insertFormat("\n$$\n", "\n$$\n", "\\int_0^\\infty f(x)dx")} tooltip="公式块">
+        <ToolbarButton onClick={() => insertFormat("\n$$\n", "\n$$\n", "\\int_0^\\infty f(x)dx")} tooltip={t("editor.toolbar.mathBlock")}>
           <span className="text-xs font-mono">∫</span>
         </ToolbarButton>
       </div>
@@ -814,9 +816,9 @@ export default function Editor() {
       <div className="relative z-10 flex flex-1 overflow-hidden">
         <aside className="hidden w-64 shrink-0 border-r border-sky-200/10 bg-slate-950/45 p-4 backdrop-blur-xl xl:block">
           <div className="mb-4">
-            <p className="text-sm font-semibold text-white">研究片段</p>
+            <p className="text-sm font-semibold text-white">{t("editor.snippetsTitle")}</p>
             <p className="mt-1 text-xs leading-5 text-slate-400">
-              快速插入论文式结构，保持主张和证据边界清楚。
+              {t("editor.snippetsDescription")}
             </p>
           </div>
           <div className="space-y-2">
@@ -835,16 +837,16 @@ export default function Editor() {
 
           <div className="mt-6 border-t border-sky-200/10 pt-4 text-xs text-slate-400">
             <div className="flex items-center justify-between py-1">
-              <span>公式</span>
+              <span>{t("editor.statEquations")}</span>
               <span className="font-mono text-white">{equationCount}</span>
             </div>
             <div className="flex items-center justify-between py-1">
-              <span>代码块</span>
+              <span>{t("editor.statCodeBlocks")}</span>
               <span className="font-mono text-white">{codeBlockCount}</span>
             </div>
             <div className="flex items-center justify-between py-1">
-              <span>阅读</span>
-              <span className="font-mono text-white">{readingTime} min</span>
+              <span>{t("editor.statReadingTime")}</span>
+              <span className="font-mono text-white">{readingTime} {t("editor.readingTime")}</span>
             </div>
           </div>
         </aside>
@@ -857,7 +859,7 @@ export default function Editor() {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="输入文章标题..."
+              placeholder={t("editor.titlePlaceholder")}
               className="w-full bg-transparent font-serif text-2xl font-semibold leading-tight text-white outline-none placeholder:text-slate-500"
             />
           </div>
@@ -869,17 +871,7 @@ export default function Editor() {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               onScroll={handleEditorScroll}
-              placeholder="开始撰写你的文章...
-
-支持 Markdown 语法：
-- # 一级标题
-- ## 二级标题
-- **粗体** 和 *斜体*
-- `行内代码` 和 ```代码块```
-- $行内公式$ 和 $$公式块$$
-- [链接](url) 和 ![图片](url)
-- > 引用
-- - 列表"
+              placeholder={t("editor.contentPlaceholder")}
               className="h-full w-full resize-none border-none bg-slate-950/20 p-5 font-mono text-sm leading-7 text-slate-200 outline-none placeholder:text-slate-600"
               style={{ minHeight: "100%" }}
             />
@@ -921,7 +913,7 @@ export default function Editor() {
                     },
                   }}
                 >
-                  {content || "*开始撰写后，预览将显示在这里...*"}
+                  {content || `*${t("editor.previewPlaceholder")}*`}
                 </ReactMarkdown>
               </article>
             </div>
@@ -933,32 +925,32 @@ export default function Editor() {
       <Dialog open={showLinkDialog} onOpenChange={setShowLinkDialog}>
         <DialogContent className="border-sky-200/15 bg-slate-950 text-slate-100">
           <DialogHeader>
-            <DialogTitle>插入链接</DialogTitle>
-            <DialogDescription>输入链接地址和显示文本</DialogDescription>
+            <DialogTitle>{t("editor.linkDialogTitle")}</DialogTitle>
+            <DialogDescription>{t("editor.linkDialogDescription")}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>链接文本</Label>
+              <Label>{t("editor.linkTextLabel")}</Label>
               <Input
                 value={linkText}
                 onChange={(e) => setLinkText(e.target.value)}
-                placeholder="显示的文本"
+                placeholder={t("editor.linkTextPlaceholder")}
               />
             </div>
             <div className="space-y-2">
-              <Label>链接地址</Label>
+              <Label>{t("editor.linkUrlLabel")}</Label>
               <Input
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
-                placeholder="https://example.com"
+                placeholder={t("editor.linkUrlPlaceholder")}
               />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowLinkDialog(false)}>
-              取消
+              {t("common.cancel")}
             </Button>
-            <Button onClick={insertLink}>插入</Button>
+            <Button onClick={insertLink}>{t("editor.linkInsert")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -967,30 +959,30 @@ export default function Editor() {
       <Dialog open={showImageDialog} onOpenChange={setShowImageDialog}>
         <DialogContent className="border-sky-200/15 bg-slate-950 text-slate-100">
           <DialogHeader>
-            <DialogTitle>插入图片</DialogTitle>
-            <DialogDescription>输入图片地址</DialogDescription>
+            <DialogTitle>{t("editor.imageDialogTitle")}</DialogTitle>
+            <DialogDescription>{t("editor.imageDialogDescription")}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>图片地址</Label>
+              <Label>{t("editor.imageUrlLabel")}</Label>
               <Input
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://example.com/image.jpg"
+                placeholder={t("editor.imageUrlPlaceholder")}
               />
             </div>
             <div className="space-y-2">
-              <Label>替代文本</Label>
+              <Label>{t("editor.imageAltLabel")}</Label>
               <Input
                 value={imageAlt}
                 onChange={(e) => setImageAlt(e.target.value)}
-                placeholder="图片描述"
+                placeholder={t("editor.imageAltPlaceholder")}
               />
             </div>
             {imageUrl && (
               <img 
                 src={imageUrl} 
-                alt={imageAlt || "预览"} 
+                alt={imageAlt || t("editor.imagePreview")}
                 className="w-full h-32 object-cover rounded-lg"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = "none";
@@ -1000,9 +992,9 @@ export default function Editor() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowImageDialog(false)}>
-              取消
+              {t("common.cancel")}
             </Button>
-            <Button onClick={insertImage}>插入</Button>
+            <Button onClick={insertImage}>{t("editor.imageInsert")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -108,7 +108,7 @@ export default function PostDetail() {
     } else if (platform === "wechat") {
       // Open QR code in new window for WeChat sharing
       window.open(shareUrls.wechat, "_blank", "width=400,height=400");
-      toast.info("Scan QR code to share on WeChat");
+      toast.info(t("post.wechatQRHint"));
     } else if (shareUrls[platform]) {
       window.open(shareUrls[platform], "_blank", "width=600,height=400");
     }
@@ -116,7 +116,7 @@ export default function PostDetail() {
 
   const copyEmail = () => {
     navigator.clipboard.writeText("zedpl28174@gmail.com");
-    toast.success(language === "en" ? "Email copied!" : "邮箱已复制！");
+    toast.success(t("common.emailCopied"));
   };
 
   const copyCode = useCallback(
@@ -194,7 +194,7 @@ export default function PostDetail() {
               <div className="mb-5 flex flex-wrap items-center gap-3 border-b border-sky-200/10 pb-5">
                 <div className="flex items-center gap-2 text-sm">
                   <User className="h-4 w-4 text-sky-300" />
-                  <span className="font-medium text-white">Misaya Yang</span>
+                  <span className="font-medium text-white">{t("post.authorName")}</span>
                 </div>
                 <div className="h-4 w-px bg-sky-200/20" />
                 <a
@@ -204,14 +204,14 @@ export default function PostDetail() {
                   className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sky-200"
                 >
                   <GraduationCap className="h-3.5 w-3.5" />
-                  Scholar
+                  {t("nav.scholar")}
                 </a>
                 <button
                   onClick={copyEmail}
                   className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sky-200"
                 >
                   <Mail className="h-3.5 w-3.5" />
-                  Email
+                  {t("nav.email")}
                 </button>
               </div>
 
@@ -235,7 +235,7 @@ export default function PostDetail() {
                 </span>
                 <span className="flex items-center gap-1.5">
                   <BookOpen className="h-4 w-4" />
-                  {readingTime} min read
+                  {readingTime} {t("post.minRead")}
                 </span>
               </div>
 
@@ -247,7 +247,7 @@ export default function PostDetail() {
                   onClick={() => handleShare("twitter")}
                 >
                   <Twitter className="h-3.5 w-3.5" />
-                  Twitter
+                  {t("post.twitter")}
                 </Button>
                 <Button
                   variant="outline"
@@ -256,7 +256,7 @@ export default function PostDetail() {
                   onClick={() => handleShare("linkedin")}
                 >
                   <Linkedin className="h-3.5 w-3.5" />
-                  LinkedIn
+                  {t("post.linkedin")}
                 </Button>
                 <Button
                   variant="outline"
@@ -265,7 +265,7 @@ export default function PostDetail() {
                   onClick={() => handleShare("wechat")}
                 >
                   <MessageCircle className="h-3.5 w-3.5" />
-                  WeChat
+                  {t("post.wechat")}
                 </Button>
                 <Button
                   variant="outline"
@@ -303,7 +303,7 @@ export default function PostDetail() {
             )}
 
             {/* Post Content */}
-            <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-headings:font-serif prose-headings:text-white prose-p:leading-relaxed prose-p:text-slate-300 prose-li:text-slate-300 prose-pre:relative prose-a:text-sky-300 prose-a:no-underline hover:prose-a:underline">
+            <div className="article-prose">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkMath]}
                 rehypePlugins={[rehypeKatex, rehypeHighlight]}
@@ -382,9 +382,9 @@ export default function PostDetail() {
             <div className="mt-16 border-t border-sky-200/10 pt-8">
               <div className="flex items-start gap-4">
                 <div className="flex-1">
-                  <h3 className="mb-2 text-lg font-semibold text-white">Misaya Yang</h3>
+                  <h3 className="mb-2 text-lg font-semibold text-white">{t("post.authorName")}</h3>
                   <p className="mb-4 text-sm text-slate-400">
-                    Researcher focusing on Deep Learning, Transformers, Large Language Models, and Position Encoding.
+                    {t("post.authorBio")}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     <a
@@ -394,7 +394,7 @@ export default function PostDetail() {
                     >
                       <Button size="sm" variant="outline" className="glass-button h-8 gap-2">
                         <GraduationCap className="h-4 w-4" />
-                        Google Scholar
+                        {t("post.googleScholar")}
                       </Button>
                     </a>
                     <Button
@@ -404,7 +404,7 @@ export default function PostDetail() {
                       onClick={copyEmail}
                     >
                       <Mail className="h-4 w-4" />
-                      Contact
+                      {t("post.contact")}
                     </Button>
                   </div>
                 </div>

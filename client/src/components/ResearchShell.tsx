@@ -1,7 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTheme } from "@/contexts/ThemeContext";
 import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
@@ -10,8 +9,6 @@ import {
   GraduationCap,
   LogOut,
   Mail,
-  Moon,
-  Sun,
   UserRound,
 } from "lucide-react";
 import { Link } from "wouter";
@@ -45,12 +42,11 @@ export function BrandMark({ className }: { className?: string }) {
 
 export function SiteHeader({ active = "home", backHref, backLabel, compact }: SiteHeaderProps) {
   const { isAdmin, isAuthenticated, displayName, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const { language, toggleLanguage, t } = useLanguage();
 
   const copyEmail = () => {
     navigator.clipboard.writeText("zedpl28174@gmail.com");
-    toast.success(language === "en" ? "Email copied" : "邮箱已复制");
+    toast.success(t("common.emailCopied"));
   };
 
   const navLink = (href: string, key: SiteHeaderProps["active"], label: string) => (
@@ -78,18 +74,18 @@ export function SiteHeader({ active = "home", backHref, backLabel, compact }: Si
             <Link href="/" className="flex items-center gap-3">
               <BrandMark />
               <span className="text-base font-semibold tracking-normal text-white sm:text-lg">
-                AI Tech Blog
+                {t("nav.brand")}
               </span>
             </Link>
           )}
         </div>
 
-        <nav className="flex items-center gap-1.5 text-sm">
+        <nav className="flex items-center gap-2 text-sm">
           {!compact && (
             <div className="hidden items-center gap-1.5 md:flex">
-              {navLink("/", "home", "首页")}
+              {navLink("/", "home", t("nav.home"))}
               <a href="#research-index" className={cn("nav-ink", active === "archive" && "nav-ink-active")}>
-                归档
+                {t("nav.archive")}
               </a>
             </div>
           )}
@@ -100,29 +96,20 @@ export function SiteHeader({ active = "home", backHref, backLabel, compact }: Si
             className="nav-ink hidden gap-2 sm:inline-flex"
           >
             <GraduationCap className="h-4 w-4" />
-            Scholar
+            {t("nav.scholar")}
           </a>
           <button type="button" className="nav-ink hidden gap-2 sm:inline-flex" onClick={copyEmail}>
             <Mail className="h-4 w-4" />
-            Email
+            {t("nav.email")}
           </button>
           {isAdmin && (
             <Link href="/write" className={cn("nav-ink gap-2", active === "write" && "nav-ink-active")}>
               <Edit className="h-4 w-4" />
-              <span className="hidden sm:inline">写作</span>
+              <span className="hidden sm:inline">{t("nav.write")}</span>
             </Link>
           )}
           <button type="button" className="nav-ink px-3" onClick={toggleLanguage}>
             {language === "en" ? "中文" : "EN"}
-          </button>
-          <button
-            type="button"
-            className="theme-pill"
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-          >
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            <span />
           </button>
           {isAuthenticated ? (
             <Button variant="outline" size="sm" className="glass-button hidden gap-2 sm:inline-flex" onClick={logout}>

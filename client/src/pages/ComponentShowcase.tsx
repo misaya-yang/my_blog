@@ -158,6 +158,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { format } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import {
@@ -175,6 +176,7 @@ import { AIChatBox, type Message } from "@/components/AIChatBox";
 
 export default function ComponentsShowcase() {
   const { theme, toggleTheme } = useTheme();
+  const { t } = useLanguage();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [datePickerDate, setDatePickerDate] = useState<Date>();
   const [selectedFruits, setSelectedFruits] = useState<string[]>([]);
@@ -195,8 +197,8 @@ export default function ComponentsShowcase() {
 
   const handleDialogSubmit = () => {
     console.log("Dialog submitted with value:", dialogInput);
-    sonnerToast.success("Submitted successfully", {
-      description: `Input: ${dialogInput}`,
+    sonnerToast.success(t("showcase.submittedSuccessfully"), {
+      description: t("showcase.inputValue", { value: dialogInput }),
     });
     setDialogInput("");
     setDialogOpen(false);
@@ -245,7 +247,7 @@ export default function ComponentsShowcase() {
         <div className="space-y-12">
           {/* Text Colors Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Text Colors</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.textColors")}</h3>
             <Card>
               <CardContent className="pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -324,54 +326,54 @@ export default function ComponentsShowcase() {
 
           {/* Color Combinations Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Color Combinations</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.colorCombinations")}</h3>
             <Card>
               <CardContent className="pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div className="bg-primary text-primary-foreground rounded-lg p-4">
-                    <p className="font-medium mb-1">Primary</p>
+                    <p className="font-medium mb-1">{t("showcase.primary")}</p>
                     <p className="text-sm opacity-90">
                       Primary background with foreground text
                     </p>
                   </div>
                   <div className="bg-secondary text-secondary-foreground rounded-lg p-4">
-                    <p className="font-medium mb-1">Secondary</p>
+                    <p className="font-medium mb-1">{t("showcase.secondary")}</p>
                     <p className="text-sm opacity-90">
                       Secondary background with foreground text
                     </p>
                   </div>
                   <div className="bg-muted text-muted-foreground rounded-lg p-4">
-                    <p className="font-medium mb-1">Muted</p>
+                    <p className="font-medium mb-1">{t("showcase.muted")}</p>
                     <p className="text-sm opacity-90">
                       Muted background with foreground text
                     </p>
                   </div>
                   <div className="bg-accent text-accent-foreground rounded-lg p-4">
-                    <p className="font-medium mb-1">Accent</p>
+                    <p className="font-medium mb-1">{t("showcase.accent")}</p>
                     <p className="text-sm opacity-90">
                       Accent background with foreground text
                     </p>
                   </div>
                   <div className="bg-destructive text-destructive-foreground rounded-lg p-4">
-                    <p className="font-medium mb-1">Destructive</p>
+                    <p className="font-medium mb-1">{t("showcase.destructive")}</p>
                     <p className="text-sm opacity-90">
                       Destructive background with foreground text
                     </p>
                   </div>
                   <div className="bg-card text-card-foreground rounded-lg p-4 border">
-                    <p className="font-medium mb-1">Card</p>
+                    <p className="font-medium mb-1">{t("showcase.card")}</p>
                     <p className="text-sm opacity-90">
                       Card background with foreground text
                     </p>
                   </div>
                   <div className="bg-popover text-popover-foreground rounded-lg p-4 border">
-                    <p className="font-medium mb-1">Popover</p>
+                    <p className="font-medium mb-1">{t("showcase.popover")}</p>
                     <p className="text-sm opacity-90">
                       Popover background with foreground text
                     </p>
                   </div>
                   <div className="bg-background text-foreground rounded-lg p-4 border">
-                    <p className="font-medium mb-1">Background</p>
+                    <p className="font-medium mb-1">{t("showcase.background")}</p>
                     <p className="text-sm opacity-90">
                       Default background with foreground text
                     </p>
@@ -383,13 +385,13 @@ export default function ComponentsShowcase() {
 
           {/* Buttons Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Buttons</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.buttons")}</h3>
             <Card>
               <CardContent className="pt-6">
                 <div className="flex flex-wrap gap-4">
                   <Button>Default</Button>
                   <Button variant="secondary">Secondary</Button>
-                  <Button variant="destructive">Destructive</Button>
+                  <Button variant="destructive">{t("showcase.destructive")}</Button>
                   <Button variant="outline">Outline</Button>
                   <Button variant="ghost">Ghost</Button>
                   <Button variant="link">Link</Button>
@@ -405,25 +407,25 @@ export default function ComponentsShowcase() {
 
           {/* Form Inputs Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Form Inputs</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.formInputs")}</h3>
             <Card>
               <CardContent className="pt-6 space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="Email" />
+                  <Label htmlFor="email">{t("showcase.email")}</Label>
+                  <Input id="email" type="email" placeholder={t("showcase.emailPlaceholder")} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="message">Message</Label>
+                  <Label htmlFor="message">{t("showcase.message")}</Label>
                   <Textarea
                     id="message"
-                    placeholder="Type your message here."
+                    placeholder={t("showcase.messagePlaceholder")}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Select</Label>
+                  <Label>{t("showcase.select")}</Label>
                   <Select>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a fruit" />
+                      <SelectValue placeholder={t("showcase.selectFruitPlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="apple">Apple</SelectItem>
@@ -434,31 +436,31 @@ export default function ComponentsShowcase() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox id="terms" />
-                  <Label htmlFor="terms">Accept terms and conditions</Label>
+                  <Label htmlFor="terms">{t("showcase.acceptTerms")}</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Switch id="airplane-mode" />
-                  <Label htmlFor="airplane-mode">Airplane Mode</Label>
+                  <Label htmlFor="airplane-mode">{t("showcase.airplaneMode")}</Label>
                 </div>
                 <div className="space-y-2">
-                  <Label>Radio Group</Label>
+                  <Label>{t("showcase.radioGroup")}</Label>
                   <RadioGroup defaultValue="option-one">
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="option-one" id="option-one" />
-                      <Label htmlFor="option-one">Option One</Label>
+                      <Label htmlFor="option-one">{t("showcase.optionOne")}</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="option-two" id="option-two" />
-                      <Label htmlFor="option-two">Option Two</Label>
+                      <Label htmlFor="option-two">{t("showcase.optionTwo")}</Label>
                     </div>
                   </RadioGroup>
                 </div>
                 <div className="space-y-2">
-                  <Label>Slider</Label>
+                  <Label>{t("showcase.slider")}</Label>
                   <Slider defaultValue={[50]} max={100} step={1} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Input OTP</Label>
+                  <Label>{t("showcase.inputOTP")}</Label>
                   <InputOTP maxLength={6}>
                     <InputOTPGroup>
                       <InputOTPSlot index={0} />
@@ -471,7 +473,7 @@ export default function ComponentsShowcase() {
                   </InputOTP>
                 </div>
                 <div className="space-y-2">
-                  <Label>Date Time Picker</Label>
+                  <Label>{t("showcase.dateTimePicker")}</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -484,7 +486,7 @@ export default function ComponentsShowcase() {
                         {datePickerDate ? (
                           format(datePickerDate, "PPP HH:mm", { locale: zhCN })
                         ) : (
-                          <span>Select date and time</span>
+                          <span>{t("showcase.selectDateTime")}</span>
                         )}
                       </Button>
                     </PopoverTrigger>
@@ -498,7 +500,7 @@ export default function ComponentsShowcase() {
                         <div className="border-t pt-3 space-y-2">
                           <Label className="flex items-center gap-2">
                             <Clock className="h-4 w-4" />
-                            Time
+                            {t("showcase.time")}
                           </Label>
                           <div className="flex gap-2">
                             <Input
@@ -534,7 +536,7 @@ export default function ComponentsShowcase() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label>Searchable Dropdown</Label>
+                  <Label>{t("showcase.searchableDropdown")}</Label>
                   <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
                     <PopoverTrigger asChild>
                       <Button
@@ -553,15 +555,15 @@ export default function ComponentsShowcase() {
                               { value: "nuxt", label: "Nuxt" },
                               { value: "remix", label: "Remix" },
                             ].find(fw => fw.value === selectedFramework)?.label
-                          : "Select framework..."}
+                          : t("showcase.selectFrameworkPlaceholder")}
                         <CalendarIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-full p-0">
                       <Command>
-                        <CommandInput placeholder="Search frameworks..." />
+                        <CommandInput placeholder={t("showcase.searchFrameworksPlaceholder")} />
                         <CommandList>
-                          <CommandEmpty>No framework found</CommandEmpty>
+                          <CommandEmpty>{t("showcase.noFrameworkFound")}</CommandEmpty>
                           <CommandGroup>
                             {[
                               { value: "react", label: "React" },
@@ -620,14 +622,14 @@ export default function ComponentsShowcase() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="month" className="text-sm font-medium">
-                        Month
+                        {t("showcase.month")}
                       </Label>
                       <Select
                         value={selectedMonth}
                         onValueChange={setSelectedMonth}
                       >
                         <SelectTrigger id="month">
-                          <SelectValue placeholder="MM" />
+                          <SelectValue placeholder={t("showcase.monthPlaceholder")} />
                         </SelectTrigger>
                         <SelectContent>
                           {Array.from({ length: 12 }, (_, i) => i + 1).map(
@@ -645,14 +647,14 @@ export default function ComponentsShowcase() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="year" className="text-sm font-medium">
-                        Year
+                        {t("showcase.year")}
                       </Label>
                       <Select
                         value={selectedYear}
                         onValueChange={setSelectedYear}
                       >
                         <SelectTrigger id="year">
-                          <SelectValue placeholder="YYYY" />
+                          <SelectValue placeholder={t("showcase.yearPlaceholder")} />
                         </SelectTrigger>
                         <SelectContent>
                           {Array.from(
@@ -679,11 +681,11 @@ export default function ComponentsShowcase() {
 
           {/* Data Display Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Data Display</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.dataDisplay")}</h3>
             <Card>
               <CardContent className="pt-6 space-y-6">
                 <div className="space-y-2">
-                  <Label>Badges</Label>
+                  <Label>{t("showcase.badges")}</Label>
                   <div className="flex flex-wrap gap-2">
                     <Badge>Default</Badge>
                     <Badge variant="secondary">Secondary</Badge>
@@ -693,7 +695,7 @@ export default function ComponentsShowcase() {
                 </div>
                 <Separator />
                 <div className="space-y-2">
-                  <Label>Avatar</Label>
+                  <Label>{t("showcase.avatar")}</Label>
                   <div className="flex gap-4">
                     <Avatar>
                       <AvatarImage src="https://github.com/shadcn.png" />
@@ -706,7 +708,7 @@ export default function ComponentsShowcase() {
                 </div>
                 <Separator />
                 <div className="space-y-2">
-                  <Label>Progress</Label>
+                  <Label>{t("showcase.progress")}</Label>
                   <Progress value={progress} />
                   <div className="flex gap-2">
                     <Button
@@ -725,7 +727,7 @@ export default function ComponentsShowcase() {
                 </div>
                 <Separator />
                 <div className="space-y-2">
-                  <Label>Skeleton</Label>
+                  <Label>{t("showcase.skeleton")}</Label>
                   <div className="space-y-2">
                     <Skeleton className="h-4 w-full" />
                     <Skeleton className="h-4 w-3/4" />
@@ -734,7 +736,7 @@ export default function ComponentsShowcase() {
                 </div>
                 <Separator />
                 <div className="space-y-2">
-                  <Label>Pagination</Label>
+                  <Label>{t("showcase.pagination")}</Label>
                   <Pagination>
                     <PaginationContent>
                       <PaginationItem>
@@ -772,38 +774,38 @@ export default function ComponentsShowcase() {
                     </PaginationContent>
                   </Pagination>
                   <p className="text-sm text-muted-foreground text-center">
-                    Current page: {currentPage}
+                    {t("showcase.currentPage", { page: currentPage })}
                   </p>
                 </div>
                 <Separator />
                 <div className="space-y-2">
-                  <Label>Table</Label>
+                  <Label>{t("showcase.table")}</Label>
                   <Table>
-                    <TableCaption>A list of your recent invoices.</TableCaption>
+                    <TableCaption>{t("showcase.invoiceListCaption")}</TableCaption>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[100px]">Invoice</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Method</TableHead>
-                        <TableHead className="text-right">Amount</TableHead>
+                        <TableHead className="w-[100px]">{t("showcase.invoice")}</TableHead>
+                        <TableHead>{t("showcase.status")}</TableHead>
+                        <TableHead>{t("showcase.method")}</TableHead>
+                        <TableHead className="text-right">{t("showcase.amount")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       <TableRow>
                         <TableCell className="font-medium">INV001</TableCell>
-                        <TableCell>Paid</TableCell>
+                        <TableCell>{t("showcase.paid")}</TableCell>
                         <TableCell>Credit Card</TableCell>
                         <TableCell className="text-right">$250.00</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">INV002</TableCell>
-                        <TableCell>Pending</TableCell>
+                        <TableCell>{t("showcase.pending")}</TableCell>
                         <TableCell>PayPal</TableCell>
                         <TableCell className="text-right">$150.00</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">INV003</TableCell>
-                        <TableCell>Unpaid</TableCell>
+                        <TableCell>{t("showcase.unpaid")}</TableCell>
                         <TableCell>Bank Transfer</TableCell>
                         <TableCell className="text-right">$350.00</TableCell>
                       </TableRow>
@@ -812,7 +814,7 @@ export default function ComponentsShowcase() {
                 </div>
                 <Separator />
                 <div className="space-y-2">
-                  <Label>Menubar</Label>
+                  <Label>{t("showcase.menubar")}</Label>
                   <Menubar>
                     <MenubarMenu>
                       <MenubarTrigger>File</MenubarTrigger>
@@ -843,7 +845,7 @@ export default function ComponentsShowcase() {
                 </div>
                 <Separator />
                 <div className="space-y-2">
-                  <Label>Breadcrumb</Label>
+                  <Label>{t("showcase.breadcrumb")}</Label>
                   <Breadcrumb>
                     <BreadcrumbList>
                       <BreadcrumbItem>
@@ -868,20 +870,20 @@ export default function ComponentsShowcase() {
 
           {/* Alerts Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Alerts</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.alerts")}</h3>
             <div className="space-y-4">
               <Alert>
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Heads up!</AlertTitle>
+                <AlertTitle>{t("showcase.headsUp")}</AlertTitle>
                 <AlertDescription>
-                  You can add components to your app using the cli.
+                  {t("showcase.addComponentsViaCli")}
                 </AlertDescription>
               </Alert>
               <Alert variant="destructive">
                 <X className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
+                <AlertTitle>{t("common.error")}</AlertTitle>
                 <AlertDescription>
-                  Your session has expired. Please log in again.
+                  {t("showcase.sessionExpired")}
                 </AlertDescription>
               </Alert>
             </div>
@@ -889,66 +891,66 @@ export default function ComponentsShowcase() {
 
           {/* Tabs Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Tabs</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.tabs")}</h3>
             <Tabs defaultValue="account" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="account">Account</TabsTrigger>
-                <TabsTrigger value="password">Password</TabsTrigger>
-                <TabsTrigger value="settings">Settings</TabsTrigger>
+                <TabsTrigger value="account">{t("showcase.account")}</TabsTrigger>
+                <TabsTrigger value="password">{t("showcase.password")}</TabsTrigger>
+                <TabsTrigger value="settings">{t("showcase.settings")}</TabsTrigger>
               </TabsList>
               <TabsContent value="account">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Account</CardTitle>
+                    <CardTitle>{t("showcase.account")}</CardTitle>
                     <CardDescription>
-                      Make changes to your account here.
+                      {t("showcase.accountDescription")}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div className="space-y-1">
-                      <Label htmlFor="name">Name</Label>
+                      <Label htmlFor="name">{t("showcase.name")}</Label>
                       <Input id="name" defaultValue="Pedro Duarte" />
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Button>Save changes</Button>
+                    <Button>{t("showcase.saveChanges")}</Button>
                   </CardFooter>
                 </Card>
               </TabsContent>
               <TabsContent value="password">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Password</CardTitle>
+                    <CardTitle>{t("showcase.password")}</CardTitle>
                     <CardDescription>
-                      Change your password here.
+                      {t("showcase.passwordDescription")}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div className="space-y-1">
-                      <Label htmlFor="current">Current password</Label>
+                      <Label htmlFor="current">{t("showcase.currentPassword")}</Label>
                       <Input id="current" type="password" />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="new">New password</Label>
+                      <Label htmlFor="new">{t("showcase.newPassword")}</Label>
                       <Input id="new" type="password" />
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Button>Save password</Button>
+                    <Button>{t("showcase.savePassword")}</Button>
                   </CardFooter>
                 </Card>
               </TabsContent>
               <TabsContent value="settings">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Settings</CardTitle>
+                    <CardTitle>{t("showcase.settings")}</CardTitle>
                     <CardDescription>
-                      Manage your settings here.
+                      {t("showcase.settingsDescription")}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground">
-                      Settings content goes here.
+                      {t("showcase.settingsContent")}
                     </p>
                   </CardContent>
                 </Card>
@@ -958,26 +960,24 @@ export default function ComponentsShowcase() {
 
           {/* Accordion Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Accordion</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.accordion")}</h3>
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-1">
-                <AccordionTrigger>Is it accessible?</AccordionTrigger>
+                <AccordionTrigger>{t("showcase.isItAccessible")}</AccordionTrigger>
                 <AccordionContent>
-                  Yes. It adheres to the WAI-ARIA design pattern.
+                  {t("showcase.accessibleAnswer")}
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-2">
-                <AccordionTrigger>Is it styled?</AccordionTrigger>
+                <AccordionTrigger>{t("showcase.isItStyled")}</AccordionTrigger>
                 <AccordionContent>
-                  Yes. It comes with default styles that matches the other
-                  components' aesthetic.
+                  {t("showcase.styledAnswer")}
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-3">
-                <AccordionTrigger>Is it animated?</AccordionTrigger>
+                <AccordionTrigger>{t("showcase.isItAnimated")}</AccordionTrigger>
                 <AccordionContent>
-                  Yes. It's animated by default, but you can disable it if you
-                  prefer.
+                  {t("showcase.animatedAnswer")}
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -985,7 +985,7 @@ export default function ComponentsShowcase() {
 
           {/* Collapsible Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Collapsible</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.collapsible")}</h3>
             <Collapsible>
               <Card>
                 <CardHeader>
@@ -1016,27 +1016,27 @@ export default function ComponentsShowcase() {
 
           {/* Dialog, Sheet, Drawer Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Overlays</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.overlays")}</h3>
             <Card>
               <CardContent className="pt-6">
                 <div className="flex flex-wrap gap-4">
                   <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="outline">Open Dialog</Button>
+                      <Button variant="outline">{t("showcase.openDialog")}</Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Test Input</DialogTitle>
+                        <DialogTitle>{t("showcase.testInput")}</DialogTitle>
                         <DialogDescription>
-                          Enter some text below. Press Enter to submit (IME composition supported).
+                          {t("showcase.dialogDescription")}
                         </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4 py-4">
                         <div className="space-y-2">
-                          <Label htmlFor="dialog-input">Input</Label>
+                          <Label htmlFor="dialog-input">{t("showcase.input")}</Label>
                           <Input
                             id="dialog-input"
-                            placeholder="Type something..."
+                            placeholder={t("showcase.typeSomething")}
                             value={dialogInput}
                             onChange={(e) => setDialogInput(e.target.value)}
                             onKeyDown={handleDialogKeyDown}
@@ -1049,23 +1049,22 @@ export default function ComponentsShowcase() {
                           variant="outline"
                           onClick={() => setDialogOpen(false)}
                         >
-                          Cancel
+                          {t("common.cancel")}
                         </Button>
-                        <Button onClick={handleDialogSubmit}>Submit</Button>
+                        <Button onClick={handleDialogSubmit}>{t("common.submit")}</Button>
                       </div>
                     </DialogContent>
                   </Dialog>
 
                   <Sheet>
                     <SheetTrigger asChild>
-                      <Button variant="outline">Open Sheet</Button>
+                      <Button variant="outline">{t("showcase.openSheet")}</Button>
                     </SheetTrigger>
                     <SheetContent>
                       <SheetHeader>
-                        <SheetTitle>Edit profile</SheetTitle>
+                        <SheetTitle>{t("showcase.editProfile")}</SheetTitle>
                         <SheetDescription>
-                          Make changes to your profile here. Click save when
-                          you're done.
+                          {t("showcase.sheetDescription")}
                         </SheetDescription>
                       </SheetHeader>
                     </SheetContent>
@@ -1073,13 +1072,13 @@ export default function ComponentsShowcase() {
 
                   <Drawer>
                     <DrawerTrigger asChild>
-                      <Button variant="outline">Open Drawer</Button>
+                      <Button variant="outline">{t("showcase.openDrawer")}</Button>
                     </DrawerTrigger>
                     <DrawerContent>
                       <DrawerHeader>
-                        <DrawerTitle>Are you absolutely sure?</DrawerTitle>
+                        <DrawerTitle>{t("showcase.areYouSure")}</DrawerTitle>
                         <DrawerDescription>
-                          This action cannot be undone.
+                          {t("showcase.actionCannotBeUndone")}
                         </DrawerDescription>
                       </DrawerHeader>
                       <DrawerFooter>
@@ -1093,13 +1092,13 @@ export default function ComponentsShowcase() {
 
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline">Open Popover</Button>
+                      <Button variant="outline">{t("showcase.openPopover")}</Button>
                     </PopoverTrigger>
                     <PopoverContent>
                       <div className="space-y-2">
-                        <h4 className="font-medium leading-none">Dimensions</h4>
+                        <h4 className="font-medium leading-none">{t("showcase.dimensions")}</h4>
                         <p className="text-sm text-muted-foreground">
-                          Set the dimensions for the layer.
+                          {t("showcase.setDimensions")}
                         </p>
                       </div>
                     </PopoverContent>
@@ -1107,10 +1106,10 @@ export default function ComponentsShowcase() {
 
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline">Hover me</Button>
+                      <Button variant="outline">{t("showcase.hoverMe")}</Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Add to library</p>
+                      <p>{t("showcase.addToLibrary")}</p>
                     </TooltipContent>
                   </Tooltip>
                 </div>
@@ -1120,39 +1119,39 @@ export default function ComponentsShowcase() {
 
           {/* Menus Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Menus</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.menus")}</h3>
             <Card>
               <CardContent className="pt-6">
                 <div className="flex flex-wrap gap-4">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline">Dropdown Menu</Button>
+                      <Button variant="outline">{t("showcase.dropdownMenu")}</Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuLabel>{t("showcase.myAccount")}</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>Profile</DropdownMenuItem>
-                      <DropdownMenuItem>Billing</DropdownMenuItem>
-                      <DropdownMenuItem>Team</DropdownMenuItem>
-                      <DropdownMenuItem>Subscription</DropdownMenuItem>
+                      <DropdownMenuItem>{t("showcase.profile")}</DropdownMenuItem>
+                      <DropdownMenuItem>{t("showcase.billing")}</DropdownMenuItem>
+                      <DropdownMenuItem>{t("showcase.team")}</DropdownMenuItem>
+                      <DropdownMenuItem>{t("showcase.subscription")}</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
 
                   <ContextMenu>
                     <ContextMenuTrigger asChild>
-                      <Button variant="outline">Right Click Me</Button>
+                      <Button variant="outline">{t("showcase.rightClickMe")}</Button>
                     </ContextMenuTrigger>
                     <ContextMenuContent>
-                      <ContextMenuItem>Profile</ContextMenuItem>
-                      <ContextMenuItem>Billing</ContextMenuItem>
-                      <ContextMenuItem>Team</ContextMenuItem>
-                      <ContextMenuItem>Subscription</ContextMenuItem>
+                      <ContextMenuItem>{t("showcase.profile")}</ContextMenuItem>
+                      <ContextMenuItem>{t("showcase.billing")}</ContextMenuItem>
+                      <ContextMenuItem>{t("showcase.team")}</ContextMenuItem>
+                      <ContextMenuItem>{t("showcase.subscription")}</ContextMenuItem>
                     </ContextMenuContent>
                   </ContextMenu>
 
                   <HoverCard>
                     <HoverCardTrigger asChild>
-                      <Button variant="outline">Hover Card</Button>
+                      <Button variant="outline">{t("showcase.hoverCard")}</Button>
                     </HoverCardTrigger>
                     <HoverCardContent>
                       <div className="space-y-2">
@@ -1171,7 +1170,7 @@ export default function ComponentsShowcase() {
 
           {/* Calendar Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Calendar</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.calendar")}</h3>
             <Card>
               <CardContent className="pt-6 flex justify-center">
                 <Calendar
@@ -1186,7 +1185,7 @@ export default function ComponentsShowcase() {
 
           {/* Carousel Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Carousel</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.carousel")}</h3>
             <Card>
               <CardContent className="pt-6">
                 <Carousel className="w-full max-w-xs mx-auto">
@@ -1214,11 +1213,11 @@ export default function ComponentsShowcase() {
 
           {/* Toggle Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Toggle</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.toggle")}</h3>
             <Card>
               <CardContent className="pt-6 space-y-4">
                 <div className="space-y-2">
-                  <Label>Toggle</Label>
+                  <Label>{t("showcase.toggle")}</Label>
                   <div className="flex gap-2">
                     <Toggle aria-label="Toggle italic">
                       <span className="font-bold">B</span>
@@ -1233,7 +1232,7 @@ export default function ComponentsShowcase() {
                 </div>
                 <Separator />
                 <div className="space-y-2">
-                  <Label>Toggle Group</Label>
+                  <Label>{t("showcase.toggleGroup")}</Label>
                   <ToggleGroup type="multiple">
                     <ToggleGroupItem value="bold" aria-label="Toggle bold">
                       <span className="font-bold">B</span>
@@ -1255,20 +1254,20 @@ export default function ComponentsShowcase() {
 
           {/* Aspect Ratio & Scroll Area Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Layout Components</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.layoutComponents")}</h3>
             <Card>
               <CardContent className="pt-6 space-y-6">
                 <div className="space-y-2">
-                  <Label>Aspect Ratio (16/9)</Label>
+                  <Label>{t("showcase.aspectRatio169")}</Label>
                   <AspectRatio ratio={16 / 9} className="bg-muted">
                     <div className="flex h-full items-center justify-center">
-                      <p className="text-muted-foreground">16:9 Aspect Ratio</p>
+                      <p className="text-muted-foreground">{t("showcase.aspectRatioText")}</p>
                     </div>
                   </AspectRatio>
                 </div>
                 <Separator />
                 <div className="space-y-2">
-                  <Label>Scroll Area</Label>
+                  <Label>{t("showcase.scrollArea")}</Label>
                   <ScrollArea className="h-[200px] w-full rounded-md border overflow-hidden">
                     <div className="p-4">
                       <div className="space-y-4">
@@ -1287,7 +1286,7 @@ export default function ComponentsShowcase() {
 
           {/* Resizable Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Resizable Panels</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.resizablePanels")}</h3>
             <Card>
               <CardContent className="pt-6">
                 <ResizablePanelGroup
@@ -1296,13 +1295,13 @@ export default function ComponentsShowcase() {
                 >
                   <ResizablePanel defaultSize={50}>
                     <div className="flex h-full items-center justify-center p-6">
-                      <span className="font-semibold">Panel One</span>
+                      <span className="font-semibold">{t("showcase.panelOne")}</span>
                     </div>
                   </ResizablePanel>
                   <ResizableHandle />
                   <ResizablePanel defaultSize={50}>
                     <div className="flex h-full items-center justify-center p-6">
-                      <span className="font-semibold">Panel Two</span>
+                      <span className="font-semibold">{t("showcase.panelTwo")}</span>
                     </div>
                   </ResizablePanel>
                 </ResizablePanelGroup>
@@ -1312,63 +1311,61 @@ export default function ComponentsShowcase() {
 
           {/* Toast Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Toast</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.toast")}</h3>
             <Card>
               <CardContent className="pt-6 space-y-4">
                 <div className="space-y-2">
-                  <Label>Sonner Toast</Label>
+                  <Label>{t("showcase.sonnerToast")}</Label>
                   <div className="flex flex-wrap gap-2">
                     <Button
                       variant="outline"
                       onClick={() => {
-                        sonnerToast.success("Operation successful", {
-                          description: "Your changes have been saved",
+                        sonnerToast.success(t("showcase.operationSuccessful"), {
+                          description: t("showcase.changesSaved"),
                         });
                       }}
                     >
-                      Success
+                      {t("common.success")}
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => {
-                        sonnerToast.error("Operation failed", {
-                          description:
-                            "Cannot complete operation, please try again",
+                        sonnerToast.error(t("showcase.operationFailed"), {
+                          description: t("showcase.cannotComplete"),
                         });
                       }}
                     >
-                      Error
+                      {t("common.error")}
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => {
-                        sonnerToast.info("Information", {
-                          description: "This is an information message",
+                        sonnerToast.info(t("showcase.information"), {
+                          description: t("showcase.infoMessage"),
                         });
                       }}
                     >
-                      Info
+                      {t("common.info")}
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => {
-                        sonnerToast.warning("Warning", {
-                          description:
-                            "Please note the impact of this operation",
+                        sonnerToast.warning(t("common.warning"), {
+                          description: t("showcase.noteImpact"),
                         });
                       }}
                     >
-                      Warning
+                      {t("common.warning")}
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => {
-                        sonnerToast.loading("Loading", {
-                          description: "Please wait",
+                        sonnerToast.loading(t("common.loading"), {
+                          description: t("showcase.pleaseWait"),
                         });
                       }}
                     >
-                      Loading
+                      {t("common.loading")}
                     </Button>
                     <Button
                       variant="outline"
@@ -1377,13 +1374,13 @@ export default function ComponentsShowcase() {
                           setTimeout(resolve, 2000)
                         );
                         sonnerToast.promise(promise, {
-                          loading: "Processing...",
-                          success: "Processing complete!",
-                          error: "Processing failed",
+                          loading: t("showcase.processing"),
+                          success: t("showcase.processingComplete"),
+                          error: t("showcase.processingFailed"),
                         });
                       }}
                     >
-                      Promise
+                      {t("showcase.promise")}
                     </Button>
                   </div>
                 </div>
@@ -1393,26 +1390,25 @@ export default function ComponentsShowcase() {
 
           {/* AI ChatBox Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">AI ChatBox</h3>
+            <h3 className="text-2xl font-semibold">{t("showcase.aiChatBox")}</h3>
             <Card>
               <CardContent className="pt-6">
                 <div className="space-y-4">
                   <div className="text-sm text-muted-foreground">
                     <p>
-                      A ready-to-use chat interface component that integrates with the LLM system.
-                      Features markdown rendering, auto-scrolling, and loading states.
+                      {t("showcase.aiChatDescription1")}
                     </p>
                     <p className="mt-2">
-                      This is a demo with simulated responses. In a real app, you'd connect it to a tRPC mutation.
+                      {t("showcase.aiChatDescription2")}
                     </p>
                   </div>
                   <AIChatBox
                     messages={chatMessages}
                     onSendMessage={handleChatSend}
                     isLoading={isChatLoading}
-                    placeholder="Try sending a message..."
+                    placeholder={t("showcase.trySendingMessage")}
                     height="500px"
-                    emptyStateMessage="How can I help you today?"
+                    emptyStateMessage={t("showcase.howCanIHelp")}
                     suggestedPrompts={[
                       "What is React?",
                       "Explain TypeScript",
@@ -1429,7 +1425,7 @@ export default function ComponentsShowcase() {
 
       <footer className="border-t py-6 mt-12">
         <div className="container text-center text-sm text-muted-foreground">
-          <p>Shadcn/ui Component Showcase</p>
+          <p>{t("showcase.footer")}</p>
         </div>
       </footer>
     </div>
