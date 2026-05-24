@@ -10,7 +10,7 @@ This project is a Vite React frontend with an Express/tRPC backend. The producti
 - API: Express is exported from `api/index.ts` as a Vercel Node.js Function.
 - Database: Drizzle ORM uses PostgreSQL via `postgres` and `drizzle-orm/postgres-js`.
 - Migrations: Drizzle migration files live in `drizzle/`.
-- Seed data: `seed-blog.mjs` creates/updates the owner, category, tags, and initial post.
+- Seed data: `seed-blog.mjs` creates/updates the owner, category, tags, and initial research posts.
 
 Relevant files:
 
@@ -124,11 +124,20 @@ If using the Vercel dashboard, import this repository, keep the build command as
 
 ## Post-Deploy Checks
 
+Current production alias:
+
+- https://my-blog-jade-ten-50.vercel.app
+
+Latest verified deployment after the EVQ/IsoHC content update:
+
+- Inspect: https://vercel.com/zedpl28174-3992s-projects/my-blog/8kjX39ewxBUhL7b4TnzCHJYSUiTe
+- Deployment URL: https://my-blog-hj6ehecl7-zedpl28174-3992s-projects.vercel.app
+
 Open the production URL and verify:
 
 - `/` renders the blog frontend.
 - `/api/trpc/posts.list?batch=1&input=...` is reachable through the tRPC client from the UI.
-- A published post appears after `pnpm db:seed`.
+- The EVQ-Cosh and IsoHC published posts appear after `pnpm db:seed`.
 - Admin login uses `ADMIN_PASSWORD`, not the fallback `admin123`.
 - The Vercel deployment logs show no `Database not available` warnings.
 

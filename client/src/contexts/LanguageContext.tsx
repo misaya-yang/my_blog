@@ -17,10 +17,10 @@ const translations: Translations = {
   "nav.back": { en: "Back", zh: "返回" },
   
   // Home page
-  "home.title": { en: "Deep Learning & Algorithm Research", zh: "深度学习与算法研究" },
+  "home.title": { en: "Misaya Research Notes", zh: "Misaya 研究札记" },
   "home.subtitle": { 
-    en: "Sharing research on Transformers, Large Language Models, Position Encoding, and cutting-edge AI techniques", 
-    zh: "分享关于 Transformer、大语言模型、位置编码及前沿 AI 技术的研究" 
+    en: "Deep learning notes on Transformers, position encoding, and long-context mechanisms",
+    zh: "关于 Transformer、位置编码与长上下文机制的深度学习研究记录"
   },
   "home.search": { en: "Search articles...", zh: "搜索文章..." },
   "home.articles": { en: "Articles", zh: "文章" },
@@ -43,7 +43,7 @@ const translations: Translations = {
   "post.unpublished": { en: "Unpublished", zh: "未发布" },
   
   // Footer
-  "footer.copyright": { en: "© 2026 AI Tech Blog. All rights reserved.", zh: "© 2026 AI Tech Blog. 保留所有权利." },
+  "footer.copyright": { en: "© 2026 Misaya Research. All rights reserved.", zh: "© 2026 Misaya Research. 保留所有权利." },
   
   // Archive
   "archive.soon": { en: "Archive feature coming soon", zh: "归档功能即将上线" },

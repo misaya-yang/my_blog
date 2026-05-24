@@ -128,16 +128,15 @@ export default function Manage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* 顶部导航栏 */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
         <div className="container flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
               <ArrowLeft className="w-4 h-4" />
-              <span>返回首页</span>
+              <span>返回研究索引</span>
             </Link>
             <div className="h-6 w-px bg-border" />
-            <h1 className="text-lg font-semibold">文章管理</h1>
+            <h1 className="text-lg font-semibold">Research CMS</h1>
           </div>
 
           <Button asChild>
@@ -150,7 +149,13 @@ export default function Manage() {
       </header>
 
       <main className="container py-8">
-        {/* 搜索栏 */}
+        <div className="mb-7 max-w-2xl">
+          <h2 className="text-2xl font-semibold">文章后台</h2>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            用来快速检查草稿、发布状态、阅读量和需要继续打磨的研究笔记。
+          </p>
+        </div>
+
         <div className="flex items-center gap-4 mb-6">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -184,7 +189,7 @@ export default function Manage() {
             </Button>
           </div>
         ) : (
-          <div className="border rounded-lg">
+          <div className="border border-border/70 bg-card/40">
             <Table>
               <TableHeader>
                 <TableRow>

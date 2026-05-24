@@ -35,7 +35,7 @@ import { toast } from "sonner";
 
 export default function PostDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const { isAdmin, isAuthenticated } = useAuth();
+  const { isAdmin, isAuthenticated, displayName } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { language, toggleLanguage, t } = useLanguage();
   const [, setLocation] = useLocation();
@@ -182,8 +182,10 @@ export default function PostDetail() {
             href="/"
             className="flex items-center gap-2.5 text-lg font-semibold text-foreground hover:text-primary transition-colors"
           >
-            <BookOpen className="h-5 w-5" />
-            <span className="tracking-tight">AI Tech Blog</span>
+            <span className="grid h-8 w-8 place-items-center border border-border/80 bg-card text-xs font-semibold">
+              MY
+            </span>
+            <span>Misaya Research</span>
           </Link>
 
           <nav className="flex items-center gap-1.5">
@@ -221,7 +223,7 @@ export default function PostDetail() {
             {isAuthenticated ? (
               <Button size="sm" variant="ghost" className="text-sm">
                 <User className="h-3.5 w-3.5 mr-1.5" />
-                {isAdmin ? t("nav.admin") : t("nav.user")}
+                {isAdmin ? t("nav.admin") : displayName || t("nav.user")}
               </Button>
             ) : (
               <a href="/login">
@@ -235,12 +237,12 @@ export default function PostDetail() {
       </header>
 
       <div className="container max-w-7xl py-10 px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-12">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_280px]">
           {/* Main Content */}
           <article className="max-w-3xl">
             {/* Post Header */}
             <div className="mb-10">
-              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-5 leading-tight tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-5 leading-tight">
                 {post.title}
               </h1>
 
@@ -331,15 +333,16 @@ export default function PostDetail() {
                   {t("post.copyLink")}
                 </Button>
                 {isAdmin && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs h-8 gap-1.5"
-                    onClick={() => toast.info(t("post.editSoon"))}
-                  >
-                    <Edit className="h-3.5 w-3.5" />
-                    {t("post.edit")}
-                  </Button>
+                  <Link href={`/write/${post.slug}`}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs h-8 gap-1.5"
+                    >
+                      <Edit className="h-3.5 w-3.5" />
+                      {t("post.edit")}
+                    </Button>
+                  </Link>
                 )}
               </div>
             </div>
@@ -356,7 +359,7 @@ export default function PostDetail() {
             )}
 
             {/* Post Content */}
-            <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-headings:tracking-tight prose-p:leading-relaxed prose-li:leading-relaxed prose-pre:relative prose-a:text-primary prose-a:no-underline hover:prose-a:underline">
+            <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-p:leading-relaxed prose-li:leading-relaxed prose-pre:relative prose-a:text-primary prose-a:no-underline hover:prose-a:underline">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkMath]}
                 rehypePlugins={[rehypeKatex, rehypeHighlight]}
@@ -468,8 +471,8 @@ export default function PostDetail() {
           {/* Table of Contents */}
           <aside className="hidden lg:block">
             <div className="sticky top-20">
-              <h3 className="text-sm font-semibold text-foreground mb-4 uppercase tracking-wide">
-                Table of Contents
+              <h3 className="text-sm font-semibold text-foreground mb-4 uppercase">
+                {t("post.toc")}
               </h3>
               <nav className="space-y-2">
                 {headings.map((heading) => (

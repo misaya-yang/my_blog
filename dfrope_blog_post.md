@@ -1,164 +1,176 @@
-# Dynamic Frequency RoPE: 长序列Transformer的积分频率调制
+EVQ-Cosh reframes Rotary Position Embedding (RoPE) as a finite spectral-budget problem: frequencies are chosen by initialization, and this choice can be derived from an explicit allocation rule rather than left implicit in defaults. The article keeps to a technical, third-person style and avoids unpublished experimental metrics or training-log details.
 
-## 摘要
+## 1. RoPE Frequency Allocation as a Design Variable
 
-本文提出了**Dynamic Frequency RoPE (DF-RoPE)**，这是一种针对长序列Transformer的改进位置编码方法。传统的RoPE（Rotary Position Embedding）在超长序列外推时会遇到两个主要问题：
+RoPE is usually described as a positional operator that applies rotating phase transforms to each attention pair on a fixed set of 2-D channel planes. That description explains the operator mechanics, but it does not fully specify how frequencies are chosen.
 
-1. **周期性混叠**（Periodic Aliasing）：有效频率分量重复，导致远距离位置难以区分
-2. **高频分量退化**：由于数值精度和分布偏移效应，高频通道变得不可靠
+A practical RoPE implementation exposes two separable layers:
 
-DF-RoPE通过引入**缓慢的、确定性的频率调制**来解决这些问题。核心思想是使用**积分相位公式**，在局部保持标准RoPE行为的同时，注入缓慢的绝对相位分量来消除长距离位置歧义。
+- **Operator definition**: the rotation mechanism used inside attention.
+- **Frequency allocation**: the finite set of rotary frequencies assigned to pairs.
 
-## 核心贡献
+Geometric RoPE uses an approximately geometric inverse-frequency table and is a strong practical baseline. It is however a specific allocation choice, not a mathematical necessity. With finite rotary channels, frequency allocation is the explicit place where a spectral budget is spent.
 
-### 1. 形式化结构性限制
+EVQ-Cosh targets this second layer only: it keeps the RoPE operator unchanged, introduces no learned positional parameters, and changes only the initialization of inverse frequencies.
 
-我们证明了一个重要的理论结果：**RoPE旋转族内的精确相对位置不变性必然意味着线性相位**。这意味着任何引入非线性相位的RoPE修改都会打破精确的平移不变性，因此需要被视为受控扰动。
+## 2. Finite Spectral Budget View
 
-**命题 1**（非线性相位不可行性）：假设相位函数 $\phi_k$ 满足精确相对位置不变性，且不是病态的不连续函数。那么 $\phi_k$ 必须满足Cauchy函数方程，因此：
+Let $\phi \in [0,1]$ be a log-frequency coordinate and define:
 
-$$\phi_k(t) \equiv \omega_k t \pmod{2\pi}$$
+$$
+\omega(\phi)=b^{-\phi}.
+$$
 
-对于某个常数 $\omega_k$ 和所有 $t \in \mathbb{Z}$。换句话说，$\phi_k(m)$ 在模 $2\pi$ 意义下关于 $m$ 是线性的。
+If a head uses $K=d_{\mathrm{rot}}/2$ rotary frequency pairs, the table is represented by quantiles induced by a density $\rho(\phi)$:
 
-### 2. DF-RoPE方法
+$$
+\phi_k = F_\rho^{-1}(u_k), \qquad
+\omega_k=b^{-\phi_k}.
+$$
 
-我们定义一个缓慢的调制函数 $f: \mathbb{R} \to \mathbb{R}$，均值为1。为了具体性，我们使用正弦调制：
+Geometric RoPE corresponds to approximately uniform density in log-frequency, i.e., $\rho(\phi)\equiv 1$. EVQ-Cosh treats $\rho$ as a design object: with the same number of channels, frequency mass can be redistributed across low and high frequency regions.
 
-$$f(t) = 1 + \alpha \sin(\omega_{\text{mod}} t)$$
+The key implication is capacity mismatch across scales. High frequencies carry finer local resolution, while low frequencies are responsible for long-distance phase separation. Under long-context pressure, low-frequency overlap becomes a practical bottleneck, so uniform log-frequency allocation is not always the intended default.
 
-其中 $0 \leq \alpha \ll 1$，$\omega_{\text{mod}}$ 相对于RoPE频率较小。关键创新是将通道相位定义为调制函数的**积分**：
+## 3. Broadband Collision Surrogate
 
-$$\phi_k(m) = \omega_k \int_0^m f(t) \, dt$$
+EVQ-Cosh introduces an analytic surrogate to express allocation constraints. For a positive density $\rho$ with $\int_0^1\rho(\phi)\,d\phi=1$, define:
 
-对于正弦调制，积分有闭式解：
+$$
+\mathcal{C}_{\mathrm{app}}[\rho]
+=
+\frac{\alpha}{2}\int_0^1 \rho(\phi)^2\,d\phi
++
+\frac{\beta}{2}\iint_{[0,1]^2}\rho(\phi)\rho(\psi)\min(\phi,\psi)\,d\phi d\psi.
+$$
 
-$$\phi_k(m) = \omega_k \left[ m - \frac{\alpha}{\omega_{\text{mod}}} (\cos(\omega_{\text{mod}} m) - 1) \right]$$
+The first term discourages excessive concentration. The second term captures low-frequency overlap through a cumulative Green-kernel structure. The surrogate is not claimed to equal the full training objective of a large transformer; it is an explicit, tractable replacement that can be mapped directly into initialization.
 
-瞬时角频率为 $\frac{d}{dm}\phi_k(m) = \omega_k f(m)$，因此DF-RoPE可以被解释为用缓慢的乘法因子调制每个基频 $\omega_k$。
+The constrained variational solution yields:
 
-### 3. 偏差界限
+$$
+\rho''(\phi)-\tau^2\rho(\phi)=0,
+\qquad
+\tau=\sqrt{\beta/\alpha}.
+$$
 
-对于两个位置 $m, n \in \mathbb{Z}$，相位差为：
+With boundary and normalization constraints, EVQ-Cosh obtains the closed-form family:
 
-$$\Delta\phi_k(n, m) = \phi_k(n) - \phi_k(m) = \omega_k \int_m^n f(t) \, dt$$
+$$
+\rho_\tau(\phi)
+=
+\frac{\tau\cosh(\tau(1-\phi))}{\sinh\tau}.
+$$
 
-我们通过以下方式衡量与标准RoPE的偏差：
+This is a one-parameter allocation family controlled by $\tau$.
 
-$$\delta\phi_k(n, m) := \Delta\phi_k(n, m) - \omega_k(n - m)$$
+## 4. Closed-Form Inverse-CDF Initialization
 
-**命题 2**（全局界限）：对于所有整数 $m, n$：
+Because $\rho_\tau$ has a closed-form CDF, inverse-CDF sampling is analytic:
 
-$$|\delta\phi_k(n, m)| \leq 2\beta_k$$
+$$
+\phi_k(\tau)
+=
+1-\frac{1}{\tau}
+\operatorname{arcsinh}\left((1-u_k)\sinh\tau\right),
+\qquad
+u_k=\frac{k+1/2}{K}.
+$$
 
-其中 $\beta_k := \frac{\omega_k \alpha}{\omega_{\text{mod}}}$ 是调制指数。
+EVQ-Cosh then sets inverse frequencies as:
 
-**命题 3**（局部短跨度界限）：设 $L := |n - m|$。如果 $L \ll T_{\text{mod}}$，那么：
+$$
+\omega_k^{\mathrm{EVQ}}=b^{-\phi_k(\tau)}.
+$$
 
-$$|\delta\phi_k(n, m)| \leq \omega_k \alpha L + O((\omega_{\text{mod}} L)^2 \beta_k)$$
-
-### 4. 频域解释：DF-RoPE作为频率调制
-
-对于正弦调制，将公式代入旋转公式：
-
-$$\exp(i\phi_k(m)) = \exp(i\omega_k m) \exp(-i\beta_k \cos(\omega_{\text{mod}} m)) \exp(i\beta_k)$$
-
-最后一项是常数相位。剩余因子是经典的**频率调制**（FM）。
-
-使用Bessel函数展开：
-
-$$\exp(-i\beta \cos x) = \sum_{n=-\infty}^{\infty} i^{-n} J_n(\beta) \exp(in x)$$
-
-结合后得到：
-
-$$\exp(i\phi_k(m)) \propto \sum_{n=-\infty}^{\infty} i^{-n} J_n(\beta_k) \exp(i(\omega_k + n\omega_{\text{mod}})m)$$
-
-因此，**DF-RoPE在每个基频 $\omega_k$ 周围创建无限的边带阶梯**。对于小的 $\beta_k$，只有 $n \in \{0, \pm 1\}$ 显著贡献，其中 $J_{\pm 1}(\beta_k) \approx \pm \beta_k / 2$。
-
-### 5. 自适应调制指数控制
-
-调制强度由调制指数 $\beta_k$ 控制。为了保持注意力扰动可控，更直接的方法是参数化和限制 $\beta_k$，而不是全局调整 $\alpha$。
-
-**逐头缩放**：设 $h$ 索引注意力头。给定估计的典型注意力跨度 $L_h$（例如，校准语料库上注意力质量的高百分位距离），定义逐头、逐通道指数：
-
-$$\beta_{k,h} = \text{clip}_{[0, \beta_{\max}]} \left( \frac{\beta_0}{1 + c \omega_k L_h} \right)$$
-
-并设置相应的幅度：
-
-$$\alpha_{k,h} = \beta_{k,h} \frac{\omega_{\text{mod}}}{\omega_k}$$
-
-这确保了全局偏差界限 $|\delta\phi_{k,h}| \leq 2\beta_{k,h} \leq 2\beta_{\max}$ 对每个头和通道成立，同时减少长距离头或高频通道上的调制。
-
-## 实现细节
-
-### 块级评估和稳定递归
-
-直接评估 $\sin(\phi_k(m))$ 和 $\cos(\phi_k(m))$ 对于非常大的 $m$ 可能会导致精度损失。我们推荐块级方案。设 $B$ 为块大小（例如2048）。在每个块的开始，从公式精确计算相位。在块内，使用递归：
+Minimal implementation template:
 
 ```python
-phi_k[m + 1] = phi_k[m] + omega_k * f_k[m]
-f_k[m] = 1 + alpha_k * sin(omega_mod * m)
+def evq_cosh_inv_freq(K, L, d_eff, base):
+    # K: number of frequency pairs = d_rot / 2
+    tau = d_eff / math.sqrt(L)
+    u = torch.arange(K, dtype=torch.float32).add_(0.5).div_(K)
+    phi = 1 - torch.asinh((1 - u) * math.sinh(tau)) / tau
+    return base ** (-phi)
 ```
 
-并通过小角度 $\omega_k f_{k,h}[m]$ 的旋转更新 $(\cos \phi_{k,h}, \sin \phi_{k,h})$。应用补偿求和（例如Kahan）用于相位增量，并定期重新归一化 $(\cos \phi_{k,h}, \sin \phi_{k,h})$ 到单位长度以减轻漂移。
+In deployment, this function should use the architecture's effective rotary channel count for $K=d_{\mathrm{rot}}/2$, while the operating dimension is defined by the model design.
 
-### 复杂度分析
+## 5. Geometric RoPE as a Continuous Limit
 
-渐近成本保持 $O(Md)$，与标准RoPE相同。开销来自评估缓慢调制和周期性重新归一化。
+The EVQ-Cosh family has a key limit behavior:
 
-## 实验协议
+$$
+\lim_{\tau\to 0}\phi_k(\tau)=u_k.
+$$
 
-我们概述了一组最小实验来验证DF-RoPE：
+Hence geometric RoPE is recovered as the $\tau\to 0$ continuous limit of EVQ-Cosh. Two practical consequences follow:
 
-1. **机制检查**：
-   - 边带的频谱验证
-   - 数值偏移敏感性匹配命题4
-   - 长距离相位签名的碰撞率分析
+- EVQ-Cosh changes frequency allocation continuously, not the rotation operator itself.
+- For sufficiently small $\tau$, initialization smoothly returns to geometric allocation.
 
-2. **下游任务**：
-   - 多深度的密钥/针检索
-   - 合成长距离关联回忆
-   - 长上下文基准测试（例如LongBench）
+Geometric RoPE therefore becomes a specific point in a broader, interpretable family rather than an unexamined baseline.
 
-3. **基线对比**：标准RoPE、PI、YaRN和LongRoPE
+## 6. Operating Rule
 
-4. **消融研究**：
-   - 单频率 vs 多频率调制
-   - 调制指数调度
-   - 逐头缩放
+The practical default is:
 
-## 讨论
+$$
+\tau=\frac{d_{\mathrm{eff}}}{\sqrt{L}}.
+$$
 
-DF-RoPE以受控的、有界的绝对相位信号换取精确的平移不变性。频域视图阐明了如何在不破坏局部分辨率的情况下注入缓慢结构。
+Here $L$ denotes training context length and $d_{\mathrm{eff}}$ denotes effective attention head dimension.
 
-**局限性**：
-- 单频调制下的残余周期性
-- 需要仔细选择 $\omega_{\text{mod}}$ 和 $\beta$ 调度
+This should be used as an operating rule, not as a universal optimum. It comes from a small-$\tau$ transport-scale argument in which benefit and channel-load terms exhibit different orders, yielding the square-root dependence on $L$. In practice, it provides a strong no-search default.
 
-**扩展方向**：
-- 多频率或弱非周期调制是自然扩展
-- 缓慢变化的chirp或低频噪声可以减少严格的周期性
+## 7. Relation to Long-Context Methods
 
-## 结论
+EVQ-Cosh and inference-time scaling methods operate on different stages:
 
-我们提出了DF-RoPE，一种积分频率调制的旋转位置嵌入。我们形式化了精确相对不变性需要线性相位的必要性，推导了偏差和偏移敏感性界限，并提供了频域谱解释。DF-RoPE与标准RoPE实现兼容，并允许逐头调制指数控制和稳定的块级评估。
+- YaRN, NTK-aware scaling, LongRoPE, and similar methods handle inference-time positional range scaling.
+- EVQ-Cosh sets a training-time initialization for frequency allocation.
+- They can be combined: one changes the initialization substrate, the other changes how positions are mapped during inference.
 
-## 参考文献
+EVQ-Cosh is also distinct from learned-position strategies. It adds no learned positional parameters, introduces no extra objective terms, and does not depend on the model learning a new frequency table during fine-tuning.
 
-1. Su, J., Lu, Y., Pan, S., Murtadha, A., Wen, B., & Liu, Y. (2021). *RoFormer: Enhanced Transformer with Rotary Position Embedding*. arXiv:2104.09864.
+In short:
 
-2. Chen, S., Wong, S., Chen, L., & Tian, Y. (2023). *Extending Context Window of Large Language Models via Positional Interpolation*. arXiv:2306.15595.
+> EVQ-Cosh is a closed-form, zero-auxiliary-parameter initialization rule for RoPE inverse frequencies that explicitly allocates finite rotary channels across log-frequency.
 
-3. Peng, B., Quesnelle, J., Fan, H., & Shippole, E. (2023). *YaRN: Efficient Context Window Extension of Large Language Models*. arXiv:2309.00071.
+## 8. Limits and Boundaries
 
-4. Ding, Y., Zhang, L. L., Zhang, C., Xu, Y., Shang, N., Xu, J., Yang, F., & Yang, M. (2024). *LongRoPE: Extending LLM Context Window Beyond 2 Million Tokens*. arXiv:2402.13753.
+The derivation is based on the analytic surrogate above, which is informative but not a full replacement for end-to-end training dynamics. Its limits are explicit:
 
-5. Veisi, A., Fartoot, D., & Amirzadeh, H. (2025). *Context-aware Rotary Position Embedding*. arXiv:2507.23083.
+- EVQ-Cosh does not replace all inference-time scaling methods.
+- EVQ-Cosh does not guarantee uniform gains across all downstream tasks.
+- $\tau=d_{\mathrm{eff}}/\sqrt{L}$ is a default operating point, not a global optimum.
+- Frequency reallocation can create a waterbed trade-off: long-range separation may improve while local allocation shifts.
+- For compressed-rope architectures, $d_{\mathrm{rot}}$, $K$, and $d_{\mathrm{eff}}$ should be distinguished explicitly.
 
----
+## 9. Implementation Focus
 
-**关键词**：Transformer, 位置编码, RoPE, 长序列, 频率调制, 注意力机制
+In standard transformer code, EVQ-Cosh typically changes only the RoPE initialization path:
 
-**发布日期**：2026年1月23日
+1. Compute $\tau$ from context length and effective dimension.
+2. Build midpoint quantiles $u_k$.
+3. Apply closed-form inverse-CDF to get $\phi_k(\tau)$.
+4. Set inverse frequencies as $\omega_k=b^{-\phi_k}$.
+5. Keep all existing rotation, attention, optimizer, and training code unchanged.
 
-**作者**：AI研究团队
+This keeps EVQ-Cosh lightweight, auditable, and easy to integrate into existing long-context baselines.
+
+## 10. Core Takeaway
+
+RoPE is not only a rotation operator; it also includes a finite frequency table. With finite channels, that table becomes a spectrum-budget allocation problem. EVQ-Cosh makes this allocation explicit, derives a closed-form family, and implements it directly via an inverse-CDF initialization.
+
+This yields a useful decomposition:
+
+- operator design,
+- training-time frequency allocation,
+- inference-time range scaling.
+
+EVQ-Cosh addresses only the middle layer. Its value lies in making an implicit degree of freedom explicit and providing a compact initialization rule with clear structure.
+
+**Keywords**: EVQ-Cosh, RoPE, Transformer, positional encoding, long-context, frequency allocation
+
+**Author**: Misaya Yang

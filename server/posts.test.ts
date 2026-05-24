@@ -7,10 +7,11 @@ type AuthenticatedUser = NonNullable<TrpcContext["user"]>;
 
 const seededPost = {
   id: 1,
-  title: "Dynamic Frequency RoPE: 长序列Transformer的积分频率调制",
-  slug: "dynamic-frequency-rope",
+  title: "EVQ-Cosh: RoPE as a Finite Spectral Budget",
+  slug: "evq-cosh-frequency-allocation",
   content: "Seeded post content",
-  excerpt: "Seeded excerpt",
+  excerpt:
+    "EVQ-Cosh treats RoPE inverse frequencies as a finite spectral allocation problem.",
   coverImage: null,
   status: "published" as const,
   categoryId: 1,
@@ -31,9 +32,10 @@ vi.mock("./db", () => ({
   getCategories: vi.fn(async () => [
     {
       id: 1,
-      name: "深度学习",
+      name: "Deep Learning",
       slug: "deep-learning",
-      description: "深度学习、神经网络和Transformer架构相关研究",
+      description:
+        "Deep learning, Transformers, position encoding, and residual stability research",
       createdAt: new Date("2026-01-01T00:00:00.000Z"),
       updatedAt: new Date("2026-01-01T00:00:00.000Z"),
     },
@@ -46,6 +48,15 @@ vi.mock("./db", () => ({
       createdAt: new Date("2026-01-01T00:00:00.000Z"),
     },
   ]),
+  createPost: vi.fn(async () => 2),
+  getPostById: vi.fn(async (id: number) => ({
+    ...seededPost,
+    id,
+    title: "Owner Draft",
+    slug: "owner-draft",
+    status: "draft",
+  })),
+  setPostTags: vi.fn(async () => undefined),
 }));
 
 // Create context for the blog owner
@@ -120,6 +131,38 @@ function createAnonymousContext(): { ctx: TrpcContext } {
   return { ctx };
 }
 
+function createCookieContext(cookie: string): { ctx: TrpcContext; setCookies: string[] } {
+  const setCookies: string[] = [];
+  const ctx: TrpcContext = {
+    user: null,
+    req: {
+      protocol: "https",
+      headers: {
+        cookie,
+        "x-forwarded-proto": "https",
+      },
+    } as TrpcContext["req"],
+    res: {
+      clearCookie: () => {},
+      setHeader: (name: string, value: string | string[]) => {
+        if (name.toLowerCase() === "set-cookie") {
+          setCookies.push(...(Array.isArray(value) ? value : [value]));
+        }
+      },
+    } as unknown as TrpcContext["res"],
+  };
+
+  return { ctx, setCookies };
+}
+
+function createCookieCaptureContext(): { ctx: TrpcContext; setCookies: string[] } {
+  return createCookieContext("");
+}
+
+function getCookiePair(setCookie: string) {
+  return setCookie.split(";")[0];
+}
+
 describe("posts router", () => {
   it("should list published posts for anonymous users", async () => {
     const { ctx } = createAnonymousContext();
@@ -141,10 +184,10 @@ describe("posts router", () => {
     const { ctx } = createOwnerContext();
     const caller = appRouter.createCaller(ctx);
 
-    const result = await caller.posts.getBySlug("dynamic-frequency-rope");
+    const result = await caller.posts.getBySlug("evq-cosh-frequency-allocation");
 
     expect(result).toBeDefined();
-    expect(result?.title).toContain("Dynamic Frequency RoPE");
+    expect(result?.title).toContain("EVQ-Cosh");
     expect(result?.status).toBe("published");
   });
 });
@@ -166,6 +209,84 @@ describe("auth router", () => {
     const result = await caller.auth.isAdmin();
 
     expect(result).toBe(false);
+  });
+
+  it("creates a visitor JWT session without granting admin privileges", async () => {
+    const { ctx, setCookies } = createCookieCaptureContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const login = await caller.auth.visitorLogin({ nickname: "Reader One" });
+
+    expect(login).toMatchObject({
+      success: true,
+      session: {
+        isAuthenticated: true,
+        isAdmin: false,
+        role: "visitor",
+        displayName: "Reader One",
+      },
+    });
+    expect(setCookies.some((cookie) => cookie.startsWith("visitor_session="))).toBe(true);
+
+    const sessionCookie = getCookiePair(
+      setCookies.find((cookie) => cookie.startsWith("visitor_session="))!
+    );
+    const { ctx: sessionCtx } = createCookieContext(sessionCookie);
+    const sessionCaller = appRouter.createCaller(sessionCtx);
+
+    await expect(
+      sessionCaller.posts.create({
+        title: "Visitor Draft",
+        slug: "visitor-draft",
+        content: "Nope",
+        status: "draft",
+        tagIds: [],
+      })
+    ).rejects.toThrow();
+
+    expect(await sessionCaller.auth.isAdmin()).toBe(false);
+    expect(await sessionCaller.auth.session()).toMatchObject({
+      isAuthenticated: true,
+      isAdmin: false,
+      role: "visitor",
+      displayName: "Reader One",
+    });
+  });
+
+  it("creates a signed admin JWT session that unlocks owner-only procedures", async () => {
+    const { ctx, setCookies } = createCookieCaptureContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const login = await caller.auth.adminLogin({ password: process.env.ADMIN_PASSWORD || "admin123" });
+
+    expect(login).toEqual({ success: true });
+    expect(setCookies.some((cookie) => cookie.startsWith("admin_session="))).toBe(true);
+
+    const adminCookie = getCookiePair(
+      setCookies.find((cookie) => cookie.startsWith("admin_session="))!
+    );
+    const { ctx: adminCtx } = createCookieContext(adminCookie);
+    const adminCaller = appRouter.createCaller(adminCtx);
+
+    expect(await adminCaller.auth.isAdmin()).toBe(true);
+    expect(await adminCaller.auth.session()).toMatchObject({
+      isAuthenticated: true,
+      isAdmin: true,
+      role: "admin",
+    });
+
+    await expect(
+      adminCaller.posts.create({
+        title: "Owner Draft",
+        slug: "owner-draft",
+        content: "Draft content",
+        status: "draft",
+        tagIds: [],
+      })
+    ).resolves.toMatchObject({
+      title: "Owner Draft",
+      status: "draft",
+    });
   });
 });
 

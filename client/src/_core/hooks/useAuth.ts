@@ -4,14 +4,19 @@ import { useCallback, useMemo } from "react";
 export function useAuth() {
   const utils = trpc.useUtils();
 
-  const isAdminQuery = trpc.auth.isAdmin.useQuery(undefined, {
+  const sessionQuery = trpc.auth.session.useQuery(undefined, {
     retry: false,
     refetchOnWindowFocus: false,
   });
 
-  const logoutMutation = trpc.auth.adminLogout.useMutation({
+  const logoutMutation = trpc.auth.logout.useMutation({
     onSuccess: () => {
-      utils.auth.isAdmin.setData(undefined, false);
+      utils.auth.session.setData(undefined, {
+        isAuthenticated: false,
+        isAdmin: false,
+        role: "anonymous",
+        displayName: null,
+      });
       window.location.reload();
     },
   });
@@ -22,29 +27,33 @@ export function useAuth() {
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
-      utils.auth.isAdmin.setData(undefined, false);
-      await utils.auth.isAdmin.invalidate();
+      await utils.auth.session.invalidate();
     }
   }, [logoutMutation, utils]);
 
   const state = useMemo(() => {
+    const session = sessionQuery.data;
     return {
-      isAdmin: isAdminQuery.data ?? false,
-      loading: isAdminQuery.isLoading || logoutMutation.isPending,
-      error: isAdminQuery.error ?? logoutMutation.error ?? null,
-      isAuthenticated: isAdminQuery.data ?? false,
+      session,
+      role: session?.role ?? "anonymous",
+      displayName: session?.displayName ?? null,
+      isAdmin: session?.isAdmin ?? false,
+      isVisitor: session?.role === "visitor",
+      loading: sessionQuery.isLoading || logoutMutation.isPending,
+      error: sessionQuery.error ?? logoutMutation.error ?? null,
+      isAuthenticated: session?.isAuthenticated ?? false,
     };
   }, [
-    isAdminQuery.data,
-    isAdminQuery.error,
-    isAdminQuery.isLoading,
+    sessionQuery.data,
+    sessionQuery.error,
+    sessionQuery.isLoading,
     logoutMutation.error,
     logoutMutation.isPending,
   ]);
 
   return {
     ...state,
-    refresh: () => isAdminQuery.refetch(),
+    refresh: () => sessionQuery.refetch(),
     logout,
   };
 }

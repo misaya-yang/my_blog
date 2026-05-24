@@ -1,480 +1,217 @@
-# IsoHC: How I Solved the Stability Crisis in Hyper-Connections
+IsoHC studies a narrow stability problem in stream-based residual architectures: how to mix multiple residual streams without destroying the invariants that make deep residual networks trainable. The method constrains the residual mixing operator to preserve both the global stream mean and Euclidean energy. This article summarizes the technical mechanism without disclosing unpublished experimental metrics or run-level details.
 
-## Introduction
+## 1. Motivation
 
-When I first encountered **Hyper-Connections (HC)**—a powerful technique that generalizes residual networks by expanding the residual stream into multiple parallel pathways—I was immediately excited by its potential. HC allows layers to learn dynamic cross-layer connectivity, dramatically improving expressivity. But as I scaled up my experiments, I hit a wall: **training became unstable at depth**.
-
-The problem? Unconstrained cross-stream mixing in HC destroys the identity-mapping invariants that make residual networks trainable in the first place. The recently proposed **mHC** (Manifold-Constrained HC) addressed this by projecting residual mixing matrices onto the Birkhoff polytope (doubly stochastic matrices), restoring mean-preservation. But I realized there was a deeper geometric structure we could exploit.
-
-In this post, I'll share how I developed **IsoHC**—a new manifold constraint that preserves both **(i) global stream mean** and **(ii) ℓ₂ energy along residuals**. My key insight: we can constrain residual mixing to a special manifold of mean-preserving orthogonal matrices, achieving exact isometry while maintaining differentiability through efficient polar retractions.
-
-## Background: The Promise and Peril of Hyper-Connections
-
-### What Are Hyper-Connections?
-
-Standard residual connections pass information through a single highway:
+Residual architectures are stable partly because they keep an identity path through depth:
 
 $$
-X_{l+1} = X_l + F(X_l, W_l)
+x_{l+1}=x_l+F(x_l,\theta_l).
 $$
 
-Hyper-Connections generalize this by expanding the residual stream to 
-$n$
- parallel streams. An HC block looks like:
+Hyper-Connection style models generalize this idea by expanding the residual stream into multiple parallel streams. A simplified residual transport step can be written as:
 
 $$
-X_{l+1} = H_l^{\\text{res}} X_l + (H_l^{\\text{post}})^T F(H_l^{\\text{pre}} X_l, W_l)
+X_{l+1}=H_l^{\mathrm{res}}X_l+\mathcal{A}_l(X_l),
 $$
 
-where:
-- 
-$X_l \\in \\mathbb{R}^{n \\times d}$
- is the 
-$n$
--stream representation at layer 
-$l$
+where $X_l\in\mathbb{R}^{n\times d}$ contains $n$ residual streams and $H_l^{\mathrm{res}}\in\mathbb{R}^{n\times n}$ mixes those streams.
 
-- 
-$H_l^{\\text{pre}}, H_l^{\\text{post}} \\in \\mathbb{R}^{n \\times n}$
- aggregate and distribute information across streams
-- 
-$H_l^{\\text{res}} \\in \\mathbb{R}^{n \\times n}$
- mixes the residual streams
+This additional mixing increases expressivity, but it also introduces a new stability risk. If the residual mixing matrices are unconstrained, the product of many such matrices can amplify or contract signals in ways that are not present in a standard identity residual path.
 
-This diversifying connectivity improves expressivity—different streams can specialize in different features. But there's a catch: **we lose the identity mapping guarantee** that makes deep residual networks trainable.
+The core question is:
 
-### The Stability Crisis
+> What constraint on residual stream mixing preserves the useful invariants of residual networks while still allowing nontrivial cross-stream interaction?
 
-In standard ResNets, the identity path 
-$X_{l+1} = X_l + \\cdots$
- ensures that gradients can flow backward without vanishing. With HC, if 
-$H_l^{\\text{res}}$
- is unconstrained, the residual path can become:
+## 2. From Mean Preservation to Isometry
+
+A common stabilizing strategy is to constrain stream mixing to preserve the global stream mean. Doubly stochastic matrices provide one route:
 
 $$
-X_L = \\prod_{l=0}^{L-1} H_l^{\\text{res}} \\cdot X_0
+H\mathbf{1}=\mathbf{1},
+\qquad
+\mathbf{1}^{\top}H=\mathbf{1}^{\top}.
 $$
 
-If the product of 
-$H_l^{\\text{res}}$
- matrices has eigenvalues that shrink or explode, training collapses. I observed this firsthand: networks with 
-$L > 20$
- layers would either fail to converge or suffer from gradient explosion.
+This keeps the stream average invariant. However, mean preservation alone does not guarantee that the mean-zero component of the residual signal keeps its energy. A mixing matrix can preserve the mean while still acting diffusively on the complementary subspace.
 
-## mHC: The First Fix
-
-The mHC paper proposed a clever solution: **project 
-$H_l^{\\text{res}}$
- onto the Birkhoff polytope**—the set of doubly stochastic matrices:
+IsoHC strengthens the constraint by requiring residual transport to be both mean-preserving and orthogonal:
 
 $$
-\\mathcal{B} = \\left\\{ H \\in \\mathbb{R}^{n \\times n} : H \\mathbf{1} = \\mathbf{1}, \\mathbf{1}^T H = \\mathbf{1}^T, H \\geq 0 \\right\\}
+\mathcal{M}_{\mathrm{iso}}
+=
+\{H\in\mathbb{R}^{n\times n}: H^\top H=I,\ H\mathbf{1}=\mathbf{1}\}.
 $$
 
-where 
-$\\mathbf{1} = (1, 1, \\ldots, 1)^T$
-. This ensures:
-1. **Row-stochastic**: Each row sums to 1 (convex combination of inputs)
-2. **Column-stochastic**: Each column sums to 1 (preserves global mean)
-3. **Nonnegative**: No cancellation between streams
+This is the subgroup of the orthogonal group that fixes the all-ones direction. Equivalently, it is an orthogonal transform on the mean-zero subspace plus an identity action on the mean direction.
 
-The projection is done via the **Sinkhorn-Knopp algorithm**, which iteratively normalizes rows and columns until convergence.
+## 3. Exact Invariants
 
-### Why mHC Helps
-
-Doubly stochastic matrices preserve the global stream mean:
+Let $H\in\mathcal{M}_{\mathrm{iso}}$ and $X\in\mathbb{R}^{n\times d}$. The stream mean is preserved:
 
 $$
-\\text{mean}(HX) := \\frac{1}{n} \\mathbf{1}^T HX = \\frac{1}{n} \\mathbf{1}^T X = \\text{mean}(X)
+\frac{1}{n}\mathbf{1}^{\top}HX
+=
+\frac{1}{n}\mathbf{1}^{\top}X.
 $$
 
-This restores a key residual invariant. Moreover, 
-$\\|H\\|_2 \\leq 1$
- for any doubly stochastic 
-$H$
-, so gradients don't explode.
-
-### But There's a Problem...
-
-While mHC stabilizes training, it has a subtle weakness: **doubly stochastic mixing can be strictly contractive on the mean-zero subspace**. Specifically, if 
-$X \\in \\mathbf{1}^\\perp$
- (i.e., 
-$\\mathbf{1}^T X = 0$
-), then:
+The residual energy is also preserved:
 
 $$
-\\|HX\\|_2 \\leq \\|X\\|_2
+\|HX\|_F^2
+=
+\mathrm{tr}(X^\top H^\top HX)
+=
+\mathrm{tr}(X^\top X)
+=
+\|X\|_F^2.
 $$
 
-with equality only if 
-$H$
- is a permutation matrix. For general 
-$H \\in \\mathcal{B}$
-, the inequality can be strict, meaning **energy leaks out of the residual path** over many layers.
+Thus IsoHC preserves both the average stream direction and the full Frobenius energy of the stream tensor. This is the main distinction from purely stochastic or diffusive mixing constraints.
 
-I wanted to fix this: **can we preserve both mean and energy exactly?**
+## 4. Fixed-Vector Orthogonal Decomposition
 
-## My Solution: The IsoHC Manifold
+The constraint can be implemented by separating the fixed mean direction from its orthogonal complement.
 
-### The Key Insight
-
-I realized that what we really want is a matrix 
-$H$
- that:
-1. Preserves the global mean: 
-$H \\mathbf{1} = \\mathbf{1}$
-
-2. Preserves ℓ₂ energy: 
-$\\|HX\\|_2 = \\|X\\|_2$
- for all 
-$X$
-
-The second condition means 
-$H$
- must be **orthogonal**: 
-$H^T H = I$
-. Combining these, I arrived at the **IsoHC residual manifold**:
+Define:
 
 $$
-\\mathcal{M}_{\\text{iso}} := \\left\\{ H \\in \\mathbb{R}^{n \\times n} : H^T H = I, \\, H \\mathbf{1} = \\mathbf{1} \\right\\}
+e_0=\frac{\mathbf{1}}{\sqrt{n}}.
 $$
 
-This is the **stabilizer subgroup of 
-$\\mathbf{1}$
- within the orthogonal group**, isomorphic to 
-$O(n-1)$
-. Geometrically, these are rotations and reflections that fix the 
-$\\mathbf{1}$
- direction.
-
-### Theorem 1: Exact Invariants
-
-I proved that 
-$\\mathcal{M}_{\\text{iso}}$
- gives us exactly what we want:
-
-**Theorem 1** (Residual mean and energy invariants): Let 
-$H \\in \\mathcal{M}_{\\text{iso}}$
- and 
-$X \\in \\mathbb{R}^{n \\times d}$
-. Then:
-
-(i) 
-$\\text{mean}(HX) = \\text{mean}(X)$
-
-(ii) For each channel 
-$c \\in \\{1, \\ldots, d\\}$
-: 
-$\\|(HX)_{:,c}\\|_2 = \\|X_{:,c}\\|_2$
-
-**Proof sketch**:
-- (i) follows from 
-$H \\mathbf{1} = \\mathbf{1}$
-: 
-$\\mathbf{1}^T HX = \\mathbf{1}^T X$
-
-- (ii) follows from orthogonality: 
-$\\|HX\\|_F^2 = \\text{tr}(X^T H^T HX) = \\text{tr}(X^T X) = \\|X\\|_F^2$
-
-
-This means **no energy is lost or gained** as signals propagate through the residual path—a perfect isometry.
-
-## The Challenge: Efficient Projection
-
-The hard part was figuring out how to **project an arbitrary matrix 
-$\\tilde{H}$
- onto 
-$\\mathcal{M}_{\\text{iso}}$
- efficiently and differentiably**. Direct optimization on this manifold is tricky because it's a non-convex constraint.
-
-My solution: **subspace polar retraction**.
-
-### Algorithm 1: Iso-NS (Isometric Newton-Schulz)
-
-The key idea is to separate the 
-$\\mathbf{1}$
- direction from its orthogonal complement 
-$\\mathbf{1}^\\perp$
-, project the orthogonal part onto 
-$O(n-1)$
-, then reconstruct.
-
-Here's the algorithm:
-
-**Input**: 
-$\\tilde{H} \\in \\mathbb{R}^{n \\times n}$
- (unconstrained matrix)
-
-**Output**: 
-$H \\in \\mathcal{M}_{\\text{iso}}$
-
-1. **Define the mean direction**: 
-$e_0 = \\mathbf{1} / \\sqrt{n}$
-
-2. **Choose an orthonormal basis for 
-$\\mathbf{1}^\\perp$
-**: Let 
-$U \\in \\mathbb{R}^{n \\times (n-1)}$
- such that 
-$U^T U = I$
- and 
-$U^T e_0 = 0$
-
-3. **Decompose 
-$\\tilde{H}$
-**: Write 
-$\\tilde{H} = e_0 e_0^T + U A U^T + \\text{(off-diagonal terms)}$
-
-4. **Extract the 
-$\\mathbf{1}^\\perp$
- block**: 
-$A = U^T \\tilde{H} U \\in \\mathbb{R}^{(n-1) \\times (n-1)}$
-
-5. **Project 
-$A$
- onto 
-$O(n-1)$
- via Newton-Schulz**:
-   - Initialize: 
-$X_0 = A / \\gamma$
- (where 
-$\\gamma$
- keeps 
-$\\sigma_{\\max}(X_0)$
- in the convergence radius)
-   - Iterate for 
-$K$
- steps:
-     
-$$
-     X_{k+1} = \\frac{3}{2} X_k - \\frac{1}{2} X_k X_k^T X_k
-     $$
-
-   - Result: 
-$R = X_K$
- (polar factor of 
-$A$
-, i.e., 
-$R \\in O(n-1)$
-)
-
-6. **Reconstruct 
-$H$
-**: 
-$H \\leftarrow e_0 e_0^T + U R U^T$
-
-
-### Why Newton-Schulz?
-
-The Newton-Schulz iteration is a matrix-free method for computing the polar factor (the closest orthogonal matrix to 
-$A$
-). It converges quadratically under standard spectral conditions, and crucially, **it's fully differentiable**—perfect for backpropagation.
-
-In practice, I use 
-$K = 3$
-–
-$5$
- iterations, which is enough for high accuracy.
-
-### Computational Cost
-
-The dominant cost is the 
-$(n-1) \\times (n-1)$
- matrix multiplications in Newton-Schulz. For typical 
-$n \\in \\{4, 8\\}$
-, this is negligible compared to the transformer block itself. I measured ~1–2% overhead relative to standard HC.
-
-## Theoretical Deep Dive: Gradient Preservation
-
-One of the most exciting properties of IsoHC is **exact gradient norm preservation along the residual path**.
-
-### Residual-Path Linearization
-
-Consider the residual-only linearization (ignoring the nonlinear function 
-$F$
-):
+Choose an orthonormal basis $U\in\mathbb{R}^{n\times(n-1)}$ for the complement of $e_0$:
 
 $$
-X_{l+1} = H_l^{\\text{res}} X_l
+U^\top U=I,
+\qquad
+U^\top e_0=0.
 $$
 
-Let 
-$G_l = \\frac{\\partial \\mathcal{L}}{\\partial X_l} \\in \\mathbb{R}^{n \\times d}$
- be the gradient at layer 
-$l$
-. By the chain rule:
+Any IsoHC mixing matrix can then be represented as:
 
 $$
-G_l = (H_l^{\\text{res}})^T G_{l+1}
+H=e_0e_0^\top+URU^\top,
 $$
 
-Since 
-$H_l^{\\text{res}}$
- is orthogonal, we have:
+where $R\in O(n-1)$ is an orthogonal transform on the mean-zero subspace.
+
+This decomposition makes the constraint practical: instead of projecting a full matrix directly onto a fixed-vector manifold, the implementation projects only the complement block onto an orthogonal group.
+
+## 5. Differentiable Projection
+
+The repository implements an IsoHC projection path in `isohc/projection.py`. Given an unconstrained raw matrix $\widetilde{H}$, the projection proceeds conceptually as follows:
+
+1. Construct the fixed direction $e_0$ and complement basis $U$.
+2. Extract the complement block:
+   $$
+   A=U^\top \widetilde{H}U.
+   $$
+3. Project $A$ to an orthogonal factor $R$ using a polar retraction.
+4. Reconstruct:
+   $$
+   H=e_0e_0^\top+URU^\top.
+   $$
+
+The polar factor can be computed by iterative Newton-Schulz style updates:
 
 $$
-\\|G_l\\|_F = \\|G_{l+1}\\|_F
+X_{k+1}=\frac{1}{2}X_k(3I-X_k^\top X_k).
 $$
 
-This means **gradient norms are exactly preserved** through deep products:
+The code also includes diagnostic and fallback paths so the projection can be monitored during training.
+
+## 6. Gradient Stability Interpretation
+
+Consider residual-only propagation:
 
 $$
-\\|G_0\\|_F = \\|G_L\\|_F
+X_{l+1}=H_lX_l.
 $$
 
-No vanishing, no explosion—perfect stability.
-
-### Comparison with mHC
-
-In contrast, doubly stochastic mixing guarantees **non-expansiveness** (
-$\\|H\\|_2 \\leq 1$
-) but can be strictly contractive on 
-$\\mathbf{1}^\\perp$
-. Over many layers, this can lead to gradual gradient decay, especially if the signal is mostly in the mean-zero subspace.
-
-IsoHC avoids this by enforcing exact isometry.
-
-## The Nonnegativity Trade-Off
-
-You might wonder: **can we have both orthogonality and nonnegativity?**
-
-Unfortunately, no. I proved this with a simple proposition:
-
-**Proposition 1**: Nonnegative orthogonal row-stochastic matrices are permutations.
-
-**Proof**: Let 
-$H \\in \\mathbb{R}^{n \\times n}$
- satisfy 
-$H \\geq 0$
-, 
-$H^T H = I$
-, and 
-$H \\mathbf{1} = \\mathbf{1}$
-. Since 
-$H \\geq 0$
- and 
-$H \\mathbf{1} = \\mathbf{1}$
-, each row 
-$r$
- satisfies 
-$\\sum_i r_i = 1$
-. Since 
-$H^T H = I$
-, each row has 
-$\\|r\\|_2 = 1$
-. But for any nonnegative vector with 
-$\\|r\\|_1 = 1$
-:
+During backpropagation:
 
 $$
-\\|r\\|_2^2 = \\sum_i r_i^2 \\leq \\left( \\sum_i r_i \\right)^2 = 1
+G_l=H_l^\top G_{l+1}.
 $$
 
-with equality if and only if exactly one entry is 1 and the rest are 0. Thus, 
-$H$
- must be a permutation matrix. 
-$\\square$
-
-### Design Trade-Off
-
-This reveals a fundamental trade-off:
-- **Birkhoff constraints** (mHC): Enable continuous convex mixing (diffusive behavior), but allow energy contraction
-- **Orthogonal constraints** (IsoHC): Enable continuous isometries (rotations/reflections), but require signed coefficients
-
-I view this as a feature, not a bug. Signed mixing allows richer representational dynamics, and the isometry constraint prevents runaway cancellation.
-
-### Hybrid Option
-
-For users who want the best of both worlds, I also explored a **diffusion-isometry interpolation**:
+If each $H_l$ is IsoHC-constrained, then:
 
 $$
-H_l^{\\text{res}} = (1 - \\lambda_l) H_l^{\\text{iso}} + \\lambda_l H_l^{\\text{birk}}
+\|G_l\|_F=\|G_{l+1}\|_F.
 $$
 
-where 
-$H_l^{\\text{iso}} \\in \\mathcal{M}_{\\text{iso}}$
- (via Algorithm 1), 
-$H_l^{\\text{birk}}$
- is Sinkhorn-projected doubly stochastic, and 
-$\\lambda_l \\in [0,1]$
- is learnable or scheduled. This lets the model adaptively blend isometric and diffusive mixing.
+The same isometry that preserves forward residual energy also preserves backward gradient energy through the residual transport path. This gives a clean geometric explanation for why the constraint targets both exploding and vanishing modes.
 
-## Experiments
+## 7. Implementation Mapping
 
-I evaluated IsoHC on deep transformer training with 
-$n \\in \\{4, 8\\}$
- streams, comparing against:
-- Standard HC (unconstrained)
-- mHC (Birkhoff polytope)
-- IsoHC (my method)
+The `isoHC` repository separates the mechanism into small modules:
 
-### Key Findings
+- `isohc/projection.py`: fixed-vector orthogonal projection utilities.
+- `isohc/layers.py`: residual stream mixing layers.
+- `isohc/transformer.py`: Transformer integration.
+- `lm/mixing.py`: language-model mixing ablations.
+- `gnn/projection.py` and `gnn/models.py`: graph-neural-network variants.
 
-1. **Stability at depth**: IsoHC trains stably up to 
-$L = 50$
- layers, while unconstrained HC collapses beyond 
-$L = 20$
+The implementation tracks two central diagnostics:
 
-2. **Gradient norm preservation**: Measured gradient norms 
-$\\|G_l\\|_F$
- across layers. IsoHC maintains near-constant norms; mHC shows gradual decay
+$$
+\|H^\top H-I\|_F
+$$
 
-3. **Collapse diagnostics**: Tracked stream similarity (cosine similarity across streams). IsoHC maintains diverse streams; unconstrained HC suffers from stream collapse
+and:
 
-4. **Overhead**: Newton-Schulz projection adds ~1.5% training time compared to Sinkhorn (which adds ~2%)
+$$
+\|H\mathbf{1}-\mathbf{1}\|_2.
+$$
 
-5. **Performance**: On language modeling benchmarks, IsoHC achieves slightly better perplexity than mHC at depth 
-$L > 30$
-, likely due to better gradient flow
+These diagnostics directly correspond to the two defining constraints.
 
-## Limitations and Open Questions
+## 8. Precision and Engineering Considerations
 
-### Cancellation Risk
+Projection precision is an important engineering detail. The projection operation is numerically more sensitive than ordinary unconstrained matrix multiplication, especially when low-precision arithmetic is used throughout the entire projection path.
 
-IsoHC allows signed residual mixing, so cancellation could still occur—energy is preserved in ℓ₂ norm, but individual components can cancel. I haven't observed this in practice, but it's worth monitoring.
+A practical implementation should distinguish:
 
-### Convergence Sensitivity
+- parameter storage dtype,
+- activation dtype,
+- projection computation dtype,
+- diagnostic computation dtype.
 
-Newton-Schulz iterations require careful scaling (choosing 
-$\\gamma$
-) for convergence. I use a simple heuristic (
-$\\gamma = 1.2 \\cdot \\sigma_{\\max}(A)$
-), but more adaptive schemes could improve robustness.
+The safest pattern is to keep the projection math in a higher-precision path while allowing the surrounding model to use lower precision where appropriate.
 
-### Reduced Degrees of Freedom
+## 9. Relation to Doubly Stochastic Mixing
 
-The manifold 
-$\\mathcal{M}_{\\text{iso}}$
- has dimension 
-$\\frac{(n-1)(n-2)}{2}$
-, compared to 
-$(n-1)^2$
- for Birkhoff polytope. This might limit expressivity in some settings.
+Doubly stochastic constraints preserve stream means and are naturally non-expansive. IsoHC chooses a different trade-off:
 
-### Future Directions
+- It removes the nonnegativity requirement.
+- It keeps exact orthogonality.
+- It preserves energy on the mean-zero subspace.
+- It allows signed rotations and reflections rather than only convex averaging.
 
-- **Sign-stable parameterizations**: Combine IsoHC with regularizers that control elementwise extremes without collapsing to permutations
-- **Multi-modal architectures**: How does IsoHC behave in vision transformers or multimodal models?
-- **Theoretical optimality**: Can we prove that 
-$\\mathcal{M}_{\\text{iso}}$
- is optimal for gradient flow in some sense?
+This is useful when diffusion is not desired. For very deep residual stacks, repeated non-expansive averaging can collapse stream diversity, while isometric mixing preserves the norm of the complementary components.
 
-## Conclusion
+## 10. Evidence Framing
 
-IsoHC demonstrates that we can have our cake and eat it too: **exact mean preservation and exact energy preservation** in hyper-connected residual networks. By constraining residual mixing to a carefully chosen manifold and projecting via efficient polar retractions, we achieve stability at scale without sacrificing expressivity.
+The repository evaluates IsoHC through projection sanity checks, residual-only propagation probes, Transformer smoke tests, real-text diagnostics, and GNN variants. The public technical conclusion should be framed carefully:
 
-The key lesson: **geometry matters**. By respecting the manifold structure of mean-preserving isometries, we unlock training dynamics that are both stable and expressive.
+- IsoHC is a stability mechanism, not a standalone claim of universal task superiority.
+- The strongest claim is geometric: the constraint exactly preserves mean and energy by construction.
+- Empirical artifacts support the stability story, but broader downstream claims require larger and more standardized evaluation.
+- GNN results should be interpreted jointly with architecture choices such as stream embeddings, readout design, and message-branch handling.
 
----
+## 11. Core Takeaway
 
-**Code**: Full implementation will be released upon publication.
+IsoHC replaces a diffusion-style residual mixing constraint with a fixed-vector isometric constraint:
 
-**Acknowledgments**: I thank the mHC authors for inspiring this work, and the reviewers for their thoughtful feedback.
+$$
+H^\top H=I,
+\qquad
+H\mathbf{1}=\mathbf{1}.
+$$
 
-## References
+This preserves the global stream mean and residual energy simultaneously. The method is compact, auditable, and directly implementable via a complement-space polar projection.
 
-1. Zhenda Xie et al. *mHC: Manifold-Constrained Hyper-Connections*. arXiv:2512.24880, 2025.
-2. Hyper-Connections authors. *Hyper-Connections*. arXiv:2409.19606, 2024.
-3. R. Sinkhorn and P. Knopp. *Concerning nonnegative matrices and doubly stochastic matrices*. Pacific Journal of Mathematics, 1967.
-4. E. Grishina, M. Smirnov, and M. Rakhuba. *Accelerating Newton-Schulz Iteration for Orthogonalization via Chebyshev-type Polynomials*. arXiv:2506.10935, 2025.
-5. D. A. Levin, Y. Peres, and E. L. Wilmer. *Markov Chains and Mixing Times*. American Mathematical Society, 2009.
+The main contribution is not another generic residual block. It is a geometric stabilization rule for stream-based residual transport: keep the mean direction fixed, rotate the residual complement isometrically, and monitor the constraints explicitly during training.
+
+**Keywords**: IsoHC, Hyper-Connections, residual mixing, orthogonal projection, Transformer stability, GNN stability
+
+**Author**: Misaya Yang

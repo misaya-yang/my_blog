@@ -126,7 +126,7 @@ function ToolbarDivider() {
 }
 
 export default function Editor() {
-  const { isAdmin, isAuthenticated, loading: authLoading } = useAuth();
+  const { isAdmin, loading: authLoading } = useAuth();
   const params = useParams<{ slug?: string }>();
   const [, navigate] = useLocation();
   const isEditing = !!params.slug;
@@ -183,6 +183,14 @@ export default function Editor() {
   const readingTime = useMemo(() => {
     return Math.max(1, Math.ceil(wordCount / 300));
   }, [wordCount]);
+
+  const equationCount = useMemo(() => {
+    return (content.match(/\$\$[\s\S]*?\$\$|\$[^$\n]+\$/g) || []).length;
+  }, [content]);
+
+  const codeBlockCount = useMemo(() => {
+    return Math.floor((content.match(/```/g) || []).length / 2);
+  }, [content]);
 
   // 加载现有文章
   useEffect(() => {
@@ -328,6 +336,59 @@ export default function Editor() {
       textarea.setSelectionRange(codeStart, codeStart + (selectedText.length || 12));
     }, 0);
   }, [content]);
+
+  const insertSnippet = useCallback((snippet: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const nextContent =
+      content.substring(0, start) +
+      snippet +
+      content.substring(textarea.selectionEnd);
+
+    setContent(nextContent);
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + snippet.length, start + snippet.length);
+    }, 0);
+  }, [content]);
+
+  const researchSnippets = useMemo(
+    () => [
+      {
+        label: "主张",
+        hint: "Claim / evidence / caveat",
+        value: "\n\n> **Claim.** \n>\n> **Evidence.** \n>\n> **Caveat.** \n",
+      },
+      {
+        label: "定理",
+        hint: "Theorem block",
+        value: "\n\n### Theorem\n\n**Statement.** \n\n**Proof sketch.** \n",
+      },
+      {
+        label: "命题",
+        hint: "Proposition block",
+        value: "\n\n### Proposition\n\n**Assumptions.** \n\n**Result.** \n\n**Why it matters.** \n",
+      },
+      {
+        label: "实验",
+        hint: "Setup / metric / result",
+        value: "\n\n### Experiment\n\n- **Setup:** \n- **Metric:** \n- **Result:** \n- **Interpretation:** \n",
+      },
+      {
+        label: "公式",
+        hint: "Display math",
+        value: "\n\n$$\n\n$$\n",
+      },
+      {
+        label: "图注",
+        hint: "Figure note",
+        value: "\n\n![Figure description](https://)\n\n*Figure.* \n",
+      },
+    ],
+    []
+  );
 
   // 插入链接
   const insertLink = useCallback(() => {
@@ -486,15 +547,15 @@ export default function Editor() {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
           <FileText className="w-16 h-16 mx-auto text-muted-foreground" />
-          <h2 className="text-xl font-semibold">请先登录</h2>
-          <p className="text-muted-foreground">登录后即可开始撰写文章</p>
+          <h2 className="text-xl font-semibold">作者权限限定</h2>
+          <p className="text-muted-foreground">只有管理员会话可以进入写作台</p>
           <a href={"/login"}>
-            <Button>立即登录</Button>
+            <Button>进入登录页</Button>
           </a>
         </div>
       </div>
@@ -539,6 +600,14 @@ export default function Editor() {
             <span className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" />
               约 {readingTime} 分钟
+            </span>
+            <span className="hidden items-center gap-1 lg:flex">
+              <Hash className="w-3.5 h-3.5" />
+              {equationCount} 公式
+            </span>
+            <span className="hidden items-center gap-1 lg:flex">
+              <Code className="w-3.5 h-3.5" />
+              {codeBlockCount} 代码块
             </span>
           </div>
 
@@ -738,17 +807,54 @@ export default function Editor() {
       </div>
 
       {/* 主编辑区域 */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden bg-background">
+        <aside className="hidden w-64 shrink-0 border-r border-border/70 bg-muted/20 p-4 xl:block">
+          <div className="mb-4">
+            <p className="text-sm font-semibold">研究片段</p>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+              快速插入论文式结构，保持主张和证据边界清楚。
+            </p>
+          </div>
+          <div className="space-y-2">
+            {researchSnippets.map((snippet) => (
+              <button
+                key={snippet.label}
+                type="button"
+                onClick={() => insertSnippet(snippet.value)}
+                className="w-full border border-border/70 bg-background px-3 py-2 text-left transition-colors hover:border-primary/60 hover:bg-accent/50"
+              >
+                <span className="block text-sm font-medium">{snippet.label}</span>
+                <span className="mt-1 block text-xs text-muted-foreground">{snippet.hint}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-6 border-t border-border/70 pt-4 text-xs text-muted-foreground">
+            <div className="flex items-center justify-between py-1">
+              <span>公式</span>
+              <span className="font-mono text-foreground">{equationCount}</span>
+            </div>
+            <div className="flex items-center justify-between py-1">
+              <span>代码块</span>
+              <span className="font-mono text-foreground">{codeBlockCount}</span>
+            </div>
+            <div className="flex items-center justify-between py-1">
+              <span>阅读</span>
+              <span className="font-mono text-foreground">{readingTime} min</span>
+            </div>
+          </div>
+        </aside>
+
         {/* 编辑器 */}
-        <div className={`flex flex-col ${showPreview ? "w-1/2 border-r border-border" : "w-full"}`}>
+        <div className={`min-w-0 flex flex-col ${showPreview ? "flex-1 border-r border-border" : "w-full"}`}>
           {/* 标题输入 */}
-          <div className="p-4 border-b border-border">
+          <div className="border-b border-border/70 bg-card/70 p-4">
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="输入文章标题..."
-              className="w-full text-2xl font-bold bg-transparent border-none outline-none placeholder:text-muted-foreground/50"
+              className="w-full bg-transparent text-2xl font-semibold leading-tight outline-none placeholder:text-muted-foreground/50"
             />
           </div>
 
@@ -770,7 +876,7 @@ export default function Editor() {
 - [链接](url) 和 ![图片](url)
 - > 引用
 - - 列表"
-              className="w-full h-full p-4 bg-transparent border-none outline-none resize-none font-mono text-sm leading-relaxed placeholder:text-muted-foreground/40"
+              className="h-full w-full resize-none border-none bg-transparent p-5 font-mono text-sm leading-7 outline-none placeholder:text-muted-foreground/40"
               style={{ minHeight: "100%" }}
             />
           </div>
@@ -780,11 +886,11 @@ export default function Editor() {
         {showPreview && (
           <div 
             ref={previewRef}
-            className="w-1/2 overflow-y-auto bg-muted/20"
+            className="min-w-0 flex-1 overflow-y-auto bg-card/40"
           >
-            <div className="p-8 max-w-3xl mx-auto">
+            <div className="mx-auto max-w-3xl p-8">
               {title && (
-                <h1 className="text-3xl font-bold mb-6">{title}</h1>
+                <h1 className="mb-6 text-3xl font-semibold leading-tight">{title}</h1>
               )}
               <article className="prose prose-slate dark:prose-invert max-w-none">
                 <ReactMarkdown

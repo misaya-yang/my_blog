@@ -1,49 +1,38 @@
-import { COOKIE_NAME } from "../shared/const.js";
-import { getSessionCookieOptions } from "./_core/cookies.js";
 import { systemRouter } from "./_core/systemRouter.js";
 import { publicProcedure, router } from "./_core/trpc.js";
 import { z } from "zod";
 import * as db from "./db.js";
 import { TRPCError } from "@trpc/server";
-// Simple cookie serialization helper
-function serializeCookie(name: string, value: string, options: any): string {
-  let str = `${name}=${encodeURIComponent(value)}`;
-  if (options.maxAge != null) str += `; Max-Age=${options.maxAge}`;
-  if (options.path) str += `; Path=${options.path}`;
-  if (options.httpOnly) str += `; HttpOnly`;
-  // Always set Secure for HTTPS proxied environments
-  str += `; Secure`;
-  str += `; SameSite=none`;
-  return str;
+import { ENV } from "./_core/env.js";
+import {
+  ADMIN_SESSION_COOKIE,
+  VISITOR_SESSION_COOKIE,
+  buildClearedCookie,
+  buildSessionCookie,
+  createVisitorSession,
+  resolveBlogSession,
+  signAdminSession,
+  verifyAdminSession,
+} from "./auth.js";
+
+function setHeader(res: unknown, name: string, value: string | string[]) {
+  (res as { setHeader(headerName: string, headerValue: string | string[]): void }).setHeader(
+    name,
+    value
+  );
 }
 
-function setHeader(res: unknown, name: string, value: string) {
-  (res as { setHeader(headerName: string, headerValue: string): void }).setHeader(name, value);
-}
-
-// Simple admin authentication using environment variable
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
-const ADMIN_SESSION_COOKIE = "admin_session";
-
-// Helper to check if request has valid admin session
-function isAdminAuthenticated(req: any): boolean {
-  const cookies = req.headers.cookie || "";
-  const match = cookies.match(new RegExp(`${ADMIN_SESSION_COOKIE}=([^;]+)`));
-  if (!match) return false;
-  
-  try {
-    // Decode URL-encoded cookie value first
-    const decodedValue = decodeURIComponent(match[1]);
-    const sessionData = JSON.parse(Buffer.from(decodedValue, "base64").toString());
-    return sessionData.isAdmin === true && Date.now() < sessionData.expires;
-  } catch {
-    return false;
+function getAdminPassword() {
+  const password = process.env.ADMIN_PASSWORD;
+  if (!password && ENV.isProduction) {
+    throw new Error("ADMIN_PASSWORD is required in production");
   }
+  return password || "admin123";
 }
 
 // Admin-only procedure
-const adminProcedure = publicProcedure.use(({ ctx, next }) => {
-  if (!isAdminAuthenticated(ctx.req)) {
+const adminProcedure = publicProcedure.use(async ({ ctx, next }) => {
+  if (!(await verifyAdminSession(ctx.req))) {
     throw new TRPCError({ code: "UNAUTHORIZED", message: "Admin authentication required" });
   }
   return next({ ctx: { ...ctx, isAdmin: true } });
@@ -54,34 +43,58 @@ export const appRouter = router({
   
   auth: router({
     // Check if current session is authenticated as admin
-    isAdmin: publicProcedure.query(({ ctx }) => {
-      return isAdminAuthenticated(ctx.req);
+    isAdmin: publicProcedure.query(async ({ ctx }) => {
+      return await verifyAdminSession(ctx.req);
+    }),
+
+    session: publicProcedure.query(async ({ ctx }) => {
+      return await resolveBlogSession(ctx.req);
+    }),
+
+    visitorLogin: publicProcedure
+      .input(
+        z.object({
+          nickname: z
+            .string()
+            .trim()
+            .min(2, "Nickname must be at least 2 characters")
+            .max(40, "Nickname must be 40 characters or less"),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        const session = await createVisitorSession(input.nickname);
+        setHeader(
+          ctx.res,
+          "Set-Cookie",
+          buildSessionCookie(ctx.req, VISITOR_SESSION_COOKIE, session.token, 365 * 24 * 60 * 60)
+        );
+
+        return {
+          success: true,
+          session: {
+            isAuthenticated: true,
+            isAdmin: false,
+            role: "visitor",
+            displayName: input.nickname,
+            visitorId: session.visitorId,
+          } as const,
+        };
     }),
     
     // Admin login with password
     adminLogin: publicProcedure
       .input(z.object({ password: z.string() }))
-      .mutation(({ input, ctx }) => {
-        if (input.password !== ADMIN_PASSWORD) {
+      .mutation(async ({ input, ctx }) => {
+        if (input.password !== getAdminPassword()) {
           throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid password" });
         }
         
-        // Create admin session (valid for 30 days)
-        const sessionData = {
-          isAdmin: true,
-          expires: Date.now() + 30 * 24 * 60 * 60 * 1000,
-        };
-        
-        const sessionToken = Buffer.from(JSON.stringify(sessionData)).toString("base64");
-        const cookieOptions = getSessionCookieOptions(ctx.req);
+        const sessionToken = await signAdminSession(process.env.OWNER_NAME || "Misaya Yang");
         
         setHeader(
           ctx.res,
           "Set-Cookie",
-          serializeCookie(ADMIN_SESSION_COOKIE, sessionToken, {
-            ...cookieOptions,
-            maxAge: 30 * 24 * 60 * 60,
-          })
+          buildSessionCookie(ctx.req, ADMIN_SESSION_COOKIE, sessionToken, 30 * 24 * 60 * 60)
         );
         
         return { success: true };
@@ -89,15 +102,19 @@ export const appRouter = router({
     
     // Admin logout
     adminLogout: publicProcedure.mutation(({ ctx }) => {
-      const cookieOptions = getSessionCookieOptions(ctx.req);
       setHeader(
         ctx.res,
         "Set-Cookie",
-          serializeCookie(ADMIN_SESSION_COOKIE, "", {
-          ...cookieOptions,
-          maxAge: -1,
-        })
+        buildClearedCookie(ctx.req, ADMIN_SESSION_COOKIE)
       );
+      return { success: true };
+    }),
+
+    logout: publicProcedure.mutation(({ ctx }) => {
+      setHeader(ctx.res, "Set-Cookie", [
+        buildClearedCookie(ctx.req, ADMIN_SESSION_COOKIE),
+        buildClearedCookie(ctx.req, VISITOR_SESSION_COOKIE),
+      ]);
       return { success: true };
     }),
   }),
@@ -117,7 +134,7 @@ export const appRouter = router({
         })
       )
       .query(async ({ input, ctx }) => {
-        const isAdmin = isAdminAuthenticated(ctx.req);
+        const isAdmin = await verifyAdminSession(ctx.req);
         const posts = await db.getPosts({
           ...input,
           status: isAdmin && input.includeUnpublished ? undefined : input.status || "published",
@@ -131,13 +148,18 @@ export const appRouter = router({
 
     getBySlug: publicProcedure
       .input(z.string())
-      .query(async ({ input }) => {
+      .query(async ({ input, ctx }) => {
         const post = await db.getPostBySlug(input);
         if (!post) {
           throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
         }
+        if (post.status !== "published" && !(await verifyAdminSession(ctx.req))) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
+        }
         // Increment view count
-        await db.incrementViewCount(post.id);
+        if (post.status === "published") {
+          await db.incrementViewCount(post.id);
+        }
         return post;
       }),
 
@@ -157,7 +179,11 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const { tagIds, ...postData } = input;
         // Use authorId = 1 as default admin user
-        const postId = await db.createPost({ ...postData, authorId: 1 });
+        const postId = await db.createPost({
+          ...postData,
+          authorId: 1,
+          publishedAt: input.status === "published" ? new Date() : null,
+        });
         // Add tags if provided
         if (tagIds && tagIds.length > 0) {
           await db.setPostTags(postId, tagIds);
@@ -181,7 +207,10 @@ export const appRouter = router({
       )
       .mutation(async ({ input }) => {
         const { id, ...updateData } = input;
-        return await db.updatePost(id, updateData);
+        return await db.updatePost(id, {
+          ...updateData,
+          ...(input.status === "published" ? { publishedAt: new Date() } : {}),
+        });
       }),
 
     delete: adminProcedure
