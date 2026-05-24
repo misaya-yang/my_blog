@@ -113,4 +113,5 @@ temp/
 # Database
 *.db
 *.sqlite
-*.sqlite3i18n-plan.md
+*.sqlite3
+i18n-plan.md
