@@ -47,6 +47,14 @@ pids
 *.pid.lock
 *.bak
 
+# Playwright MCP artifacts
+.playwright-mcp/
+
+# Playwright test outputs
+playwright-report/
+test-results/
+test-resources/
+
 # Coverage directory used by tools like istanbul
 coverage/
 *.lcov
