@@ -23,6 +23,7 @@ const posts = [
     title: "EVQ-Cosh: RoPE as a Finite Spectral Budget",
     slug: "evq-cosh-frequency-allocation",
     contentPath: "./dfrope_blog_post.md",
+    status: "draft",
     excerpt:
       "EVQ-Cosh treats RoPE inverse frequencies as a finite spectral allocation problem and derives a closed-form initialization rule for rotary channels.",
     tags: [
@@ -37,6 +38,7 @@ const posts = [
     title: "IsoHC: Fixed-Vector Isometric Residual Mixing",
     slug: "isohc-fixed-vector-isometric-residual-mixing",
     contentPath: "./isohc_blog_en.md",
+    status: "published",
     excerpt:
       "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.",
     tags: [
@@ -129,10 +131,10 @@ async function seed() {
           ${postSeed.slug},
           ${content},
           ${postSeed.excerpt},
-          'published',
+          ${postSeed.status},
           ${category.id},
           ${owner.id},
-          now(),
+          ${postSeed.status === "published" ? new Date() : null},
           0
         )
         ON CONFLICT (slug) DO UPDATE SET
@@ -142,6 +144,7 @@ async function seed() {
           status = EXCLUDED.status,
           category_id = EXCLUDED.category_id,
           author_id = EXCLUDED.author_id,
+          published_at = EXCLUDED.published_at,
           updated_at = now()
         RETURNING id
       `;

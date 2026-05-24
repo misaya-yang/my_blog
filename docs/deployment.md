@@ -148,7 +148,8 @@ Open the production URL and verify:
 
 - `/` renders the blog frontend.
 - `/api/trpc/posts.list?batch=1&input=...` is reachable through the tRPC client from the UI.
-- The EVQ-Cosh and IsoHC published posts appear after `pnpm db:seed`.
+- The IsoHC post appears publicly after `pnpm db:seed`.
+- The EVQ-Cosh post remains a draft while related work may be under double-blind review.
 - Admin login uses `ADMIN_PASSWORD`, not the fallback `admin123`.
 - The Vercel deployment logs show no `Database not available` warnings.
 
