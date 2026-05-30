@@ -1,17 +1,17 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { ArticleCard } from "@/components/ArticleCard";
 import {
-  ResearchWaveVisual,
   SiteHeader,
   SpaceBackdrop,
   StatTile,
 } from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { trackConfigs, type TrackKind } from "@/lib/tracks";
 import { trpc } from "@/lib/trpc";
 import {
   ArrowRight,
   BookOpen,
-  Calendar,
   Eye,
   FileText,
   Folder,
@@ -27,21 +27,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useDeferredValue, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-function readingTime(content: string) {
-  const chinese = (content.match(/[\u4e00-\u9fa5]/g) || []).length;
-  const english = (content.match(/[a-zA-Z]+/g) || []).length;
-  return Math.max(1, Math.ceil((chinese + english) / 320));
-}
-
-function formatDate(value: string | Date | null, locale: string, fallback: string) {
-  if (!value) return fallback;
-  return new Date(value).toLocaleDateString(locale, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
 const focusTagKeys = [
   "home.focusTag1",
   "home.focusTag2",
@@ -52,6 +37,8 @@ const focusTagKeys = [
   "home.focusTag7",
   "home.focusTag8",
 ];
+
+const portalTracks: TrackKind[] = ["algorithms", "applications"];
 
 export default function Home() {
   const { isAdmin } = useAuth();
@@ -79,6 +66,8 @@ export default function Home() {
 
   const totalViews =
     posts?.posts?.reduce((sum: number, post: any) => sum + (post.viewCount || 0), 0) || 0;
+  const visibleTags = (tags?.length ? tags : focusTagKeys.map((key, index) => ({ id: index, name: t(key) })))
+    .filter((tag: any) => tag.slug !== "evq-cosh" && tag.name !== "EVQ-Cosh");
 
   const copyEmail = () => {
     navigator.clipboard.writeText("zedpl28174@gmail.com");
@@ -136,6 +125,31 @@ export default function Home() {
                 <Mail className="h-4 w-4 text-sky-300" />
                 zedpl28174@gmail.com
               </button>
+            </div>
+
+            <div className="mt-8 grid max-w-5xl gap-4 md:grid-cols-2">
+              {portalTracks.map((track) => {
+                const config = trackConfigs[track];
+                return (
+                  <Link key={track} href={config.href}>
+                    <article className="glass-panel group min-h-[13rem] p-5 transition hover:border-sky-300/60">
+                      <div className="mb-4 flex items-center justify-between gap-4">
+                        <div className="signal-chip">
+                          <Sparkles className="h-4 w-4" />
+                          {t(track === "algorithms" ? "home.algorithmsLabel" : "home.applicationsLabel")}
+                        </div>
+                        <ArrowRight className="h-5 w-5 text-sky-300 transition-transform group-hover:translate-x-1" />
+                      </div>
+                      <h2 className="font-serif text-2xl font-semibold leading-tight text-white">
+                        {t(config.titleKey)}
+                      </h2>
+                      <p className="mt-3 text-sm leading-7 text-slate-300">
+                        {t(config.overviewKey)}
+                      </p>
+                    </article>
+                  </Link>
+                );
+              })}
             </div>
 
             <div className="glass-panel mt-8 flex max-w-4xl items-center gap-4 px-5 py-4">
@@ -197,7 +211,7 @@ export default function Home() {
                 <h2 className="text-base font-semibold">{t("home.hotTags")}</h2>
               </div>
               <div className="flex flex-wrap gap-2">
-                {(tags?.length ? tags : focusTagKeys.map((key, index) => ({ id: index, name: t(key) }))).slice(0, 12).map((tag: any) => (
+                {visibleTags.slice(0, 12).map((tag: any) => (
                   <span key={tag.id ?? tag.name} className="rounded-lg border border-slate-600/50 bg-slate-900/55 px-3 py-1.5 text-xs text-slate-300">
                     {tag.name}
                   </span>
@@ -229,48 +243,14 @@ export default function Home() {
             ) : filteredPosts.length > 0 ? (
               <div className="grid gap-4">
                 {filteredPosts.map((post: any, index: number) => (
-                  <Link key={post.id} href={`/post/${post.slug}`}>
-                    <article className="article-card group">
-                      <ResearchWaveVisual
-                        variant={post.slug?.includes("isohc") ? "orbit" : "wave"}
-                        className="article-visual"
-                      />
-                      <div className="article-copy">
-                        <div className="article-tags">
-                          <span className="article-tag article-tag-primary">
-                            {index === 0 ? t("home.tagLatest") : t("home.tagResearch")}
-                          </span>
-                          <span className="article-tag">
-                            {post.slug?.includes("isohc") ? t("home.tagResidualMixing") : t("home.tagRoPE")}
-                          </span>
-                        </div>
-                        <h3 className="article-title">
-                          {post.title}
-                        </h3>
-                        <p className="article-excerpt">
-                          {post.excerpt ||
-                            `${post.content?.replace(/[#*$\\`\n]/g, " ").slice(0, 220)}...`}
-                        </p>
-                        <div className="article-meta">
-                          <span className="inline-flex items-center gap-1.5">
-                            <Calendar className="h-3.5 w-3.5" />
-                            {formatDate(post.publishedAt, language === "zh" ? "zh-CN" : "en-US", t("common.draft"))}
-                          </span>
-                          <span className="inline-flex items-center gap-1.5">
-                            <BookOpen className="h-3.5 w-3.5" />
-                            {readingTime(post.content || "")} {t("home.minRead")}
-                          </span>
-                          <span className="inline-flex items-center gap-1.5">
-                            <Eye className="h-3.5 w-3.5" />
-                            {post.viewCount || 0} {t("home.reads")}
-                          </span>
-                          <span className="article-read-link">
-                            {t("home.readMore")} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                          </span>
-                        </div>
-                      </div>
-                    </article>
-                  </Link>
+                  <ArticleCard
+                    key={post.id}
+                    post={post}
+                    index={index}
+                    language={language}
+                    t={t}
+                    track={post.categoryId === categories?.find((category) => category.slug === "ai-applications")?.id ? "applications" : "algorithms"}
+                  />
                 ))}
               </div>
             ) : (
@@ -283,17 +263,17 @@ export default function Home() {
           <aside className="glass-panel research-index-panel">
             <h2 className="section-title">{t("home.researchIndex")}</h2>
             <div className="research-index-list">
+              <Link href="/algorithms" className="research-index-row">
+                <span>{t("home.algorithmsLabel")}</span>
+                <span className="text-sky-300">Models</span>
+              </Link>
+              <Link href="/applications" className="research-index-row">
+                <span>{t("home.applicationsLabel")}</span>
+                <span className="text-sky-300">Systems</span>
+              </Link>
               <div className="research-index-row">
-                <span>EVQ-Cosh</span>
-                <span className="text-sky-300">RoPE</span>
-              </div>
-              <div className="research-index-row">
-                <span>IsoHC</span>
-                <span className="text-sky-300">Stability</span>
-              </div>
-              <div className="research-index-row">
-                <span>Long Context</span>
-                <span className="text-sky-300">Scaling</span>
+                <span>Agent Harness</span>
+                <span className="text-sky-300">Evaluation</span>
               </div>
             </div>
           </aside>

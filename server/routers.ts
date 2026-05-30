@@ -128,6 +128,7 @@ export const appRouter = router({
         z.object({
           status: z.enum(["draft", "published"]).optional(),
           visibility: postVisibilityInput.optional(),
+          categorySlug: z.string().optional(),
           categoryId: z.number().optional(),
           search: z.string().optional(),
           limit: z.number().default(10),

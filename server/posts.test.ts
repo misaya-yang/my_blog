@@ -201,6 +201,34 @@ describe("posts router", () => {
     );
   });
 
+  it("filters public posts by category slug", async () => {
+    const { ctx } = createAnonymousContext();
+    const caller = appRouter.createCaller(ctx);
+
+    await caller.posts.list({
+      status: "published",
+      categorySlug: "ai-applications",
+      limit: 10,
+      offset: 0,
+      orderBy: "publishedAt",
+    });
+
+    expect(db.getPosts).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "published",
+        visibility: "public",
+        categorySlug: "ai-applications",
+      })
+    );
+    expect(db.getPostsCount).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "published",
+        visibility: "public",
+        categorySlug: "ai-applications",
+      })
+    );
+  });
+
   it("should get post by slug", async () => {
     const { ctx } = createOwnerContext();
     const caller = appRouter.createCaller(ctx);

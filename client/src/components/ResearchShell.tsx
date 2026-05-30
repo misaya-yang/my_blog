@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import type React from "react";
 
 type SiteHeaderProps = {
-  active?: "home" | "archive" | "write" | "login";
+  active?: "home" | "algorithms" | "applications" | "archive" | "write" | "login";
   backHref?: string;
   backLabel?: string;
   compact?: boolean;
@@ -84,7 +84,9 @@ export function SiteHeader({ active = "home", backHref, backLabel, compact }: Si
           {!compact && (
             <div className="hidden items-center gap-1.5 md:flex">
               {navLink("/", "home", t("nav.home"))}
-              <a href="#research-index" className={cn("nav-ink", active === "archive" && "nav-ink-active")}>
+              {navLink("/algorithms", "algorithms", t("nav.algorithms"))}
+              {navLink("/applications", "applications", t("nav.applications"))}
+              <a href="/#research-index" className={cn("nav-ink", active === "archive" && "nav-ink-active")}>
                 {t("nav.archive")}
               </a>
             </div>

@@ -2,6 +2,8 @@ import type { TranslationDict } from "./types";
 
 const nav: TranslationDict = {
   "nav.home": { en: "Home", zh: "首页" },
+  "nav.algorithms": { en: "AI Algorithms", zh: "AI 算法" },
+  "nav.applications": { en: "AI Applications", zh: "AI 应用" },
   "nav.archive": { en: "Archive", zh: "归档" },
   "nav.write": { en: "Write", zh: "写作" },
   "nav.login": { en: "Login", zh: "登录" },

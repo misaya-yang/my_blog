@@ -16,6 +16,8 @@ const manage: TranslationDict = {
 
   // Search & stats
   "manage.searchPlaceholder": { en: "Search articles...", zh: "搜索文章..." },
+  "manage.categoryFilter": { en: "Filter by category", zh: "按分类筛选" },
+  "manage.categoryAll": { en: "All technical areas", zh: "全部技术区" },
   "manage.articleCount": { en: "{count} articles", zh: "共 {count} 篇文章" },
 
   // Empty state

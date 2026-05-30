@@ -11,18 +11,27 @@ if (!DATABASE_URL) {
 
 const sql = postgres(DATABASE_URL, { prepare: false });
 
-const categorySeed = {
-  name: "Deep Learning",
-  slug: "deep-learning",
-  description:
-    "Deep learning, Transformers, position encoding, and residual stability research",
-};
+const categorySeeds = [
+  {
+    name: "AI Algorithms",
+    slug: "ai-algorithms",
+    description:
+      "Model architecture, Transformers, position encoding, long-context behavior, and algorithmic reliability research",
+  },
+  {
+    name: "AI Applications",
+    slug: "ai-applications",
+    description:
+      "Agent systems, RAG, context engineering, evaluation harnesses, fine-tuning, and AI application infrastructure",
+  },
+];
 
 const posts = [
   {
     title: "EVQ-Cosh: RoPE as a Finite Spectral Budget",
     slug: "evq-cosh-frequency-allocation",
     contentPath: "./dfrope_blog_post.md",
+    categorySlug: "ai-algorithms",
     status: "draft",
     visibility: "hidden",
     excerpt:
@@ -39,6 +48,7 @@ const posts = [
     title: "IsoHC: Fixed-Vector Isometric Residual Mixing",
     slug: "isohc-fixed-vector-isometric-residual-mixing",
     contentPath: "./isohc_blog_en.md",
+    categorySlug: "ai-algorithms",
     status: "published",
     visibility: "public",
     excerpt:
@@ -50,6 +60,26 @@ const posts = [
       { name: "Orthogonal Projection", slug: "orthogonal-projection" },
       { name: "Transformer", slug: "transformer" },
       { name: "GNN", slug: "gnn" },
+    ],
+  },
+  {
+    title: "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+    slug: "agent-harness-engine-evaluating-tool-using-agents",
+    contentPath: "./agent_harness_engine_blog.md",
+    categorySlug: "ai-applications",
+    status: "published",
+    visibility: "public",
+    excerpt:
+      "A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals.",
+    tags: [
+      { name: "Agent Systems", slug: "agent-systems" },
+      { name: "Harness Engine", slug: "harness-engine" },
+      { name: "RAG", slug: "rag" },
+      { name: "Context Engineering", slug: "context-engineering" },
+      { name: "Fine-tuning", slug: "fine-tuning" },
+      { name: "Evaluation", slug: "evaluation" },
+      { name: "Observability", slug: "observability" },
+      { name: "Tool Use", slug: "tool-use" },
     ],
   },
 ];
@@ -92,17 +122,31 @@ async function seed() {
 
     console.log("User ID:", owner.id);
 
-    const [category] = await sql`
-      INSERT INTO categories (name, slug, description)
-      VALUES (${categorySeed.name}, ${categorySeed.slug}, ${categorySeed.description})
-      ON CONFLICT (slug) DO UPDATE SET
-        name = EXCLUDED.name,
-        description = EXCLUDED.description,
+    await sql`
+      UPDATE categories
+      SET
+        name = ${"AI Algorithms"},
+        slug = ${"ai-algorithms"},
+        description = ${categorySeeds[0].description},
         updated_at = now()
-      RETURNING id
+      WHERE slug = ${"deep-learning"}
+      AND NOT EXISTS (SELECT 1 FROM categories WHERE slug = ${"ai-algorithms"})
     `;
 
-    console.log("Category ID:", category.id);
+    const categoryBySlug = new Map();
+    for (const categorySeed of categorySeeds) {
+      const [category] = await sql`
+        INSERT INTO categories (name, slug, description)
+        VALUES (${categorySeed.name}, ${categorySeed.slug}, ${categorySeed.description})
+        ON CONFLICT (slug) DO UPDATE SET
+          name = EXCLUDED.name,
+          description = EXCLUDED.description,
+          updated_at = now()
+        RETURNING id, slug
+      `;
+      categoryBySlug.set(category.slug, category);
+      console.log("Category:", category.slug, "ID:", category.id);
+    }
 
     await sql`
       DELETE FROM post_tags
@@ -115,6 +159,11 @@ async function seed() {
     for (const postSeed of posts) {
       const content = fs.readFileSync(postSeed.contentPath, "utf-8");
       const tagIds = await upsertTags(postSeed.tags);
+      const category = categoryBySlug.get(postSeed.categorySlug);
+
+      if (!category) {
+        throw new Error(`Missing category seed for ${postSeed.categorySlug}`);
+      }
 
       const [post] = await sql`
         INSERT INTO posts (

@@ -10,12 +10,15 @@ import PostDetail from "./pages/PostDetail";
 import Editor from "./pages/Editor";
 import Manage from "./pages/Manage";
 import Login from "./pages/Login";
+import { AlgorithmsPage, ApplicationsPage } from "./pages/Track";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path="/algorithms" component={AlgorithmsPage} />
+      <Route path="/applications" component={ApplicationsPage} />
       <Route path="/post/:slug" component={PostDetail} />
       <Route path="/write" component={Editor} />
       <Route path="/write/:slug" component={Editor} />

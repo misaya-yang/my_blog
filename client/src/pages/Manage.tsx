@@ -5,6 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -65,6 +72,7 @@ export default function Manage() {
   const { language, t } = useLanguage();
   const [, navigate] = useLocation();
   const [search, setSearch] = useState("");
+  const [categorySlug, setCategorySlug] = useState("all");
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
   // 获取文章列表
@@ -74,6 +82,7 @@ export default function Manage() {
     refetch,
   } = trpc.posts.list.useQuery({
     search: search || undefined,
+    categorySlug: categorySlug === "all" ? undefined : categorySlug,
     limit: 50,
     includeUnpublished: true,
   });
@@ -178,7 +187,7 @@ export default function Manage() {
           </Button>
         </div>
 
-        <div className="glass-panel mb-6 flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
+        <div className="glass-panel mb-6 flex flex-col gap-4 p-4 lg:flex-row lg:items-center">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input
@@ -188,6 +197,19 @@ export default function Manage() {
               className="border-sky-200/15 bg-slate-950/40 pl-10 text-white placeholder:text-slate-500"
             />
           </div>
+          <Select value={categorySlug} onValueChange={setCategorySlug}>
+            <SelectTrigger className="w-full border-sky-200/15 bg-slate-950/40 text-white lg:w-[220px]">
+              <SelectValue placeholder={t("manage.categoryFilter")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("manage.categoryAll")}</SelectItem>
+              {categoriesData?.map((category) => (
+                <SelectItem key={category.id} value={category.slug}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <div className="text-sm text-slate-400">
             {t("manage.articleCount", { count: postsData?.total || 0 })}
           </div>
