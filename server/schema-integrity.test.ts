@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 describe("content integrity migration", () => {
   const migration = readFileSync("drizzle/0002_content_integrity.sql", "utf-8");
+  const aiKnowledgeMigration = readFileSync("drizzle/0005_little_james_howlett.sql", "utf-8");
   const schema = readFileSync("drizzle/schema.ts", "utf-8");
 
   it("adds foreign keys for post ownership, categories, tags, and versions", () => {
@@ -28,5 +29,15 @@ describe("content integrity migration", () => {
     expect(schema).toContain("references(() => posts.id");
     expect(schema).toContain("references(() => tags.id");
     expect(schema).toContain("postsStatusVisibilityPublishedAtIdx");
+  });
+
+  it("adds a Supabase-backed public AI knowledge chunk index", () => {
+    expect(aiKnowledgeMigration).toContain("CREATE TABLE \"ai_knowledge_chunks\"");
+    expect(aiKnowledgeMigration).toContain("ai_knowledge_chunks_post_id_posts_id_fk");
+    expect(aiKnowledgeMigration).toContain("ai_knowledge_chunks_visibility_idx");
+    expect(aiKnowledgeMigration).toContain("ai_knowledge_chunks_content_fts_idx");
+    expect(schema).toContain("export const aiKnowledgeChunks");
+    expect(schema).toContain("statusSnapshot");
+    expect(schema).toContain("visibilitySnapshot");
   });
 });
