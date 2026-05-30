@@ -2,9 +2,9 @@ import type { TranslationDict } from "./types";
 
 const editor: TranslationDict = {
   // Auth guard
-  "editor.authRequired": { en: "Author access only", zh: "作者权限限定" },
-  "editor.authDescription": { en: "Only admin sessions can access the writing desk", zh: "只有管理员会话可以进入写作台" },
-  "editor.goToLogin": { en: "Go to Login", zh: "进入登录页" },
+  "editor.authRequired": { en: "Admin login required", zh: "需要管理员登录" },
+  "editor.authDescription": { en: "Sign in with the admin password to create or edit posts.", zh: "使用管理员密码登录后可创建或编辑文章。" },
+  "editor.goToLogin": { en: "Go to login", zh: "去登录" },
 
   // Toolbar tooltips
   "editor.toolbar.heading1": { en: "Heading 1", zh: "一级标题" },
@@ -37,6 +37,8 @@ const editor: TranslationDict = {
 
   // Header bar
   "editor.back": { en: "Back", zh: "返回" },
+  "editor.newPost": { en: "New article", zh: "新建文章" },
+  "editor.editPost": { en: "Edit article", zh: "编辑文章" },
   "editor.savedAt": { en: "Saved at", zh: "已保存于" },
   "editor.saving": { en: "Saving...", zh: "保存中..." },
   "editor.wordCount": { en: "words", zh: "字" },
@@ -95,6 +97,20 @@ const editor: TranslationDict = {
   "editor.categoryLabel": { en: "Category", zh: "分类" },
   "editor.categoryPlaceholder": { en: "Select category", zh: "选择分类" },
   "editor.tagsLabel": { en: "Tags", zh: "标签" },
+  "editor.curationTitle": { en: "Series and curation", zh: "系列与精选" },
+  "editor.seriesSlugPlaceholder": { en: "Series slug", zh: "系列 slug" },
+  "editor.seriesTitlePlaceholder": { en: "Series title", zh: "系列标题" },
+  "editor.seriesOrderPlaceholder": { en: "Series order", zh: "系列顺序" },
+  "editor.featuredRankPlaceholder": { en: "Featured rank", zh: "首页精选排序" },
+  "editor.pinnedTrackPlaceholder": { en: "Pinned track", zh: "置顶技术区" },
+  "editor.pinnedTrackNone": { en: "No track pin", zh: "不置顶" },
+  "editor.versionHistoryTitle": { en: "Version history", zh: "版本历史" },
+  "editor.versionHistoryEmpty": { en: "No saved versions yet.", zh: "暂无已保存版本。" },
+  "editor.versionRestore": { en: "Restore", zh: "恢复" },
+  "editor.versionRestoreConfirm": {
+    en: "Restore this version? The current content will be saved as a new version first.",
+    zh: "确认恢复这个版本吗？当前内容会先保存为一个新版本。",
+  },
 
   // Link dialog
   "editor.linkDialogTitle": { en: "Insert Link", zh: "插入链接" },
@@ -126,6 +142,8 @@ const editor: TranslationDict = {
   "editor.toast.saveFailed": { en: "Save failed, please try again", zh: "保存失败，请重试" },
   "editor.toast.published": { en: "Article published!", zh: "文章已发布！" },
   "editor.toast.publishFailed": { en: "Publish failed, please try again", zh: "发布失败，请重试" },
+  "editor.toast.versionRestored": { en: "Version restored", zh: "版本已恢复" },
+  "editor.toast.versionRestoreFailed": { en: "Version restore failed", zh: "版本恢复失败" },
 
   // Misc
   "editor.readingTimeApprox": { en: "~ {time} min", zh: "约 {time} 分钟" },

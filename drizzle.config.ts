@@ -1,5 +1,8 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import { defineConfig } from "drizzle-kit";
+
+dotenv.config({ quiet: true });
+dotenv.config({ path: ".env.local", override: true, quiet: true });
 
 const connectionString =
   process.env.MIGRATION_DATABASE_URL ??

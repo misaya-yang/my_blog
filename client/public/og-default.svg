@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#08111f"/>
+      <stop offset="0.6" stop-color="#0b1728"/>
+      <stop offset="1" stop-color="#07101d"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0v48" fill="none" stroke="#1f3a5a" stroke-opacity=".34"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)" opacity=".55"/>
+  <circle cx="980" cy="120" r="260" fill="#0ea5e9" opacity=".09"/>
+  <circle cx="980" cy="610" r="380" fill="#38bdf8" opacity=".08"/>
+  <rect x="80" y="82" width="72" height="72" rx="14" fill="#0f233b" stroke="#7dd3fc" stroke-width="3"/>
+  <path d="M101 108h31M101 124h31M101 140h20" stroke="#e0f2fe" stroke-width="6" stroke-linecap="round"/>
+  <text x="80" y="230" fill="#f8fafc" font-family="Noto Serif SC, Georgia, serif" font-size="82" font-weight="700">AI Tech Blog</text>
+  <text x="84" y="302" fill="#bae6fd" font-family="Inter, Noto Sans SC, sans-serif" font-size="30" font-weight="600">Misaya Yang · Research Notebook</text>
+  <text x="84" y="392" fill="#cbd5e1" font-family="Inter, Noto Sans SC, sans-serif" font-size="32">AI algorithms, long-context mechanisms, agent systems, RAG,</text>
+  <text x="84" y="438" fill="#cbd5e1" font-family="Inter, Noto Sans SC, sans-serif" font-size="32">and reliable AI application engineering.</text>
+  <text x="84" y="550" fill="#7dd3fc" font-family="JetBrains Mono, monospace" font-size="24">zedpl28174@gmail.com</text>
+</svg>

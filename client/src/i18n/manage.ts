@@ -7,18 +7,49 @@ const manage: TranslationDict = {
   "manage.loginBtn": { en: "Log in", zh: "登录" },
 
   // Page header
-  "manage.pageTitle": { en: "Article Dashboard", zh: "文章后台" },
+  "manage.pageTitle": { en: "Content Dashboard", zh: "内容管理" },
   "manage.pageSubtitle": {
     en: "Quickly check drafts, publishing status, views, and research notes that need further refinement.",
     zh: "用来快速检查草稿、发布状态、阅读量和需要继续打磨的研究笔记。",
   },
-  "manage.cmsLabel": { en: "Research CMS", zh: "Research CMS" },
+  "manage.cmsLabel": { en: "Content management", zh: "内容管理" },
 
   // Search & stats
   "manage.searchPlaceholder": { en: "Search articles...", zh: "搜索文章..." },
   "manage.categoryFilter": { en: "Filter by category", zh: "按分类筛选" },
   "manage.categoryAll": { en: "All technical areas", zh: "全部技术区" },
   "manage.articleCount": { en: "{count} articles", zh: "共 {count} 篇文章" },
+
+  // Content health
+  "manage.health.drafts": { en: "Drafts", zh: "草稿" },
+  "manage.health.public": { en: "Public", zh: "公开" },
+  "manage.health.ownerOnly": { en: "Admin-only", zh: "仅管理员" },
+  "manage.health.hidden": { en: "Hidden", zh: "隐藏" },
+  "manage.health.noExcerpt": { en: "No excerpt", zh: "缺摘要" },
+  "manage.health.noCategory": { en: "No category", zh: "缺分类" },
+  "manage.health.noTags": { en: "No tags", zh: "缺标签" },
+  "manage.health.recent": { en: "Recent", zh: "近期更新" },
+
+  // Taxonomy management
+  "manage.taxonomy.categoriesTitle": { en: "Categories", zh: "分类管理" },
+  "manage.taxonomy.tagsTitle": { en: "Tags", zh: "标签管理" },
+  "manage.taxonomy.name": { en: "Name", zh: "名称" },
+  "manage.taxonomy.slug": { en: "Slug", zh: "Slug" },
+  "manage.taxonomy.description": { en: "Description", zh: "描述" },
+  "manage.taxonomy.deleteCategoryConfirm": {
+    en: "Delete this category? Deletion is blocked while posts still use it.",
+    zh: "确认删除这个分类吗？如果仍有文章使用它，系统会阻止删除。",
+  },
+  "manage.taxonomy.deleteTagConfirm": {
+    en: "Delete this tag? Deletion is blocked while posts still use it.",
+    zh: "确认删除这个标签吗？如果仍有文章使用它，系统会阻止删除。",
+  },
+  "manage.taxonomy.categoryCreated": { en: "Category created", zh: "分类已创建" },
+  "manage.taxonomy.categoryUpdated": { en: "Category updated", zh: "分类已更新" },
+  "manage.taxonomy.categoryDeleted": { en: "Category deleted", zh: "分类已删除" },
+  "manage.taxonomy.tagCreated": { en: "Tag created", zh: "标签已创建" },
+  "manage.taxonomy.tagUpdated": { en: "Tag updated", zh: "标签已更新" },
+  "manage.taxonomy.tagDeleted": { en: "Tag deleted", zh: "标签已删除" },
 
   // Empty state
   "manage.noArticles": { en: "No articles", zh: "暂无文章" },
@@ -59,9 +90,35 @@ const manage: TranslationDict = {
   "manage.toast.statusUpdated": { en: "Status updated", zh: "状态已更新" },
   "manage.toast.updateFailed": { en: "Update failed", zh: "更新失败" },
 
+  // Engagement workflow
+  "manage.engagement.feedbackTitle": { en: "Reader Feedback", zh: "读者反馈" },
+  "manage.engagement.feedbackDescription": {
+    en: "Private feedback submitted from article pages.",
+    zh: "读者在文章页提交的私密反馈。",
+  },
+  "manage.engagement.feedbackCount": { en: "{count} items", zh: "{count} 条" },
+  "manage.engagement.useful": { en: "Useful", zh: "有帮助" },
+  "manage.engagement.notUseful": { en: "Not useful", zh: "帮助不大" },
+  "manage.engagement.statusNew": { en: "New", zh: "新反馈" },
+  "manage.engagement.statusReviewed": { en: "Reviewed", zh: "已查看" },
+  "manage.engagement.unknownPost": { en: "Unknown article", zh: "未知文章" },
+  "manage.engagement.noMessage": { en: "No message attached.", zh: "没有补充说明。" },
+  "manage.engagement.anonymous": { en: "Anonymous reader", zh: "匿名读者" },
+  "manage.engagement.markReviewed": { en: "Mark reviewed", zh: "标记已查看" },
+  "manage.engagement.feedbackEmpty": { en: "No reader feedback yet.", zh: "暂无读者反馈。" },
+  "manage.engagement.feedbackReviewed": { en: "Feedback reviewed", zh: "反馈已标记查看" },
+  "manage.engagement.feedbackReviewFailed": { en: "Could not update feedback", zh: "反馈状态更新失败" },
+  "manage.engagement.subscribersTitle": { en: "Subscribers", zh: "订阅者" },
+  "manage.engagement.subscribersDescription": {
+    en: "Stored subscription intent. Export this list when connecting an email provider.",
+    zh: "已保存的订阅意向；接入邮件服务商时可导出这份列表。",
+  },
+  "manage.engagement.export": { en: "Export", zh: "导出" },
+  "manage.engagement.subscribersEmpty": { en: "No subscribers yet.", zh: "暂无订阅者。" },
+
   // Actions
   "manage.writeArticle": { en: "Write Article", zh: "撰写文章" },
-  "manage.backLabel": { en: "Back to Research Index", zh: "返回研究索引" },
+  "manage.backLabel": { en: "Back to Home", zh: "返回首页" },
 };
 
 export default manage;

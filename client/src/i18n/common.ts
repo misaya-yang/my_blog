@@ -45,6 +45,79 @@ const common: TranslationDict = {
   // Email
   "common.emailCopied": { en: "Email copied", zh: "邮箱已复制" },
 
+  // Engagement
+  "engagement.subscribe.title": { en: "Follow updates", zh: "订阅更新" },
+  "engagement.subscribe.articleTitle": { en: "Get future notes", zh: "接收后续笔记" },
+  "engagement.subscribe.description": {
+    en: "Leave an email to get occasional article updates. RSS stays available if you prefer a reader.",
+    zh: "留下邮箱接收不定期文章更新；如果你更喜欢阅读器，也可以直接使用 RSS。",
+  },
+  "engagement.subscribe.rss": { en: "RSS", zh: "RSS" },
+  "engagement.subscribe.emailPlaceholder": { en: "you@example.com", zh: "you@example.com" },
+  "engagement.subscribe.interestsPlaceholder": {
+    en: "Optional topics: RoPE, agents, RAG...",
+    zh: "可选主题：RoPE、Agent、RAG...",
+  },
+  "engagement.subscribe.loading": { en: "Saving...", zh: "保存中..." },
+  "engagement.subscribe.button": { en: "Subscribe", zh: "订阅" },
+  "engagement.subscribe.toastCreated": { en: "Subscription saved", zh: "订阅已保存" },
+  "engagement.subscribe.toastExisting": { en: "Subscription updated", zh: "订阅已更新" },
+  "engagement.subscribe.error": { en: "Subscription failed", zh: "订阅失败" },
+  "engagement.subscribe.rateLimited": {
+    en: "Too many attempts. Please try again later.",
+    zh: "提交过于频繁，请稍后再试。",
+  },
+  "engagement.subscribe.successCreated": {
+    en: "Saved. Updates will be sent when email delivery is connected.",
+    zh: "已保存。邮件发送接入后会用于更新通知。",
+  },
+  "engagement.subscribe.successExisting": {
+    en: "Already on the list. Preferences were refreshed.",
+    zh: "你已在列表中，偏好已刷新。",
+  },
+  "engagement.subscribe.privacy": {
+    en: "Only email and optional topics are stored.",
+    zh: "仅保存邮箱和可选主题偏好。",
+  },
+  "engagement.feedback.title": { en: "Was this useful?", zh: "这篇文章有帮助吗？" },
+  "engagement.feedback.description": {
+    en: "Send a private note about what worked or what was missing.",
+    zh: "提交一条私密反馈，说明哪里有帮助或哪里还需要补充。",
+  },
+  "engagement.feedback.visitorIdentity": {
+    en: "Submitting as {name}",
+    zh: "将以 {name} 提交",
+  },
+  "engagement.feedback.anonymousIdentity": {
+    en: "You can submit anonymously.",
+    zh: "你可以匿名提交。",
+  },
+  "engagement.feedback.contact": { en: "Email", zh: "发邮件" },
+  "engagement.feedback.useful": { en: "Useful", zh: "有帮助" },
+  "engagement.feedback.notUseful": { en: "Not useful", zh: "帮助不大" },
+  "engagement.feedback.messagePlaceholder": {
+    en: "Optional note: what was clear or missing?",
+    zh: "可选补充：哪里清楚，哪里还缺？",
+  },
+  "engagement.feedback.namePlaceholder": { en: "Optional nickname", zh: "可选昵称" },
+  "engagement.feedback.emailPlaceholder": {
+    en: "Optional reply email",
+    zh: "可选回复邮箱",
+  },
+  "engagement.feedback.toastSuccess": { en: "Feedback sent", zh: "反馈已发送" },
+  "engagement.feedback.error": { en: "Feedback failed", zh: "反馈提交失败" },
+  "engagement.feedback.rateLimited": {
+    en: "Too many attempts. Please try again later.",
+    zh: "提交过于频繁，请稍后再试。",
+  },
+  "engagement.feedback.success": { en: "Thanks. Feedback has been saved.", zh: "谢谢，反馈已保存。" },
+  "engagement.feedback.privacy": {
+    en: "Reply email is optional and only used when follow-up is needed.",
+    zh: "回复邮箱完全可选，仅在需要跟进时使用。",
+  },
+  "engagement.feedback.loading": { en: "Sending...", zh: "发送中..." },
+  "engagement.feedback.submit": { en: "Send feedback", zh: "发送反馈" },
+
   // Footer
   "common.copyright": { en: "© 2026 AI Tech Blog. All rights reserved.", zh: "© 2026 AI Tech Blog. 保留所有权利." },
 };

@@ -2,42 +2,42 @@ import type { TranslationDict } from "./types";
 
 const login: TranslationDict = {
   // Left panel
-  "login.chip": { en: "Personal research identity", zh: "Personal research identity" },
-  "login.title": { en: "Writing entrance for the author, reading identity for peers.", zh: "写作入口给作者，阅读身份留给同行。" },
+  "login.chip": { en: "Account access", zh: "账号入口" },
+  "login.title": { en: "Sign in to read or manage articles.", zh: "登录后继续阅读或管理文章。" },
   "login.subtitle": {
-    en: "Admin mode is used for publishing and maintaining articles; visitor mode only creates a local JWT identity, temporarily not requiring email, and can naturally connect to comments, bookmarks, or subscriptions later.",
-    zh: "管理员模式用于发布和维护文章；访客模式只创建一个本地 JWT 身份，暂时不接邮箱，后续可以自然接到评论、收藏或订阅。",
+    en: "Readers can use a nickname for lightweight article feedback. The admin password unlocks publishing and management tools.",
+    zh: "读者可用昵称提交文章反馈；管理员密码用于进入发布和管理工具。",
   },
-  "login.visitorCardTitle": { en: "Visitor JWT", zh: "Visitor JWT" },
-  "login.visitorCardDesc": { en: "Used to identify reading identity, not bound to email.", zh: "用于识别阅读身份，不绑定邮箱。" },
-  "login.ownerCardTitle": { en: "Owner Console", zh: "Owner Console" },
-  "login.ownerCardDesc": { en: "Publish, maintain, and manage research articles.", zh: "发布、维护和管理研究文章。" },
+  "login.visitorCardTitle": { en: "Reader mode", zh: "读者模式" },
+  "login.visitorCardDesc": { en: "Use a nickname for feedback. Email is optional.", zh: "使用昵称提交反馈；邮箱可选。" },
+  "login.ownerCardTitle": { en: "Admin access", zh: "管理员入口" },
+  "login.ownerCardDesc": { en: "Manage posts, taxonomy, feedback, and subscribers.", zh: "管理文章、分类、反馈和订阅。" },
 
   // Tabs
-  "login.tabVisitor": { en: "Visitor", zh: "访客" },
-  "login.tabAdmin": { en: "Author", zh: "作者" },
+  "login.tabVisitor": { en: "Reader", zh: "读者" },
+  "login.tabAdmin": { en: "Admin", zh: "管理员" },
 
   // Visitor form
-  "login.visitorTitle": { en: "Visitor Login", zh: "访客登录" },
+  "login.visitorTitle": { en: "Reader login", zh: "读者登录" },
   "login.visitorDesc": {
-    en: "Enter a nickname. No email will be sent, no third-party account created.",
-    zh: "输入一个昵称即可。不会发送邮箱，不会创建第三方账号。",
+    en: "Enter a nickname to keep feedback attached to one local session.",
+    zh: "输入昵称后，后续反馈会关联到当前浏览器会话。",
   },
   "login.visitorPlaceholder": {
-    en: "e.g., A student reading RoPE",
-    zh: "例如：一位读 RoPE 的同学",
+    en: "e.g., RoPE reader",
+    zh: "例如：RoPE 读者",
   },
-  "login.visitorBtn": { en: "Enter as Visitor", zh: "以访客身份进入" },
+  "login.visitorBtn": { en: "Continue", zh: "继续" },
   "login.visitorBtnLoading": { en: "Creating...", zh: "创建中..." },
 
   // Admin form
-  "login.adminTitle": { en: "Author Console", zh: "作者后台" },
+  "login.adminTitle": { en: "Admin login", zh: "管理员登录" },
   "login.adminDesc": {
-    en: "Only the blog owner can enter the writing, publishing, and management workflow.",
-    zh: "仅博客所有者可进入写作、发布和管理流程。",
+    en: "Use the admin password to publish, edit, and manage content.",
+    zh: "使用管理员密码进入发布、编辑和管理功能。",
   },
   "login.adminPasswordPlaceholder": { en: "Admin password", zh: "管理员密码" },
-  "login.adminBtn": { en: "Enter Writing Desk", zh: "进入写作台" },
+  "login.adminBtn": { en: "Sign in", zh: "登录" },
   "login.adminBtnLoading": { en: "Verifying...", zh: "验证中..." },
 
   // Back label
@@ -46,8 +46,8 @@ const login: TranslationDict = {
   // Toast
   "login.toast.welcomeBack": { en: "Welcome back, Misaya", zh: "欢迎回来，Misaya" },
   "login.toast.adminFailed": { en: "Admin login failed", zh: "管理员登录失败" },
-  "login.toast.visitorCreated": { en: "Visitor identity created", zh: "已创建访客身份" },
-  "login.toast.visitorFailed": { en: "Visitor login failed", zh: "访客登录失败" },
+  "login.toast.visitorCreated": { en: "Signed in", zh: "已登录" },
+  "login.toast.visitorFailed": { en: "Login failed", zh: "登录失败" },
 };
 
 export default login;

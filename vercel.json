@@ -4,16 +4,85 @@
   "outputDirectory": "dist/public",
   "functions": {
     "api/index.ts": {
-      "maxDuration": 30
+      "maxDuration": 30,
+      "includeFiles": "dist/public/index.html"
     }
   },
   "rewrites": [
+    {
+      "source": "/robots.txt",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/rss.xml",
+      "destination": "/api/index"
+    },
     {
       "source": "/api/:path*",
       "destination": "/api/index"
     },
     {
-      "source": "/(.*)",
+      "source": "/post/:slug",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/algorithms",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/applications",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/archive",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/search",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/projects",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/manage",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/write",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/write/:slug",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/tags/:slug",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/categories/:slug",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/404",
       "destination": "/index.html"
     }
   ]

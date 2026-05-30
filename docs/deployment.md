@@ -1,6 +1,6 @@
 # Supabase + Vercel Deployment Guide
 
-Last updated: 2026-05-24
+Last updated: 2026-05-30
 
 This project is a Vite React frontend with an Express/tRPC backend. The production target is Vercel, and the database target is Supabase Postgres.
 
@@ -43,6 +43,7 @@ The runtime connection in `server/db.ts` sets `prepare: false`, which matches Su
 ## Local Database Commands
 
 Create `.env.local` from `.env.example`, then fill in Supabase credentials.
+The local server and Drizzle config load `.env` first and `.env.local` second, so project-specific local values can live in `.env.local`.
 
 Generate migrations after schema edits:
 
@@ -74,6 +75,8 @@ ADMIN_PASSWORD
 JWT_SECRET
 OWNER_OPEN_ID
 OWNER_NAME
+SITE_URL
+VITE_SITE_URL
 VITE_APP_ID
 VITE_OAUTH_PORTAL_URL
 OAUTH_SERVER_URL
@@ -94,15 +97,38 @@ Do not commit real values. `.env`, `.env.local`, and production-local env files 
 
 ## Vercel Deploy
 
-The repository includes `vercel.json`:
+The repository includes `vercel.json`. Known public/owner routes are routed to the Vercel function when server-rendered fallbacks or HTTP status handling are needed; static assets are served from `dist/public`.
 
 ```json
 {
   "buildCommand": "pnpm build",
   "outputDirectory": "dist/public",
+  "functions": {
+    "api/index.ts": {
+      "maxDuration": 30,
+      "includeFiles": "dist/public/index.html"
+    }
+  },
   "rewrites": [
+    { "source": "/robots.txt", "destination": "/api/index" },
+    { "source": "/sitemap.xml", "destination": "/api/index" },
+    { "source": "/rss.xml", "destination": "/api/index" },
     { "source": "/api/:path*", "destination": "/api/index" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/post/:slug", "destination": "/api/index" },
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/algorithms", "destination": "/index.html" },
+    { "source": "/applications", "destination": "/index.html" },
+    { "source": "/archive", "destination": "/index.html" },
+    { "source": "/search", "destination": "/index.html" },
+    { "source": "/about", "destination": "/index.html" },
+    { "source": "/projects", "destination": "/index.html" },
+    { "source": "/login", "destination": "/index.html" },
+    { "source": "/manage", "destination": "/index.html" },
+    { "source": "/write", "destination": "/index.html" },
+    { "source": "/write/:slug", "destination": "/index.html" },
+    { "source": "/tags/:slug", "destination": "/index.html" },
+    { "source": "/categories/:slug", "destination": "/index.html" },
+    { "source": "/404", "destination": "/index.html" }
   ]
 }
 ```
@@ -111,16 +137,66 @@ Deployment order:
 
 1. Configure Supabase and Vercel environment variables.
 2. Run `pnpm check`.
-3. Run `pnpm build`.
-4. Run `pnpm db:migrate`.
-5. Run `pnpm db:seed` if this is a new database.
-6. Deploy:
+3. Run `pnpm test`.
+4. Run `pnpm build`.
+5. Run `pnpm audit:baseline:quick`.
+6. Run `pnpm db:migrate`.
+7. Run `pnpm db:seed` if this is a new database.
+8. Deploy:
 
 ```bash
 vercel --prod
 ```
 
 If using the Vercel dashboard, import this repository, keep the build command as `pnpm build`, and keep the output directory as `dist/public`.
+
+## CI and Preview Gates
+
+`.github/workflows/release-gates.yml` runs on pull requests and main/codex branch pushes:
+
+```bash
+pnpm install --frozen-lockfile
+pnpm check
+pnpm test
+pnpm build
+pnpm audit:baseline:quick
+```
+
+For preview deployments, verify:
+
+- `/` renders and has no framework overlay.
+- one public `/post/:slug` returns indexable article HTML when database content is present.
+- `/login` renders owner/visitor flows.
+- an unknown route returns a 404/noindex response.
+- `docs/harness_engine/reports/latest-baseline.json` contains the latest bundle budget snapshot.
+
+## Migration and Rollback
+
+Migration flow:
+
+1. Generate migration files locally with `pnpm db:generate`.
+2. Review SQL in `drizzle/*.sql`.
+3. Apply to preview/staging first with `pnpm db:migrate`.
+4. Run smoke checks against the preview URL.
+5. Apply to production before promoting the deployment.
+
+Rollback flow:
+
+1. If the deployment is bad but the database is healthy, use Vercel's previous deployment rollback.
+2. If a migration is bad, create a forward-only corrective migration; do not hand-edit Drizzle snapshots.
+3. Restore database backups from Supabase only for destructive data incidents.
+4. After rollback, rerun `pnpm audit:baseline:quick` against the restored deployment URL.
+
+## Owner Content Verification
+
+Before publishing a substantial content update:
+
+- `/manage` content health has no accidental hidden/public mismatch.
+- categories and tags can be edited without scripts.
+- posts that should be public have `status=published` and `visibility=public`.
+- important articles have excerpt, category, tags, and cover image where appropriate.
+- version history exists before risky rewrites, and restore is tested on preview.
+- feedback and subscriber data remain owner-only.
 
 ## Post-Deploy Checks
 
@@ -139,10 +215,11 @@ www  A    76.76.21.21
 
 The `yang.misaya.online` record is managed separately and is not part of the Vercel blog deployment.
 
-Latest verified deployment after the space-style UI redesign and custom domain cutover:
+Latest verified deployment after the login copy polish release:
 
-- Deployment URL: https://my-blog-61cs31tcf-zedpl28174-3992s-projects.vercel.app
-- Vercel deployment id: `dpl_HFotzLwkixChb67cNRBAf6Wy71na`
+- Deployment URL: https://my-blog-ms18xm7vm-zedpl28174-3992s-projects.vercel.app
+- Vercel deployment id: `dpl_F3W2Bsv92vGoe7bDt8WMwSeEEsNb`
+- Verified production alias: https://misaya.online
 
 Open the production URL and verify:
 

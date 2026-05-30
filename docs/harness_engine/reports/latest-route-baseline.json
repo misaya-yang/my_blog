@@ -1,0 +1,474 @@
+{
+  "generatedAt": "2026-05-30T11:29:35.690Z",
+  "git": {
+    "branch": "codex/ai-app-track",
+    "commit": "18bfe8b",
+    "dirty": true
+  },
+  "commands": [],
+  "routes": [
+    {
+      "path": "/",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "home page shell and research index",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": null,
+            "description": null,
+            "image": null,
+            "type": null,
+            "url": null
+          },
+          "twitter": {
+            "card": null,
+            "title": null,
+            "description": null,
+            "image": null
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/algorithms",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "AI algorithm track page",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": null,
+            "description": null,
+            "image": null,
+            "type": null,
+            "url": null
+          },
+          "twitter": {
+            "card": null,
+            "title": null,
+            "description": null,
+            "image": null
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/applications",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "AI application engineering track page",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": null,
+            "description": null,
+            "image": null,
+            "type": null,
+            "url": null
+          },
+          "twitter": {
+            "card": null,
+            "title": null,
+            "description": null,
+            "image": null
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/login",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "visitor and admin login surface",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": null,
+            "description": null,
+            "image": null,
+            "type": null,
+            "url": null
+          },
+          "twitter": {
+            "card": null,
+            "title": null,
+            "description": null,
+            "image": null
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/404",
+      "audience": "utility",
+      "expectedStatus": 200,
+      "expectedContent": "client-rendered not found page",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": null,
+            "description": null,
+            "image": null,
+            "type": null,
+            "url": null
+          },
+          "twitter": {
+            "card": null,
+            "title": null,
+            "description": null,
+            "image": null
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/not-a-real-route",
+      "audience": "utility",
+      "expectedStatus": 404,
+      "expectedContent": "server-level not found status",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": false,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": null,
+            "description": null,
+            "image": null,
+            "type": null,
+            "url": null
+          },
+          "twitter": {
+            "card": null,
+            "title": null,
+            "description": null,
+            "image": null
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/post/isohc-fixed-vector-isometric-residual-mixing",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "public seeded algorithm article",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": null,
+            "description": null,
+            "image": null,
+            "type": null,
+            "url": null
+          },
+          "twitter": {
+            "card": null,
+            "title": null,
+            "description": null,
+            "image": null
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/post/agent-harness-engine-evaluating-tool-using-agents",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "public seeded application article",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": null,
+            "description": null,
+            "image": null,
+            "type": null,
+            "url": null
+          },
+          "twitter": {
+            "card": null,
+            "title": null,
+            "description": null,
+            "image": null
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/robots.txt",
+      "audience": "generated",
+      "expectedStatus": 200,
+      "expectedContent": "robots directives and sitemap pointer",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": null,
+            "description": null,
+            "image": null,
+            "type": null,
+            "url": null
+          },
+          "twitter": {
+            "card": null,
+            "title": null,
+            "description": null,
+            "image": null
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/sitemap.xml",
+      "audience": "generated",
+      "expectedStatus": 200,
+      "expectedContent": "public route and article sitemap",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": null,
+            "description": null,
+            "image": null,
+            "type": null,
+            "url": null
+          },
+          "twitter": {
+            "card": null,
+            "title": null,
+            "description": null,
+            "image": null
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/rss.xml",
+      "audience": "generated",
+      "expectedStatus": 200,
+      "expectedContent": "public article feed",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": null,
+            "description": null,
+            "image": null,
+            "type": null,
+            "url": null
+          },
+          "twitter": {
+            "card": null,
+            "title": null,
+            "description": null,
+            "image": null
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    }
+  ],
+  "dist": {
+    "html": {
+      "file": "index.html",
+      "rawBytes": 367760,
+      "gzipBytes": 105538
+    },
+    "javascript": [
+      {
+        "file": "assets/index-Cb8PRypM.js",
+        "rawBytes": 1270454,
+        "gzipBytes": 375452
+      },
+      {
+        "file": "__manus__/debug-collector.js",
+        "rawBytes": 25168,
+        "gzipBytes": 5705
+      }
+    ],
+    "css": [
+      {
+        "file": "assets/index-BYhGGor8.css",
+        "rawBytes": 180877,
+        "gzipBytes": 33118
+      }
+    ]
+  },
+  "accessibility": {
+    "hasReducedMotionRule": false,
+    "iconOnlyButtonPatternCount": 1
+  },
+  "browserSmoke": {
+    "state": "manual-required",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "routes": [
+      "/",
+      "/algorithms",
+      "/applications",
+      "/login",
+      "/post/isohc-fixed-vector-isometric-residual-mixing"
+    ],
+    "note": "Use the Codex Browser plugin for rendered desktop/mobile checks; package script records the required viewport and route set."
+  },
+  "knownGaps": [
+    {
+      "id": "missing-robots",
+      "severity": "warning",
+      "summary": "No robots.txt is present.",
+      "evidence": "client/public/robots.txt not found"
+    },
+    {
+      "id": "missing-sitemap",
+      "severity": "warning",
+      "summary": "No sitemap.xml is present.",
+      "evidence": "client/public/sitemap.xml not found"
+    },
+    {
+      "id": "missing-rss",
+      "severity": "warning",
+      "summary": "No RSS feed is present.",
+      "evidence": "client/public/rss.xml not found"
+    },
+    {
+      "id": "missing-canonical",
+      "severity": "warning",
+      "summary": "One or more checked HTML routes are missing canonical URLs.",
+      "evidence": "/, /algorithms, /applications, /login, /404, /not-a-real-route, /post/isohc-fixed-vector-isometric-residual-mixing, /post/agent-harness-engine-evaluating-tool-using-agents, /robots.txt, /sitemap.xml, /rss.xml"
+    },
+    {
+      "id": "unknown-route-not-404",
+      "severity": "failure",
+      "summary": "Unknown routes should return HTTP 404.",
+      "evidence": "/not-a-real-route returned 200"
+    },
+    {
+      "id": "large-initial-js",
+      "severity": "warning",
+      "summary": "Largest JavaScript chunk is above the 200 kB gzip target.",
+      "evidence": "assets/index-Cb8PRypM.js: 366.7 kB gzip"
+    },
+    {
+      "id": "missing-reduced-motion",
+      "severity": "warning",
+      "summary": "Global CSS does not define a prefers-reduced-motion fallback.",
+      "evidence": "client/src/index.css"
+    }
+  ]
+}

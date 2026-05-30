@@ -1,54 +1,61 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle, Home } from "lucide-react";
-import { useLocation } from "wouter";
+import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
+import { getClientSiteUrl, useSeo } from "@/lib/seo";
+import { buildRouteMetadata } from "@shared/metadata";
+import { Archive, Home, Search } from "lucide-react";
+import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function NotFound() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { t } = useLanguage();
+  const siteUrl = getClientSiteUrl();
+  useSeo(
+    buildRouteMetadata(siteUrl, {
+      title: t("notFound.heading"),
+      description: t("notFound.description").replace("\n", " "),
+      path: location || "/404",
+      noindex: true,
+    })
+  );
 
   const handleGoHome = () => {
     setLocation("/");
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-      <Card className="w-full max-w-lg mx-4 shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-        <CardContent className="pt-8 pb-8 text-center">
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <div className="absolute inset-0 bg-red-100 rounded-full animate-pulse" />
-              <AlertCircle className="relative h-16 w-16 text-red-500" />
-            </div>
-          </div>
-
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">{t("notFound.title")}</h1>
-
-          <h2 className="text-xl font-semibold text-slate-700 mb-4">
+    <div className="space-page">
+      <SpaceBackdrop subtle />
+      <SiteHeader compact backHref="/" backLabel={t("nav.backToHome")} />
+      <main className="container relative z-10 flex min-h-[calc(100vh-68px)] items-center px-4 py-12 sm:px-6">
+        <section className="max-w-2xl">
+          <p className="font-mono text-sm text-sky-200">{t("notFound.title")}</p>
+          <h1 className="mt-4 font-serif text-4xl font-semibold leading-tight text-white md:text-6xl">
             {t("notFound.heading")}
-          </h2>
-
-          <p className="text-slate-600 mb-8 leading-relaxed">
-            {t("notFound.description").split('\n')[0]}
-            <br />
-            {t("notFound.description").split('\n')[1]}
+          </h1>
+          <p className="mt-5 max-w-xl text-base leading-8 text-slate-300">
+            {t("notFound.description").replace("\n", " ")}
           </p>
-
-          <div
-            id="not-found-button-group"
-            className="flex flex-col sm:flex-row gap-3 justify-center"
-          >
-            <Button
-              onClick={handleGoHome}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
-            >
-              <Home className="w-4 h-4 mr-2" />
+          <div id="not-found-button-group" className="mt-8 flex flex-wrap gap-3">
+            <Button onClick={handleGoHome} className="bg-sky-400 text-slate-950 hover:bg-sky-300">
+              <Home className="h-4 w-4" />
               {t("notFound.goHome")}
             </Button>
+            <Button asChild variant="outline" className="glass-button">
+              <Link href="/archive">
+                <Archive className="h-4 w-4" />
+                {t("nav.archive")}
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="glass-button">
+              <Link href="/search">
+                <Search className="h-4 w-4" />
+                {t("nav.search")}
+              </Link>
+            </Button>
           </div>
-        </CardContent>
-      </Card>
+        </section>
+      </main>
     </div>
   );
 }

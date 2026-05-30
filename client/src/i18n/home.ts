@@ -7,13 +7,13 @@ const home: TranslationDict = {
     en: "A technical notebook for model mechanisms and AI application engineering: Transformers, long-context algorithms, agent systems, RAG, context engines, evaluation harnesses, and the practical constraints behind reliable AI systems.",
     zh: "记录模型机制与 AI 应用工程：Transformer、长上下文算法、Agent 系统、RAG、Context Engine、评测 Harness，以及可靠 AI 系统背后的工程约束。",
   },
-  "home.chip1": { en: "Explore Frontiers", zh: "探索前沿" },
-  "home.chip2": { en: "Understand Intelligence", zh: "理解智能" },
-  "home.chip3": { en: "Drive Innovation", zh: "推动创新" },
+  "home.chip1": { en: "RoPE", zh: "RoPE" },
+  "home.chip2": { en: "Long Context", zh: "长上下文" },
+  "home.chip3": { en: "Agent Evaluation", zh: "Agent 评测" },
 
   // Author card
   "home.authorName": { en: "Misaya Yang", zh: "Misaya Yang" },
-  "home.authorRole": { en: "Researcher / Blogger", zh: "研究者 / 博客作者" },
+  "home.authorRole": { en: "AI systems research notes", zh: "AI 系统研究笔记" },
   "home.googleScholar": { en: "Google Scholar", zh: "Google Scholar" },
 
   // Search
@@ -71,6 +71,74 @@ const home: TranslationDict = {
 
   // Archive placeholder
   "archive.soon": { en: "Archive feature coming soon", zh: "归档功能即将上线" },
+
+  // Discovery routes
+  "discovery.archiveKicker": { en: "Chronological index", zh: "时间索引" },
+  "discovery.archiveTitle": { en: "Archive", zh: "文章归档" },
+  "discovery.archiveSubtitle": {
+    en: "{count} public notes grouped by month for quick scanning.",
+    zh: "{count} 篇公开文章，按月份组织，便于快速回溯。",
+  },
+  "discovery.archiveEmpty": { en: "No public articles are archived yet.", zh: "暂无可归档的公开文章。" },
+  "discovery.articlesCount": { en: "{count} articles", zh: "{count} 篇文章" },
+  "discovery.updated": { en: "Updated {date}", zh: "更新于 {date}" },
+  "discovery.searchKicker": { en: "Full-site search", zh: "全站搜索" },
+  "discovery.searchTitle": { en: "Search the research index", zh: "搜索研究索引" },
+  "discovery.searchSubtitle": {
+    en: "Search public articles across titles, excerpts, body text, categories, and tags.",
+    zh: "跨标题、摘要、正文、分类与标签搜索所有公开文章。",
+  },
+  "discovery.searchPlaceholder": { en: "agent, RoPE, context engineering...", zh: "agent、RoPE、context engineering..." },
+  "discovery.searchButton": { en: "Search", zh: "搜索" },
+  "discovery.resultsFor": { en: "{count} results for “{query}”", zh: "“{query}” 的 {count} 个结果" },
+  "discovery.latestPublic": { en: "Latest public articles", zh: "最新公开文章" },
+  "discovery.searchEmpty": { en: "No public articles match this search.", zh: "没有匹配的公开文章。" },
+  "discovery.tagKicker": { en: "Tag index", zh: "标签索引" },
+  "discovery.categoryKicker": { en: "Category index", zh: "分类索引" },
+  "discovery.siblingTags": { en: "Related tags", zh: "相关标签" },
+  "discovery.noSiblingTags": { en: "No related tags yet.", zh: "暂无相关标签。" },
+  "discovery.noPosts": { en: "No public articles in this index yet.", zh: "这个索引下暂无公开文章。" },
+  "discovery.taxonomyNotFound": { en: "Index not found", zh: "索引未找到" },
+
+  // About / Projects
+  "about.kicker": { en: "Profile", zh: "个人介绍" },
+  "about.title": { en: "Misaya Yang", zh: "Misaya Yang" },
+  "about.subtitle": {
+    en: "I write about the mechanics of AI systems: model architecture, long-context behavior, agent infrastructure, retrieval, evaluation, and the engineering constraints behind reliable software.",
+    zh: "我记录 AI 系统的机制与工程：模型架构、长上下文行为、Agent 基础设施、检索、评测，以及可靠软件背后的工程约束。",
+  },
+  "about.focusTitle": { en: "Current focus", zh: "当前关注" },
+  "about.focusBody": {
+    en: "This blog is maintained as a working research notebook. The goal is to keep ideas precise enough to implement, inspect, and revisit later.",
+    zh: "这个博客更像持续维护的研究笔记：每个想法都尽量写到可以实现、检查，并在之后重新审视的程度。",
+  },
+  "about.focus1": { en: "Long-context mechanisms and positional encoding", zh: "长上下文机制与位置编码" },
+  "about.focus2": { en: "Agent protocols, harnesses, and observability", zh: "Agent 协议、Harness 与可观测性" },
+  "about.focus3": { en: "RAG, context engineering, and retrieval boundaries", zh: "RAG、Context Engineering 与检索边界" },
+  "about.focus4": { en: "Evaluation loops for production AI systems", zh: "生产级 AI 系统的评测循环" },
+  "about.linksTitle": { en: "Links", zh: "链接" },
+  "about.location": { en: "Shanghai / Remote research notes", zh: "上海 / 远程研究笔记" },
+  "projects.kicker": { en: "Working threads", zh: "进行中的主题" },
+  "projects.title": { en: "Projects", zh: "项目" },
+  "projects.subtitle": {
+    en: "A compact map of active research and engineering threads that connect articles into longer-running work.",
+    zh: "这里整理持续推进的研究与工程主题，把单篇文章连接成更长期的工作线索。",
+  },
+  "projects.harness.title": { en: "Agent Harness Engine", zh: "Agent Harness Engine" },
+  "projects.harness.body": {
+    en: "Controlled task protocols, tool traces, and evaluation signals for tool-using agents.",
+    zh: "围绕工具型 Agent 的任务协议、工具轨迹与评测信号进行控制与复现。",
+  },
+  "projects.context.title": { en: "Context Engineering", zh: "Context Engineering" },
+  "projects.context.body": {
+    en: "Research notes on memory, retrieval, prompt boundaries, and context policy in real AI software.",
+    zh: "记录真实 AI 软件中的记忆、检索、提示边界与上下文策略。",
+  },
+  "projects.isohc.title": { en: "IsoHC / Residual Stability", zh: "IsoHC / 残差稳定性" },
+  "projects.isohc.body": {
+    en: "Architecture-side experiments around residual stream mixing, constraints, and stability.",
+    zh: "围绕残差流混合、约束与稳定性的架构侧实验。",
+  },
 
   // Track pages
   "track.articles": { en: "Technical Articles", zh: "技术文章" },

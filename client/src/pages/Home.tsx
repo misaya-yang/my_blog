@@ -5,10 +5,13 @@ import {
   SpaceBackdrop,
   StatTile,
 } from "@/components/ResearchShell";
+import { SubscriptionForm } from "@/components/SubscriptionForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { trackConfigs, type TrackKind } from "@/lib/tracks";
 import { trpc } from "@/lib/trpc";
+import { getClientSiteUrl, useSeo } from "@/lib/seo";
+import { buildHomeJsonLd, buildRouteMetadata } from "@shared/metadata";
 import {
   ArrowRight,
   BookOpen,
@@ -24,8 +27,9 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useDeferredValue, useMemo, useState } from "react";
+import { FormEvent, useState } from "react";
 import { toast } from "sonner";
+import { useLocation } from "wouter";
 
 const focusTagKeys = [
   "home.focusTag1",
@@ -43,36 +47,43 @@ const portalTracks: TrackKind[] = ["algorithms", "applications"];
 export default function Home() {
   const { isAdmin } = useAuth();
   const { language, t } = useLanguage();
+  const siteUrl = getClientSiteUrl();
+  const [, navigate] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
-  const deferredSearch = useDeferredValue(searchQuery.trim().toLowerCase());
 
   const { data: posts, isLoading } = trpc.posts.list.useQuery({
     status: "published",
     limit: 20,
-    orderBy: "publishedAt",
+    orderBy: "featured",
   });
 
   const { data: categories } = trpc.categories.list.useQuery();
   const { data: tags } = trpc.tags.list.useQuery();
 
-  const filteredPosts = useMemo(() => {
-    const list = posts?.posts ?? [];
-    if (!deferredSearch) return list;
-    return list.filter((post: any) => {
-      const haystack = `${post.title} ${post.excerpt ?? ""} ${post.content ?? ""}`.toLowerCase();
-      return haystack.includes(deferredSearch);
-    });
-  }, [deferredSearch, posts?.posts]);
-
   const totalViews =
     posts?.posts?.reduce((sum: number, post: any) => sum + (post.viewCount || 0), 0) || 0;
+  const hasMeaningfulStats = Boolean((posts?.posts?.length || 0) > 0 || (categories?.length || 0) > 0 || totalViews > 0);
+  useSeo(
+    buildRouteMetadata(siteUrl, {
+      title: t("home.title"),
+      description: t("home.subtitle"),
+      path: "/",
+      locale: language === "zh" ? "zh-CN" : "en-US",
+    }),
+    buildHomeJsonLd(siteUrl)
+  );
   const visibleTags = (tags?.length ? tags : focusTagKeys.map((key, index) => ({ id: index, name: t(key) })))
     .filter((tag: any) => tag.slug !== "evq-cosh" && tag.name !== "EVQ-Cosh");
-  const applicationCategoryId = categories?.find((category) => category.slug === "ai-applications")?.id;
 
   const copyEmail = () => {
     navigator.clipboard.writeText("zedpl28174@gmail.com");
     toast.success(t("common.emailCopied"));
+  };
+
+  const submitSearch = (event: FormEvent) => {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    navigate(query ? `/search?q=${encodeURIComponent(query)}` : "/search");
   };
 
   return (
@@ -153,7 +164,7 @@ export default function Home() {
               })}
             </div>
 
-            <div className="glass-panel mt-8 flex max-w-4xl items-center gap-4 px-5 py-4">
+            <form onSubmit={submitSearch} className="glass-panel mt-8 flex max-w-4xl items-center gap-4 px-5 py-4">
               <Search className="h-6 w-6 shrink-0 text-slate-400" />
               <Input
                 placeholder={t("home.searchPlaceholder")}
@@ -161,16 +172,27 @@ export default function Home() {
                 onChange={(event) => setSearchQuery(event.target.value)}
                 className="h-11 border-0 bg-transparent px-0 text-base text-white shadow-none placeholder:text-slate-500 focus-visible:ring-0"
               />
-              <kbd className="hidden rounded-md border border-slate-600/70 bg-slate-800/70 px-2.5 py-1 text-xs text-slate-400 sm:inline-flex">
-                ⌘ K
-              </kbd>
+              <Button type="submit" size="sm" className="hidden bg-sky-400 text-slate-950 hover:bg-sky-300 sm:inline-flex">
+                {t("discovery.searchButton")}
+              </Button>
+            </form>
+
+            <div className="mt-4 flex max-w-4xl flex-wrap gap-2">
+              <Link href="/archive" className="article-tag">{t("nav.archive")}</Link>
+              <Link href="/search" className="article-tag">{t("nav.search")}</Link>
+              <Link href="/categories/ai-algorithms" className="article-tag">{t("home.algorithmsLabel")}</Link>
+              <Link href="/categories/ai-applications" className="article-tag">{t("home.applicationsLabel")}</Link>
             </div>
 
-            <div className="mt-5 grid max-w-4xl gap-3 sm:grid-cols-3">
-              <StatTile icon={<FileText className="h-5 w-5" />} value={posts?.posts?.length || 0} label={t("home.statArticles")} />
-              <StatTile icon={<Folder className="h-5 w-5" />} value={categories?.length || 0} label={t("home.statCategories")} />
-              <StatTile icon={<Eye className="h-5 w-5" />} value={totalViews} label={t("home.statViews")} />
-            </div>
+            <SubscriptionForm className="mt-6 max-w-4xl" surface="home" />
+
+            {hasMeaningfulStats && (
+              <div className="mt-5 grid max-w-4xl gap-3 sm:grid-cols-3">
+                <StatTile icon={<FileText className="h-5 w-5" />} value={posts?.posts?.length || 0} label={t("home.statArticles")} />
+                <StatTile icon={<Folder className="h-5 w-5" />} value={categories?.length || 0} label={t("home.statCategories")} />
+                <StatTile icon={<Eye className="h-5 w-5" />} value={totalViews} label={t("home.statViews")} />
+              </div>
+            )}
           </div>
 
           <aside className="grid gap-5 self-start lg:pt-1">
@@ -213,9 +235,15 @@ export default function Home() {
               </div>
               <div className="flex flex-wrap gap-2">
                 {visibleTags.slice(0, 12).map((tag: any) => (
-                  <span key={tag.id ?? tag.name} className="rounded-lg border border-slate-600/50 bg-slate-900/55 px-3 py-1.5 text-xs text-slate-300">
+                  tag.slug ? (
+                    <Link key={tag.id ?? tag.name} href={`/tags/${tag.slug}`} className="rounded-lg border border-slate-600/50 bg-slate-900/55 px-3 py-1.5 text-xs text-slate-300 hover:border-sky-300/45 hover:text-white">
+                      {tag.name}
+                    </Link>
+                  ) : (
+                    <span key={tag.id ?? tag.name} className="rounded-lg border border-slate-600/50 bg-slate-900/55 px-3 py-1.5 text-xs text-slate-300">
                     {tag.name}
                   </span>
+                  )
                 ))}
               </div>
             </section>
@@ -241,16 +269,16 @@ export default function Home() {
                   <div key={item} className="article-skeleton" />
                 ))}
               </div>
-            ) : filteredPosts.length > 0 ? (
+            ) : posts?.posts?.length ? (
               <div className="grid gap-4">
-                {filteredPosts.map((post: any, index: number) => (
+                {posts.posts.map((post: any, index: number) => (
                   <ArticleCard
                     key={post.id}
                     post={post}
                     index={index}
                     language={language}
                     t={t}
-                    track={post.categoryId === applicationCategoryId ? "applications" : "algorithms"}
+                    track={post.category?.slug === "ai-applications" ? "applications" : "algorithms"}
                   />
                 ))}
               </div>
@@ -272,10 +300,10 @@ export default function Home() {
                 <span>{t("home.applicationsLabel")}</span>
                 <span className="text-sky-300">Systems</span>
               </Link>
-              <div className="research-index-row">
+              <Link href="/tags/harness-engine" className="research-index-row">
                 <span>Agent Harness</span>
                 <span className="text-sky-300">Evaluation</span>
-              </div>
+              </Link>
             </div>
           </aside>
         </section>

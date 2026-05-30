@@ -7,8 +7,8 @@ const components: TranslationDict = {
     zh: "请登录以继续",
   },
   "components.dashboardAccessRequired": {
-    en: "Access to this dashboard requires authentication. Continue to launch the login flow.",
-    zh: "访问此仪表板需要身份验证。继续启动登录流程。",
+    en: "Please sign in before opening the dashboard.",
+    zh: "请先登录，再进入管理页面。",
   },
   "components.toggleNavigation": {
     en: "Toggle navigation",

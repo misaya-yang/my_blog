@@ -40,7 +40,7 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-sans: 'Inter', 'Noto Serif SC', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
   --font-serif: 'Noto Serif SC', Georgia, 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
@@ -168,9 +168,9 @@
   .space-page {
     @apply relative min-h-screen overflow-hidden bg-background text-foreground;
     background:
-      radial-gradient(circle at 74% 36%, oklch(0.50 0.22 252 / 18%), transparent 31rem),
-      radial-gradient(circle at 18% 18%, oklch(0.64 0.18 215 / 13%), transparent 22rem),
-      linear-gradient(180deg, oklch(0.08 0.022 260), oklch(0.12 0.024 260) 58%, oklch(0.095 0.018 260));
+      radial-gradient(circle at 78% 12%, oklch(0.45 0.15 242 / 10%), transparent 29rem),
+      radial-gradient(circle at 12% 0%, oklch(0.43 0.11 196 / 8%), transparent 20rem),
+      linear-gradient(180deg, oklch(0.075 0.018 260), oklch(0.105 0.020 260) 58%, oklch(0.085 0.016 260));
   }
 
   .space-backdrop {
@@ -185,7 +185,7 @@
       radial-gradient(circle at 69% 15%, oklch(0.77 0.19 240 / 70%) 0 1px, transparent 2px),
       radial-gradient(circle at 83% 53%, oklch(0.70 0.18 260 / 55%) 0 1px, transparent 2px),
       radial-gradient(circle at 49% 32%, oklch(0.72 0.18 245 / 42%) 0 1px, transparent 2px);
-    opacity: 0.72;
+    opacity: 0.38;
   }
 
   .space-backdrop-subtle {
@@ -198,7 +198,7 @@
     background-image:
       linear-gradient(oklch(0.66 0.15 245 / 8%) 1px, transparent 1px),
       linear-gradient(90deg, oklch(0.66 0.15 245 / 8%) 1px, transparent 1px);
-    background-size: 42px 42px;
+    background-size: 48px 48px;
     mask-image: linear-gradient(90deg, transparent, black 18%, black 88%, transparent);
   }
 
@@ -210,22 +210,22 @@
       radial-gradient(circle, oklch(0.76 0.17 250 / 35%) 0 1px, transparent 1.6px);
     background-position: 0 0, 28px 19px;
     background-size: 134px 134px, 211px 211px;
-    opacity: 0.65;
+    opacity: 0.28;
   }
 
   .planet-horizon {
     position: absolute;
-    right: -12vw;
-    bottom: -18rem;
-    width: min(70rem, 92vw);
-    height: 32rem;
+    right: -18vw;
+    bottom: -22rem;
+    width: min(68rem, 92vw);
+    height: 30rem;
     border-radius: 50% 50% 0 0;
     background:
-      radial-gradient(ellipse at 50% 0%, oklch(0.77 0.17 245 / 72%) 0 1px, transparent 2px),
-      linear-gradient(180deg, oklch(0.66 0.19 250 / 30%), oklch(0.16 0.06 255 / 58%) 22%, transparent 62%);
+      radial-gradient(ellipse at 50% 0%, oklch(0.77 0.17 245 / 34%) 0 1px, transparent 2px),
+      linear-gradient(180deg, oklch(0.54 0.13 245 / 16%), oklch(0.13 0.04 255 / 32%) 22%, transparent 62%);
     box-shadow:
-      0 -18px 70px oklch(0.64 0.20 247 / 28%),
-      inset 0 20px 42px oklch(0.78 0.19 245 / 18%);
+      0 -18px 70px oklch(0.50 0.15 247 / 12%),
+      inset 0 20px 42px oklch(0.68 0.14 245 / 8%);
     transform: rotate(-4deg);
   }
 
@@ -267,13 +267,13 @@
 
   .glass-panel {
     @apply rounded-lg border backdrop-blur-xl;
-    border-color: oklch(0.62 0.13 245 / 34%);
+    border-color: oklch(0.62 0.10 245 / 22%);
     background:
-      linear-gradient(145deg, oklch(0.18 0.044 260 / 70%), oklch(0.10 0.024 260 / 50%)),
-      oklch(0.11 0.024 260 / 66%);
+      linear-gradient(145deg, oklch(0.145 0.030 260 / 78%), oklch(0.09 0.020 260 / 62%)),
+      oklch(0.10 0.020 260 / 72%);
     box-shadow:
-      inset 0 1px 0 oklch(0.95 0.05 240 / 10%),
-      0 24px 90px oklch(0.02 0.02 260 / 32%);
+      inset 0 1px 0 oklch(0.95 0.04 240 / 7%),
+      0 18px 55px oklch(0.02 0.02 260 / 22%);
   }
 
   .glass-button {
@@ -281,10 +281,10 @@
   }
 
   .signal-chip {
-    @apply inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium text-sky-100;
-    border-color: oklch(0.62 0.16 245 / 42%);
-    background: linear-gradient(135deg, oklch(0.30 0.10 245 / 42%), oklch(0.13 0.04 260 / 50%));
-    box-shadow: inset 0 0 20px oklch(0.62 0.17 245 / 12%), 0 0 24px oklch(0.54 0.18 245 / 13%);
+    @apply inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium text-sky-100;
+    border-color: oklch(0.62 0.12 245 / 30%);
+    background: linear-gradient(135deg, oklch(0.21 0.06 245 / 46%), oklch(0.10 0.025 260 / 52%));
+    box-shadow: inset 0 0 16px oklch(0.62 0.12 245 / 8%);
   }
 
   .section-title {
@@ -373,31 +373,51 @@
   .article-card {
     display: grid;
     gap: 1rem;
-    min-height: 18.5rem;
+    min-height: 13rem;
     padding: 0.875rem;
     border-radius: var(--radius-lg);
     border: 1px solid oklch(0.62 0.13 245 / 18%);
-    background:
-      linear-gradient(145deg, oklch(0.105 0.028 260 / 82%), oklch(0.08 0.022 260 / 68%)),
-      oklch(0.09 0.022 260 / 76%);
+    background: oklch(0.09 0.020 260 / 72%);
     transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
   }
 
   .article-card:hover {
     border-color: oklch(0.68 0.16 240 / 48%);
-    background:
-      linear-gradient(145deg, oklch(0.14 0.04 258 / 82%), oklch(0.09 0.024 260 / 72%)),
-      oklch(0.10 0.024 260 / 82%);
+    background: oklch(0.105 0.024 260 / 82%);
     transform: translateY(-1px);
   }
 
   .article-visual {
-    min-height: 14.5rem;
-    aspect-ratio: 1.18;
+    display: block;
+    width: 100%;
+    min-height: 9.25rem;
+    aspect-ratio: 1.7;
+    border-radius: var(--radius-lg);
   }
 
   .article-visual svg {
     min-height: 100%;
+  }
+
+  .article-visual-ledger {
+    display: grid;
+    place-items: end start;
+    border-radius: var(--radius-lg);
+    border: 1px solid oklch(0.62 0.10 245 / 18%);
+    background:
+      linear-gradient(90deg, oklch(0.66 0.12 238 / 14%) 1px, transparent 1px),
+      linear-gradient(180deg, oklch(0.66 0.12 238 / 10%) 1px, transparent 1px),
+      oklch(0.075 0.018 260 / 88%);
+    background-size: 32px 32px;
+    padding: 1rem;
+  }
+
+  .article-visual-ledger span {
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 500;
+    line-height: 1;
+    color: oklch(0.78 0.10 238 / 60%);
   }
 
   .article-copy {
@@ -435,7 +455,7 @@
   }
 
   .article-title {
-    max-width: 22ch;
+    max-width: 28ch;
     font-family: var(--font-serif);
     font-size: clamp(1.85rem, 2vw, 2.85rem);
     font-weight: 650;
@@ -589,7 +609,7 @@
   .article-prose {
     max-width: none;
     color: oklch(0.86 0.028 250);
-    font-family: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    font-family: var(--font-sans);
     font-size: 1.0625rem;
     line-height: 1.9;
     text-rendering: optimizeLegibility;
@@ -791,5 +811,88 @@
   ::selection {
     background: oklch(0.65 0.12 250 / 25%);
     color: var(--foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid oklch(0.78 0.14 235);
+    outline-offset: 3px;
+  }
+
+  .public-render-snapshot {
+    min-height: 100vh;
+    padding: 4rem clamp(1.25rem, 5vw, 5rem);
+    background:
+      radial-gradient(circle at 80% 10%, oklch(0.45 0.15 242 / 12%), transparent 24rem),
+      linear-gradient(180deg, oklch(0.075 0.018 260), oklch(0.105 0.020 260));
+    color: white;
+    font-family: var(--font-sans);
+  }
+
+  .public-render-snapshot h1 {
+    max-width: 12ch;
+    margin: 0.75rem 0 1rem;
+    font-family: var(--font-serif);
+    font-size: clamp(2.6rem, 6vw, 5rem);
+    font-weight: 700;
+    line-height: 1.05;
+  }
+
+  .public-render-snapshot__eyebrow,
+  .public-render-snapshot__meta,
+  .public-render-snapshot__tags {
+    color: oklch(0.76 0.06 245);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .public-render-snapshot__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .public-render-snapshot__excerpt,
+  .public-render-snapshot__body {
+    max-width: 60rem;
+    color: oklch(0.83 0.035 250);
+    line-height: 1.85;
+  }
+
+  .public-render-snapshot__excerpt {
+    margin-top: 2rem;
+    font-size: 1.125rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .site-header,
+    .glass-panel,
+    .stat-tile,
+    .signal-chip {
+      backdrop-filter: blur(10px);
+    }
+
+    .space-stars {
+      opacity: 0.16;
+    }
+
+    .space-grid {
+      background-size: 64px 64px;
+    }
+
+    .planet-horizon {
+      opacity: 0.45;
+      transform: none;
+    }
   }
 }

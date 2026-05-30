@@ -15,6 +15,34 @@
       "when": 1779631793970,
       "tag": "0001_free_kang",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780140971888,
+      "tag": "0002_content_integrity",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1780146621763,
+      "tag": "0003_motionless_lila_cheney",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1780147863993,
+      "tag": "0004_wonderful_wildside",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1780153535858,
+      "tag": "0005_little_james_howlett",
+      "breakpoints": true
     }
   ]
 }

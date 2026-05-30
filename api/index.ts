@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "../server/_core/loadEnv.js";
 import { createApp } from "../server/app.js";
 
-export default createApp();
+export default createApp({ clientFallback: true });

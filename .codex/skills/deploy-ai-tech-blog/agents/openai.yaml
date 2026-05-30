@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deploy AI Tech Blog"
+  short_description: "Project-local Vercel deploy and Supabase migration workflow."
+  default_prompt: "Publish this project: run release gates, apply Supabase migrations safely, and deploy to Vercel."

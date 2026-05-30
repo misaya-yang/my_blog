@@ -8,6 +8,8 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getClientSiteUrl, useSeo } from "@/lib/seo";
+import { buildRouteMetadata } from "@shared/metadata";
 
 export default function Login() {
   const [password, setPassword] = useState("");
@@ -15,6 +17,15 @@ export default function Login() {
   const [, navigate] = useLocation();
   const utils = trpc.useUtils();
   const { t } = useLanguage();
+  const siteUrl = getClientSiteUrl();
+  useSeo(
+    buildRouteMetadata(siteUrl, {
+      title: t("nav.login"),
+      description: t("login.subtitle"),
+      path: "/login",
+      noindex: true,
+    })
+  );
 
   const adminLogin = trpc.auth.adminLogin.useMutation({
     onSuccess: async () => {

@@ -40,6 +40,31 @@ vi.mock("./db", () => ({
   getPostBySlug: vi.fn(async (slug: string) =>
     slug === seededPost.slug ? seededPost : slug === adminVisiblePost.slug ? adminVisiblePost : null
   ),
+  getPostTags: vi.fn(async (postId: number) =>
+    postId === seededPost.id
+      ? [
+          {
+            id: 1,
+            name: "Transformer",
+            slug: "transformer",
+            createdAt: new Date("2026-01-01T00:00:00.000Z"),
+          },
+        ]
+      : []
+  ),
+  getCategoryById: vi.fn(async (id: number) =>
+    id === seededPost.categoryId
+      ? {
+          id: 1,
+          name: "Deep Learning",
+          slug: "deep-learning",
+          description:
+            "Deep learning, Transformers, position encoding, and residual stability research",
+          createdAt: new Date("2026-01-01T00:00:00.000Z"),
+          updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+        }
+      : null
+  ),
   incrementViewCount: vi.fn(async () => undefined),
   getCategories: vi.fn(async () => [
     {
@@ -61,6 +86,7 @@ vi.mock("./db", () => ({
     },
   ]),
   createPost: vi.fn(async () => 2),
+  createPostWithTags: vi.fn(async () => 2),
   getPostById: vi.fn(async (id: number) => ({
     ...seededPost,
     id,
@@ -70,6 +96,9 @@ vi.mock("./db", () => ({
     visibility: "admin",
   })),
   updatePost: vi.fn(async () => undefined),
+  updatePostWithTags: vi.fn(async () => undefined),
+  deletePost: vi.fn(async () => undefined),
+  deletePostCascade: vi.fn(async () => undefined),
   setPostTags: vi.fn(async () => undefined),
 }));
 
@@ -240,6 +269,26 @@ describe("posts router", () => {
     expect(result?.status).toBe("published");
   });
 
+  it("returns category and tags with post detail data", async () => {
+    const { ctx } = createOwnerContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.posts.getBySlug("evq-cosh-frequency-allocation");
+
+    expect(result).toMatchObject({
+      category: {
+        id: 1,
+        slug: "deep-learning",
+      },
+      tags: [
+        {
+          id: 1,
+          slug: "transformer",
+        },
+      ],
+    });
+  });
+
   it("hides admin-visible posts from anonymous readers", async () => {
     const { ctx } = createAnonymousContext();
     const caller = appRouter.createCaller(ctx);
@@ -363,10 +412,118 @@ describe("auth router", () => {
       status: "draft",
       visibility: "admin",
     });
+    expect(db.createPostWithTags).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Owner Draft",
+        authorId: 1,
+        visibility: "admin",
+      }),
+      []
+    );
+  });
+
+  it("rate limits repeated admin password failures by request source", async () => {
+    const { ctx } = createCookieContext("");
+    ctx.req.headers = {
+      ...ctx.req.headers,
+      "x-forwarded-for": "203.0.113.77",
+    };
+    const caller = appRouter.createCaller(ctx);
+
+    for (let attempt = 0; attempt < 5; attempt++) {
+      await expect(caller.auth.adminLogin({ password: "wrong-password" })).rejects.toThrow(
+        "Invalid credentials"
+      );
+    }
+
+    await expect(caller.auth.adminLogin({ password: "wrong-password" })).rejects.toThrow(
+      "Too many login attempts"
+    );
   });
 });
 
 describe("owner-only operations", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  async function createAdminCaller() {
+    const { ctx, setCookies } = createCookieCaptureContext();
+    const caller = appRouter.createCaller(ctx);
+    await caller.auth.adminLogin({ password: process.env.ADMIN_PASSWORD || "admin123" });
+
+    const adminCookie = getCookiePair(
+      setCookies.find((cookie) => cookie.startsWith("admin_session="))!
+    );
+    const { ctx: adminCtx } = createCookieContext(adminCookie);
+    return appRouter.createCaller(adminCtx);
+  }
+
+  it("publishing from management makes a post publicly visible", async () => {
+    const adminCaller = await createAdminCaller();
+
+    await adminCaller.posts.update({
+      id: adminVisiblePost.id,
+      status: "published",
+    });
+
+    expect(db.updatePostWithTags).toHaveBeenCalledWith(
+      adminVisiblePost.id,
+      expect.objectContaining({
+        status: "published",
+        visibility: "public",
+        publishedAt: expect.any(Date),
+      }),
+      undefined
+    );
+  });
+
+  it("unpublishing from management returns a post to owner-only draft state", async () => {
+    const adminCaller = await createAdminCaller();
+
+    await adminCaller.posts.update({
+      id: seededPost.id,
+      status: "draft",
+    });
+
+    expect(db.updatePostWithTags).toHaveBeenCalledWith(
+      seededPost.id,
+      expect.objectContaining({
+        status: "draft",
+        visibility: "admin",
+        publishedAt: null,
+      }),
+      undefined
+    );
+  });
+
+  it("updates post content and tags through a single transactional helper", async () => {
+    const adminCaller = await createAdminCaller();
+
+    await adminCaller.posts.update({
+      id: seededPost.id,
+      title: "Updated title",
+      tagIds: [1],
+    });
+
+    expect(db.updatePostWithTags).toHaveBeenCalledWith(
+      seededPost.id,
+      expect.objectContaining({ title: "Updated title" }),
+      [1]
+    );
+    expect(db.updatePost).not.toHaveBeenCalled();
+    expect(db.setPostTags).not.toHaveBeenCalled();
+  });
+
+  it("deletes posts through the cascade helper", async () => {
+    const adminCaller = await createAdminCaller();
+
+    await adminCaller.posts.delete(seededPost.id);
+
+    expect(db.deletePostCascade).toHaveBeenCalledWith(seededPost.id);
+    expect(db.deletePost).not.toHaveBeenCalled();
+  });
+
   it("should reject post creation from non-owner users", async () => {
     const { ctx } = createRegularUserContext();
     const caller = appRouter.createCaller(ctx);

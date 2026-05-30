@@ -1,0 +1,317 @@
+{
+  "generatedAt": "2026-05-30T15:06:07.541Z",
+  "git": {
+    "branch": "codex/ai-app-track",
+    "commit": "18bfe8b",
+    "dirty": true
+  },
+  "commands": [],
+  "routes": [
+    {
+      "path": "/",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "home page shell and research index",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+      }
+    },
+    {
+      "path": "/algorithms",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "AI algorithm track page",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+      }
+    },
+    {
+      "path": "/applications",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "AI application engineering track page",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+      }
+    },
+    {
+      "path": "/login",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "visitor and admin login surface",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+      }
+    },
+    {
+      "path": "/404",
+      "audience": "utility",
+      "expectedStatus": 200,
+      "expectedContent": "client-rendered not found page",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+      }
+    },
+    {
+      "path": "/not-a-real-route",
+      "audience": "utility",
+      "expectedStatus": 404,
+      "expectedContent": "server-level not found status",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+      }
+    },
+    {
+      "path": "/post/isohc-fixed-vector-isometric-residual-mixing",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "public seeded algorithm article",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+      }
+    },
+    {
+      "path": "/post/agent-harness-engine-evaluating-tool-using-agents",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "public seeded application article",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+      }
+    },
+    {
+      "path": "/robots.txt",
+      "audience": "generated",
+      "expectedStatus": 200,
+      "expectedContent": "robots directives and sitemap pointer",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+      }
+    },
+    {
+      "path": "/sitemap.xml",
+      "audience": "generated",
+      "expectedStatus": 200,
+      "expectedContent": "public route and article sitemap",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+      }
+    },
+    {
+      "path": "/rss.xml",
+      "audience": "generated",
+      "expectedStatus": 200,
+      "expectedContent": "public article feed",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+      }
+    }
+  ],
+  "dist": {
+    "html": {
+      "file": "index.html",
+      "rawBytes": 2694,
+      "gzipBytes": 854
+    },
+    "javascript": [
+      {
+        "file": "assets/app-vendor-C68_BoiF.js",
+        "rawBytes": 563595,
+        "gzipBytes": 172824
+      },
+      {
+        "file": "assets/MarkdownRenderer-DfloDvrU.js",
+        "rawBytes": 495870,
+        "gzipBytes": 148396
+      },
+      {
+        "file": "assets/index-BJ4BSIji.js",
+        "rawBytes": 56779,
+        "gzipBytes": 19651
+      },
+      {
+        "file": "assets/metadata-13XcQCiy.js",
+        "rawBytes": 41722,
+        "gzipBytes": 13608
+      },
+      {
+        "file": "assets/Editor-DFBO-ORC.js",
+        "rawBytes": 24920,
+        "gzipBytes": 6941
+      },
+      {
+        "file": "assets/Manage-pb9K4ROX.js",
+        "rawBytes": 27904,
+        "gzipBytes": 6502
+      },
+      {
+        "file": "assets/icons-CrV6I2Zz.js",
+        "rawBytes": 30577,
+        "gzipBytes": 6135
+      },
+      {
+        "file": "__manus__/debug-collector.js",
+        "rawBytes": 25168,
+        "gzipBytes": 5705
+      },
+      {
+        "file": "assets/PostDetail-8pDzvNRX.js",
+        "rawBytes": 15956,
+        "gzipBytes": 4803
+      },
+      {
+        "file": "assets/Home-CK8MYx2j.js",
+        "rawBytes": 9590,
+        "gzipBytes": 2883
+      },
+      {
+        "file": "assets/Login-CODbVtFu.js",
+        "rawBytes": 5580,
+        "gzipBytes": 1825
+      },
+      {
+        "file": "assets/Search-m7U0P7YE.js",
+        "rawBytes": 4381,
+        "gzipBytes": 1785
+      },
+      {
+        "file": "assets/input-DNjL0XaU.js",
+        "rawBytes": 4774,
+        "gzipBytes": 1764
+      },
+      {
+        "file": "assets/select-DmDFXC3N.js",
+        "rawBytes": 4734,
+        "gzipBytes": 1573
+      },
+      {
+        "file": "assets/TaxonomyPage-DcYYdhFq.js",
+        "rawBytes": 4204,
+        "gzipBytes": 1548
+      },
+      {
+        "file": "assets/Archive-J0EWIyXJ.js",
+        "rawBytes": 3753,
+        "gzipBytes": 1446
+      },
+      {
+        "file": "assets/tracks-eCrQKgUV.js",
+        "rawBytes": 3915,
+        "gzipBytes": 1421
+      },
+      {
+        "file": "assets/Track-DhwZv8He.js",
+        "rawBytes": 3879,
+        "gzipBytes": 1419
+      },
+      {
+        "file": "assets/SubscriptionForm-BDA_44Qb.js",
+        "rawBytes": 3485,
+        "gzipBytes": 1349
+      },
+      {
+        "file": "assets/About-BgaCe0FK.js",
+        "rawBytes": 2205,
+        "gzipBytes": 870
+      },
+      {
+        "file": "assets/Projects-D6NYNBUg.js",
+        "rawBytes": 1999,
+        "gzipBytes": 859
+      },
+      {
+        "file": "assets/NotFound-CNhaieW4.js",
+        "rawBytes": 1650,
+        "gzipBytes": 762
+      },
+      {
+        "file": "assets/textarea-BhdxRNus.js",
+        "rawBytes": 1132,
+        "gzipBytes": 601
+      },
+      {
+        "file": "assets/sonner-DOta9iXw.js",
+        "rawBytes": 303,
+        "gzipBytes": 223
+      }
+    ],
+    "css": [
+      {
+        "file": "assets/index-BatNHZ-f.css",
+        "rawBytes": 155131,
+        "gzipBytes": 25371
+      },
+      {
+        "file": "assets/katex-DvXFAOB1.css",
+        "rawBytes": 29193,
+        "gzipBytes": 8033
+      },
+      {
+        "file": "assets/github-dark-BSTcku12.css",
+        "rawBytes": 1316,
+        "gzipBytes": 615
+      }
+    ]
+  },
+  "accessibility": {
+    "hasReducedMotionRule": true,
+    "iconOnlyButtonPatternCount": 1
+  },
+  "browserSmoke": {
+    "state": "manual-required",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "routes": [
+      "/",
+      "/algorithms",
+      "/applications",
+      "/login",
+      "/post/isohc-fixed-vector-isometric-residual-mixing"
+    ],
+    "note": "Use the Codex Browser plugin for rendered desktop/mobile checks; package script records the required viewport and route set."
+  },
+  "knownGaps": [
+    {
+      "id": "missing-robots",
+      "severity": "warning",
+      "summary": "No robots.txt is present.",
+      "evidence": "client/public/robots.txt not found"
+    },
+    {
+      "id": "missing-sitemap",
+      "severity": "warning",
+      "summary": "No sitemap.xml is present.",
+      "evidence": "client/public/sitemap.xml not found"
+    },
+    {
+      "id": "missing-rss",
+      "severity": "warning",
+      "summary": "No RSS feed is present.",
+      "evidence": "client/public/rss.xml not found"
+    }
+  ]
+}

@@ -1,5 +1,13 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 import {
@@ -9,6 +17,8 @@ import {
   GraduationCap,
   LogOut,
   Mail,
+  Menu,
+  Search,
   UserRound,
 } from "lucide-react";
 import { Link } from "wouter";
@@ -16,7 +26,7 @@ import { toast } from "sonner";
 import type React from "react";
 
 type SiteHeaderProps = {
-  active?: "home" | "algorithms" | "applications" | "archive" | "write" | "login";
+  active?: "home" | "algorithms" | "applications" | "archive" | "search" | "about" | "projects" | "write" | "login";
   backHref?: string;
   backLabel?: string;
   compact?: boolean;
@@ -43,6 +53,19 @@ export function BrandMark({ className }: { className?: string }) {
 export function SiteHeader({ active = "home", backHref, backLabel, compact }: SiteHeaderProps) {
   const { isAdmin, isAuthenticated, displayName, logout } = useAuth();
   const { language, toggleLanguage, t } = useLanguage();
+  const primaryLinks: Array<{
+    href: string;
+    key: NonNullable<SiteHeaderProps["active"]>;
+    label: string;
+  }> = [
+    { href: "/", key: "home", label: t("nav.home") },
+    { href: "/algorithms", key: "algorithms", label: t("nav.algorithms") },
+    { href: "/applications", key: "applications", label: t("nav.applications") },
+    { href: "/archive", key: "archive", label: t("nav.archive") },
+    { href: "/search", key: "search", label: t("nav.search") },
+    { href: "/about", key: "about", label: t("nav.about") },
+    { href: "/projects", key: "projects", label: t("nav.projects") },
+  ];
 
   const copyEmail = () => {
     navigator.clipboard.writeText("zedpl28174@gmail.com");
@@ -51,6 +74,7 @@ export function SiteHeader({ active = "home", backHref, backLabel, compact }: Si
 
   const navLink = (href: string, key: SiteHeaderProps["active"], label: string) => (
     <Link
+      key={href}
       href={href}
       className={cn(
         "nav-ink",
@@ -82,13 +106,10 @@ export function SiteHeader({ active = "home", backHref, backLabel, compact }: Si
 
         <nav className="flex items-center gap-2 text-sm">
           {!compact && (
-            <div className="hidden items-center gap-1.5 md:flex">
-              {navLink("/", "home", t("nav.home"))}
-              {navLink("/algorithms", "algorithms", t("nav.algorithms"))}
-              {navLink("/applications", "applications", t("nav.applications"))}
-              <a href="/#research-index" className={cn("nav-ink", active === "archive" && "nav-ink-active")}>
-                {t("nav.archive")}
-              </a>
+            <div className="hidden items-center gap-1.5 lg:flex">
+              {primaryLinks
+                .filter((link) => link.key !== "search")
+                .map((link) => navLink(link.href, link.key, link.label))}
             </div>
           )}
           <a
@@ -130,6 +151,78 @@ export function SiteHeader({ active = "home", backHref, backLabel, compact }: Si
               </Button>
             </Link>
           )}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="glass-button lg:hidden"
+                aria-label={t("nav.menu")}
+              >
+                <Menu className="h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="w-[20rem] border-sky-200/15 bg-slate-950/95 p-0 text-white">
+              <SheetHeader className="border-b border-sky-200/10 p-5">
+                <SheetTitle className="flex items-center gap-3 text-white">
+                  <BrandMark />
+                  {t("nav.brand")}
+                </SheetTitle>
+              </SheetHeader>
+              <div className="grid gap-2 px-4 py-5">
+                {primaryLinks.map((link) => (
+                  <SheetClose asChild key={link.href}>
+                    <Link
+                      href={link.href}
+                      className={cn(
+                        "flex h-11 items-center gap-2 rounded-md px-3 text-sm text-slate-300 transition-colors hover:bg-sky-400/10 hover:text-white",
+                        active === link.key && "bg-sky-400/10 text-white"
+                      )}
+                    >
+                      {link.key === "search" && <Search className="h-4 w-4" />}
+                      {link.label}
+                    </Link>
+                  </SheetClose>
+                ))}
+              </div>
+              <div className="grid gap-2 border-t border-sky-200/10 px-4 py-5">
+                <SheetClose asChild>
+                  <a
+                    href="https://scholar.google.com/citations?user=6X9HlDAAAAAJ"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="nav-ink h-11 justify-start gap-2"
+                  >
+                    <GraduationCap className="h-4 w-4" />
+                    {t("nav.scholar")}
+                  </a>
+                </SheetClose>
+                <button type="button" className="nav-ink h-11 justify-start gap-2" onClick={copyEmail}>
+                  <Mail className="h-4 w-4" />
+                  {t("nav.email")}
+                </button>
+                <button type="button" className="nav-ink h-11 justify-start" onClick={toggleLanguage}>
+                  {language === "en" ? "中文" : "EN"}
+                </button>
+                {isAuthenticated ? (
+                  <SheetClose asChild>
+                    <button type="button" className="nav-ink h-11 justify-start gap-2" onClick={logout}>
+                      <UserRound className="h-4 w-4" />
+                      <span className="truncate">{isAdmin ? "Misaya" : displayName}</span>
+                      <LogOut className="h-3.5 w-3.5 opacity-70" />
+                    </button>
+                  </SheetClose>
+                ) : (
+                  <SheetClose asChild>
+                    <Link href="/login" className="nav-ink h-11 justify-start">
+                      {t("nav.login")}
+                    </Link>
+                  </SheetClose>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
         </nav>
       </div>
     </header>
@@ -146,7 +239,7 @@ export function ResearchWaveVisual({
   return (
     <div className={cn("research-visual", `research-visual-${variant}`, className)}>
       <div className="visual-grid" />
-      <svg viewBox="0 0 640 300" role="img" aria-label="Abstract blue research visualization">
+      <svg viewBox="0 0 640 300" aria-hidden="true" focusable="false">
         <defs>
           <linearGradient id={`line-${variant}`} x1="0" x2="1" y1="0" y2="0">
             <stop offset="0%" stopColor="#38bdf8" stopOpacity=".1" />

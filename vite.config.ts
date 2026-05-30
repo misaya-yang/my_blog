@@ -3,7 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "node:path";
-import { defineConfig, type Plugin, type ViteDevServer } from "vite";
+import { defineConfig, type Plugin, type PluginOption, type ViteDevServer } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
 
 // =============================================================================
@@ -150,10 +150,25 @@ function vitePluginManusDebugCollector(): Plugin {
   };
 }
 
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector()];
+type VitePluginOptions = {
+  mode?: string;
+};
 
-export default defineConfig({
-  plugins,
+export function createVitePlugins({ mode = process.env.NODE_ENV || "development" }: VitePluginOptions = {}) {
+  const isProduction = mode === "production" || process.env.NODE_ENV === "production";
+  const plugins: PluginOption[] = [react(), tailwindcss()];
+
+  if (!isProduction) {
+    plugins.push(jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector());
+  } else if (process.env.VITE_MANUS_RUNTIME === "true") {
+    plugins.push(vitePluginManusRuntime());
+  }
+
+  return plugins;
+}
+
+export default defineConfig(({ mode }) => ({
+  plugins: createVitePlugins({ mode }),
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
@@ -167,6 +182,25 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return undefined;
+          if (id.includes("@tiptap")) return "editor";
+          if (id.includes("lucide-react")) return "icons";
+          if (
+            id.includes("react") ||
+            id.includes("wouter") ||
+            id.includes("@tanstack") ||
+            id.includes("@trpc") ||
+            id.includes("superjson")
+          ) {
+            return "app-vendor";
+          }
+          return undefined;
+        },
+      },
+    },
   },
   server: {
     host: true,
@@ -184,4 +218,4 @@ export default defineConfig({
       deny: ["**/.*"],
     },
   },
-});
+}));

@@ -32,9 +32,12 @@ import {
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { trpc } from "@/lib/trpc";
+import { getClientSiteUrl, useSeo } from "@/lib/seo";
+import { buildRouteMetadata } from "@shared/metadata";
 import {
   ArrowLeft,
   Bold,
@@ -65,18 +68,15 @@ import {
   Hash,
   Type,
   AlignLeft,
+  History,
+  RotateCcw,
+  Star,
 } from "lucide-react";
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { lazy, Suspense, useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Link as RouterLink, useParams, useLocation } from "wouter";
 import { toast } from "sonner";
 
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
-import rehypeHighlight from "rehype-highlight";
-import "katex/dist/katex.min.css";
-import "highlight.js/styles/github-dark.min.css";
+const MarkdownRenderer = lazy(() => import("@/components/MarkdownRenderer"));
 
 // 工具栏按钮组件
 function ToolbarButton({
@@ -99,6 +99,7 @@ function ToolbarButton({
       <TooltipTrigger asChild>
         <button
           type="button"
+          aria-label={tooltip}
           onClick={onClick}
           disabled={disabled}
           className={`rounded-md p-2 transition-all duration-150 ${
@@ -130,9 +131,18 @@ function ToolbarDivider() {
 export default function Editor() {
   const { isAdmin, loading: authLoading } = useAuth();
   const { t } = useLanguage();
+  const siteUrl = getClientSiteUrl();
   const params = useParams<{ slug?: string }>();
   const [, navigate] = useLocation();
   const isEditing = !!params.slug;
+  useSeo(
+    buildRouteMetadata(siteUrl, {
+      title: isEditing ? t("editor.editPost") : t("editor.newPost"),
+      description: t("editor.authDescription"),
+      path: params.slug ? `/write/${params.slug}` : "/write",
+      noindex: true,
+    })
+  );
 
   // 编辑器状态
   const [title, setTitle] = useState("");
@@ -142,6 +152,11 @@ export default function Editor() {
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [coverImage, setCoverImage] = useState("");
   const [postId, setPostId] = useState<number | null>(null);
+  const [seriesSlug, setSeriesSlug] = useState("");
+  const [seriesTitle, setSeriesTitle] = useState("");
+  const [seriesOrder, setSeriesOrder] = useState("");
+  const [featuredRank, setFeaturedRank] = useState("");
+  const [pinnedTrack, setPinnedTrack] = useState<"none" | "algorithms" | "applications">("none");
 
   // UI状态
   const [showPreview, setShowPreview] = useState(true);
@@ -168,11 +183,16 @@ export default function Editor() {
     params.slug!,
     { enabled: isEditing }
   );
+  const utils = trpc.useUtils();
+  const { data: versions } = trpc.posts.getVersions.useQuery(postId ?? 0, {
+    enabled: Boolean(postId),
+  });
 
   // Mutations
   const createPost = trpc.posts.create.useMutation();
   const updatePost = trpc.posts.update.useMutation();
   const saveVersion = trpc.posts.saveVersion.useMutation();
+  const restoreVersion = trpc.posts.restoreVersion.useMutation();
 
   // 字数统计
   const wordCount = useMemo(() => {
@@ -204,11 +224,24 @@ export default function Editor() {
       setCategoryId(existingPost.categoryId);
       setCoverImage(existingPost.coverImage || "");
       setPostId(existingPost.id);
+      setSeriesSlug((existingPost as any).seriesSlug || "");
+      setSeriesTitle((existingPost as any).seriesTitle || "");
+      setSeriesOrder((existingPost as any).seriesOrder == null ? "" : String((existingPost as any).seriesOrder));
+      setFeaturedRank((existingPost as any).featuredRank == null ? "" : String((existingPost as any).featuredRank));
+      setPinnedTrack(((existingPost as any).pinnedTrack as "algorithms" | "applications" | null) || "none");
       if ((existingPost as any).tags) {
         setSelectedTags((existingPost as any).tags.map((t: { id: number }) => t.id));
       }
     }
   }, [existingPost]);
+
+  const buildCurationPayload = useCallback(() => ({
+    seriesSlug: seriesSlug.trim() || null,
+    seriesTitle: seriesTitle.trim() || null,
+    seriesOrder: seriesOrder.trim() ? Number(seriesOrder) : null,
+    featuredRank: featuredRank.trim() ? Number(featuredRank) : null,
+    pinnedTrack: pinnedTrack === "none" ? null : pinnedTrack,
+  }), [featuredRank, pinnedTrack, seriesOrder, seriesSlug, seriesTitle]);
 
   // 自动保存（每30秒）
   useEffect(() => {
@@ -443,6 +476,7 @@ export default function Editor() {
           categoryId: categoryId || undefined,
           tagIds: selectedTags,
           coverImage: coverImage || undefined,
+          ...buildCurationPayload(),
         });
         // 保存版本
         await saveVersion.mutateAsync({
@@ -466,6 +500,7 @@ export default function Editor() {
           coverImage: coverImage || undefined,
           status: "draft",
           visibility: "admin",
+          ...buildCurationPayload(),
         });
         if (result) {
           setPostId(result.id);
@@ -479,7 +514,7 @@ export default function Editor() {
     } finally {
       setIsSaving(false);
     }
-  }, [title, content, excerpt, categoryId, selectedTags, coverImage, postId, createPost, updatePost, saveVersion, t]);
+  }, [title, content, excerpt, categoryId, selectedTags, coverImage, postId, createPost, updatePost, saveVersion, buildCurationPayload, t]);
 
   // 发布文章
   const handlePublish = useCallback(async () => {
@@ -510,6 +545,7 @@ export default function Editor() {
           coverImage: coverImage || undefined,
           status: "published",
           visibility: "public",
+          ...buildCurationPayload(),
         });
       } else {
         await createPost.mutateAsync({
@@ -522,6 +558,7 @@ export default function Editor() {
           coverImage: coverImage || undefined,
           status: "published",
           visibility: "public",
+          ...buildCurationPayload(),
         });
       }
 
@@ -532,7 +569,26 @@ export default function Editor() {
     } finally {
       setIsPublishing(false);
     }
-  }, [title, content, excerpt, categoryId, selectedTags, coverImage, postId, createPost, updatePost, navigate, t]);
+  }, [title, content, excerpt, categoryId, selectedTags, coverImage, postId, createPost, updatePost, buildCurationPayload, navigate, t]);
+
+  const handleRestoreVersion = useCallback(async (version: { id: number; title: string; content: string }) => {
+    if (!postId) return;
+    if (!window.confirm(t("editor.versionRestoreConfirm"))) return;
+
+    try {
+      await restoreVersion.mutateAsync({
+        postId,
+        versionId: version.id,
+        saveCurrent: true,
+      });
+      setTitle(version.title);
+      setContent(version.content);
+      await utils.posts.getVersions.invalidate(postId);
+      toast.success(t("editor.toast.versionRestored"));
+    } catch {
+      toast.error(t("editor.toast.versionRestoreFailed"));
+    }
+  }, [postId, restoreVersion, t, utils]);
 
   // 同步滚动
   const handleEditorScroll = useCallback(() => {
@@ -571,7 +627,8 @@ export default function Editor() {
   }
 
   return (
-    <div className={`relative flex min-h-screen flex-col overflow-hidden bg-[#060b16] text-slate-100 ${isFullscreen ? "fixed inset-0 z-50" : ""}`}>
+    <TooltipProvider>
+      <div className={`relative flex min-h-screen flex-col overflow-hidden bg-[#060b16] text-slate-100 ${isFullscreen ? "fixed inset-0 z-50" : ""}`}>
       <SpaceBackdrop subtle />
       {/* 顶部工具栏 */}
       <header className="relative z-10 flex h-14 shrink-0 items-center justify-between border-b border-sky-200/10 bg-slate-950/80 px-4 backdrop-blur-xl">
@@ -639,8 +696,8 @@ export default function Editor() {
 
           <Sheet open={showSettings} onOpenChange={setShowSettings}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="sm">
-              <Settings className="h-4 w-4" />
+              <Button variant="ghost" size="sm" aria-label={t("editor.settingsTitle")}>
+                <Settings className="h-4 w-4" />
               </Button>
             </SheetTrigger>
             <SheetContent className="w-[400px] border-sky-200/15 bg-slate-950 text-slate-100 sm:w-[540px]">
@@ -672,6 +729,9 @@ export default function Editor() {
                     <img 
                       src={coverImage} 
                       alt={t("editor.coverPreview")}
+                      loading="lazy"
+                      decoding="async"
+                      sizes="(min-width: 640px) 480px, calc(100vw - 48px)"
                       className="w-full h-32 object-cover rounded-lg mt-2"
                     />
                   )}
@@ -719,6 +779,92 @@ export default function Editor() {
                     ))}
                   </div>
                 </div>
+
+                <div className="space-y-3 rounded-lg border border-sky-200/10 bg-slate-950/35 p-4">
+                  <div className="flex items-center gap-2">
+                    <Star className="h-4 w-4 text-sky-300" />
+                    <Label>{t("editor.curationTitle")}</Label>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Input
+                      value={seriesSlug}
+                      onChange={(e) => setSeriesSlug(e.target.value)}
+                      placeholder={t("editor.seriesSlugPlaceholder")}
+                    />
+                    <Input
+                      value={seriesTitle}
+                      onChange={(e) => setSeriesTitle(e.target.value)}
+                      placeholder={t("editor.seriesTitlePlaceholder")}
+                    />
+                    <Input
+                      type="number"
+                      value={seriesOrder}
+                      onChange={(e) => setSeriesOrder(e.target.value)}
+                      placeholder={t("editor.seriesOrderPlaceholder")}
+                    />
+                    <Input
+                      type="number"
+                      min={1}
+                      value={featuredRank}
+                      onChange={(e) => setFeaturedRank(e.target.value)}
+                      placeholder={t("editor.featuredRankPlaceholder")}
+                    />
+                  </div>
+                  <Select
+                    value={pinnedTrack}
+                    onValueChange={(value) =>
+                      setPinnedTrack(value as "none" | "algorithms" | "applications")
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t("editor.pinnedTrackPlaceholder")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t("editor.pinnedTrackNone")}</SelectItem>
+                      <SelectItem value="algorithms">{t("home.algorithmsLabel")}</SelectItem>
+                      <SelectItem value="applications">{t("home.applicationsLabel")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {postId && (
+                  <div className="space-y-3 rounded-lg border border-sky-200/10 bg-slate-950/35 p-4">
+                    <div className="flex items-center gap-2">
+                      <History className="h-4 w-4 text-cyan-300" />
+                      <Label>{t("editor.versionHistoryTitle")}</Label>
+                    </div>
+                    {versions?.length ? (
+                      <div className="grid gap-2">
+                        {versions.slice(0, 8).map((version) => (
+                          <div
+                            key={version.id}
+                            className="flex items-center justify-between gap-3 rounded-md border border-sky-200/10 bg-slate-950/40 px-3 py-2"
+                          >
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-medium text-white">{version.title}</p>
+                              <p className="text-xs text-slate-500">
+                                {new Date(version.createdAt).toLocaleString()}
+                              </p>
+                            </div>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              className="glass-button shrink-0"
+                              disabled={restoreVersion.isPending}
+                              onClick={() => handleRestoreVersion(version)}
+                            >
+                              <RotateCcw className="h-4 w-4" />
+                              {t("editor.versionRestore")}
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-slate-500">{t("editor.versionHistoryEmpty")}</p>
+                    )}
+                  </div>
+                )}
               </div>
             </SheetContent>
           </Sheet>
@@ -892,32 +1038,9 @@ export default function Editor() {
                 <h1 className="mb-6 font-serif text-3xl font-semibold leading-tight text-white">{title}</h1>
               )}
               <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:font-serif prose-headings:text-white prose-p:text-slate-300 prose-li:text-slate-300 prose-a:text-sky-300">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm, remarkMath]}
-                  rehypePlugins={[rehypeKatex, rehypeHighlight]}
-                  components={{
-                    pre: ({ children, ...props }) => (
-                      <pre className="relative group" {...props}>
-                        {children}
-                      </pre>
-                    ),
-                    code: ({ className, children, ...props }: any) => {
-                      const match = /language-(\w+)/.exec(className || "");
-                      const isInline = !match;
-                      return isInline ? (
-                        <code className="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-sm" {...props}>
-                          {children}
-                        </code>
-                      ) : (
-                        <code className={className} {...props}>
-                          {children}
-                        </code>
-                      );
-                    },
-                  }}
-                >
-                  {content || `*${t("editor.previewPlaceholder")}*`}
-                </ReactMarkdown>
+                <Suspense fallback={<div className="h-24 animate-pulse rounded-lg bg-slate-800/40" />}>
+                  <MarkdownRenderer content={content || `*${t("editor.previewPlaceholder")}*`} />
+                </Suspense>
               </article>
             </div>
           </div>
@@ -986,6 +1109,9 @@ export default function Editor() {
               <img 
                 src={imageUrl} 
                 alt={imageAlt || t("editor.imagePreview")}
+                loading="lazy"
+                decoding="async"
+                sizes="(min-width: 640px) 480px, calc(100vw - 48px)"
                 className="w-full h-32 object-cover rounded-lg"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = "none";
@@ -1001,6 +1127,7 @@ export default function Editor() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }

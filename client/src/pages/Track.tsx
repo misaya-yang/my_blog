@@ -1,6 +1,5 @@
 import { ArticleCard } from "@/components/ArticleCard";
 import {
-  ResearchWaveVisual,
   SiteHeader,
   SpaceBackdrop,
   StatTile,
@@ -9,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trackConfigs, type TrackKind } from "@/lib/tracks";
 import { trpc } from "@/lib/trpc";
+import { getClientSiteUrl, useSeo } from "@/lib/seo";
+import { buildRouteMetadata } from "@shared/metadata";
 import {
   ArrowRight,
   Boxes,
@@ -16,7 +17,6 @@ import {
   FileText,
   Folder,
   Network,
-  Sparkles,
   Tags,
 } from "lucide-react";
 import { Link } from "wouter";
@@ -24,6 +24,7 @@ import { Link } from "wouter";
 function TrackPage({ kind }: { kind: TrackKind }) {
   const { language, t } = useLanguage();
   const config = trackConfigs[kind];
+  const siteUrl = getClientSiteUrl();
 
   const { data: posts, isLoading } = trpc.posts.list.useQuery({
     status: "published",
@@ -35,6 +36,15 @@ function TrackPage({ kind }: { kind: TrackKind }) {
   const totalViews =
     posts?.posts?.reduce((sum: number, post: any) => sum + (post.viewCount || 0), 0) || 0;
 
+  useSeo(
+    buildRouteMetadata(siteUrl, {
+      title: t(config.titleKey),
+      description: t(config.subtitleKey),
+      path: config.href,
+      locale: language === "zh" ? "zh-CN" : "en-US",
+    })
+  );
+
   return (
     <div className="space-page">
       <SpaceBackdrop />
@@ -43,14 +53,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
       <main className="relative z-10">
         <section className="container grid gap-8 px-4 pb-9 pt-12 sm:px-6 md:pt-16 lg:grid-cols-[minmax(0,1fr)_380px]">
           <div className="min-w-0">
-            <div className="signal-chip mb-8">
-              <Sparkles className="h-4 w-4 text-sky-300" />
-              <span>{t(config.chipKeys[0])}</span>
-              <span className="text-slate-500">·</span>
-              <span>{t(config.chipKeys[1])}</span>
-              <span className="text-slate-500">·</span>
-              <span>{t(config.chipKeys[2])}</span>
-            </div>
+            <p className="mb-6 font-mono text-sm text-sky-200">{t(config.topicTitleKey)}</p>
 
             <h1 className="max-w-5xl font-serif text-5xl font-semibold leading-[1.08] text-white md:text-7xl">
               {t(config.titleKey)}
@@ -67,10 +70,6 @@ function TrackPage({ kind }: { kind: TrackKind }) {
           </div>
 
           <aside className="glass-panel p-5">
-            <ResearchWaveVisual
-              variant={kind === "applications" ? "matrix" : "orbit"}
-              className="mb-5 h-[230px]"
-            />
             <div className="flex items-center gap-2 text-white">
               <Network className="h-5 w-5 text-sky-300" />
               <h2 className="text-base font-semibold">{t(config.topicTitleKey)}</h2>
