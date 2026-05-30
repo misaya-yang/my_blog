@@ -27,4 +27,5 @@ CREATE UNIQUE INDEX "ai_knowledge_chunks_post_chunk_idx" ON "ai_knowledge_chunks
 CREATE INDEX "ai_knowledge_chunks_post_id_idx" ON "ai_knowledge_chunks" USING btree ("post_id");--> statement-breakpoint
 CREATE INDEX "ai_knowledge_chunks_post_slug_idx" ON "ai_knowledge_chunks" USING btree ("post_slug");--> statement-breakpoint
 CREATE INDEX "ai_knowledge_chunks_visibility_idx" ON "ai_knowledge_chunks" USING btree ("status_snapshot","visibility_snapshot");--> statement-breakpoint
-CREATE INDEX "ai_knowledge_chunks_chunk_type_idx" ON "ai_knowledge_chunks" USING btree ("chunk_type");
+CREATE INDEX "ai_knowledge_chunks_chunk_type_idx" ON "ai_knowledge_chunks" USING btree ("chunk_type");--> statement-breakpoint
+CREATE INDEX "ai_knowledge_chunks_content_fts_idx" ON "ai_knowledge_chunks" USING gin (to_tsvector('english', coalesce("content", '') || ' ' || coalesce("summary", '')));

@@ -12,6 +12,7 @@
     "test": "vitest run",
     "audit:baseline": "tsx scripts/audit/baseline.ts",
     "audit:baseline:quick": "tsx scripts/audit/baseline.ts --skip-checks",
+    "ai:reindex": "tsx scripts/ai/reindex-knowledge.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
