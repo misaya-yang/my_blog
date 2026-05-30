@@ -54,15 +54,15 @@
       "destination": "/index.html"
     },
     {
-      "source": "/projects",
-      "destination": "/index.html"
-    },
-    {
       "source": "/login",
       "destination": "/index.html"
     },
     {
       "source": "/manage",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/manage/agent",
       "destination": "/index.html"
     },
     {

@@ -1,6 +1,6 @@
 # Supabase + Vercel Deployment Guide
 
-Last updated: 2026-05-30
+Last updated: 2026-05-31
 
 This project is a Vite React frontend with an Express/tRPC backend. The production target is Vercel, and the database target is Supabase Postgres.
 
@@ -87,6 +87,7 @@ Optional variables if the related features are used:
 ```bash
 BUILT_IN_FORGE_API_URL
 BUILT_IN_FORGE_API_KEY
+BLOG_AGENT_MODEL
 VITE_FRONTEND_FORGE_API_URL
 VITE_FRONTEND_FORGE_API_KEY
 VITE_ANALYTICS_ENDPOINT
@@ -121,9 +122,9 @@ The repository includes `vercel.json`. Known public/owner routes are routed to t
     { "source": "/archive", "destination": "/index.html" },
     { "source": "/search", "destination": "/index.html" },
     { "source": "/about", "destination": "/index.html" },
-    { "source": "/projects", "destination": "/index.html" },
     { "source": "/login", "destination": "/index.html" },
     { "source": "/manage", "destination": "/index.html" },
+    { "source": "/manage/agent", "destination": "/index.html" },
     { "source": "/write", "destination": "/index.html" },
     { "source": "/write/:slug", "destination": "/index.html" },
     { "source": "/tags/:slug", "destination": "/index.html" },
@@ -215,10 +216,10 @@ www  A    76.76.21.21
 
 The `yang.misaya.online` record is managed separately and is not part of the Vercel blog deployment.
 
-Latest verified deployment after the login copy polish release:
+Latest verified deployment after the Agent + Projects removal release:
 
-- Deployment URL: https://my-blog-ms18xm7vm-zedpl28174-3992s-projects.vercel.app
-- Vercel deployment id: `dpl_F3W2Bsv92vGoe7bDt8WMwSeEEsNb`
+- Deployment URL: https://my-blog-ai88iejin-zedpl28174-3992s-projects.vercel.app
+- Vercel deployment id: `dpl_7pkfvzCqfUQMN6phryHammtNPjbW`
 - Verified production alias: https://misaya.online
 
 Open the production URL and verify:

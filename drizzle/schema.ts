@@ -9,6 +9,7 @@ import {
   text,
   timestamp,
   uniqueIndex,
+  uuid,
   varchar,
 } from "drizzle-orm/pg-core";
 
@@ -22,6 +23,35 @@ export const aiKnowledgeChunkType = pgEnum("ai_knowledge_chunk_type", [
   "post_chunk",
   "post_metadata_chunk",
   "site_overview_chunk",
+]);
+export const aiIdentityType = pgEnum("ai_identity_type", ["anonymous", "visitor", "admin"]);
+export const aiConversationStatus = pgEnum("ai_conversation_status", ["active", "archived", "flagged"]);
+export const aiScopeType = pgEnum("ai_scope_type", ["site", "post", "category", "tag", "track"]);
+export const aiMessageRole = pgEnum("ai_message_role", ["user", "assistant", "system"]);
+export const aiMessageStatus = pgEnum("ai_message_status", ["created", "completed", "failed", "blocked"]);
+export const aiUsageActionType = pgEnum("ai_usage_action_type", [
+  "assistant_message",
+  "retrieval_query",
+  "tool_call",
+  "file_upload",
+  "file_parse",
+]);
+export const aiUsageWindowType = pgEnum("ai_usage_window_type", ["day", "burst"]);
+export const aiAgentRunStatus = pgEnum("ai_agent_run_status", [
+  "started",
+  "completed",
+  "failed",
+  "blocked",
+]);
+export const aiContextSourceKind = pgEnum("ai_context_source_kind", [
+  "pasted_text",
+  "text_file",
+  "markdown_file",
+]);
+export const aiContextSourceStatus = pgEnum("ai_context_source_status", [
+  "ready",
+  "deleted",
+  "rejected",
 ]);
 
 /**
@@ -227,3 +257,125 @@ export const aiKnowledgeChunks = pgTable("ai_knowledge_chunks", {
 
 export type AiKnowledgeChunk = typeof aiKnowledgeChunks.$inferSelect;
 export type InsertAiKnowledgeChunk = typeof aiKnowledgeChunks.$inferInsert;
+
+export const aiConversations = pgTable("ai_conversations", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  ownerType: aiIdentityType("owner_type").notNull(),
+  ownerKey: varchar("owner_key", { length: 128 }).notNull(),
+  title: varchar("title", { length: 255 }),
+  status: aiConversationStatus("status").default("active").notNull(),
+  scopeType: aiScopeType("scope_type").default("site").notNull(),
+  scopeValue: varchar("scope_value", { length: 255 }),
+  activePostId: integer("active_post_id").references(() => posts.id, { onDelete: "set null" }),
+  summary: text("summary"),
+  messageCount: integer("message_count").default(0).notNull(),
+  totalInputTokens: integer("total_input_tokens").default(0).notNull(),
+  totalOutputTokens: integer("total_output_tokens").default(0).notNull(),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  lastMessageAt: timestamp("last_message_at"),
+}, (table) => [
+  index("ai_conversations_owner_updated_at_idx").on(table.ownerType, table.ownerKey, table.updatedAt),
+  index("ai_conversations_status_expires_at_idx").on(table.status, table.expiresAt),
+  index("ai_conversations_scope_idx").on(table.scopeType, table.scopeValue),
+]);
+
+export type AiConversation = typeof aiConversations.$inferSelect;
+export type InsertAiConversation = typeof aiConversations.$inferInsert;
+
+export const aiMessages = pgTable("ai_messages", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  conversationId: uuid("conversation_id").notNull().references(() => aiConversations.id, { onDelete: "cascade" }),
+  role: aiMessageRole("role").notNull(),
+  status: aiMessageStatus("status").default("created").notNull(),
+  content: text("content").notNull(),
+  sourceJson: jsonb("source_json").$type<Record<string, unknown> | null>(),
+  usageJson: jsonb("usage_json").$type<Record<string, unknown> | null>(),
+  errorCode: varchar("error_code", { length: 120 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("ai_messages_conversation_created_at_idx").on(table.conversationId, table.createdAt),
+]);
+
+export type AiMessage = typeof aiMessages.$inferSelect;
+export type InsertAiMessage = typeof aiMessages.$inferInsert;
+
+export const aiContextSources = pgTable("ai_context_sources", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  conversationId: uuid("conversation_id").notNull().references(() => aiConversations.id, { onDelete: "cascade" }),
+  ownerType: aiIdentityType("owner_type").notNull(),
+  ownerKey: varchar("owner_key", { length: 128 }).notNull(),
+  kind: aiContextSourceKind("kind").notNull(),
+  status: aiContextSourceStatus("status").default("ready").notNull(),
+  filename: varchar("filename", { length: 255 }),
+  mimeType: varchar("mime_type", { length: 120 }),
+  content: text("content").notNull(),
+  contentHash: varchar("content_hash", { length: 64 }).notNull(),
+  tokenEstimate: integer("token_estimate").default(0).notNull(),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("ai_context_sources_conversation_idx").on(table.conversationId, table.status, table.createdAt),
+  index("ai_context_sources_owner_idx").on(table.ownerType, table.ownerKey, table.createdAt),
+  index("ai_context_sources_expires_at_idx").on(table.expiresAt),
+]);
+
+export type AiContextSource = typeof aiContextSources.$inferSelect;
+export type InsertAiContextSource = typeof aiContextSources.$inferInsert;
+
+export const aiUsageBuckets = pgTable("ai_usage_buckets", {
+  id: serial("id").primaryKey(),
+  identityType: aiIdentityType("identity_type").notNull(),
+  identityKey: varchar("identity_key", { length: 128 }).notNull(),
+  actionType: aiUsageActionType("action_type").notNull(),
+  windowType: aiUsageWindowType("window_type").notNull(),
+  windowStart: timestamp("window_start").notNull(),
+  requestCount: integer("request_count").default(0).notNull(),
+  inputTokens: integer("input_tokens").default(0).notNull(),
+  outputTokens: integer("output_tokens").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex("ai_usage_buckets_identity_window_idx").on(
+    table.identityType,
+    table.identityKey,
+    table.actionType,
+    table.windowType,
+    table.windowStart
+  ),
+  index("ai_usage_buckets_identity_idx").on(table.identityType, table.identityKey),
+]);
+
+export type AiUsageBucket = typeof aiUsageBuckets.$inferSelect;
+export type InsertAiUsageBucket = typeof aiUsageBuckets.$inferInsert;
+
+export const aiAgentRuns = pgTable("ai_agent_runs", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  conversationId: uuid("conversation_id").references(() => aiConversations.id, { onDelete: "set null" }),
+  userMessageId: uuid("user_message_id").references(() => aiMessages.id, { onDelete: "set null" }),
+  assistantMessageId: uuid("assistant_message_id").references(() => aiMessages.id, { onDelete: "set null" }),
+  identityType: aiIdentityType("identity_type").notNull(),
+  identityKey: varchar("identity_key", { length: 128 }).notNull(),
+  model: varchar("model", { length: 120 }),
+  scopeType: aiScopeType("scope_type").default("site").notNull(),
+  scopeValue: varchar("scope_value", { length: 255 }),
+  retrievalStrategy: varchar("retrieval_strategy", { length: 120 }),
+  retrievedChunkIds: jsonb("retrieved_chunk_ids").$type<string[]>().notNull(),
+  toolCallIds: jsonb("tool_call_ids").$type<string[]>().notNull(),
+  inputTokens: integer("input_tokens").default(0).notNull(),
+  outputTokens: integer("output_tokens").default(0).notNull(),
+  latencyMs: integer("latency_ms"),
+  status: aiAgentRunStatus("status").default("started").notNull(),
+  errorCode: varchar("error_code", { length: 120 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  completedAt: timestamp("completed_at"),
+}, (table) => [
+  index("ai_agent_runs_conversation_created_at_idx").on(table.conversationId, table.createdAt),
+  index("ai_agent_runs_identity_created_at_idx").on(table.identityType, table.identityKey, table.createdAt),
+  index("ai_agent_runs_status_created_at_idx").on(table.status, table.createdAt),
+]);
+
+export type AiAgentRun = typeof aiAgentRuns.$inferSelect;
+export type InsertAiAgentRun = typeof aiAgentRuns.$inferInsert;

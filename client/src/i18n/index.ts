@@ -8,6 +8,8 @@ import login from "./login";
 import notFound from "./notFound";
 import components from "./components";
 import showcase from "./showcase";
+import agent from "./agent";
+import agentOps from "./agentOps";
 import type { TranslationDict, Language, InterpolationVars } from "./types";
 
 export const translations: TranslationDict = {
@@ -21,6 +23,8 @@ export const translations: TranslationDict = {
   ...notFound,
   ...components,
   ...showcase,
+  ...agent,
+  ...agentOps,
 };
 
 export type { Language, InterpolationVars, TranslationDict, TranslationEntry } from "./types";

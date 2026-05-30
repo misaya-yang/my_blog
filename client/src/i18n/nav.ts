@@ -7,7 +7,6 @@ const nav: TranslationDict = {
   "nav.archive": { en: "Archive", zh: "归档" },
   "nav.search": { en: "Search", zh: "搜索" },
   "nav.about": { en: "About", zh: "关于" },
-  "nav.projects": { en: "Projects", zh: "项目" },
   "nav.menu": { en: "Open navigation", zh: "打开导航" },
   "nav.write": { en: "Write", zh: "写作" },
   "nav.login": { en: "Login", zh: "登录" },

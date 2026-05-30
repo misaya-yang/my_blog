@@ -53,7 +53,9 @@ describe("client shell renderability", () => {
       kind: "article",
       slug: "agent-harness-engine",
     });
+    expect(classifyClientRoute("/manage/agent")).toEqual({ kind: "known" });
     expect(classifyClientRoute("/tags/harness-engine")).toEqual({ kind: "known" });
+    expect(classifyClientRoute("/projects")).toEqual({ kind: "unknown" });
     expect(classifyClientRoute("/not-a-real-route")).toEqual({ kind: "unknown" });
   });
 

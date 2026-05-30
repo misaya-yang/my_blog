@@ -26,7 +26,7 @@ import { toast } from "sonner";
 import type React from "react";
 
 type SiteHeaderProps = {
-  active?: "home" | "algorithms" | "applications" | "archive" | "search" | "about" | "projects" | "write" | "login";
+  active?: "home" | "algorithms" | "applications" | "archive" | "search" | "about" | "write" | "login";
   backHref?: string;
   backLabel?: string;
   compact?: boolean;
@@ -64,7 +64,6 @@ export function SiteHeader({ active = "home", backHref, backLabel, compact }: Si
     { href: "/archive", key: "archive", label: t("nav.archive") },
     { href: "/search", key: "search", label: t("nav.search") },
     { href: "/about", key: "about", label: t("nav.about") },
-    { href: "/projects", key: "projects", label: t("nav.projects") },
   ];
 
   const copyEmail = () => {

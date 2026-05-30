@@ -4,6 +4,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { trackPageView } from "@/lib/analytics";
+import { BlogAgentRoot } from "@/components/agent/BlogAgentRoot";
 
 const Home = lazy(() => import("./pages/Home"));
 const Toaster = lazy(() =>
@@ -12,11 +13,11 @@ const Toaster = lazy(() =>
 const PostDetail = lazy(() => import("./pages/PostDetail"));
 const Editor = lazy(() => import("./pages/Editor"));
 const Manage = lazy(() => import("./pages/Manage"));
+const ManageAgent = lazy(() => import("./pages/ManageAgent"));
 const Login = lazy(() => import("./pages/Login"));
 const Archive = lazy(() => import("./pages/Archive"));
 const Search = lazy(() => import("./pages/Search"));
 const About = lazy(() => import("./pages/About"));
-const Projects = lazy(() => import("./pages/Projects"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AlgorithmsPage = lazy(() =>
   import("./pages/Track").then((module) => ({ default: module.AlgorithmsPage }))
@@ -52,10 +53,10 @@ function Router() {
         <Route path="/tags/:slug" component={TagPage} />
         <Route path="/categories/:slug" component={CategoryPage} />
         <Route path="/about" component={About} />
-        <Route path="/projects" component={Projects} />
         <Route path="/post/:slug" component={PostDetail} />
         <Route path="/write" component={Editor} />
         <Route path="/write/:slug" component={Editor} />
+        <Route path="/manage/agent" component={ManageAgent} />
         <Route path="/manage" component={Manage} />
         <Route path="/login" component={Login} />
         <Route path={"/404"} component={NotFound} />
@@ -91,6 +92,7 @@ function App() {
           </Suspense>
           <AnalyticsRouteTracker />
           <Router />
+          <BlogAgentRoot />
         </LanguageProvider>
       </ThemeProvider>
     </ErrorBoundary>

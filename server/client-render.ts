@@ -55,6 +55,7 @@ const staticClientRoutes = new Set<string>([
   ...siteConfig.publicStaticRoutes,
   "/login",
   "/manage",
+  "/manage/agent",
   "/write",
   "/404",
 ]);

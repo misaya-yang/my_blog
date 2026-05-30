@@ -16,7 +16,7 @@ export const siteConfig = {
   feedTitle: "AI Tech Blog",
   feedDescription:
     "Research notes by Misaya Yang on deep learning systems and AI application engineering.",
-  publicStaticRoutes: ["/", "/algorithms", "/applications", "/archive", "/about", "/projects", "/search"],
+  publicStaticRoutes: ["/", "/algorithms", "/applications", "/archive", "/about", "/search"],
   disallowedRoutes: ["/write", "/manage", "/api/trpc/posts.create", "/api/trpc/posts.update"],
 } as const;
 

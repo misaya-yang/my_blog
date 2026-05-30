@@ -100,7 +100,7 @@ const home: TranslationDict = {
   "discovery.noPosts": { en: "No public articles in this index yet.", zh: "这个索引下暂无公开文章。" },
   "discovery.taxonomyNotFound": { en: "Index not found", zh: "索引未找到" },
 
-  // About / Projects
+  // About
   "about.kicker": { en: "Profile", zh: "个人介绍" },
   "about.title": { en: "Misaya Yang", zh: "Misaya Yang" },
   "about.subtitle": {
@@ -118,28 +118,6 @@ const home: TranslationDict = {
   "about.focus4": { en: "Evaluation loops for production AI systems", zh: "生产级 AI 系统的评测循环" },
   "about.linksTitle": { en: "Links", zh: "链接" },
   "about.location": { en: "Shanghai / Remote research notes", zh: "上海 / 远程研究笔记" },
-  "projects.kicker": { en: "Working threads", zh: "进行中的主题" },
-  "projects.title": { en: "Projects", zh: "项目" },
-  "projects.subtitle": {
-    en: "A compact map of active research and engineering threads that connect articles into longer-running work.",
-    zh: "这里整理持续推进的研究与工程主题，把单篇文章连接成更长期的工作线索。",
-  },
-  "projects.harness.title": { en: "Agent Harness Engine", zh: "Agent Harness Engine" },
-  "projects.harness.body": {
-    en: "Controlled task protocols, tool traces, and evaluation signals for tool-using agents.",
-    zh: "围绕工具型 Agent 的任务协议、工具轨迹与评测信号进行控制与复现。",
-  },
-  "projects.context.title": { en: "Context Engineering", zh: "Context Engineering" },
-  "projects.context.body": {
-    en: "Research notes on memory, retrieval, prompt boundaries, and context policy in real AI software.",
-    zh: "记录真实 AI 软件中的记忆、检索、提示边界与上下文策略。",
-  },
-  "projects.isohc.title": { en: "IsoHC / Residual Stability", zh: "IsoHC / 残差稳定性" },
-  "projects.isohc.body": {
-    en: "Architecture-side experiments around residual stream mixing, constraints, and stability.",
-    zh: "围绕残差流混合、约束与稳定性的架构侧实验。",
-  },
-
   // Track pages
   "track.articles": { en: "Technical Articles", zh: "技术文章" },
   "track.backHome": { en: "Back to Portal", zh: "返回总览" },

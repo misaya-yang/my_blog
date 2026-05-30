@@ -60,6 +60,7 @@ import {
   X,
   Folder,
   Tags,
+  Bot,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -344,12 +345,20 @@ export default function Manage() {
             </p>
           </div>
 
-          <Button asChild className="bg-blue-500 text-white hover:bg-blue-400">
-            <Link href="/write">
-              <Plus className="mr-2 h-4 w-4" />
-              {t("manage.writeArticle")}
-            </Link>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild variant="outline" className="border-sky-200/20 bg-slate-950/50 text-sky-100">
+              <Link href="/manage/agent">
+                <Bot className="mr-2 h-4 w-4" />
+                {t("agentOps.title")}
+              </Link>
+            </Button>
+            <Button asChild className="bg-blue-500 text-white hover:bg-blue-400">
+              <Link href="/write">
+                <Plus className="mr-2 h-4 w-4" />
+                {t("manage.writeArticle")}
+              </Link>
+            </Button>
+          </div>
         </div>
 
         <div className="glass-panel mb-6 flex flex-col gap-4 p-4 lg:flex-row lg:items-center">

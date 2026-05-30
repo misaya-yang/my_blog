@@ -1,5 +1,6 @@
 import { systemRouter } from "./_core/systemRouter.js";
 import { publicProcedure, router } from "./_core/trpc.js";
+import { agentRouter } from "./ai/router.js";
 import { z } from "zod";
 import * as db from "./db.js";
 import { TRPCError } from "@trpc/server";
@@ -201,6 +202,7 @@ function normalizeDiscoveryQuery(query: string | undefined) {
 
 export const appRouter = router({
   system: systemRouter,
+  agent: agentRouter,
   
   auth: router({
     // Check if current session is authenticated as admin
