@@ -52,7 +52,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import { toast } from "sonner";
 
 type PostVisibility = "hidden" | "admin" | "public";
@@ -70,7 +70,6 @@ const visibilityOptions: Array<{
 export default function Manage() {
   const { isAdmin, loading: authLoading } = useAuth();
   const { language, t } = useLanguage();
-  const [, navigate] = useLocation();
   const [search, setSearch] = useState("");
   const [categorySlug, setCategorySlug] = useState("all");
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -134,6 +133,33 @@ export default function Manage() {
       visibility,
     });
   };
+
+  const renderVisibilityControl = (post: any) => (
+    <div className="inline-grid grid-cols-3 rounded-md border border-sky-200/15 bg-slate-950/50 p-1">
+      {visibilityOptions.map((option) => {
+        const Icon = option.icon;
+        const active = (post.visibility ?? "admin") === option.value;
+        return (
+          <button
+            key={option.value}
+            type="button"
+            aria-pressed={active}
+            title={t(option.labelKey)}
+            disabled={updateMutation.isPending}
+            onClick={() => setVisibility(post, option.value)}
+            className={`flex h-8 min-w-0 items-center justify-center gap-1.5 rounded px-2 text-xs font-medium transition ${
+              active
+                ? "bg-sky-400/20 text-sky-100 shadow-[0_0_18px_rgba(56,189,248,0.18)]"
+                : "text-slate-400 hover:bg-slate-800/80 hover:text-slate-100"
+            }`}
+          >
+            <Icon className="h-3.5 w-3.5 shrink-0" />
+            <span className="hidden sm:inline">{t(option.labelKey)}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
 
   // 未登录提示
   if (!authLoading && !isAdmin) {
@@ -233,126 +259,154 @@ export default function Manage() {
             </Button>
           </div>
         ) : (
-          <div className="glass-panel overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-sky-200/10 hover:bg-transparent">
-                  <TableHead className="w-[400px] text-slate-300">{t("manage.table.title")}</TableHead>
-                  <TableHead className="text-slate-300">{t("manage.table.category")}</TableHead>
-                  <TableHead className="text-slate-300">{t("manage.table.status")}</TableHead>
-                  <TableHead className="min-w-[280px] text-slate-300">{t("manage.table.visibility")}</TableHead>
-                  <TableHead className="text-slate-300">{t("manage.table.views")}</TableHead>
-                  <TableHead className="text-slate-300">{t("manage.table.createdAt")}</TableHead>
-                  <TableHead className="w-[70px] text-slate-300">{t("manage.table.actions")}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {postsData?.posts.map((post) => (
-                  <TableRow key={post.id} className="border-sky-200/10 hover:bg-sky-400/5">
-                    <TableCell>
-                      <div className="space-y-1">
+          <>
+            <div className="grid gap-3 md:hidden">
+              {postsData?.posts.map((post) => (
+                <article key={post.id} className="glass-panel p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <Link
+                        href={`/post/${post.slug}`}
+                        className="line-clamp-2 text-sm font-semibold leading-6 text-white hover:text-sky-200"
+                      >
+                        {post.title}
+                      </Link>
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                        <span>{categoriesMap.get(post.categoryId ?? 0) || t("common.uncategorized")}</span>
+                        <span>·</span>
+                        <span>{new Date(post.createdAt).toLocaleDateString(language === "zh" ? "zh-CN" : "en-US")}</span>
+                        <span>·</span>
+                        <span>{post.viewCount} {t("manage.table.views")}</span>
+                      </div>
+                    </div>
+                    <Badge variant={post.status === "published" ? "default" : "secondary"} className="shrink-0">
+                      {post.status === "published" ? t("manage.status.published") : t("manage.status.draft")}
+                    </Badge>
+                  </div>
+                  <div className="mt-4 flex flex-col gap-3">
+                    {renderVisibilityControl(post)}
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                      <Button asChild variant="outline" size="sm" className="glass-button">
+                        <Link href={`/post/${post.slug}`}>{t("manage.action.view")}</Link>
+                      </Button>
+                      <Button asChild variant="outline" size="sm" className="glass-button">
+                        <Link href={`/write/${post.slug}`}>{t("manage.action.edit")}</Link>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="glass-button"
+                        onClick={() => togglePublish(post)}
+                      >
+                        {post.status === "published" ? t("manage.action.unpublish") : t("manage.action.publish")}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-red-400/25 bg-red-950/15 text-red-100 hover:bg-red-500/15"
+                        onClick={() => setDeleteId(post.id)}
+                      >
+                        {t("manage.action.delete")}
+                      </Button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <div className="glass-panel hidden overflow-hidden md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-sky-200/10 hover:bg-transparent">
+                    <TableHead className="w-[400px] text-slate-300">{t("manage.table.title")}</TableHead>
+                    <TableHead className="text-slate-300">{t("manage.table.category")}</TableHead>
+                    <TableHead className="text-slate-300">{t("manage.table.status")}</TableHead>
+                    <TableHead className="min-w-[280px] text-slate-300">{t("manage.table.visibility")}</TableHead>
+                    <TableHead className="text-slate-300">{t("manage.table.views")}</TableHead>
+                    <TableHead className="text-slate-300">{t("manage.table.createdAt")}</TableHead>
+                    <TableHead className="w-[70px] text-slate-300">{t("manage.table.actions")}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {postsData?.posts.map((post) => (
+                    <TableRow key={post.id} className="border-sky-200/10 hover:bg-sky-400/5">
+                      <TableCell>
                         <Link
                           href={`/post/${post.slug}`}
                           className="line-clamp-1 font-medium text-white hover:text-sky-200"
                         >
                           {post.title}
                         </Link>
-                        <div className="flex flex-wrap gap-1">
-  
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {categoriesMap.get(post.categoryId ?? 0) || (
-                        <span className="text-slate-500">{t("common.uncategorized")}</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={post.status === "published" ? "default" : "secondary"}
-                      >
-                        {post.status === "published" ? t("manage.status.published") : t("manage.status.draft")}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="inline-grid grid-cols-3 rounded-md border border-sky-200/15 bg-slate-950/50 p-1">
-                        {visibilityOptions.map((option) => {
-                          const Icon = option.icon;
-                          const active = (post.visibility ?? "admin") === option.value;
-                          return (
-                            <button
-                              key={option.value}
-                              type="button"
-                              aria-pressed={active}
-                              title={t(option.labelKey)}
-                              disabled={updateMutation.isPending}
-                              onClick={() => setVisibility(post, option.value)}
-                              className={`flex h-8 min-w-0 items-center justify-center gap-1.5 rounded px-2 text-xs font-medium transition ${
-                                active
-                                  ? "bg-sky-400/20 text-sky-100 shadow-[0_0_18px_rgba(56,189,248,0.18)]"
-                                  : "text-slate-400 hover:bg-slate-800/80 hover:text-slate-100"
-                              }`}
-                            >
-                              <Icon className="h-3.5 w-3.5 shrink-0" />
-                              <span className="hidden sm:inline">{t(option.labelKey)}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-slate-300">{post.viewCount}</TableCell>
-                    <TableCell>
-                      {new Date(post.createdAt).toLocaleDateString(language === "zh" ? "zh-CN" : "en-US")}
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="w-4 h-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem asChild>
-                            <Link href={`/post/${post.slug}`}>
-                              <Eye className="w-4 h-4 mr-2" />
-                              {t("manage.action.view")}
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link href={`/write/${post.slug}`}>
-                              <Edit className="w-4 h-4 mr-2" />
-                              {t("manage.action.edit")}
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => togglePublish(post)}>
-                            {post.status === "published" ? (
-                              <>
-                                <EyeOff className="w-4 h-4 mr-2" />
-                                {t("manage.action.unpublish")}
-                              </>
-                            ) : (
-                              <>
+                      </TableCell>
+                      <TableCell>
+                        {categoriesMap.get(post.categoryId ?? 0) || (
+                          <span className="text-slate-500">{t("common.uncategorized")}</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={post.status === "published" ? "default" : "secondary"}
+                        >
+                          {post.status === "published" ? t("manage.status.published") : t("manage.status.draft")}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {renderVisibilityControl(post)}
+                      </TableCell>
+                      <TableCell className="text-slate-300">{post.viewCount}</TableCell>
+                      <TableCell>
+                        {new Date(post.createdAt).toLocaleDateString(language === "zh" ? "zh-CN" : "en-US")}
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <Link href={`/post/${post.slug}`}>
                                 <Eye className="w-4 h-4 mr-2" />
-                                {t("manage.action.publish")}
-                              </>
-                            )}
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() => setDeleteId(post.id)}
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            {t("manage.action.delete")}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                                {t("manage.action.view")}
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <Link href={`/write/${post.slug}`}>
+                                <Edit className="w-4 h-4 mr-2" />
+                                {t("manage.action.edit")}
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => togglePublish(post)}>
+                              {post.status === "published" ? (
+                                <>
+                                  <EyeOff className="w-4 h-4 mr-2" />
+                                  {t("manage.action.unpublish")}
+                                </>
+                              ) : (
+                                <>
+                                  <Eye className="w-4 h-4 mr-2" />
+                                  {t("manage.action.publish")}
+                                </>
+                              )}
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={() => setDeleteId(post.id)}
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              {t("manage.action.delete")}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </>
         )}
       </main>
 

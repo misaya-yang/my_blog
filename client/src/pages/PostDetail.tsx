@@ -29,6 +29,13 @@ import "highlight.js/styles/github-dark.min.css";
 
 import { toast } from "sonner";
 
+function postVisualVariant(slug?: string) {
+  if (slug?.includes("agent") || slug?.includes("harness") || slug?.includes("rag")) {
+    return "matrix";
+  }
+  return slug?.includes("isohc") ? "orbit" : "wave";
+}
+
 export default function PostDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { isAdmin } = useAuth();
@@ -182,7 +189,7 @@ export default function PostDetail() {
             <div className="mb-8">
               <div className="mb-5">
                 <ResearchWaveVisual
-                  variant={post.slug?.includes("isohc") ? "orbit" : "wave"}
+                  variant={postVisualVariant(post.slug)}
                   className="h-[240px] sm:h-[300px]"
                 />
               </div>

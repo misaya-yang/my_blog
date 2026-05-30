@@ -148,6 +148,16 @@ async function seed() {
       console.log("Category:", category.slug, "ID:", category.id);
     }
 
+    const algorithmCategory = categoryBySlug.get("ai-algorithms");
+    if (algorithmCategory) {
+      await sql`
+        UPDATE posts
+        SET category_id = ${algorithmCategory.id}
+        WHERE category_id IN (SELECT id FROM categories WHERE slug = ${"deep-learning"})
+      `;
+      await sql`DELETE FROM categories WHERE slug = ${"deep-learning"}`;
+    }
+
     await sql`
       DELETE FROM post_tags
       WHERE post_id IN (

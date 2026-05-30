@@ -68,6 +68,7 @@ export default function Home() {
     posts?.posts?.reduce((sum: number, post: any) => sum + (post.viewCount || 0), 0) || 0;
   const visibleTags = (tags?.length ? tags : focusTagKeys.map((key, index) => ({ id: index, name: t(key) })))
     .filter((tag: any) => tag.slug !== "evq-cosh" && tag.name !== "EVQ-Cosh");
+  const applicationCategoryId = categories?.find((category) => category.slug === "ai-applications")?.id;
 
   const copyEmail = () => {
     navigator.clipboard.writeText("zedpl28174@gmail.com");
@@ -249,7 +250,7 @@ export default function Home() {
                     index={index}
                     language={language}
                     t={t}
-                    track={post.categoryId === categories?.find((category) => category.slug === "ai-applications")?.id ? "applications" : "algorithms"}
+                    track={post.categoryId === applicationCategoryId ? "applications" : "algorithms"}
                   />
                 ))}
               </div>

@@ -11,7 +11,6 @@ import { trackConfigs, type TrackKind } from "@/lib/tracks";
 import { trpc } from "@/lib/trpc";
 import {
   ArrowRight,
-  BookOpen,
   Boxes,
   Eye,
   FileText,
