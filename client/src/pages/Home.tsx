@@ -12,7 +12,11 @@ import {
 import { SubscriptionForm } from "@/components/SubscriptionForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { trackConfigs, type TrackKind } from "@/lib/tracks";
+import {
+  getPublicTrackSeries,
+  trackConfigs,
+  type TrackKind,
+} from "@/lib/tracks";
 import { trpc } from "@/lib/trpc";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
 import { buildHomeJsonLd, buildRouteMetadata } from "@shared/metadata";
@@ -92,6 +96,16 @@ export default function Home() {
   const { data: tags } = trpc.tags.list.useQuery();
 
   const publishedPosts = (posts?.posts ?? []) as ArticleCardPost[];
+  const publicSeriesByTrack: Record<
+    TrackKind,
+    ReturnType<typeof getPublicTrackSeries>
+  > = {
+    algorithms: getPublicTrackSeries("algorithms", publishedPosts),
+    applications: getPublicTrackSeries("applications", publishedPosts),
+  };
+  const activeSeries = portalTracks.flatMap(track =>
+    publicSeriesByTrack[track].map(series => ({ track, series }))
+  );
   const totalViews = sumPostViews(publishedPosts);
   const hasMeaningfulStats = Boolean(
     publishedPosts.length > 0 || (categories?.length || 0) > 0 || totalViews > 0
@@ -190,6 +204,7 @@ export default function Home() {
               {portalTracks.map(track => {
                 const config = trackConfigs[track];
                 const publicCount = countTrackPosts(publishedPosts, track);
+                const pathCount = publicSeriesByTrack[track].length;
                 return (
                   <Link key={track} href={config.href}>
                     <article className="glass-panel track-portal-card group min-h-[12rem] p-5 transition hover:-translate-y-0.5 hover:border-sky-300/60 sm:p-6">
@@ -213,7 +228,7 @@ export default function Home() {
                       <div className="track-portal-cta flex flex-wrap items-center gap-2 text-xs font-semibold text-sky-200">
                         <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200/15 px-2.5 py-1">
                           <GitBranch className="h-3.5 w-3.5" />
-                          {t("home.pathCount", { count: config.series.length })}
+                          {t("home.pathCount", { count: pathCount })}
                         </span>
                         <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200/15 px-2.5 py-1">
                           {t("home.publicNotes", { count: publicCount })}
@@ -229,25 +244,25 @@ export default function Home() {
               })}
             </div>
 
-            <section className="research-map-strip mt-8 max-w-5xl">
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-white">
-                  <Map className="h-5 w-5 text-sky-300" />
-                  <h2 className="text-base font-semibold">
-                    {t("home.activeSeries")}
-                  </h2>
+            {activeSeries.length > 0 && (
+              <section className="research-map-strip mt-8 max-w-5xl">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 text-white">
+                    <Map className="h-5 w-5 text-sky-300" />
+                    <h2 className="text-base font-semibold">
+                      {t("home.activeSeries")}
+                    </h2>
+                  </div>
+                  <Link
+                    href="#research-index"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-200 hover:text-white"
+                  >
+                    {t("home.researchIndexKicker")}
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
                 </div>
-                <Link
-                  href="#research-index"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-200 hover:text-white"
-                >
-                  {t("home.researchIndexKicker")}
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
-              <div className="research-series-grid">
-                {portalTracks.flatMap(track =>
-                  trackConfigs[track].series.map(series => (
+                <div className="research-series-grid">
+                  {activeSeries.map(({ track, series }) => (
                     <Link
                       key={series.slug}
                       href={trackConfigs[track].href}
@@ -268,10 +283,10 @@ export default function Home() {
                         ))}
                       </div>
                     </Link>
-                  ))
-                )}
-              </div>
-            </section>
+                  ))}
+                </div>
+              </section>
+            )}
 
             <form
               onSubmit={submitSearch}

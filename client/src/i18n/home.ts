@@ -193,10 +193,6 @@ const home: TranslationDict = {
   "track.statTopics": { en: "Topics / Technical Map", zh: "专题 / 技术地图" },
   "track.topicNodes": { en: "Technical Nodes", zh: "技术节点" },
   "track.seriesTitle": { en: "Reading paths", zh: "阅读路径" },
-  "track.seriesEmpty": {
-    en: "No public article is attached yet; the planned path is still visible.",
-    zh: "还没有公开文章接入；先保留规划路径。",
-  },
   "track.nextPlanned": { en: "Next planned", zh: "后续计划" },
   "track.readingOrder": { en: "Reading order", zh: "阅读顺序" },
   "track.researchMap": { en: "Research map", zh: "研究地图" },
