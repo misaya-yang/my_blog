@@ -1,0 +1,438 @@
+# Agent Loop: 从 ReAct 模式到可观测运行时
+
+Agent loop 常被写成一个朴素循环：模型读取上下文，决定是否调用工具，工具返回 observation，再把 observation 放回上下文。这个结构可以复现 ReAct 的核心思想：reasoning 和 acting 交替发生，模型通过外部环境修正自己的下一步行动。
+
+但生产系统里的 AgentLoop 不是 `while true` 调模型。真正困难的问题是：状态由谁保存，工具调用如何治理，什么时候停止，失败如何恢复，预算如何消耗，人工确认在哪里插入，trace 如何复盘。
+
+本文讨论一个更窄的抽象：
+
+> AgentLoop 是围绕随机模型决策构建的确定性运行时。
+
+它把模型从全能控制器降级为 policy component，把状态、上下文、工具、预算、检查点和观测交给运行时管理。
+
+```text
+State -> Context -> Model Decision -> Action -> Observation -> Reducer -> Checkpoint -> State
+```
+
+这个方向的目标不是让 Agent 更“自主”，而是让多步行动变得可观测、可恢复、可评测。
+
+## Design Boundary
+
+这里的 Agent Loop 指运行时抽象，而不是某个已经完整商品化的产品声明。讨论重点放在架构边界、状态转移、工具治理、会话恢复和评测面上，不依赖私有实验数据或未公开指标。
+
+在博客 Agent、文档助手、工具型 Assistant 等场景里，这个抽象可以逐步落地：先保存会话和 trace，再引入受控工具，最后扩展到文件、权限、限流和人工确认。复杂度应随着真实任务需求增加，而不是一开始就堆叠多 Agent 或重型编排。
+
+## 1. From Pattern to Runtime
+
+ReAct 的贡献是把语言推理和环境行动放进同一条轨迹中。模型不再只是生成答案，而是可以先思考、再行动、再根据 observation 更新计划。这个范式适合工具使用、网页操作、检索问答和交互式任务。
+
+ReAct 解决的是行为模式问题，但 AgentLoop 还要解决运行时问题：
+
+- 当前任务状态是否独立于 prompt 保存？
+- 每一步模型输入由谁构建？
+- 工具参数如何验证？
+- 副作用 action 如何审批和去重？
+- 工具失败后如何重试、降级或终止？
+- 模型重复无效 action 时如何检测 no-progress？
+- crash 后能否从上一个安全状态恢复？
+
+因此，AgentLoop 的边界不是“模型自己决定下一步”，而是“运行时管理状态转移，模型在受控上下文中提出下一步决策”。
+
+## 2. State Transition View
+
+一个清晰的 AgentLoop 应该围绕单一状态对象运行。模型输出可以影响状态，但不能隐式拥有状态。
+
+```ts
+type AgentState = {
+  runId: string
+  sessionId: string
+  goal: string
+  phase: AgentPhase
+
+  plan: PlanStep[]
+  messages: Message[]
+  workingMemory: WorkingMemory
+  evidence?: EvidencePacket
+  observations: Observation[]
+
+  pendingActions: AgentAction[]
+  approvals: ApprovalRequest[]
+
+  budgets: {
+    maxSteps: number
+    maxTokens: number
+    maxToolCalls: number
+    maxWallClockMs: number
+  }
+
+  counters: {
+    steps: number
+    tokens: number
+    toolCalls: number
+    retries: number
+  }
+
+  trace: AgentEvent[]
+  status: "running" | "waiting" | "completed" | "failed" | "cancelled"
+}
+```
+
+形式上，AgentLoop 可以写成一个状态转移系统：
+
+$$
+a_t = \pi_\theta(C(S_t))
+$$
+
+$$
+o_t = E(a_t)
+$$
+
+$$
+S_{t+1}=R(S_t,a_t,o_t)
+$$
+
+其中 $S_t$ 是状态，$C$ 是 context builder，$\pi_\theta$ 是模型 policy，$E$ 是 action executor，$R$ 是 reducer。AgentLoop 的工程重点在 $C$、$E$ 和 $R$：模型产生候选决策，运行时决定它如何进入系统。
+
+## 3. Runtime Stack
+
+把 AgentLoop 写成运行时后，技术栈可以拆成几层。
+
+| Layer | Responsibility | Typical Primitive |
+| --- | --- | --- |
+| Input Protocol | 接收用户目标和运行配置 | task spec, session id, tenant context |
+| State Store | 保存 loop 的事实来源 | AgentState, checkpoint, reducer |
+| Context Builder | 把状态投影成模型输入 | memory, evidence, plan, tool schema, budget summary |
+| Model Policy | 在受控上下文中生成下一步 | structured decision, tool call, final answer |
+| Tool Runtime | 执行外部 action 并归一化 observation | schema validation, permission, timeout, retry |
+| Guardrail Gate | 拦截高风险或不合规 action | confirmation, policy check, human approval |
+| Event Stream | 暴露运行过程 | phase events, tool events, stop reason |
+| Evaluator | 基于 trace 判断质量 | path quality, recovery, cost discipline |
+
+这张表也说明了一个关键点：AgentLoop 不是 prompt 技巧，而是 AI application runtime。模型只是其中一层。
+
+## 4. Phase Machine
+
+生产 AgentLoop 需要相位，而不是一团循环逻辑。
+
+```text
+INIT
+  -> LOAD_STATE
+  -> ANALYZE_TASK
+  -> BUILD_CONTEXT
+  -> MODEL_STEP
+  -> ROUTE_DECISION
+  -> EXECUTE_ACTION
+  -> MERGE_OBSERVATION
+  -> CHECK_TERMINATION
+  -> CHECKPOINT
+  -> BUILD_CONTEXT ...
+  -> FINALIZE
+```
+
+每个 phase 应该满足三个条件：
+
+- 输入只来自 `AgentState` 和明确依赖。
+- 输出是 state patch 或结构化 event。
+- 失败语义可以归类为 recoverable、waiting、blocked 或 fatal。
+
+OpenAI Agents SDK 的 tracing 设计把 LLM generation、tool call、handoff、guardrail 和 custom event 纳入一次 run 的 trace。LangGraph 从 state graph 和 persistence 角度强调 checkpoint、interrupt 和 durable execution。两者指向同一个工程原则：多步 Agent 不能只留下最终回答，必须留下可回放的运行轨迹。
+
+## 5. Decision Contract
+
+AgentLoop 不应该解析模型自由文本来决定下一步。模型输出应该落到一个受约束的 decision contract。
+
+```ts
+type AgentDecision =
+  | {
+      type: "final"
+      answer: string
+      citations?: Citation[]
+    }
+  | {
+      type: "tool_call"
+      tool: string
+      arguments: Record<string, unknown>
+      reason?: string
+    }
+  | {
+      type: "plan_update"
+      steps: PlanStep[]
+    }
+  | {
+      type: "ask_human"
+      question: string
+      approvalFor?: AgentAction
+    }
+```
+
+这个 contract 让运行时可以做四类检查：
+
+- 工具是否存在。
+- 参数是否符合 schema。
+- 用户是否具备权限。
+- action 是否需要 guardrail 或 human approval。
+
+Anthropic 在 agent 实践中强调工具接口要清晰、文档化、适合模型使用。Decision Contract 是同一个原则在 loop 层的延伸：模型不是随意发言，而是在明确的 agent-computer interface 中行动。
+
+## 6. Context Builder
+
+AgentLoop 每一轮都要重新构建上下文。上下文不是聊天历史追加，而是状态到模型输入的投影。
+
+```text
+Context = System Policy
+        + Goal
+        + Current Plan
+        + Relevant Memory
+        + Evidence Packet
+        + Recent Observations
+        + Tool Schemas
+        + Budget Summary
+```
+
+Context Builder 的职责是选择，不是堆叠。它决定哪些 observation 原文保留，哪些工具结果压缩，哪些 evidence 进入当前轮，哪些 memory 只留在 state。
+
+可以把上下文选择写成预算优化：
+
+$$
+C^\*=\arg\max_C U(C,S_t)
+\quad
+\mathrm{s.t.}
+\quad
+\mathrm{tokens}(C)\le B_t
+$$
+
+$U(C,S_t)$ 代表上下文对当前状态的效用，$B_t$ 是本轮 token budget。Evidence、memory、tool result、plan 和 system constraints 都在争夺这个预算。
+
+这也是 AgentLoop 与 Evidence Packet 的连接点：Evidence Packet 负责把知识变成可评估证据，Context Builder 再把证据编译进当前模型窗口。
+
+## 7. Tool Runtime
+
+工具执行不能直接由模型输出驱动。中间必须有 Tool Runtime。
+
+```text
+Decision
+  -> schema validation
+  -> permission check
+  -> risk classification
+  -> confirmation gate
+  -> timeout / retry policy
+  -> execution
+  -> observation normalization
+  -> reducer
+```
+
+一个可治理的 tool interface 至少应包含：
+
+- parameter schema
+- risk level
+- required permissions
+- session and quota scope
+- timeout and retry policy
+- confirmation requirement
+- result serializer
+- relevance hints
+
+如果 action 有副作用，模型只能提出 intent，运行时必须控制 execution。比如删除数据、发送邮件、写入数据库、发起支付，都应该通过 confirmation gate、idempotency key 和 audit log。
+
+### Session, File, and Quota Scope
+
+Agent Loop 还需要把每一步 action 绑定到明确的用户、会话和额度范围。匿名用户、登录用户和作者账号不应共享同一组能力边界：可用消息数、可检索内容、可上传文件大小、可调用工具、可继续的历史会话都应由运行时检查，而不是交给 prompt 约束。
+
+文件也应被看成带作用域的 evidence source。用户上传的临时文件默认只属于当前会话；只有经过作者确认和显式发布流程，才应进入公共知识库或长期可检索索引。这条边界可以避免把私人附件误编译进后续读者的上下文。
+
+## 8. Loop Invariants
+
+AgentLoop 需要一些运行时不变量，否则多步行为会逐渐变成不可解释的 transcript。
+
+| Invariant | Meaning |
+| --- | --- |
+| State-owned truth | 事实来源在 `AgentState`，不在模型上下文里 |
+| Reducer-only mutation | 状态只能通过 reducer/event patch 修改 |
+| Append-only trace | 运行轨迹只追加，不覆盖历史 |
+| Budget monotonicity | step、token、tool counters 单调递增 |
+| Action idempotency | 副作用 action 必须有 call id 或 dedupe key |
+| Tool result normalization | 工具结果先变成 observation，再进入上下文 |
+| Explicit termination | 停止原因必须结构化记录 |
+
+这些不变量让 AgentLoop 更像系统运行时，而不是一次聊天记录。它们也让 evaluation 和 debugging 有稳定对象。
+
+## 9. Termination and Progress
+
+AgentLoop 最大的风险之一是无限循环。停止条件不能只靠模型自己说“完成了”。
+
+```ts
+function shouldStop(state: AgentState): StopReason | null {
+  if (state.status === "completed") return "final_answer"
+  if (state.counters.steps >= state.budgets.maxSteps) return "step_budget"
+  if (state.counters.tokens >= state.budgets.maxTokens) return "token_budget"
+  if (state.counters.toolCalls >= state.budgets.maxToolCalls) return "tool_budget"
+  if (detectRepeatedToolFailure(state)) return "repeated_tool_failure"
+  if (detectRepeatedAction(state)) return "repeated_action"
+  if (detectNoProgress(state)) return "no_progress"
+  if (requiresHumanInput(state)) return "waiting_for_human"
+  return null
+}
+```
+
+`no_progress` 是生产 AgentLoop 的关键指标。很多失败不会表现为异常，而是表现为重复搜索同一个 query、重复调用同一个工具、不断重写相同计划，或在证据已经足够时继续收集材料。
+
+一个实用的 progress detector 可以观察三类信号：
+
+- action 是否在重复。
+- observation 是否带来新信息。
+- plan 是否更接近 terminal condition。
+
+## 10. Checkpoints and Recovery
+
+多步 Agent 必须考虑恢复。长任务中断后从头执行会浪费成本，更危险的是重复执行副作用工具。
+
+建议 checkpoint 的边界包括：
+
+- model decision 之后
+- tool execution 之前
+- tool observation 合并之后
+- human approval interrupt 之前
+- final answer 写入之前
+
+LangGraph 的 persistence 和 interrupt/resume 机制说明了这类设计的重要性：长运行 Agent 需要保存 state snapshot，才能支持 human-in-the-loop、fault tolerance 和 time travel debugging。
+
+恢复友好的 AgentLoop 要求 phase 尽量幂等。尤其是 interrupt 之前的代码，resume 后可能重新执行，因此不可重复副作用必须放在明确的 action boundary 后面。
+
+## 11. Event Stream
+
+AgentLoop 应该把运行过程作为 event stream 输出，而不是只返回最终答案。
+
+```ts
+type AgentEvent =
+  | { type: "phase_started"; phase: AgentPhase }
+  | { type: "context_built"; tokens: number; included: string[] }
+  | { type: "model_decision"; decisionType: string }
+  | { type: "tool_started"; tool: string; callId: string }
+  | { type: "tool_finished"; tool: string; callId: string; status: string }
+  | { type: "checkpoint_saved"; checkpointId: string }
+  | { type: "stop"; reason: StopReason }
+```
+
+Event stream 同时服务三类消费者：
+
+- 前端展示 Agent 正在做什么。
+- 运行时监控 latency、token、tool error 和 stop reason。
+- evaluator 判断路径是否合理。
+
+这也是 AgentLoop 和普通 request-response API 的分水岭。Agent 的价值来自多步行动，而多步行动必须可见。
+
+## 12. Implementation Skeleton
+
+一个最小可用的 AgentLoop 可以保持下面的骨架：
+
+```ts
+async function runAgentLoop(initialState: AgentState): Promise<AgentState> {
+  let state = await loadOrCreateState(initialState)
+
+  while (true) {
+    const context = await buildContext(state)
+    state = reduce(state, event("context_built", { context }))
+
+    const decision = await callModel(context)
+    validateDecision(decision, state)
+    state = reduce(state, event("model_decision", { decision }))
+
+    if (decision.type === "final") {
+      state = reduce(state, event("final_answer", { answer: decision.answer }))
+      await checkpoint(state)
+      return finalize(state)
+    }
+
+    if (decision.type === "ask_human") {
+      state = reduce(state, event("waiting_for_human", { decision }))
+      await checkpoint(state)
+      return state
+    }
+
+    const action = await authorizeAction(decision, state)
+    await checkpointBeforeAction(state, action)
+
+    const observation = await executeAction(action)
+    state = reduce(state, event("observation", { observation }))
+
+    const stop = shouldStop(state)
+    await checkpoint(state)
+
+    if (stop) {
+      state = reduce(state, event("stop", { reason: stop }))
+      return finalize(state)
+    }
+  }
+}
+```
+
+骨架的重点是三条约束：模型不直接改状态，工具不直接进入 prompt，所有变化都通过事件和 reducer 合并。
+
+## 13. Failure Taxonomy
+
+AgentLoop 的失败最好提前命名，否则所有问题都会被归因成“模型不稳定”。
+
+| Failure | Symptom | Runtime Response |
+| --- | --- | --- |
+| Invalid decision | 模型输出不可解析或不符合 contract | ask model to repair, fallback, terminate |
+| Tool schema error | 参数缺失、类型错误、非法枚举 | structured error, retry with correction |
+| Permission denied | 工具存在但用户无权执行 | stop or ask human |
+| Repeated action | 重复同一无效工具调用 | no-progress stop |
+| Context overflow | observation 或 evidence 超预算 | compress, drop, summarize |
+| Side-effect ambiguity | 不确定 action 是否已经执行 | dedupe by call id, require audit check |
+| Stale state | resume 后状态与外部系统不一致 | refresh observation, reconcile |
+
+这个 taxonomy 会直接影响 eval 和 observability。一个好的 AgentLoop 不只是减少失败，而是让失败可分类、可复现、可修复。
+
+## 14. Evaluation Surface
+
+AgentLoop 的评测不应该只看最终答案。至少要拆出六类指标：
+
+- **Completion:** 是否在预算内到达有效终态。
+- **Path quality:** 是否选择合理工具和合理顺序。
+- **State integrity:** 状态是否正确更新，没有丢 observation 或重复副作用。
+- **Recovery:** 中断、失败和重试后是否能继续。
+- **Cost discipline:** token、tool calls、latency 和 retries 是否受控。
+- **Stop quality:** 终止原因是否正确，是否过早停止或无限拖延。
+
+这与 Harness Engine 的方向相连：AgentLoop 产生 trace，Harness 用 trace 做可重复评测。没有 loop-level trace，Agent 评测只能停留在答案打分。
+
+## 15. Boundaries
+
+AgentLoop 不是越复杂越好。
+
+- 简单 FAQ 或固定流程任务不一定需要 AgentLoop，普通 workflow 可能更稳定。
+- 多 Agent 不是默认选择。先把单 Agent loop 的 state、tool、trace 和 termination 做清楚。
+- 长计划不等于高质量计划。计划必须能被 observation 校正。
+- checkpoint 不能替代幂等设计。副作用工具仍然需要 call id、dedupe 和 confirmation。
+- trace 不能替代评测集。trace 让问题可见，但不会自动判断质量。
+
+Anthropic 对 agent 的建议很克制：优先选择最简单可行的方案，只在任务确实需要灵活决策和多步行动时增加复杂度。AgentLoop 也应该遵守这个原则。
+
+## 16. Core Takeaway
+
+AgentLoop 的核心不是“让模型循环思考”，而是为模型行动提供受控运行时：
+
+```text
+AgentLoop = state machine
+          + context builder
+          + decision contract
+          + tool runtime
+          + budget policy
+          + checkpoint
+          + trace
+```
+
+这个抽象把模型从全能控制器降级为决策组件，把系统可靠性交还给工程结构。模型决定下一步，运行时管理状态、预算、权限、恢复和终止。
+
+如果 Evidence Packet 解决的是“知识如何进入 Agent”，AgentLoop 解决的就是“Agent 如何在多步行动中保持可控”。两者组合起来，构成通用 AI Assistant 的基础运行层。
+
+## References
+
+- Yao et al., [ReAct: Synergizing Reasoning and Acting in Language Models](https://arxiv.org/abs/2210.03629)
+- Anthropic, [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents)
+- OpenAI Agents SDK, [Tracing](https://openai.github.io/openai-agents-python/tracing/)
+- OpenAI Agents SDK, [Guardrails](https://openai.github.io/openai-agents-python/guardrails/)
+- LangGraph, [Overview](https://docs.langchain.com/oss/python/langgraph)
+- LangGraph, [Interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts)
+- Google Cloud, [Manage sessions with Agent Development Kit](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-adk)

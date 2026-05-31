@@ -14,19 +14,24 @@ import {
   ArrowLeft,
   BookOpen,
   Edit,
-  GraduationCap,
   LogOut,
-  Mail,
   Menu,
   Search,
   UserRound,
 } from "lucide-react";
 import { Link } from "wouter";
-import { toast } from "sonner";
 import type React from "react";
 
 type SiteHeaderProps = {
-  active?: "home" | "algorithms" | "applications" | "archive" | "search" | "about" | "write" | "login";
+  active?:
+    | "home"
+    | "algorithms"
+    | "applications"
+    | "archive"
+    | "search"
+    | "about"
+    | "write"
+    | "login";
   backHref?: string;
   backLabel?: string;
   compact?: boolean;
@@ -34,7 +39,10 @@ type SiteHeaderProps = {
 
 export function SpaceBackdrop({ subtle = false }: { subtle?: boolean }) {
   return (
-    <div aria-hidden="true" className={cn("space-backdrop", subtle && "space-backdrop-subtle")}>
+    <div
+      aria-hidden="true"
+      className={cn("space-backdrop", subtle && "space-backdrop-subtle")}
+    >
       <div className="space-grid" />
       <div className="space-stars" />
       <div className="planet-horizon" />
@@ -50,7 +58,12 @@ export function BrandMark({ className }: { className?: string }) {
   );
 }
 
-export function SiteHeader({ active = "home", backHref, backLabel, compact }: SiteHeaderProps) {
+export function SiteHeader({
+  active = "home",
+  backHref,
+  backLabel,
+  compact,
+}: SiteHeaderProps) {
   const { isAdmin, isAuthenticated, displayName, logout } = useAuth();
   const { language, toggleLanguage, t } = useLanguage();
   const primaryLinks: Array<{
@@ -60,25 +73,25 @@ export function SiteHeader({ active = "home", backHref, backLabel, compact }: Si
   }> = [
     { href: "/", key: "home", label: t("nav.home") },
     { href: "/algorithms", key: "algorithms", label: t("nav.algorithms") },
-    { href: "/applications", key: "applications", label: t("nav.applications") },
+    {
+      href: "/applications",
+      key: "applications",
+      label: t("nav.applications"),
+    },
     { href: "/archive", key: "archive", label: t("nav.archive") },
     { href: "/search", key: "search", label: t("nav.search") },
     { href: "/about", key: "about", label: t("nav.about") },
   ];
 
-  const copyEmail = () => {
-    navigator.clipboard.writeText("zedpl28174@gmail.com");
-    toast.success(t("common.emailCopied"));
-  };
-
-  const navLink = (href: string, key: SiteHeaderProps["active"], label: string) => (
+  const navLink = (
+    href: string,
+    key: SiteHeaderProps["active"],
+    label: string
+  ) => (
     <Link
       key={href}
       href={href}
-      className={cn(
-        "nav-ink",
-        active === key && "nav-ink-active"
-      )}
+      className={cn("nav-ink", active === key && "nav-ink-active")}
     >
       {label}
     </Link>
@@ -91,7 +104,9 @@ export function SiteHeader({ active = "home", backHref, backLabel, compact }: Si
           {backHref ? (
             <Link href={backHref} className="nav-ink gap-2">
               <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">{backLabel || t("nav.back")}</span>
+              <span className="hidden sm:inline">
+                {backLabel || t("nav.back")}
+              </span>
             </Link>
           ) : (
             <Link href="/" className="flex items-center gap-3">
@@ -107,36 +122,44 @@ export function SiteHeader({ active = "home", backHref, backLabel, compact }: Si
           {!compact && (
             <div className="hidden items-center gap-1.5 lg:flex">
               {primaryLinks
-                .filter((link) => link.key !== "search")
-                .map((link) => navLink(link.href, link.key, link.label))}
+                .filter(link => link.key !== "search")
+                .map(link => navLink(link.href, link.key, link.label))}
             </div>
           )}
-          <a
-            href="https://scholar.google.com/citations?user=6X9HlDAAAAAJ"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-ink hidden gap-2 sm:inline-flex"
-          >
-            <GraduationCap className="h-4 w-4" />
-            {t("nav.scholar")}
-          </a>
-          <button type="button" className="nav-ink hidden gap-2 sm:inline-flex" onClick={copyEmail}>
-            <Mail className="h-4 w-4" />
-            {t("nav.email")}
-          </button>
           {isAdmin && (
-            <Link href="/write" className={cn("nav-ink gap-2", active === "write" && "nav-ink-active")}>
+            <Link
+              href="/write"
+              className={cn(
+                "nav-ink gap-2",
+                active === "write" && "nav-ink-active"
+              )}
+            >
               <Edit className="h-4 w-4" />
               <span className="hidden sm:inline">{t("nav.write")}</span>
             </Link>
           )}
-          <button type="button" className="nav-ink px-3" onClick={toggleLanguage}>
+          <span
+            className="mx-1 hidden h-5 w-px bg-white/10 sm:block"
+            aria-hidden="true"
+          />
+          <button
+            type="button"
+            className="nav-ink px-3"
+            onClick={toggleLanguage}
+          >
             {language === "en" ? t("nav.switchToZh") : t("nav.switchToEn")}
           </button>
           {isAuthenticated ? (
-            <Button variant="outline" size="sm" className="glass-button hidden gap-2 sm:inline-flex" onClick={logout}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="glass-button hidden gap-2 sm:inline-flex"
+              onClick={logout}
+            >
               <UserRound className="h-4 w-4" />
-              <span className="max-w-24 truncate">{isAdmin ? "Misaya" : displayName}</span>
+              <span className="max-w-24 truncate">
+                {isAdmin ? "Misaya" : displayName}
+              </span>
               <LogOut className="h-3.5 w-3.5 opacity-70" />
             </Button>
           ) : (
@@ -144,7 +167,10 @@ export function SiteHeader({ active = "home", backHref, backLabel, compact }: Si
               <Button
                 size="sm"
                 variant="outline"
-                className={cn("glass-button", active === "login" && "border-primary/70 text-white")}
+                className={cn(
+                  "glass-button",
+                  active === "login" && "border-primary/70 text-white"
+                )}
               >
                 {t("nav.login")}
               </Button>
@@ -170,7 +196,7 @@ export function SiteHeader({ active = "home", backHref, backLabel, compact }: Si
                 </SheetTitle>
               </SheetHeader>
               <div className="grid gap-2 px-4 py-5">
-                {primaryLinks.map((link) => (
+                {primaryLinks.map(link => (
                   <SheetClose asChild key={link.href}>
                     <Link
                       href={link.href}
@@ -186,29 +212,26 @@ export function SiteHeader({ active = "home", backHref, backLabel, compact }: Si
                 ))}
               </div>
               <div className="grid gap-2 border-t border-sky-200/10 px-4 py-5">
-                <SheetClose asChild>
-                  <a
-                    href="https://scholar.google.com/citations?user=6X9HlDAAAAAJ"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="nav-ink h-11 justify-start gap-2"
-                  >
-                    <GraduationCap className="h-4 w-4" />
-                    {t("nav.scholar")}
-                  </a>
-                </SheetClose>
-                <button type="button" className="nav-ink h-11 justify-start gap-2" onClick={copyEmail}>
-                  <Mail className="h-4 w-4" />
-                  {t("nav.email")}
-                </button>
-                <button type="button" className="nav-ink h-11 justify-start" onClick={toggleLanguage}>
-                  {language === "en" ? t("nav.switchToZh") : t("nav.switchToEn")}
+                <button
+                  type="button"
+                  className="nav-ink h-11 justify-start"
+                  onClick={toggleLanguage}
+                >
+                  {language === "en"
+                    ? t("nav.switchToZh")
+                    : t("nav.switchToEn")}
                 </button>
                 {isAuthenticated ? (
                   <SheetClose asChild>
-                    <button type="button" className="nav-ink h-11 justify-start gap-2" onClick={logout}>
+                    <button
+                      type="button"
+                      className="nav-ink h-11 justify-start gap-2"
+                      onClick={logout}
+                    >
                       <UserRound className="h-4 w-4" />
-                      <span className="truncate">{isAdmin ? "Misaya" : displayName}</span>
+                      <span className="truncate">
+                        {isAdmin ? "Misaya" : displayName}
+                      </span>
                       <LogOut className="h-3.5 w-3.5 opacity-70" />
                     </button>
                   </SheetClose>
@@ -236,7 +259,9 @@ export function ResearchWaveVisual({
   className?: string;
 }) {
   return (
-    <div className={cn("research-visual", `research-visual-${variant}`, className)}>
+    <div
+      className={cn("research-visual", `research-visual-${variant}`, className)}
+    >
       <div className="visual-grid" />
       <svg viewBox="0 0 640 300" aria-hidden="true" focusable="false">
         <defs>
@@ -245,7 +270,13 @@ export function ResearchWaveVisual({
             <stop offset="45%" stopColor="#60a5fa" stopOpacity=".95" />
             <stop offset="100%" stopColor="#a78bfa" stopOpacity=".15" />
           </linearGradient>
-          <filter id={`glow-${variant}`} x="-20%" y="-50%" width="140%" height="200%">
+          <filter
+            id={`glow-${variant}`}
+            x="-20%"
+            y="-50%"
+            width="140%"
+            height="200%"
+          >
             <feGaussianBlur stdDeviation="5" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />

@@ -79,21 +79,37 @@ const common: TranslationDict = {
 
   // Engagement
   "engagement.subscribe.title": { en: "Follow updates", zh: "订阅更新" },
-  "engagement.subscribe.articleTitle": { en: "Get future notes", zh: "接收后续笔记" },
+  "engagement.subscribe.articleTitle": {
+    en: "Get future notes",
+    zh: "接收后续笔记",
+  },
   "engagement.subscribe.description": {
     en: "Leave an email to get occasional article updates. RSS stays available if you prefer a reader.",
     zh: "留下邮箱接收不定期文章更新；如果你更喜欢阅读器，也可以直接使用 RSS。",
   },
   "engagement.subscribe.rss": { en: "RSS", zh: "RSS" },
-  "engagement.subscribe.emailPlaceholder": { en: "you@example.com", zh: "you@example.com" },
+  "engagement.subscribe.emailPlaceholder": {
+    en: "you@example.com",
+    zh: "you@example.com",
+  },
   "engagement.subscribe.interestsPlaceholder": {
     en: "Optional topics: RoPE, agents, RAG...",
     zh: "可选主题：RoPE、Agent、RAG...",
   },
+  "engagement.subscribe.languageLabel": {
+    en: "Email language",
+    zh: "接收语言",
+  },
   "engagement.subscribe.loading": { en: "Saving...", zh: "保存中..." },
   "engagement.subscribe.button": { en: "Subscribe", zh: "订阅" },
-  "engagement.subscribe.toastCreated": { en: "Subscription saved", zh: "订阅已保存" },
-  "engagement.subscribe.toastExisting": { en: "Subscription updated", zh: "订阅已更新" },
+  "engagement.subscribe.toastCreated": {
+    en: "Subscription saved",
+    zh: "订阅已保存",
+  },
+  "engagement.subscribe.toastExisting": {
+    en: "Subscription updated",
+    zh: "订阅已更新",
+  },
   "engagement.subscribe.error": { en: "Subscription failed", zh: "订阅失败" },
   "engagement.subscribe.rateLimited": {
     en: "Too many attempts. Please try again later.",
@@ -111,7 +127,10 @@ const common: TranslationDict = {
     en: "Only email and optional topics are stored.",
     zh: "仅保存邮箱和可选主题偏好。",
   },
-  "engagement.feedback.title": { en: "Was this useful?", zh: "这篇文章有帮助吗？" },
+  "engagement.feedback.title": {
+    en: "Was this useful?",
+    zh: "这篇文章有帮助吗？",
+  },
   "engagement.feedback.description": {
     en: "Send a private note about what worked or what was missing.",
     zh: "提交一条私密反馈，说明哪里有帮助或哪里还需要补充。",
@@ -131,7 +150,10 @@ const common: TranslationDict = {
     en: "Optional note: what was clear or missing?",
     zh: "可选补充：哪里清楚，哪里还缺？",
   },
-  "engagement.feedback.namePlaceholder": { en: "Optional nickname", zh: "可选昵称" },
+  "engagement.feedback.namePlaceholder": {
+    en: "Optional nickname",
+    zh: "可选昵称",
+  },
   "engagement.feedback.emailPlaceholder": {
     en: "Optional reply email",
     zh: "可选回复邮箱",
@@ -142,7 +164,10 @@ const common: TranslationDict = {
     en: "Too many attempts. Please try again later.",
     zh: "提交过于频繁，请稍后再试。",
   },
-  "engagement.feedback.success": { en: "Thanks. Feedback has been saved.", zh: "谢谢，反馈已保存。" },
+  "engagement.feedback.success": {
+    en: "Thanks. Feedback has been saved.",
+    zh: "谢谢，反馈已保存。",
+  },
   "engagement.feedback.privacy": {
     en: "Reply email is optional and only used when follow-up is needed.",
     zh: "回复邮箱完全可选，仅在需要跟进时使用。",
@@ -151,7 +176,10 @@ const common: TranslationDict = {
   "engagement.feedback.submit": { en: "Send feedback", zh: "发送反馈" },
 
   // Footer
-  "common.copyright": { en: "© 2026 AI Tech Blog. All rights reserved.", zh: "© 2026 AI Tech Blog. 保留所有权利." },
+  "common.copyright": {
+    en: "© 2026 AI Tech Blog. All rights reserved.",
+    zh: "© 2026 AI Tech Blog. 保留所有权利.",
+  },
 };
 
 export default common;

@@ -11,6 +11,7 @@ This project is a Vite React frontend with an Express/tRPC backend. The producti
 - Database: Drizzle ORM uses PostgreSQL via `postgres` and `drizzle-orm/postgres-js`.
 - Migrations: Drizzle migration files live in `drizzle/`.
 - Seed data: `seed-blog.mjs` creates/updates the owner, category, tags, and initial research posts.
+- Agent knowledge: public article chunks live in `ai_knowledge_chunks` and must be rebuilt after public content changes.
 
 Relevant files:
 
@@ -63,6 +64,14 @@ Seed the initial blog content:
 pnpm db:seed
 ```
 
+Seed content and rebuild the blog agent's public knowledge chunks:
+
+```bash
+pnpm content:publish
+```
+
+Important: `pnpm db:seed` updates `posts`, `categories`, and `tags`; it does not update `ai_knowledge_chunks`. Any new public article, title/excerpt/content rewrite, tag/category move, or visibility/status change must be followed by `pnpm ai:reindex` so the right-bottom blog agent can retrieve and explain the latest public article set.
+
 For production, prefer `db:migrate` over `db:push` so schema changes are recorded in migration files.
 
 ## Vercel Environment Variables
@@ -87,12 +96,24 @@ Optional variables if the related features are used:
 ```bash
 BUILT_IN_FORGE_API_URL
 BUILT_IN_FORGE_API_KEY
-BLOG_AGENT_MODEL
+BLOG_AGENT_MODEL=deepseek-v4-flash
+AI_ANONYMOUS_DAILY_LIMIT=2
+AI_VISITOR_DAILY_LIMIT=6
+AI_ADMIN_DAILY_LIMIT=200
+AI_ANONYMOUS_DAILY_FILE_LIMIT=1
+AI_VISITOR_DAILY_FILE_LIMIT=3
+AI_ADMIN_DAILY_FILE_LIMIT=100
 VITE_FRONTEND_FORGE_API_URL
 VITE_FRONTEND_FORGE_API_KEY
 VITE_ANALYTICS_ENDPOINT
 VITE_ANALYTICS_WEBSITE_ID
 ```
+
+The blog agent uses the OpenAI-compatible DeepSeek endpoint when
+`BUILT_IN_FORGE_API_URL=https://api.deepseek.com` and
+`BUILT_IN_FORGE_API_KEY` is set. Keep the default model on
+`deepseek-v4-flash`; avoid `deepseek-v4-pro` for the public assistant unless a
+specific evaluation requires it.
 
 Do not commit real values. `.env`, `.env.local`, and production-local env files are ignored by git.
 
@@ -143,7 +164,7 @@ Deployment order:
 4. Run `pnpm build`.
 5. Run `pnpm audit:baseline:quick`.
 6. Run `pnpm db:migrate`.
-7. Run `pnpm db:seed` if this is a new database.
+7. Run `pnpm content:publish` when seed content or public article visibility changed. This runs `pnpm db:seed` and then `pnpm ai:reindex`.
 8. Deploy:
 
 ```bash
@@ -199,6 +220,8 @@ Before publishing a substantial content update:
 - important articles have excerpt, category, tags, and cover image where appropriate.
 - version history exists before risky rewrites, and restore is tested on preview.
 - feedback and subscriber data remain owner-only.
+- `pnpm ai:reindex` has been run after content changes, and the output shows newly created `ai_knowledge_chunks` for public articles.
+- `/manage/agent` retrieval/debug checks can find the new article by title, slug, and major topic terms before the deployment is considered complete.
 
 ## Post-Deploy Checks
 

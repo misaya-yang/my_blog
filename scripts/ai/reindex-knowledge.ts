@@ -1,4 +1,5 @@
 import { reindexPublicKnowledgeChunks } from "../../server/ai/knowledgeDb.js";
+import { closeDb } from "../../server/db.js";
 
 async function main() {
   const result = await reindexPublicKnowledgeChunks();
@@ -7,7 +8,11 @@ async function main() {
   );
 }
 
-main().catch((error) => {
-  console.error("AI knowledge reindex failed", error);
-  process.exitCode = 1;
-});
+main()
+  .catch((error) => {
+    console.error("AI knowledge reindex failed", error);
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await closeDb();
+  });

@@ -1,5 +1,4 @@
-import { invokeLLM } from "../_core/llm.js";
-import { ENV } from "../_core/env.js";
+import { DEFAULT_LLM_MODEL, invokeLLM, resolveLLMModel } from "../_core/llm.js";
 import { z } from "zod";
 import type { KnowledgeSearchResult } from "./knowledge.js";
 import type {
@@ -10,14 +9,19 @@ import type {
   AgentSourceCard,
 } from "./types.js";
 
-export const BLOG_AGENT_MODEL = "gemini-2.5-flash";
+const MAX_PUBLIC_SOURCES = 6;
+const MAX_CONTEXT_SOURCES = 4;
+const MAX_AGENT_OUTPUT_TOKENS = 1800;
+
+export const BLOG_AGENT_MODEL = DEFAULT_LLM_MODEL;
 
 export const defaultAgentModel: AgentModel = {
   async generate(input) {
-    const sources = input.sources.slice(0, 6);
-    const contextSources = input.contextSources.slice(0, 4);
+    const model = resolveLLMModel();
+    const sources = input.sources.slice(0, MAX_PUBLIC_SOURCES);
+    const contextSources = input.contextSources.slice(0, MAX_CONTEXT_SOURCES);
     const result = await invokeLLM({
-      model: ENV.blogAgentModel || BLOG_AGENT_MODEL,
+      model,
       messages: [
         {
           role: "system",
@@ -36,11 +40,13 @@ export const defaultAgentModel: AgentModel = {
         },
       ],
       responseFormat: { type: "json_object" },
-      maxTokens: 1800,
+      maxTokens: MAX_AGENT_OUTPUT_TOKENS,
     });
 
     const content = result.choices[0]?.message.content;
-    const parsed = parseModelContent(typeof content === "string" ? content : "");
+    const parsed = parseModelContent(
+      typeof content === "string" ? content : ""
+    );
     const sourceCards = [
       ...buildSourceCards(sources),
       ...buildContextSourceCards(contextSources),
@@ -51,7 +57,7 @@ export const defaultAgentModel: AgentModel = {
       answer,
       inputTokens: result.usage?.prompt_tokens,
       outputTokens: result.usage?.completion_tokens,
-      model: result.model || BLOG_AGENT_MODEL,
+      model: result.model || model,
     };
   },
 };
@@ -111,7 +117,12 @@ const agentAnswerSchema = z.object({
   relatedQuestions: z.array(z.string()).optional(),
   confidence: z.enum(["high", "medium", "low"]).optional(),
   refusalReason: z
-    .enum(["no_public_source", "hidden_or_unavailable", "outside_blog_scope", "unsafe_or_forbidden"])
+    .enum([
+      "no_public_source",
+      "hidden_or_unavailable",
+      "outside_blog_scope",
+      "unsafe_or_forbidden",
+    ])
     .optional(),
 });
 
@@ -122,7 +133,8 @@ function parseModelContent(content: string): Partial<AgentAnswer> {
     const parsed = agentAnswerSchema.safeParse(raw);
     if (parsed.success) return parsed.data;
     return {
-      answerMarkdown: typeof raw?.answerMarkdown === "string" ? raw.answerMarkdown : content,
+      answerMarkdown:
+        typeof raw?.answerMarkdown === "string" ? raw.answerMarkdown : content,
     };
   } catch {
     return { answerMarkdown: content };
@@ -133,15 +145,16 @@ export function normalizeAgentAnswer(
   parsed: Partial<AgentAnswer>,
   sourceCards: AgentSourceCard[]
 ): AgentModelResult["answer"] {
-  const sourceIds = sourceCards.map((source) => source.sourceId);
+  const sourceIds = sourceCards.map(source => source.sourceId);
   const hasSources = sourceCards.length > 0;
   if (!hasSources) return createNoPublicSourceAnswer();
 
-  const validatedSourceIds = (parsed.sourceIds ?? []).filter((id) => sourceIds.includes(id));
-  const finalSourceIds = validatedSourceIds.length > 0 ? validatedSourceIds : sourceIds;
-  const answerType = isAllowedAnswerType(parsed.answerType) && parsed.answerType !== "refusal"
-    ? parsed.answerType
-    : "explanation";
+  const validatedSourceIds = (parsed.sourceIds ?? []).filter(id =>
+    sourceIds.includes(id)
+  );
+  const finalSourceIds =
+    validatedSourceIds.length > 0 ? validatedSourceIds : sourceIds;
+  const answerType = normalizeAnswerType(parsed.answerType);
 
   return {
     answerType,
@@ -150,13 +163,18 @@ export function normalizeAgentAnswer(
       "I found relevant public blog sources, but the model returned an empty answer.",
     sourceIds: finalSourceIds,
     sourceCards,
-    relatedQuestions: normalizeRelatedQuestions(parsed.relatedQuestions, sourceCards),
+    relatedQuestions: normalizeRelatedQuestions(
+      parsed.relatedQuestions,
+      sourceCards
+    ),
     confidence: parsed.confidence ?? "medium",
     refusalReason: undefined,
   };
 }
 
-function isAllowedAnswerType(value: unknown): value is AgentAnswer["answerType"] {
+function isAllowedAnswerType(
+  value: unknown
+): value is AgentAnswer["answerType"] {
   return (
     value === "direct" ||
     value === "explanation" ||
@@ -164,6 +182,15 @@ function isAllowedAnswerType(value: unknown): value is AgentAnswer["answerType"]
     value === "reading_path" ||
     value === "refusal"
   );
+}
+
+function normalizeAnswerType(
+  value: unknown
+): Exclude<AgentAnswer["answerType"], "refusal"> {
+  if (!isAllowedAnswerType(value) || value === "refusal") {
+    return "explanation";
+  }
+  return value;
 }
 
 export function createNoPublicSourceAnswer(): AgentAnswer {
@@ -182,8 +209,10 @@ export function createNoPublicSourceAnswer(): AgentAnswer {
   };
 }
 
-export function buildSourceCards(sources: KnowledgeSearchResult[]): AgentSourceCard[] {
-  return sources.map((source) => ({
+export function buildSourceCards(
+  sources: KnowledgeSearchResult[]
+): AgentSourceCard[] {
+  return sources.map(source => ({
     sourceId: source.sourceId,
     sourceType: "blog",
     postTitle: source.postTitle ?? "Public blog overview",
@@ -196,14 +225,17 @@ export function buildSourceCards(sources: KnowledgeSearchResult[]): AgentSourceC
   }));
 }
 
-export function buildContextSourceCards(sources: AgentContextSourceRecord[]): AgentSourceCard[] {
-  return sources.map((source) => ({
+export function buildContextSourceCards(
+  sources: AgentContextSourceRecord[]
+): AgentSourceCard[] {
+  return sources.map(source => ({
     sourceId: source.sourceId,
     sourceType: "user_context",
     postTitle: source.filename || "Pasted context",
     postSlug: "",
     tagSlugs: ["user-context"],
-    heading: source.kind === "pasted_text" ? "Pasted context" : "Uploaded context",
+    heading:
+      source.kind === "pasted_text" ? "Pasted context" : "Uploaded context",
     excerpt: source.excerpt,
     relevanceReason: "User-provided context attached to this conversation.",
   }));
@@ -214,13 +246,18 @@ function normalizeRelatedQuestions(
   sourceCards: AgentSourceCard[]
 ) {
   const explicit = Array.isArray(relatedQuestions)
-    ? relatedQuestions.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+    ? relatedQuestions.filter(isNonEmptyString)
     : [];
   if (explicit.length > 0) return explicit.slice(0, 4);
 
-  const primary = sourceCards.find((source) => source.postSlug)?.postTitle ?? "this topic";
+  const primary =
+    sourceCards.find(source => source.postSlug)?.postTitle ?? "this topic";
   return [
     `What is the core argument of ${primary}?`,
     "What should I read next on this blog?",
   ];
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
 }

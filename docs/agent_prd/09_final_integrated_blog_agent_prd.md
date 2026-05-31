@@ -27,15 +27,15 @@ It is:
 
 ## Product Reference Points
 
-| Reference | Relevant Pattern | Product Decision |
-| --- | --- | --- |
-| Anthropic-style docs assistant | A docs-aware assistant is launched from a small entry and answers from documentation context. | Use a right-bottom launcher and floating panel, but keep desktop reading uninterrupted. |
-| Atlassian Rovo Agents | Rovo agents have objectives, knowledge sources, instructions, and allowed actions. Source: https://support.atlassian.com/rovo/docs/agents/ | Treat the assistant as a scoped knowledge agent with explicit source boundaries and registered actions. |
-| Rovo agent manifest | Agent definitions include prompt, actions, conversation starters, and follow-up prompts. Source: https://developer.atlassian.com/platform/forge/manifest-reference/modules/rovo-agent/ | Store profile/config later; MVP uses code-defined profile and deterministic server actions. |
-| Supabase AI & Vectors | Supabase supports Postgres, pgvector, semantic search, keyword search, and hybrid search. Source: https://supabase.com/docs/guides/ai | Keep retrieval in Supabase; start with full-text/metadata, add pgvector later. |
-| Supabase hybrid search | Hybrid search combines full-text search and vector search with Postgres indexes. Source: https://supabase.com/docs/guides/ai/hybrid-search | Phase 2+ can add hybrid retrieval after keyword retrieval is correct. |
-| Supabase rate limits | Rate limits protect endpoints from abuse. Source: https://supabase.com/docs/guides/auth/rate-limits | Product-level AI quota must be server-side and atomic; do not rely only on client checks. |
-| OpenAI File Search | Managed file search handles parsing, chunking, embedding, retrieval, and retention policy. Source: https://platform.openai.com/docs/assistants/tools/file-search | If not using managed file search, reproduce ownership, chunking, retention, and source metadata in Supabase. |
+| Reference                      | Relevant Pattern                                                                                                                                                                       | Product Decision                                                                                             |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Anthropic-style docs assistant | A docs-aware assistant is launched from a small entry and answers from documentation context.                                                                                          | Use a right-bottom launcher and floating panel, but keep desktop reading uninterrupted.                      |
+| Atlassian Rovo Agents          | Rovo agents have objectives, knowledge sources, instructions, and allowed actions. Source: https://support.atlassian.com/rovo/docs/agents/                                             | Treat the assistant as a scoped knowledge agent with explicit source boundaries and registered actions.      |
+| Rovo agent manifest            | Agent definitions include prompt, actions, conversation starters, and follow-up prompts. Source: https://developer.atlassian.com/platform/forge/manifest-reference/modules/rovo-agent/ | Store profile/config later; MVP uses code-defined profile and deterministic server actions.                  |
+| Supabase AI & Vectors          | Supabase supports Postgres, pgvector, semantic search, keyword search, and hybrid search. Source: https://supabase.com/docs/guides/ai                                                  | Keep retrieval in Supabase; start with full-text/metadata, add pgvector later.                               |
+| Supabase hybrid search         | Hybrid search combines full-text search and vector search with Postgres indexes. Source: https://supabase.com/docs/guides/ai/hybrid-search                                             | Phase 2+ can add hybrid retrieval after keyword retrieval is correct.                                        |
+| Supabase rate limits           | Rate limits protect endpoints from abuse. Source: https://supabase.com/docs/guides/auth/rate-limits                                                                                    | Product-level AI quota must be server-side and atomic; do not rely only on client checks.                    |
+| OpenAI File Search             | Managed file search handles parsing, chunking, embedding, retrieval, and retention policy. Source: https://platform.openai.com/docs/assistants/tools/file-search                       | If not using managed file search, reproduce ownership, chunking, retention, and source metadata in Supabase. |
 
 ## Target Users
 
@@ -522,11 +522,11 @@ Fields:
 
 ### Limits
 
-| Tier | Limit |
-| --- | ---: |
-| Anonymous | 2 assistant messages/day |
-| Visitor JWT | 6 assistant messages/day |
-| Admin | env-configured high limit |
+| Tier        |                     Limit |
+| ----------- | ------------------------: |
+| Anonymous   |  2 assistant messages/day |
+| Visitor JWT |  6 assistant messages/day |
+| Admin       | env-configured high limit |
 
 ### Counting Rule
 
@@ -633,13 +633,22 @@ Use a machine-checkable output shape.
 
 ```ts
 type AgentAnswer = {
-  answerType: "direct" | "explanation" | "comparison" | "reading_path" | "refusal";
+  answerType:
+    | "direct"
+    | "explanation"
+    | "comparison"
+    | "reading_path"
+    | "refusal";
   answerMarkdown: string;
   sourceIds: string[];
   sourceCards: SourceCard[];
   relatedQuestions: string[];
   confidence: "high" | "medium" | "low";
-  refusalReason?: "no_public_source" | "hidden_or_unavailable" | "outside_blog_scope" | "unsafe_or_forbidden";
+  refusalReason?:
+    | "no_public_source"
+    | "hidden_or_unavailable"
+    | "outside_blog_scope"
+    | "unsafe_or_forbidden";
 };
 
 type SourceCard = {
@@ -737,6 +746,13 @@ Rules:
 - default indexes public published posts only
 - deletes or isolates chunks when a post becomes hidden/admin/draft
 - records counts: created, updated, deleted, skipped
+
+Release invariant:
+
+- Every content deployment that adds or changes public seeded posts must run the knowledge reindex step after the post seed step.
+- Current command: `pnpm content:publish`, equivalent to `pnpm db:seed && pnpm ai:reindex`.
+- If Vercel auto-deploys after git push, the database/knowledge update is still a separate Supabase operation; the deployment is incomplete until `ai_knowledge_chunks` reflects the latest public article set.
+- Verification must include a retrieval/debug query for the new article title, slug, and primary topic terms.
 
 ## Source and Visibility Rules
 

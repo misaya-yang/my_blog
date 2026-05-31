@@ -26,6 +26,13 @@ The goal is not a generic chatbot and not primarily an author-support inbox. The
 5. Add pasted context and `.txt` / `.md` uploads only after the core assistant is stable.
 6. Treat direct author intervention as a future hard problem after the agent platform is stable.
 
+## Persistent Operating Memory
+
+- New public articles are not agent-readable until `ai_knowledge_chunks` is rebuilt.
+- After any seeded article addition, article content rewrite, title/excerpt/tag/category change, or public/hidden/admin/draft visibility change, run `pnpm content:publish` or run `pnpm db:seed` followed by `pnpm ai:reindex`.
+- Do not consider a content deployment complete until `/manage/agent` retrieval/debug can find the new article by title, slug, and core topic terms.
+- Uploaded visitor files remain conversation-local context and must not be promoted into public `ai_knowledge_chunks` unless an explicit admin workflow does that later.
+
 ## Current Codebase Anchors
 
 - Reuse `client/src/components/AIChatBox.tsx` as the initial chat surface, but restyle it to match the current dark space research identity.

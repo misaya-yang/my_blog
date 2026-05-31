@@ -40,10 +40,15 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Noto Sans SC', system-ui, sans-serif;
-  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Noto Sans SC', system-ui, sans-serif;
-  --font-serif: 'Noto Serif SC', 'Source Han Serif SC', Georgia, 'Times New Roman', serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Noto Sans SC",
+    system-ui, sans-serif;
+  --font-display:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter",
+    "Noto Sans SC", system-ui, sans-serif;
+  --font-serif:
+    "Noto Serif SC", "Source Han Serif SC", Georgia, "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
 }
 
 :root {
@@ -53,7 +58,7 @@
   --sidebar-primary: oklch(0.64 0.17 248);
   --sidebar-primary-foreground: oklch(0.99 0 0);
   --chart-1: oklch(0.52 0.13 205);
-  --chart-2: oklch(0.50 0.10 165);
+  --chart-2: oklch(0.5 0.1 165);
   --chart-3: oklch(0.56 0.12 330);
   --chart-4: oklch(0.49 0.09 260);
   --chart-5: oklch(0.46 0.08 120);
@@ -69,7 +74,7 @@
   --muted-foreground: oklch(0.47 0.018 250);
   --accent: oklch(0.93 0.025 205);
   --accent-foreground: oklch(0.19 0.012 250);
-  --destructive: oklch(0.50 0.20 25);
+  --destructive: oklch(0.5 0.2 25);
   --destructive-foreground: oklch(0.99 0 0);
   --border: oklch(0.86 0.008 245);
   --input: oklch(0.86 0.008 245);
@@ -92,7 +97,7 @@
   --primary: oklch(0.72 0.17 248);
   --primary-foreground: oklch(0.11 0.02 260);
   --secondary: oklch(0.22 0.032 260);
-  --secondary-foreground: oklch(0.90 0.018 250);
+  --secondary-foreground: oklch(0.9 0.018 250);
   --muted: oklch(0.205 0.028 260);
   --muted-foreground: oklch(0.72 0.026 250);
   --accent: oklch(0.26 0.065 250);
@@ -103,8 +108,8 @@
   --input: oklch(0.34 0.044 255);
   --ring: oklch(0.72 0.17 248);
   --chart-1: oklch(0.72 0.17 248);
-  --chart-2: oklch(0.65 0.10 165);
-  --chart-3: oklch(0.70 0.11 330);
+  --chart-2: oklch(0.65 0.1 165);
+  --chart-3: oklch(0.7 0.11 330);
   --chart-4: oklch(0.68 0.08 260);
   --chart-5: oklch(0.62 0.08 120);
   --sidebar: oklch(0.19 0.014 250);
@@ -112,12 +117,16 @@
   --sidebar-accent: oklch(0.28 0.032 205);
   --sidebar-accent-foreground: oklch(0.88 0.008 245);
   --sidebar-border: oklch(0.31 0.018 250);
-  --sidebar-ring: oklch(0.70 0.12 205);
-  --glass-bg: linear-gradient(145deg, oklch(0.18 0.038 258 / 70%), oklch(0.075 0.022 260 / 50%));
-  --glass-border: oklch(0.74 0.12 238 / 24%);
-  --glass-border-strong: oklch(0.78 0.16 235 / 48%);
-  --glass-highlight: oklch(0.98 0.02 235 / 12%);
-  --glass-shadow: 0 24px 80px oklch(0.02 0.02 260 / 34%);
+  --sidebar-ring: oklch(0.7 0.12 205);
+  --glass-bg: linear-gradient(
+    145deg,
+    oklch(0.18 0.026 258 / 58%),
+    oklch(0.06 0.012 260 / 44%)
+  );
+  --glass-border: oklch(0.94 0.012 240 / 13%);
+  --glass-border-strong: oklch(0.88 0.055 235 / 34%);
+  --glass-highlight: oklch(0.99 0.006 235 / 16%);
+  --glass-shadow: 0 28px 90px oklch(0.02 0.015 260 / 38%);
 }
 
 @layer base {
@@ -177,9 +186,22 @@
   .space-page {
     @apply relative min-h-screen overflow-hidden bg-background text-foreground;
     background:
-      radial-gradient(circle at 78% 12%, oklch(0.56 0.16 238 / 15%), transparent 29rem),
-      radial-gradient(circle at 12% 0%, oklch(0.45 0.12 202 / 10%), transparent 20rem),
-      linear-gradient(180deg, oklch(0.06 0.020 260), oklch(0.092 0.023 260) 58%, oklch(0.072 0.018 260));
+      radial-gradient(
+        circle at 72% 8%,
+        oklch(0.72 0.08 230 / 10%),
+        transparent 28rem
+      ),
+      radial-gradient(
+        circle at 14% 0%,
+        oklch(0.58 0.05 205 / 8%),
+        transparent 22rem
+      ),
+      linear-gradient(
+        180deg,
+        oklch(0.052 0.014 260),
+        oklch(0.08 0.017 260) 58%,
+        oklch(0.062 0.014 260)
+      );
   }
 
   .space-backdrop {
@@ -191,10 +213,22 @@
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(circle at 69% 15%, oklch(0.77 0.19 240 / 70%) 0 1px, transparent 2px),
-      radial-gradient(circle at 83% 53%, oklch(0.70 0.18 260 / 55%) 0 1px, transparent 2px),
-      radial-gradient(circle at 49% 32%, oklch(0.72 0.18 245 / 42%) 0 1px, transparent 2px);
-    opacity: 0.38;
+      radial-gradient(
+        circle at 69% 15%,
+        oklch(0.77 0.19 240 / 70%) 0 1px,
+        transparent 2px
+      ),
+      radial-gradient(
+        circle at 83% 53%,
+        oklch(0.7 0.18 260 / 55%) 0 1px,
+        transparent 2px
+      ),
+      radial-gradient(
+        circle at 49% 32%,
+        oklch(0.72 0.18 245 / 42%) 0 1px,
+        transparent 2px
+      );
+    opacity: 0.3;
   }
 
   .space-backdrop-subtle {
@@ -205,21 +239,39 @@
     position: absolute;
     inset: 0;
     background-image:
-      linear-gradient(oklch(0.66 0.15 245 / 8%) 1px, transparent 1px),
-      linear-gradient(90deg, oklch(0.66 0.15 245 / 8%) 1px, transparent 1px);
+      linear-gradient(oklch(0.72 0.05 245 / 5%) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(0.72 0.05 245 / 5%) 1px, transparent 1px);
     background-size: 48px 48px;
-    opacity: 0.72;
-    mask-image: linear-gradient(90deg, transparent, black 14%, black 90%, transparent);
+    opacity: 0.58;
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      black 14%,
+      black 90%,
+      transparent
+    );
   }
 
   .space-stars {
     position: absolute;
     inset: 0;
     background-image:
-      radial-gradient(circle, oklch(0.88 0.12 240 / 64%) 0 1px, transparent 1.6px),
-      radial-gradient(circle, oklch(0.76 0.17 250 / 35%) 0 1px, transparent 1.6px);
-    background-position: 0 0, 28px 19px;
-    background-size: 134px 134px, 211px 211px;
+      radial-gradient(
+        circle,
+        oklch(0.88 0.12 240 / 64%) 0 1px,
+        transparent 1.6px
+      ),
+      radial-gradient(
+        circle,
+        oklch(0.76 0.17 250 / 35%) 0 1px,
+        transparent 1.6px
+      );
+    background-position:
+      0 0,
+      28px 19px;
+    background-size:
+      134px 134px,
+      211px 211px;
     opacity: 0.28;
   }
 
@@ -231,8 +283,17 @@
     height: 30rem;
     border-radius: 50% 50% 0 0;
     background:
-      radial-gradient(ellipse at 50% 0%, oklch(0.77 0.17 245 / 34%) 0 1px, transparent 2px),
-      linear-gradient(180deg, oklch(0.54 0.13 245 / 16%), oklch(0.13 0.04 255 / 32%) 22%, transparent 62%);
+      radial-gradient(
+        ellipse at 50% 0%,
+        oklch(0.85 0.06 235 / 22%) 0 1px,
+        transparent 2px
+      ),
+      linear-gradient(
+        180deg,
+        oklch(0.56 0.08 245 / 11%),
+        oklch(0.12 0.025 255 / 28%) 22%,
+        transparent 62%
+      );
     box-shadow:
       0 -18px 86px oklch(0.58 0.17 242 / 18%),
       inset 0 20px 42px oklch(0.75 0.14 235 / 10%);
@@ -241,27 +302,39 @@
 
   .site-header {
     @apply sticky top-0 z-50 border-b;
-    border-color: oklch(0.78 0.12 238 / 16%);
+    border-color: oklch(0.94 0.012 240 / 10%);
     background:
-      linear-gradient(180deg, oklch(0.09 0.026 260 / 78%), oklch(0.075 0.023 260 / 58%)),
-      oklch(0.07 0.020 260 / 70%);
+      linear-gradient(
+        180deg,
+        oklch(0.095 0.018 260 / 72%),
+        oklch(0.06 0.012 260 / 54%)
+      ),
+      oklch(0.045 0.012 260 / 60%);
     box-shadow:
-      inset 0 1px 0 oklch(0.98 0.02 240 / 8%),
+      inset 0 1px 0 oklch(0.99 0.006 240 / 11%),
       0 18px 42px oklch(0.02 0.02 260 / 24%);
-    backdrop-filter: blur(22px) saturate(150%);
-    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    backdrop-filter: blur(26px) saturate(165%);
+    -webkit-backdrop-filter: blur(26px) saturate(165%);
   }
 
   .brand-mark {
     @apply grid h-10 w-10 place-items-center rounded-lg text-sky-200;
     background:
-      radial-gradient(circle at 28% 18%, oklch(0.98 0.03 230 / 32%), transparent 34%),
-      linear-gradient(135deg, oklch(0.64 0.17 235 / 42%), oklch(0.21 0.10 260 / 36%)),
+      radial-gradient(
+        circle at 28% 18%,
+        oklch(0.98 0.03 230 / 32%),
+        transparent 34%
+      ),
+      linear-gradient(
+        135deg,
+        oklch(0.64 0.17 235 / 42%),
+        oklch(0.21 0.1 260 / 36%)
+      ),
       oklch(0.13 0.04 258 / 64%);
     border: 1px solid oklch(0.78 0.14 232 / 50%);
     box-shadow:
       inset 0 1px 0 oklch(0.98 0.02 235 / 30%),
-      inset 0 -16px 26px oklch(0.22 0.10 260 / 24%),
+      inset 0 -16px 26px oklch(0.22 0.1 260 / 24%),
       0 0 28px oklch(0.63 0.18 245 / 18%);
   }
 
@@ -271,7 +344,7 @@
   }
 
   .nav-ink:hover {
-    background: oklch(0.98 0.02 240 / 5%);
+    background: oklch(0.99 0.006 240 / 6%);
   }
 
   .nav-ink-active {
@@ -286,8 +359,12 @@
     bottom: -0.88rem;
     height: 3px;
     border-radius: 999px;
-    background: linear-gradient(90deg, #38bdf8, #60a5fa);
-    box-shadow: 0 0 18px oklch(0.72 0.18 240 / 70%);
+    background: linear-gradient(
+      90deg,
+      oklch(0.82 0.07 222),
+      oklch(0.72 0.1 250)
+    );
+    box-shadow: 0 0 18px oklch(0.78 0.1 235 / 44%);
   }
 
   .glass-panel {
@@ -295,15 +372,23 @@
     position: relative;
     border-color: var(--glass-border);
     background:
-      radial-gradient(circle at 14% 0%, oklch(0.98 0.02 235 / 8%), transparent 22rem),
-      var(--glass-bg),
-      oklch(0.10 0.020 260 / 62%);
+      radial-gradient(
+        circle at 14% 0%,
+        oklch(0.99 0.006 235 / 12%),
+        transparent 22rem
+      ),
+      radial-gradient(
+        circle at 92% 8%,
+        oklch(0.74 0.07 235 / 7%),
+        transparent 18rem
+      ),
+      var(--glass-bg), oklch(0.08 0.014 260 / 52%);
     box-shadow:
       inset 0 1px 0 var(--glass-highlight),
-      inset 0 -1px 0 oklch(0.38 0.10 245 / 10%),
+      inset 0 -1px 0 oklch(0.82 0.04 245 / 6%),
       var(--glass-shadow);
-    backdrop-filter: blur(24px) saturate(145%);
-    -webkit-backdrop-filter: blur(24px) saturate(145%);
+    backdrop-filter: blur(28px) saturate(170%);
+    -webkit-backdrop-filter: blur(28px) saturate(170%);
   }
 
   .glass-panel::before {
@@ -312,23 +397,35 @@
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: linear-gradient(135deg, oklch(0.98 0.02 235 / 12%), transparent 34%, transparent 68%, oklch(0.72 0.14 235 / 8%));
-    opacity: 0.72;
+    background:
+      linear-gradient(
+        135deg,
+        oklch(0.99 0.006 235 / 16%),
+        transparent 32%,
+        transparent 68%,
+        oklch(0.74 0.06 235 / 8%)
+      ),
+      linear-gradient(180deg, oklch(1 0 0 / 6%), transparent 42%);
+    opacity: 0.78;
   }
 
   .glass-button {
-    @apply border-sky-300/25 bg-slate-950/35 text-slate-100 shadow-none hover:border-sky-200/60 hover:bg-sky-300/10;
-    backdrop-filter: blur(16px) saturate(145%);
-    -webkit-backdrop-filter: blur(16px) saturate(145%);
+    @apply border-white/15 bg-white/[0.035] text-slate-100 shadow-none hover:border-sky-200/45 hover:bg-white/[0.075];
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
   }
 
   .signal-chip {
     @apply inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium text-sky-100;
-    border-color: oklch(0.72 0.14 238 / 34%);
+    border-color: oklch(0.9 0.03 238 / 18%);
     background:
-      radial-gradient(circle at 18% 0%, oklch(0.98 0.02 235 / 18%), transparent 44%),
-      linear-gradient(135deg, oklch(0.25 0.07 245 / 48%), oklch(0.10 0.025 260 / 48%));
-    box-shadow: inset 0 1px 0 oklch(0.98 0.02 235 / 12%);
+      radial-gradient(circle at 18% 0%, oklch(1 0 0 / 18%), transparent 44%),
+      linear-gradient(
+        135deg,
+        oklch(0.22 0.035 245 / 42%),
+        oklch(0.08 0.014 260 / 48%)
+      );
+    box-shadow: inset 0 1px 0 oklch(1 0 0 / 13%);
   }
 
   .section-title {
@@ -348,24 +445,34 @@
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.04em;
-    color: oklch(0.78 0.10 238);
+    color: oklch(0.78 0.1 238);
   }
 
   .stat-tile {
     @apply grid min-h-[86px] grid-cols-[auto_1fr] items-center gap-x-4 rounded-lg border px-5 py-4;
-    border-color: oklch(0.72 0.13 238 / 24%);
+    border-color: oklch(0.9 0.03 238 / 14%);
     background:
-      radial-gradient(circle at 20% 0%, oklch(0.98 0.02 235 / 10%), transparent 46%),
-      linear-gradient(135deg, oklch(0.21 0.05 258 / 54%), oklch(0.095 0.025 260 / 42%));
-    box-shadow: inset 0 1px 0 oklch(0.98 0.02 235 / 10%);
-    backdrop-filter: blur(18px) saturate(135%);
-    -webkit-backdrop-filter: blur(18px) saturate(135%);
+      radial-gradient(circle at 20% 0%, oklch(1 0 0 / 11%), transparent 46%),
+      linear-gradient(
+        135deg,
+        oklch(0.18 0.026 258 / 50%),
+        oklch(0.07 0.014 260 / 42%)
+      );
+    box-shadow:
+      inset 0 1px 0 oklch(1 0 0 / 10%),
+      inset 0 -1px 0 oklch(0.78 0.04 240 / 5%);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
   }
 
   .stat-icon {
     @apply row-span-2 grid h-12 w-12 place-items-center rounded-full text-sky-300;
-    background: oklch(0.28 0.10 248 / 45%);
-    box-shadow: inset 0 0 18px oklch(0.69 0.17 245 / 15%);
+    background:
+      radial-gradient(circle at 35% 22%, oklch(1 0 0 / 20%), transparent 42%),
+      oklch(0.24 0.07 248 / 38%);
+    box-shadow:
+      inset 0 1px 0 oklch(1 0 0 / 14%),
+      inset 0 0 18px oklch(0.69 0.12 245 / 13%);
   }
 
   .stat-value {
@@ -381,7 +488,11 @@
     @apply relative overflow-hidden rounded-lg border;
     border-color: oklch(0.56 0.15 245 / 30%);
     background:
-      radial-gradient(circle at 25% 25%, oklch(0.62 0.18 250 / 24%), transparent 18rem),
+      radial-gradient(
+        circle at 25% 25%,
+        oklch(0.62 0.18 250 / 24%),
+        transparent 18rem
+      ),
       linear-gradient(145deg, oklch(0.12 0.036 260), oklch(0.06 0.02 260));
   }
 
@@ -405,13 +516,21 @@
 
   .research-visual-orbit {
     background:
-      radial-gradient(circle at 55% 48%, oklch(0.65 0.18 255 / 25%), transparent 12rem),
+      radial-gradient(
+        circle at 55% 48%,
+        oklch(0.65 0.18 255 / 25%),
+        transparent 12rem
+      ),
       linear-gradient(145deg, oklch(0.13 0.04 260), oklch(0.06 0.02 260));
   }
 
   .research-visual-matrix {
     background:
-      radial-gradient(circle at 70% 24%, oklch(0.70 0.16 215 / 20%), transparent 16rem),
+      radial-gradient(
+        circle at 70% 24%,
+        oklch(0.7 0.16 215 / 20%),
+        transparent 16rem
+      ),
       linear-gradient(145deg, oklch(0.12 0.04 248), oklch(0.055 0.02 260));
   }
 
@@ -441,23 +560,37 @@
     min-height: 13rem;
     padding: 0.875rem;
     border-radius: var(--radius-lg);
-    border: 1px solid oklch(0.72 0.13 238 / 18%);
+    border: 1px solid oklch(0.9 0.03 238 / 13%);
     background:
-      radial-gradient(circle at 12% 0%, oklch(0.98 0.02 235 / 7%), transparent 44%),
-      oklch(0.09 0.020 260 / 58%);
-    box-shadow: inset 0 1px 0 oklch(0.98 0.02 235 / 7%);
-    backdrop-filter: blur(18px) saturate(130%);
-    -webkit-backdrop-filter: blur(18px) saturate(130%);
-    transition: border-color 180ms ease, background 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+      radial-gradient(circle at 12% 0%, oklch(1 0 0 / 8%), transparent 44%),
+      linear-gradient(
+        135deg,
+        oklch(0.12 0.018 260 / 50%),
+        oklch(0.06 0.012 260 / 48%)
+      );
+    box-shadow:
+      inset 0 1px 0 oklch(1 0 0 / 8%),
+      inset 0 -1px 0 oklch(0.74 0.04 240 / 4%);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    transition:
+      border-color 180ms ease,
+      background 180ms ease,
+      transform 180ms ease,
+      box-shadow 180ms ease;
   }
 
   .article-card:hover {
-    border-color: oklch(0.78 0.16 235 / 46%);
+    border-color: oklch(0.88 0.08 235 / 34%);
     background:
-      radial-gradient(circle at 12% 0%, oklch(0.98 0.02 235 / 10%), transparent 44%),
-      oklch(0.105 0.024 260 / 70%);
+      radial-gradient(circle at 12% 0%, oklch(1 0 0 / 11%), transparent 44%),
+      linear-gradient(
+        135deg,
+        oklch(0.14 0.022 260 / 62%),
+        oklch(0.07 0.014 260 / 58%)
+      );
     box-shadow:
-      inset 0 1px 0 oklch(0.98 0.02 235 / 12%),
+      inset 0 1px 0 oklch(1 0 0 / 12%),
       0 22px 60px oklch(0.03 0.03 260 / 30%);
     transform: translateY(-1px);
   }
@@ -478,7 +611,7 @@
     display: grid;
     place-items: end start;
     border-radius: var(--radius-lg);
-    border: 1px solid oklch(0.62 0.10 245 / 18%);
+    border: 1px solid oklch(0.62 0.1 245 / 18%);
     background:
       linear-gradient(90deg, oklch(0.66 0.12 238 / 14%) 1px, transparent 1px),
       linear-gradient(180deg, oklch(0.66 0.12 238 / 10%) 1px, transparent 1px),
@@ -492,7 +625,7 @@
     font-size: 2rem;
     font-weight: 500;
     line-height: 1;
-    color: oklch(0.78 0.10 238 / 60%);
+    color: oklch(0.78 0.1 238 / 60%);
   }
 
   .article-copy {
@@ -516,8 +649,8 @@
     min-height: 1.8rem;
     align-items: center;
     border-radius: 999px;
-    border: 1px solid oklch(0.70 0.12 238 / 14%);
-    background: oklch(0.20 0.040 260 / 58%);
+    border: 1px solid oklch(0.88 0.04 238 / 13%);
+    background: oklch(0.18 0.025 260 / 46%);
     padding: 0 0.72rem;
     font-size: 0.75rem;
     font-weight: 600;
@@ -526,23 +659,23 @@
   }
 
   .article-tag-primary {
-    border-color: oklch(0.78 0.16 235 / 22%);
-    background: oklch(0.34 0.11 248 / 42%);
-    color: oklch(0.86 0.08 240);
+    border-color: oklch(0.84 0.09 235 / 24%);
+    background: oklch(0.3 0.075 248 / 38%);
+    color: oklch(0.88 0.06 240);
   }
 
   .article-title {
-    max-width: 26ch;
-    font-family: var(--font-serif);
-    font-size: clamp(1.85rem, 2vw, 2.85rem);
-    font-weight: 700;
-    line-height: 1.15;
+    max-width: 30ch;
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1.72vw, 2.45rem);
+    font-weight: 760;
+    line-height: 1.12;
     color: white;
     transition: color 180ms ease;
   }
 
   .article-card:hover .article-title {
-    color: oklch(0.90 0.06 240);
+    color: oklch(0.9 0.06 240);
   }
 
   .article-excerpt {
@@ -552,7 +685,7 @@
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
-    color: oklch(0.78 0.030 250);
+    color: oklch(0.78 0.03 250);
     font-size: 1rem;
     font-weight: 450;
     line-height: 1.78;
@@ -565,7 +698,7 @@
     gap: 0.75rem 1.35rem;
     margin-top: auto;
     padding-top: 1.75rem;
-    color: oklch(0.70 0.04 250);
+    color: oklch(0.7 0.04 250);
     font-size: 0.875rem;
     font-weight: 500;
   }
@@ -581,29 +714,66 @@
   }
 
   .agent-liquid-launcher {
-    border-color: oklch(0.78 0.14 235 / 40%);
+    border-color: oklch(0.9 0.04 235 / 24%);
     background:
-      radial-gradient(circle at 18% 8%, oklch(0.98 0.02 235 / 26%), transparent 34%),
-      linear-gradient(135deg, oklch(0.25 0.08 245 / 76%), oklch(0.08 0.023 260 / 72%));
+      radial-gradient(circle at 18% 8%, oklch(1 0 0 / 24%), transparent 34%),
+      radial-gradient(
+        circle at 80% 88%,
+        oklch(0.72 0.09 235 / 18%),
+        transparent 40%
+      ),
+      linear-gradient(
+        135deg,
+        oklch(0.19 0.035 245 / 74%),
+        oklch(0.055 0.012 260 / 72%)
+      );
     box-shadow:
-      inset 0 1px 0 oklch(0.98 0.02 235 / 22%),
+      inset 0 1px 0 oklch(1 0 0 / 20%),
+      inset 0 -1px 0 oklch(0.74 0.04 240 / 8%),
       0 18px 54px oklch(0.05 0.04 260 / 50%),
-      0 0 34px oklch(0.62 0.17 238 / 20%);
-    backdrop-filter: blur(22px) saturate(155%);
-    -webkit-backdrop-filter: blur(22px) saturate(155%);
+      0 0 34px oklch(0.62 0.1 238 / 16%);
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+  }
+
+  .agent-launcher-orb {
+    border: 1px solid oklch(0.9 0.04 235 / 18%);
+    background:
+      radial-gradient(circle at 35% 22%, oklch(1 0 0 / 28%), transparent 34%),
+      conic-gradient(
+        from 210deg,
+        oklch(0.75 0.1 225 / 50%),
+        transparent,
+        oklch(0.62 0.1 255 / 42%),
+        transparent
+      ),
+      oklch(0.13 0.025 260 / 66%);
+    box-shadow:
+      inset 0 1px 0 oklch(1 0 0 / 18%),
+      inset 0 -8px 18px oklch(0.1 0.04 260 / 28%),
+      0 0 18px oklch(0.7 0.1 235 / 24%);
   }
 
   .agent-liquid-panel {
-    border-color: oklch(0.78 0.14 235 / 28%);
+    border-color: oklch(0.9 0.04 235 / 18%);
     background:
-      radial-gradient(circle at 16% 0%, oklch(0.98 0.02 235 / 9%), transparent 24rem),
-      linear-gradient(145deg, oklch(0.145 0.034 258 / 98%), oklch(0.055 0.020 260 / 98%));
+      radial-gradient(circle at 16% 0%, oklch(1 0 0 / 10%), transparent 24rem),
+      radial-gradient(
+        circle at 100% 12%,
+        oklch(0.66 0.08 235 / 9%),
+        transparent 18rem
+      ),
+      linear-gradient(
+        145deg,
+        oklch(0.135 0.022 258 / 96%),
+        oklch(0.045 0.012 260 / 96%)
+      );
     box-shadow:
-      inset 0 1px 0 oklch(0.98 0.02 235 / 14%),
-      inset 0 -1px 0 oklch(0.38 0.10 245 / 12%),
+      inset 0 1px 0 oklch(1 0 0 / 13%),
+      inset 0 -1px 0 oklch(0.72 0.05 245 / 8%),
       0 32px 90px oklch(0.02 0.02 260 / 54%);
-    backdrop-filter: blur(26px) saturate(150%);
-    -webkit-backdrop-filter: blur(26px) saturate(150%);
+    backdrop-filter: blur(30px) saturate(170%);
+    -webkit-backdrop-filter: blur(30px) saturate(170%);
   }
 
   .article-skeleton {
@@ -611,7 +781,7 @@
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     border-radius: var(--radius-lg);
     border: 1px solid oklch(0.62 0.13 245 / 16%);
-    background: oklch(0.20 0.04 258 / 35%);
+    background: oklch(0.2 0.04 258 / 35%);
   }
 
   .research-index-panel {
@@ -634,21 +804,105 @@
     justify-content: space-between;
     gap: 1rem;
     border-radius: var(--radius-lg);
-    border: 1px solid oklch(0.72 0.13 238 / 18%);
+    border: 1px solid oklch(0.9 0.03 238 / 13%);
     background:
-      radial-gradient(circle at 12% 0%, oklch(0.98 0.02 235 / 7%), transparent 50%),
-      linear-gradient(135deg, oklch(0.13 0.030 260 / 70%), oklch(0.08 0.022 260 / 58%)),
-      oklch(0.09 0.022 260 / 68%);
+      radial-gradient(circle at 12% 0%, oklch(1 0 0 / 8%), transparent 50%),
+      linear-gradient(
+        135deg,
+        oklch(0.12 0.02 260 / 60%),
+        oklch(0.07 0.014 260 / 52%)
+      ),
+      oklch(0.08 0.014 260 / 58%);
     padding: 0.95rem 1.55rem;
-    transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+    transition:
+      border-color 180ms ease,
+      background 180ms ease,
+      transform 180ms ease;
   }
 
   .research-index-row:hover {
-    border-color: oklch(0.78 0.16 235 / 42%);
+    border-color: oklch(0.88 0.08 235 / 30%);
     background:
-      radial-gradient(circle at 12% 0%, oklch(0.98 0.02 235 / 10%), transparent 50%),
-      linear-gradient(135deg, oklch(0.15 0.034 260 / 78%), oklch(0.09 0.024 260 / 66%));
+      radial-gradient(circle at 12% 0%, oklch(1 0 0 / 11%), transparent 50%),
+      linear-gradient(
+        135deg,
+        oklch(0.14 0.022 260 / 70%),
+        oklch(0.08 0.014 260 / 62%)
+      );
     transform: translateY(-1px);
+  }
+
+  .author-pill {
+    min-height: 3.75rem;
+  }
+
+  .hero-icon-button {
+    display: inline-grid;
+    height: 3.75rem;
+    width: 3.75rem;
+    place-items: center;
+    transition:
+      border-color 180ms ease,
+      transform 180ms ease,
+      background 180ms ease;
+  }
+
+  .hero-icon-button:hover {
+    border-color: oklch(0.88 0.08 235 / 36%);
+    background:
+      radial-gradient(circle at 32% 18%, oklch(1 0 0 / 14%), transparent 42%),
+      oklch(0.12 0.018 260 / 56%);
+    transform: translateY(-1px);
+  }
+
+  .track-portal-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .track-portal-copy {
+    display: -webkit-box;
+    min-height: 3.5rem;
+    max-height: 3.5rem;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    mask-image: linear-gradient(180deg, black 68%, transparent);
+    -webkit-mask-image: linear-gradient(180deg, black 68%, transparent);
+  }
+
+  .track-portal-cta {
+    margin-top: auto;
+    padding-top: 1rem;
+  }
+
+  .subscription-language-control {
+    display: flex;
+    min-height: 2.5rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-radius: var(--radius-md);
+    border: 1px solid oklch(0.88 0.04 238 / 13%);
+    background: oklch(0.08 0.014 260 / 38%);
+    padding: 0.25rem 0.35rem 0.25rem 0.85rem;
+  }
+
+  .subscription-language-label {
+    color: oklch(0.7 0.035 250);
+    font-size: 0.75rem;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  .home-sidebar-panel {
+    font-size: 0.94rem;
+  }
+
+  .home-sidebar-chip {
+    border-color: oklch(0.88 0.04 238 / 14%);
+    background: oklch(0.13 0.02 260 / 46%);
   }
 
   @media (min-width: 768px) {
@@ -780,7 +1034,7 @@
   }
 
   .article-prose :where(a) {
-    color: oklch(0.80 0.14 240);
+    color: oklch(0.8 0.14 240);
     text-decoration: none;
   }
 
@@ -790,7 +1044,7 @@
   }
 
   .article-prose :where(code:not(pre code)) {
-    border: 1px solid oklch(0.70 0.12 245 / 16%);
+    border: 1px solid oklch(0.7 0.12 245 / 16%);
     border-radius: 0.35rem;
     background: oklch(0.16 0.035 258 / 74%);
     padding: 0.1rem 0.35rem;
@@ -803,7 +1057,11 @@
     margin: 1.5rem 0;
     border-left: 2px solid oklch(0.74 0.16 240 / 70%);
     background:
-      radial-gradient(circle at 0% 0%, oklch(0.78 0.14 238 / 10%), transparent 50%),
+      radial-gradient(
+        circle at 0% 0%,
+        oklch(0.78 0.14 238 / 10%),
+        transparent 50%
+      ),
       oklch(0.16 0.035 258 / 46%);
     padding: 0.8rem 1rem;
     color: oklch(0.82 0.03 250);
@@ -848,7 +1106,7 @@
     position: relative;
     margin: 1.5rem 0;
     overflow-x: auto;
-    border: 1px solid oklch(0.70 0.12 245 / 18%);
+    border: 1px solid oklch(0.7 0.12 245 / 18%);
     border-radius: var(--radius-lg);
     background: oklch(0.105 0.025 260 / 94%) !important;
     padding: 1rem;
@@ -938,8 +1196,12 @@
     min-height: 100vh;
     padding: 4rem clamp(1.25rem, 5vw, 5rem);
     background:
-      radial-gradient(circle at 80% 10%, oklch(0.45 0.15 242 / 12%), transparent 24rem),
-      linear-gradient(180deg, oklch(0.075 0.018 260), oklch(0.105 0.020 260));
+      radial-gradient(
+        circle at 80% 10%,
+        oklch(0.45 0.15 242 / 12%),
+        transparent 24rem
+      ),
+      linear-gradient(180deg, oklch(0.075 0.018 260), oklch(0.105 0.02 260));
     color: white;
     font-family: var(--font-sans);
   }

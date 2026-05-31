@@ -23,7 +23,11 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useIsMobile } from "@/hooks/useMobile";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
-import { buildRouteContext, inferClientScope, type AgentScope } from "./routeContext";
+import {
+  buildRouteContext,
+  inferClientScope,
+  type AgentScope,
+} from "./routeContext";
 
 type ChatMessage = {
   id: string;
@@ -57,19 +61,29 @@ export function BlogAgentRoot() {
   const [location] = useLocation();
   const { language, t } = useLanguage();
   const isMobile = useIsMobile();
-  const routeContext = useMemo(() => buildRouteContext(location, language), [location, language]);
+  const routeContext = useMemo(
+    () => buildRouteContext(location, language),
+    [location, language]
+  );
   const hiddenOnRoute = /^\/(write|manage|login)(\/|$)/.test(location);
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [conversationId, setConversationId] = useState<string | undefined>();
-  const [selectedConversationId, setSelectedConversationId] = useState<string | undefined>();
+  const [selectedConversationId, setSelectedConversationId] = useState<
+    string | undefined
+  >();
   const [notice, setNotice] = useState<string | null>(null);
   const [contextDraft, setContextDraft] = useState("");
   const [contextOpen, setContextOpen] = useState(false);
   const [attachedContextCount, setAttachedContextCount] = useState(0);
   const [historyOpen, setHistoryOpen] = useState(false);
-  const [quota, setQuota] = useState<{ limit: number; used: number; remaining: number; tier: string } | null>(null);
+  const [quota, setQuota] = useState<{
+    limit: number;
+    used: number;
+    remaining: number;
+    tier: string;
+  } | null>(null);
   const messageEndRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const utils = trpc.useUtils();
@@ -86,7 +100,10 @@ export function BlogAgentRoot() {
     retry: 1,
   });
   const conversationDetail = trpc.agent.getConversation.useQuery(
-    { conversationId: selectedConversationId ?? "00000000-0000-4000-8000-000000000000" },
+    {
+      conversationId:
+        selectedConversationId ?? "00000000-0000-4000-8000-000000000000",
+    },
     {
       enabled: open && Boolean(selectedConversationId),
       retry: 1,
@@ -103,7 +120,9 @@ export function BlogAgentRoot() {
     if (!conversationDetail.data) return;
     setConversationId(conversationDetail.data.conversation.id);
     setMessages(conversationDetail.data.messages.map(toChatMessage));
-    setAttachedContextCount(conversationDetail.data.contextSources?.length ?? 0);
+    setAttachedContextCount(
+      conversationDetail.data.contextSources?.length ?? 0
+    );
     setNotice(null);
   }, [conversationDetail.data]);
 
@@ -117,8 +136,11 @@ export function BlogAgentRoot() {
 
   if (hiddenOnRoute) return null;
 
-  const suggestedPrompts = bootstrap.data?.suggestedPrompts ?? fallbackPrompts(routeContext.routeType, t);
-  const currentScope = bootstrap.data?.currentScope ?? inferClientScope(routeContext);
+  const suggestedPrompts =
+    bootstrap.data?.suggestedPrompts ??
+    fallbackPrompts(routeContext.routeType, t);
+  const currentScope =
+    bootstrap.data?.currentScope ?? inferClientScope(routeContext);
   const lowQuota = quota ? quota.remaining <= 1 : false;
 
   async function handleSubmit(message: string) {
@@ -132,7 +154,7 @@ export function BlogAgentRoot() {
     };
     setNotice(null);
     setDraft("");
-    setMessages((current) => [...current, userMessage]);
+    setMessages(current => [...current, userMessage]);
 
     try {
       const response = await sendMessage.mutateAsync({
@@ -143,7 +165,9 @@ export function BlogAgentRoot() {
       setQuota(response.quota);
 
       if (response.status === "blocked") {
-        setMessages((current) => current.filter((item) => item.id !== userMessage.id));
+        setMessages(current =>
+          current.filter(item => item.id !== userMessage.id)
+        );
         setDraft(trimmed);
         setNotice(getQuotaBlockedNotice(response.quota.tier, t));
         return;
@@ -154,7 +178,7 @@ export function BlogAgentRoot() {
       if (response.status === "failed") {
         setDraft(trimmed);
         setNotice(t("agent.error.send"));
-        setMessages((current) => [
+        setMessages(current => [
           ...current,
           {
             id: response.messageId,
@@ -165,7 +189,7 @@ export function BlogAgentRoot() {
         return;
       }
 
-      setMessages((current) => [
+      setMessages(current => [
         ...current,
         {
           id: response.messageId,
@@ -175,7 +199,9 @@ export function BlogAgentRoot() {
         },
       ]);
     } catch {
-      setMessages((current) => current.filter((item) => item.id !== userMessage.id));
+      setMessages(current =>
+        current.filter(item => item.id !== userMessage.id)
+      );
       setDraft(trimmed);
       setNotice(t("agent.error.send"));
     }
@@ -206,12 +232,14 @@ export function BlogAgentRoot() {
       }
 
       setConversationId(response.conversationId);
-      setAttachedContextCount((count) => count + 1);
+      setAttachedContextCount(count => count + 1);
       setContextDraft("");
       setContextOpen(false);
       setNotice(t("agent.context.attached"));
       void utils.agent.listConversations.invalidate();
-      void utils.agent.getConversation.invalidate({ conversationId: response.conversationId });
+      void utils.agent.getConversation.invalidate({
+        conversationId: response.conversationId,
+      });
     } catch {
       setNotice(t("agent.context.error"));
     }
@@ -252,7 +280,7 @@ export function BlogAgentRoot() {
         lowQuota={lowQuota}
         label={t("agent.launcher.label")}
         tooltip={t("agent.launcher.tooltip")}
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => setOpen(value => !value)}
       />
 
       {open && (
@@ -271,14 +299,16 @@ export function BlogAgentRoot() {
             attachingContext={addContext.isPending}
             historyOpen={historyOpen}
             conversations={conversations.data ?? []}
-            historyLoading={conversations.isLoading || conversationDetail.isFetching}
+            historyLoading={
+              conversations.isLoading || conversationDetail.isFetching
+            }
             activeConversationId={conversationId}
             suggestedPrompts={suggestedPrompts}
             sending={sendMessage.isPending}
             onClose={() => setOpen(false)}
             onDraftChange={setDraft}
             onContextDraftChange={setContextDraft}
-            onToggleContext={() => setContextOpen((value) => !value)}
+            onToggleContext={() => setContextOpen(value => !value)}
             onAttachPastedContext={() =>
               handleAttachContext({
                 kind: "pasted_text",
@@ -286,7 +316,7 @@ export function BlogAgentRoot() {
               })
             }
             onPickContextFile={() => fileInputRef.current?.click()}
-            onToggleHistory={() => setHistoryOpen((value) => !value)}
+            onToggleHistory={() => setHistoryOpen(value => !value)}
             onLoadConversation={handleLoadConversation}
             onPrompt={handleSubmit}
             onSubmit={handleSubmit}
@@ -297,7 +327,7 @@ export function BlogAgentRoot() {
             type="file"
             accept=".txt,.md,text/plain,text/markdown"
             className="hidden"
-            onChange={(event) => {
+            onChange={event => {
               const file = event.currentTarget.files?.[0];
               if (file) void handleFileInput(file);
             }}
@@ -328,13 +358,19 @@ export function AgentLauncher({
       aria-label={label}
       title={tooltip}
       onClick={onClick}
-      className="agent-liquid-launcher fixed bottom-5 right-5 z-[60] inline-flex h-12 items-center gap-3 rounded-full border px-4 text-sm font-semibold text-white transition hover:border-sky-200/70 sm:bottom-6 sm:right-6"
+      className="agent-liquid-launcher fixed bottom-5 right-5 z-[60] inline-flex h-12 items-center gap-3 rounded-full border px-3 text-sm font-semibold text-white transition hover:border-sky-200/70 sm:bottom-6 sm:right-6 sm:px-4"
     >
-      <span className="grid h-8 w-8 place-items-center rounded-full border border-sky-200/20 bg-sky-300/15 text-sky-100">
-        {open ? <X className="h-4 w-4" /> : <MessageCircle className="h-4 w-4" />}
+      <span className="agent-launcher-orb grid h-8 w-8 place-items-center rounded-full text-sky-100">
+        {open ? (
+          <X className="h-4 w-4" />
+        ) : (
+          <MessageCircle className="h-4 w-4" />
+        )}
       </span>
       <span className="hidden sm:inline">{label}</span>
-      {lowQuota && <span className="h-2 w-2 rounded-full bg-cyan-300" aria-hidden="true" />}
+      {lowQuota && (
+        <span className="h-2 w-2 rounded-full bg-cyan-300" aria-hidden="true" />
+      )}
     </button>
   );
 }
@@ -396,7 +432,12 @@ export function AgentPanel({
   draft: string;
   messages: ChatMessage[];
   notice: string | null;
-  quota: { limit: number; used: number; remaining: number; tier: string } | null;
+  quota: {
+    limit: number;
+    used: number;
+    remaining: number;
+    tier: string;
+  } | null;
   contextDraft: string;
   contextOpen: boolean;
   attachedContextCount: number;
@@ -434,8 +475,12 @@ export function AgentPanel({
             <Bot className="h-4 w-4" />
           </span>
           <div className="min-w-0">
-            <h2 className="text-sm font-semibold text-white">{t("agent.header.title")}</h2>
-            <p className="mt-0.5 truncate text-xs text-slate-400">{t("agent.header.subtitle")}</p>
+            <h2 className="text-sm font-semibold text-white">
+              {t("agent.header.title")}
+            </h2>
+            <p className="mt-0.5 truncate text-xs text-slate-400">
+              {t("agent.header.subtitle")}
+            </p>
           </div>
         </div>
         <button
@@ -501,11 +546,15 @@ export function AgentPanel({
               <div className="mb-3 grid h-11 w-11 place-items-center rounded-lg border border-sky-300/25 bg-sky-400/10 text-sky-200">
                 <BookOpen className="h-5 w-5" />
               </div>
-              <h3 className="text-lg font-semibold text-white">{t("agent.welcome.title")}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-400">{t("agent.welcome.body")}</p>
+              <h3 className="text-lg font-semibold text-white">
+                {t("agent.welcome.title")}
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-slate-400">
+                {t("agent.welcome.body")}
+              </p>
             </div>
             <div className="grid gap-2">
-              {suggestedPrompts.map((prompt) => (
+              {suggestedPrompts.map(prompt => (
                 <button
                   key={prompt}
                   type="button"
@@ -522,10 +571,13 @@ export function AgentPanel({
 
         {messages.length > 0 && (
           <div className="space-y-4">
-            {messages.map((message) => (
+            {messages.map(message => (
               <article
                 key={message.id}
-                className={cn("flex gap-3", message.role === "user" ? "justify-end" : "justify-start")}
+                className={cn(
+                  "flex gap-3",
+                  message.role === "user" ? "justify-end" : "justify-start"
+                )}
               >
                 {message.role === "assistant" && (
                   <span className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-sky-400/10 text-sky-200">
@@ -599,8 +651,8 @@ export function AgentPanel({
           </Button>
           <Textarea
             value={draft}
-            onChange={(event) => onDraftChange(event.target.value)}
-            onKeyDown={(event) => {
+            onChange={event => onDraftChange(event.target.value)}
+            onKeyDown={event => {
               if (event.key === "Enter" && !event.shiftKey) {
                 event.preventDefault();
                 onSubmit(draft);
@@ -617,7 +669,11 @@ export function AgentPanel({
             aria-label={t("agent.input.send")}
             className="h-10 w-10 shrink-0 rounded-md bg-sky-500 text-white hover:bg-sky-400"
           >
-            {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            {sending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </form>
@@ -674,7 +730,7 @@ function AgentContextDock({
         <div className="mt-2 rounded-lg border border-sky-300/15 bg-slate-900/65 p-2">
           <Textarea
             value={value}
-            onChange={(event) => onChange(event.target.value)}
+            onChange={event => onChange(event.target.value)}
             placeholder={t("agent.context.placeholder")}
             rows={3}
             className="max-h-28 min-h-20 resize-none border-0 bg-transparent text-xs leading-5 text-slate-100 shadow-none placeholder:text-slate-500 focus-visible:ring-0"
@@ -696,7 +752,11 @@ function AgentContextDock({
               onClick={onAttach}
               className="h-8 rounded-md bg-sky-500 px-3 text-xs text-white hover:bg-sky-400"
             >
-              {attaching ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : t("agent.context.attach")}
+              {attaching ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                t("agent.context.attach")
+              )}
             </Button>
           </div>
         </div>
@@ -714,26 +774,38 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
         {t("agent.sources.title")}
       </div>
       <div className="grid gap-2">
-        {sources.slice(0, 3).map((source) => {
+        {sources.slice(0, 3).map(source => {
           const title = source.postTitle || t("agent.sources.site");
-          const body = source.heading ? `${source.heading} · ${source.excerpt}` : source.excerpt;
+          const body = source.heading
+            ? `${source.heading} · ${source.excerpt}`
+            : source.excerpt;
           const card = (
             <span className="block rounded-md border border-sky-300/15 bg-slate-950/45 p-2.5 transition hover:border-sky-300/35 hover:bg-sky-400/10">
               <span className="flex items-center justify-between gap-3 text-sm font-semibold text-sky-100">
                 <span className="min-w-0 truncate">{title}</span>
                 <span className="inline-flex shrink-0 items-center gap-1">
                   <span className="rounded border border-sky-300/15 bg-white/[0.03] px-1.5 py-0.5 text-[0.65rem] font-medium text-slate-400">
-                    {source.sourceType === "user_context" ? t("agent.sources.context") : t("agent.sources.blog")}
+                    {source.sourceType === "user_context"
+                      ? t("agent.sources.context")
+                      : t("agent.sources.blog")}
                   </span>
-                  {source.postSlug && <ExternalLink className="h-3.5 w-3.5 shrink-0" />}
+                  {source.postSlug && (
+                    <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                  )}
                 </span>
               </span>
-              <span className="mt-1 line-clamp-2 text-xs leading-5 text-slate-400">{body}</span>
+              <span className="mt-1 line-clamp-2 text-xs leading-5 text-slate-400">
+                {body}
+              </span>
             </span>
           );
 
           return source.postSlug ? (
-            <a key={source.sourceId} href={`/post/${source.postSlug}`} aria-label={t("agent.sources.open")}>
+            <a
+              key={source.sourceId}
+              href={`/post/${source.postSlug}`}
+              aria-label={t("agent.sources.open")}
+            >
               {card}
             </a>
           ) : (
@@ -763,11 +835,13 @@ function AgentHistoryPanel({
     <div className="border-b border-sky-300/10 bg-slate-950/55 px-4 py-3">
       <div className="mb-2 flex items-center justify-between gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-slate-500">
         <span>{t("agent.history.title")}</span>
-        {loading && <Loader2 className="h-3.5 w-3.5 animate-spin text-sky-300" />}
+        {loading && (
+          <Loader2 className="h-3.5 w-3.5 animate-spin text-sky-300" />
+        )}
       </div>
       {visible.length > 0 ? (
         <div className="grid max-h-48 gap-2 overflow-y-auto pr-1">
-          {visible.map((conversation) => {
+          {visible.map(conversation => {
             const active = conversation.id === activeConversationId;
             return (
               <button
@@ -790,7 +864,10 @@ function AgentHistoryPanel({
                   </span>
                 </span>
                 <span className="shrink-0 text-right text-[0.68rem] leading-4 text-slate-500">
-                  {formatConversationTime(conversation.lastMessageAt ?? conversation.updatedAt, t)}
+                  {formatConversationTime(
+                    conversation.lastMessageAt ?? conversation.updatedAt,
+                    t
+                  )}
                 </span>
               </button>
             );
@@ -803,7 +880,10 @@ function AgentHistoryPanel({
   );
 }
 
-function formatConversationTime(value: Date | string | null | undefined, t: (key: string) => string) {
+function formatConversationTime(
+  value: Date | string | null | undefined,
+  t: (key: string) => string
+) {
   if (!value) return t("agent.history.noTime");
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return t("agent.history.noTime");
@@ -815,9 +895,14 @@ function formatConversationTime(value: Date | string | null | undefined, t: (key
   }).format(date);
 }
 
-function AgentQuotaBadge({ quota }: { quota: { limit: number; remaining: number } }) {
+function AgentQuotaBadge({
+  quota,
+}: {
+  quota: { limit: number; remaining: number };
+}) {
   const { t } = useLanguage();
-  const key = quota.remaining <= 1 ? "agent.quota.low" : "agent.quota.remaining";
+  const key =
+    quota.remaining <= 1 ? "agent.quota.low" : "agent.quota.remaining";
 
   return (
     <span className="inline-flex items-center gap-1.5 rounded-md border border-slate-500/25 bg-white/[0.03] px-2.5 py-1 text-slate-300">
@@ -827,7 +912,13 @@ function AgentQuotaBadge({ quota }: { quota: { limit: number; remaining: number 
   );
 }
 
-function AgentNotice({ tone, message }: { tone: "warning" | "error"; message: string }) {
+function AgentNotice({
+  tone,
+  message,
+}: {
+  tone: "warning" | "error";
+  message: string;
+}) {
   return (
     <div
       className={cn(
@@ -848,10 +939,14 @@ function scopeLabel(scope: AgentScope, t: (key: string) => string) {
 }
 
 function getQuotaBlockedNotice(tier: string, t: (key: string) => string) {
-  return tier === "anonymous" ? t("agent.quota.blockedAnonymous") : t("agent.quota.blockedVisitor");
+  return tier === "anonymous"
+    ? t("agent.quota.blockedAnonymous")
+    : t("agent.quota.blockedVisitor");
 }
 
-function getContextFileKind(fileName: string): "markdown_file" | "text_file" | null {
+function getContextFileKind(
+  fileName: string
+): "markdown_file" | "text_file" | null {
   const lower = fileName.toLowerCase();
   if (lower.endsWith(".md")) return "markdown_file";
   if (lower.endsWith(".txt")) return "text_file";
@@ -892,11 +987,13 @@ function toChatMessage(message: {
   };
 }
 
-function extractSourceCards(sourceJson: Record<string, unknown> | null | undefined): SourceCard[] | undefined {
+function extractSourceCards(
+  sourceJson: Record<string, unknown> | null | undefined
+): SourceCard[] | undefined {
   const cards = sourceJson?.sourceCards;
   if (!Array.isArray(cards)) return undefined;
   const normalized = cards
-    .map((card) => normalizeSourceCard(card))
+    .map(card => normalizeSourceCard(card))
     .filter((card): card is SourceCard => Boolean(card));
   return normalized.length > 0 ? normalized : undefined;
 }
@@ -904,18 +1001,24 @@ function extractSourceCards(sourceJson: Record<string, unknown> | null | undefin
 function normalizeSourceCard(value: unknown): SourceCard | null {
   if (!value || typeof value !== "object") return null;
   const record = value as Record<string, unknown>;
-  if (typeof record.sourceId !== "string" || typeof record.postTitle !== "string") return null;
+  if (
+    typeof record.sourceId !== "string" ||
+    typeof record.postTitle !== "string"
+  )
+    return null;
   return {
     sourceId: record.sourceId,
     sourceType: record.sourceType === "user_context" ? "user_context" : "blog",
     postTitle: record.postTitle,
     postSlug: typeof record.postSlug === "string" ? record.postSlug : "",
-    categorySlug: typeof record.categorySlug === "string" ? record.categorySlug : undefined,
+    categorySlug:
+      typeof record.categorySlug === "string" ? record.categorySlug : undefined,
     tagSlugs: Array.isArray(record.tagSlugs)
       ? record.tagSlugs.filter((tag): tag is string => typeof tag === "string")
       : [],
     heading: typeof record.heading === "string" ? record.heading : undefined,
     excerpt: typeof record.excerpt === "string" ? record.excerpt : "",
-    relevanceReason: typeof record.relevanceReason === "string" ? record.relevanceReason : "",
+    relevanceReason:
+      typeof record.relevanceReason === "string" ? record.relevanceReason : "",
   };
 }

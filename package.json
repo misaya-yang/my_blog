@@ -13,6 +13,7 @@
     "audit:baseline": "tsx scripts/audit/baseline.ts",
     "audit:baseline:quick": "tsx scripts/audit/baseline.ts --skip-checks",
     "ai:reindex": "tsx scripts/ai/reindex-knowledge.ts",
+    "content:publish": "pnpm db:seed && pnpm ai:reindex",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",

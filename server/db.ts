@@ -59,6 +59,14 @@ export async function getDb() {
   return _db;
 }
 
+export async function closeDb() {
+  if (_client) {
+    await _client.end();
+  }
+  _client = null;
+  _db = null;
+}
+
 export async function upsertUser(user: InsertUser): Promise<void> {
   if (!user.openId) {
     throw new Error("User openId is required for upsert");

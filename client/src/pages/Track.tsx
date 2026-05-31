@@ -1,4 +1,4 @@
-import { ArticleCard } from "@/components/ArticleCard";
+import { ArticleCard, type ArticleCardPost } from "@/components/ArticleCard";
 import {
   SiteHeader,
   SpaceBackdrop,
@@ -11,7 +11,7 @@ import { trpc } from "@/lib/trpc";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
 import { buildRouteMetadata } from "@shared/metadata";
 import {
-  ArrowRight,
+  ArrowLeft,
   Boxes,
   Eye,
   FileText,
@@ -33,8 +33,11 @@ function TrackPage({ kind }: { kind: TrackKind }) {
     orderBy: "publishedAt",
   });
 
-  const totalViews =
-    posts?.posts?.reduce((sum: number, post: any) => sum + (post.viewCount || 0), 0) || 0;
+  const trackPosts = (posts?.posts ?? []) as ArticleCardPost[];
+  const totalViews = trackPosts.reduce(
+    (sum, post) => sum + (post.viewCount || 0),
+    0
+  );
 
   useSeo(
     buildRouteMetadata(siteUrl, {
@@ -63,21 +66,40 @@ function TrackPage({ kind }: { kind: TrackKind }) {
             </p>
 
             <div className="mt-5 grid max-w-4xl gap-3 sm:grid-cols-3">
-              <StatTile icon={<FileText className="h-5 w-5" />} value={posts?.posts?.length || 0} label={t("home.statArticles")} />
-              <StatTile icon={<Folder className="h-5 w-5" />} value={config.topics.length} label={t("track.statTopics")} />
-              <StatTile icon={<Eye className="h-5 w-5" />} value={totalViews} label={t("home.statViews")} />
+              <StatTile
+                icon={<FileText className="h-5 w-5" />}
+                value={trackPosts.length}
+                label={t("home.statArticles")}
+              />
+              <StatTile
+                icon={<Folder className="h-5 w-5" />}
+                value={config.topics.length}
+                label={t("track.statTopics")}
+              />
+              <StatTile
+                icon={<Eye className="h-5 w-5" />}
+                value={totalViews}
+                label={t("home.statViews")}
+              />
             </div>
           </div>
 
           <aside className="glass-panel p-5">
             <div className="flex items-center gap-2 text-white">
               <Network className="h-5 w-5 text-sky-300" />
-              <h2 className="text-base font-semibold">{t(config.topicTitleKey)}</h2>
+              <h2 className="text-base font-semibold">
+                {t(config.topicTitleKey)}
+              </h2>
             </div>
-            <p className="mt-3 line-clamp-4 text-sm leading-7 text-slate-300">{t(config.overviewKey)}</p>
+            <p className="mt-3 line-clamp-4 text-sm leading-7 text-slate-300">
+              {t(config.overviewKey)}
+            </p>
             <div className="mt-5 flex flex-wrap gap-2">
-              {config.focusKeys.slice(0, 4).map((key) => (
-                <span key={key} className="rounded-lg border border-sky-200/15 bg-slate-900/60 px-3 py-1.5 text-xs text-slate-200">
+              {config.focusKeys.slice(0, 4).map(key => (
+                <span
+                  key={key}
+                  className="rounded-lg border border-sky-200/15 bg-slate-900/60 px-3 py-1.5 text-xs text-slate-200"
+                >
                   {t(key)}
                 </span>
               ))}
@@ -85,26 +107,35 @@ function TrackPage({ kind }: { kind: TrackKind }) {
           </aside>
         </section>
 
-        <section id="research-index" className="container research-grid px-4 pb-16 sm:px-6">
+        <section
+          id="research-index"
+          className="container research-grid px-4 pb-16 sm:px-6"
+        >
           <div className="glass-panel research-section-panel">
             <div className="section-heading-row">
               <h2 className="section-title">{t("track.articles")}</h2>
-              <Button asChild variant="outline" size="sm" className="glass-button">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="glass-button"
+              >
                 <Link href="/">
-                  {t("track.backHome")} <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  {t("track.backHome")}
                 </Link>
               </Button>
             </div>
 
             {isLoading ? (
               <div className="grid gap-4">
-                {[1, 2].map((item) => (
+                {[1, 2].map(item => (
                   <div key={item} className="article-skeleton" />
                 ))}
               </div>
-            ) : posts?.posts?.length ? (
+            ) : trackPosts.length > 0 ? (
               <div className="grid gap-4">
-                {posts.posts.map((post: any, index: number) => (
+                {trackPosts.map((post, index) => (
                   <ArticleCard
                     key={post.id}
                     post={post}
@@ -125,10 +156,10 @@ function TrackPage({ kind }: { kind: TrackKind }) {
           <aside className="glass-panel research-index-panel">
             <div className="flex items-center gap-2">
               <Boxes className="h-5 w-5 text-sky-300" />
-              <h2 className="section-title">{t(config.topicTitleKey)}</h2>
+              <h2 className="section-title">{t("track.topicNodes")}</h2>
             </div>
             <div className="research-index-list">
-              {config.topics.map((topic) => (
+              {config.topics.map(topic => (
                 <div key={topic.labelKey} className="research-index-row">
                   <span>{t(topic.labelKey)}</span>
                   <span className="text-sky-300">{t(topic.metaKey)}</span>
@@ -137,7 +168,9 @@ function TrackPage({ kind }: { kind: TrackKind }) {
             </div>
             <div className="mt-6 flex flex-wrap gap-2">
               <Tags className="h-4 w-4 text-blue-300" />
-              <span className="text-xs text-slate-400">{t("track.topicHint")}</span>
+              <span className="text-xs text-slate-400">
+                {t("track.topicHint")}
+              </span>
             </div>
           </aside>
         </section>

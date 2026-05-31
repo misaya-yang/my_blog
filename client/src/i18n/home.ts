@@ -2,7 +2,10 @@ import type { TranslationDict } from "./types";
 
 const home: TranslationDict = {
   // Hero section
-  "home.title": { en: "AI Algorithms & Application Systems", zh: "AI 算法与应用系统" },
+  "home.title": {
+    en: "AI Algorithms & Application Systems",
+    zh: "AI 算法与应用系统",
+  },
   "home.subtitle": {
     en: "Technical notes on model mechanisms and AI application engineering: long context, agents, RAG, context engines, and evaluation harnesses.",
     zh: "记录模型机制与 AI 应用工程：长上下文、Agent、RAG、Context Engine 与评测 Harness。",
@@ -17,7 +20,10 @@ const home: TranslationDict = {
   "home.googleScholar": { en: "Google Scholar", zh: "Google Scholar" },
 
   // Search
-  "home.searchPlaceholder": { en: "Search articles, keywords, topics...", zh: "搜索文章、关键词、主题..." },
+  "home.searchPlaceholder": {
+    en: "Search articles, keywords, topics...",
+    zh: "搜索文章、关键词、主题...",
+  },
   "home.searchShortcut": { en: "⌘ K", zh: "⌘ K" },
 
   // Stats
@@ -33,9 +39,18 @@ const home: TranslationDict = {
   },
   "home.researchDirection": { en: "Research Directions", zh: "研究方向" },
   "home.recentFocus": { en: "Recent Focus", zh: "近期关注" },
-  "home.recentFocus1": { en: "Position encoding and extrapolation from a frequency-domain perspective", zh: "频域视角下的位置编码与外推能力" },
-  "home.recentFocus2": { en: "Efficient training and inference optimization for large models", zh: "大模型高效训练与推理优化" },
-  "home.recentFocus3": { en: "Research on interpretability and generalization", zh: "可解释性与泛化能力研究" },
+  "home.recentFocus1": {
+    en: "Position encoding and extrapolation from a frequency-domain perspective",
+    zh: "频域视角下的位置编码与外推能力",
+  },
+  "home.recentFocus2": {
+    en: "Efficient training and inference optimization for large models",
+    zh: "大模型高效训练与推理优化",
+  },
+  "home.recentFocus3": {
+    en: "Research on interpretability and generalization",
+    zh: "可解释性与泛化能力研究",
+  },
 
   // Sidebar - Tags
   "home.hotTags": { en: "Hot Tags", zh: "热门标签" },
@@ -62,7 +77,10 @@ const home: TranslationDict = {
 
   // Focus tags (static research topics)
   "home.focusTag1": { en: "Transformer Architecture", zh: "Transformer 架构" },
-  "home.focusTag2": { en: "Large Language Model (LLM)", zh: "大语言模型 (LLM)" },
+  "home.focusTag2": {
+    en: "Large Language Model (LLM)",
+    zh: "大语言模型 (LLM)",
+  },
   "home.focusTag3": { en: "Position Encoding", zh: "位置编码" },
   "home.focusTag4": { en: "RoPE", zh: "RoPE" },
   "home.focusTag5": { en: "Long Sequence Modeling", zh: "长序列建模" },
@@ -71,7 +89,10 @@ const home: TranslationDict = {
   "home.focusTag8": { en: "Efficiency Optimization", zh: "效率优化" },
 
   // Footer
-  "home.footerTagline": { en: "Misaya Yang · Transformer systems · Long-context mechanisms", zh: "Misaya Yang · Transformer systems · Long-context mechanisms" },
+  "home.footerTagline": {
+    en: "Misaya Yang · Transformer systems · Long-context mechanisms",
+    zh: "Misaya Yang · Transformer systems · Long-context mechanisms",
+  },
 
   // Archive placeholder
   "archive.soon": { en: "Archive feature coming soon", zh: "归档功能即将上线" },
@@ -83,25 +104,49 @@ const home: TranslationDict = {
     en: "{count} public notes grouped by month for quick scanning.",
     zh: "{count} 篇公开文章，按月份组织，便于快速回溯。",
   },
-  "discovery.archiveEmpty": { en: "No public articles are archived yet.", zh: "暂无可归档的公开文章。" },
+  "discovery.archiveEmpty": {
+    en: "No public articles are archived yet.",
+    zh: "暂无可归档的公开文章。",
+  },
   "discovery.articlesCount": { en: "{count} articles", zh: "{count} 篇文章" },
   "discovery.updated": { en: "Updated {date}", zh: "更新于 {date}" },
   "discovery.searchKicker": { en: "Full-site search", zh: "全站搜索" },
-  "discovery.searchTitle": { en: "Search the research index", zh: "搜索研究索引" },
+  "discovery.searchTitle": {
+    en: "Search the research index",
+    zh: "搜索研究索引",
+  },
   "discovery.searchSubtitle": {
     en: "Search public articles across titles, excerpts, body text, categories, and tags.",
     zh: "跨标题、摘要、正文、分类与标签搜索所有公开文章。",
   },
-  "discovery.searchPlaceholder": { en: "agent, RoPE, context engineering...", zh: "agent、RoPE、context engineering..." },
+  "discovery.searchPlaceholder": {
+    en: "agent, RoPE, context engineering...",
+    zh: "agent、RoPE、context engineering...",
+  },
   "discovery.searchButton": { en: "Search", zh: "搜索" },
-  "discovery.resultsFor": { en: "{count} results for “{query}”", zh: "“{query}” 的 {count} 个结果" },
-  "discovery.latestPublic": { en: "Latest public articles", zh: "最新公开文章" },
-  "discovery.searchEmpty": { en: "No public articles match this search.", zh: "没有匹配的公开文章。" },
+  "discovery.resultsFor": {
+    en: "{count} results for “{query}”",
+    zh: "“{query}” 的 {count} 个结果",
+  },
+  "discovery.latestPublic": {
+    en: "Latest public articles",
+    zh: "最新公开文章",
+  },
+  "discovery.searchEmpty": {
+    en: "No public articles match this search.",
+    zh: "没有匹配的公开文章。",
+  },
   "discovery.tagKicker": { en: "Tag index", zh: "标签索引" },
   "discovery.categoryKicker": { en: "Category index", zh: "分类索引" },
   "discovery.siblingTags": { en: "Related tags", zh: "相关标签" },
-  "discovery.noSiblingTags": { en: "No related tags yet.", zh: "暂无相关标签。" },
-  "discovery.noPosts": { en: "No public articles in this index yet.", zh: "这个索引下暂无公开文章。" },
+  "discovery.noSiblingTags": {
+    en: "No related tags yet.",
+    zh: "暂无相关标签。",
+  },
+  "discovery.noPosts": {
+    en: "No public articles in this index yet.",
+    zh: "这个索引下暂无公开文章。",
+  },
   "discovery.taxonomyNotFound": { en: "Index not found", zh: "索引未找到" },
 
   // About
@@ -116,17 +161,36 @@ const home: TranslationDict = {
     en: "This blog is maintained as a working research notebook. The goal is to keep ideas precise enough to implement, inspect, and revisit later.",
     zh: "这个博客更像持续维护的研究笔记：每个想法都尽量写到可以实现、检查，并在之后重新审视的程度。",
   },
-  "about.focus1": { en: "Long-context mechanisms and positional encoding", zh: "长上下文机制与位置编码" },
-  "about.focus2": { en: "Agent protocols, harnesses, and observability", zh: "Agent 协议、Harness 与可观测性" },
-  "about.focus3": { en: "RAG, context engineering, and retrieval boundaries", zh: "RAG、Context Engineering 与检索边界" },
-  "about.focus4": { en: "Evaluation loops for production AI systems", zh: "生产级 AI 系统的评测循环" },
+  "about.focus1": {
+    en: "Long-context mechanisms and positional encoding",
+    zh: "长上下文机制与位置编码",
+  },
+  "about.focus2": {
+    en: "Agent protocols, harnesses, and observability",
+    zh: "Agent 协议、Harness 与可观测性",
+  },
+  "about.focus3": {
+    en: "RAG, context engineering, and retrieval boundaries",
+    zh: "RAG、Context Engineering 与检索边界",
+  },
+  "about.focus4": {
+    en: "Evaluation loops for production AI systems",
+    zh: "生产级 AI 系统的评测循环",
+  },
   "about.linksTitle": { en: "Links", zh: "链接" },
-  "about.location": { en: "Shanghai / Remote research notes", zh: "上海 / 远程研究笔记" },
+  "about.location": {
+    en: "Shanghai / Remote research notes",
+    zh: "上海 / 远程研究笔记",
+  },
   // Track pages
   "track.articles": { en: "Technical Articles", zh: "技术文章" },
   "track.backHome": { en: "Back to Portal", zh: "返回总览" },
   "track.statTopics": { en: "Topics / Technical Map", zh: "专题 / 技术地图" },
-  "track.topicHint": { en: "Topics are represented as tags and article series.", zh: "专题通过标签和系列文章表达。" },
+  "track.topicNodes": { en: "Technical Nodes", zh: "技术节点" },
+  "track.topicHint": {
+    en: "Topics are represented as tags and article series.",
+    zh: "专题通过标签和系列文章表达。",
+  },
   "track.algorithms.chip1": { en: "Mechanisms", zh: "机制" },
   "track.algorithms.chip2": { en: "Scaling", zh: "扩展" },
   "track.algorithms.chip3": { en: "Reliability", zh: "可靠性" },
@@ -143,7 +207,10 @@ const home: TranslationDict = {
   "track.applications.chip1": { en: "Agents", zh: "Agent" },
   "track.applications.chip2": { en: "Context", zh: "上下文" },
   "track.applications.chip3": { en: "Evaluation", zh: "评测" },
-  "track.applications.title": { en: "AI Application Engineering", zh: "AI 应用工程" },
+  "track.applications.title": {
+    en: "AI Application Engineering",
+    zh: "AI 应用工程",
+  },
   "track.applications.subtitle": {
     en: "Technical essays on agents, harness engines, RAG, context engineering, tool use, and evaluation loops.",
     zh: "记录 Agent、Harness Engine、RAG、Context Engineering、工具调用与评测循环。",
@@ -156,7 +223,10 @@ const home: TranslationDict = {
   "track.applications.focus1": { en: "Agent Systems", zh: "Agent 系统" },
   "track.applications.focus2": { en: "Harness Engine", zh: "Harness Engine" },
   "track.applications.focus3": { en: "RAG & Retrieval", zh: "RAG 与检索" },
-  "track.applications.focus4": { en: "Context Engineering", zh: "Context Engineering" },
+  "track.applications.focus4": {
+    en: "Context Engineering",
+    zh: "Context Engineering",
+  },
   "track.applications.focus5": { en: "Fine-tuning", zh: "微调" },
   "track.applications.focus6": { en: "Evaluation", zh: "评测" },
   "track.topic.positionEncoding": { en: "Position Encoding", zh: "位置编码" },
@@ -173,7 +243,10 @@ const home: TranslationDict = {
   "track.topic.evaluation": { en: "Evaluation", zh: "评测" },
   "track.topic.ragRetrieval": { en: "RAG & Retrieval", zh: "RAG 与检索" },
   "track.topic.grounding": { en: "Grounding", zh: "接地" },
-  "track.topic.contextEngineering": { en: "Context Engineering", zh: "Context Engineering" },
+  "track.topic.contextEngineering": {
+    en: "Context Engineering",
+    zh: "Context Engineering",
+  },
   "track.topic.memory": { en: "Memory", zh: "记忆" },
   "track.topic.fineTuning": { en: "Fine-tuning", zh: "微调" },
   "track.topic.adaptation": { en: "Adaptation", zh: "适配" },

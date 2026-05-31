@@ -1,5 +1,7 @@
 import { ENV } from "./env.js";
 
+export const DEFAULT_LLM_MODEL = "deepseek-v4-flash";
+
 export type Role = "system" | "user" | "assistant" | "tool" | "function";
 
 export type TextContent = {
@@ -19,7 +21,12 @@ export type FileContent = {
   type: "file_url";
   file_url: {
     url: string;
-    mime_type?: "audio/mpeg" | "audio/wav" | "application/pdf" | "audio/mp4" | "video/mp4" ;
+    mime_type?:
+      | "audio/mpeg"
+      | "audio/wav"
+      | "application/pdf"
+      | "audio/mp4"
+      | "video/mp4";
   };
 };
 
@@ -210,18 +217,32 @@ const normalizeToolChoice = (
   return toolChoice;
 };
 
-const resolveApiUrl = () =>
-  ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
-    ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`
+function nonBlank(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+const resolveApiUrl = () => {
+  const apiUrl = nonBlank(ENV.forgeApiUrl);
+  return apiUrl
+    ? `${apiUrl.replace(/\/$/, "")}/v1/chat/completions`
     : "https://forge.manus.im/v1/chat/completions";
+};
 
-const isDeepSeekApi = () => ENV.forgeApiUrl.toLowerCase().includes("deepseek");
+const isDeepSeekApi = () =>
+  nonBlank(ENV.forgeApiUrl)?.toLowerCase().includes("deepseek") ?? false;
 
-const assertApiKey = () => {
-  if (!ENV.forgeApiKey) {
+const getApiKey = () => {
+  const apiKey = nonBlank(ENV.forgeApiKey);
+  if (!apiKey) {
     throw new Error("OPENAI_API_KEY is not configured");
   }
+  return apiKey;
 };
+
+export function resolveLLMModel(model?: string): string {
+  return nonBlank(model) || nonBlank(ENV.blogAgentModel) || DEFAULT_LLM_MODEL;
+}
 
 const normalizeResponseFormat = ({
   responseFormat,
@@ -269,7 +290,7 @@ const normalizeResponseFormat = ({
 };
 
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
-  assertApiKey();
+  const apiKey = getApiKey();
 
   const {
     model,
@@ -283,8 +304,9 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     response_format,
   } = params;
 
+  const resolvedModel = resolveLLMModel(model);
   const payload: Record<string, unknown> = {
-    model: model || "gemini-2.5-flash",
+    model: resolvedModel,
     messages: messages.map(normalizeMessage),
   };
 
@@ -325,7 +347,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      authorization: `Bearer ${ENV.forgeApiKey}`,
+      authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify(payload),
   });

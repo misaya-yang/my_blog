@@ -2,8 +2,8 @@ import type { TranslationDict } from "./types";
 
 const agent: TranslationDict = {
   "agent.launcher.label": {
-    en: "Ask the blog",
-    zh: "问问这个博客",
+    en: "Blog Agent",
+    zh: "AI 助手",
   },
   "agent.launcher.tooltip": {
     en: "Ask AI about public posts and reading paths",

@@ -1,6 +1,9 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import fs from "node:fs";
 import postgres from "postgres";
+
+dotenv.config({ quiet: true });
+dotenv.config({ path: ".env.local", override: true, quiet: true });
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -63,7 +66,8 @@ const posts = [
     ],
   },
   {
-    title: "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+    title:
+      "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
     slug: "agent-harness-engine-evaluating-tool-using-agents",
     contentPath: "./agent_harness_engine_blog.md",
     categorySlug: "ai-applications",
@@ -80,6 +84,48 @@ const posts = [
       { name: "Evaluation", slug: "evaluation" },
       { name: "Observability", slug: "observability" },
       { name: "Tool Use", slug: "tool-use" },
+    ],
+  },
+  {
+    title: "Evidence Packet: Agentic RAG 的上下文编译接口",
+    slug: "rag-evidence-packet-context-compiler",
+    contentPath: "./rag_evidence_packet_context_compiler.md",
+    categorySlug: "ai-applications",
+    status: "published",
+    visibility: "public",
+    excerpt:
+      "把知识库从 top-k chunk 搜索升级为面向 Agent 的上下文编译器，用 Evidence Packet 统一检索信号、来源引用、权限范围、token budget、trace 和评测。",
+    tags: [
+      { name: "Agent Systems", slug: "agent-systems" },
+      { name: "Agentic RAG", slug: "agentic-rag" },
+      { name: "RAG", slug: "rag" },
+      { name: "Knowledge Base", slug: "knowledge-base" },
+      { name: "Context Compiler", slug: "context-compiler" },
+      { name: "Context Engineering", slug: "context-engineering" },
+      { name: "Hybrid Search", slug: "hybrid-search" },
+      { name: "Evaluation", slug: "evaluation" },
+      { name: "Observability", slug: "observability" },
+    ],
+  },
+  {
+    title: "Agent Loop: 从 ReAct 模式到可观测运行时",
+    slug: "agent-loop-observable-tool-using-agents",
+    contentPath: "./agent_loop_blog.md",
+    categorySlug: "ai-applications",
+    status: "published",
+    visibility: "public",
+    excerpt:
+      "Agent Loop 将 ReAct 式多步行为收束为可观测运行时：用状态机、上下文构建器、决策合约、工具运行时、预算、检查点和 trace 管理模型行动。",
+    tags: [
+      { name: "Agent Systems", slug: "agent-systems" },
+      { name: "AgentLoop", slug: "agent-loop" },
+      { name: "Tool Use", slug: "tool-use" },
+      { name: "Context Engineering", slug: "context-engineering" },
+      { name: "Session Management", slug: "session-management" },
+      { name: "Rate Limiting", slug: "rate-limiting" },
+      { name: "Guardrails", slug: "guardrails" },
+      { name: "Evaluation", slug: "evaluation" },
+      { name: "Observability", slug: "observability" },
     ],
   },
 ];
