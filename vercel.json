@@ -84,6 +84,10 @@
     {
       "source": "/404",
       "destination": "/index.html"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/api/index"
     }
   ]
 }

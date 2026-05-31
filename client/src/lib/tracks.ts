@@ -10,7 +10,7 @@ export type TrackConfig = {
   subtitleKey: string;
   overviewKey: string;
   topicTitleKey: string;
-  topics: Array<{ label: string; meta: string }>;
+  topics: Array<{ labelKey: string; metaKey: string }>;
   focusKeys: string[];
 };
 
@@ -26,10 +26,10 @@ export const trackConfigs: Record<TrackKind, TrackConfig> = {
     overviewKey: "track.algorithms.overview",
     topicTitleKey: "track.algorithms.topicTitle",
     topics: [
-      { label: "Position Encoding", meta: "RoPE" },
-      { label: "IsoHC", meta: "Stability" },
-      { label: "Long Context", meta: "Scaling" },
-      { label: "Residual Mixing", meta: "Architecture" },
+      { labelKey: "track.topic.positionEncoding", metaKey: "track.topic.rope" },
+      { labelKey: "track.topic.isohc", metaKey: "track.topic.stability" },
+      { labelKey: "track.topic.longContext", metaKey: "track.topic.scaling" },
+      { labelKey: "track.topic.residualMixing", metaKey: "track.topic.architecture" },
     ],
     focusKeys: [
       "home.focusTag1",
@@ -51,12 +51,12 @@ export const trackConfigs: Record<TrackKind, TrackConfig> = {
     overviewKey: "track.applications.overview",
     topicTitleKey: "track.applications.topicTitle",
     topics: [
-      { label: "Agent Systems", meta: "Tool Use" },
-      { label: "Harness Engine", meta: "Evaluation" },
-      { label: "RAG & Retrieval", meta: "Grounding" },
-      { label: "Context Engineering", meta: "Memory" },
-      { label: "Fine-tuning", meta: "Adaptation" },
-      { label: "Observability", meta: "Reliability" },
+      { labelKey: "track.topic.agentSystems", metaKey: "track.topic.toolUse" },
+      { labelKey: "track.topic.harnessEngine", metaKey: "track.topic.evaluation" },
+      { labelKey: "track.topic.ragRetrieval", metaKey: "track.topic.grounding" },
+      { labelKey: "track.topic.contextEngineering", metaKey: "track.topic.memory" },
+      { labelKey: "track.topic.fineTuning", metaKey: "track.topic.adaptation" },
+      { labelKey: "track.topic.observability", metaKey: "track.topic.reliability" },
     ],
     focusKeys: [
       "track.applications.focus1",

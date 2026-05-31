@@ -51,14 +51,14 @@ function TrackPage({ kind }: { kind: TrackKind }) {
       <SiteHeader active={config.active} />
 
       <main className="relative z-10">
-        <section className="container grid gap-8 px-4 pb-9 pt-12 sm:px-6 md:pt-16 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <section className="container grid gap-10 px-4 pb-12 pt-14 sm:px-6 md:pt-20 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div className="min-w-0">
-            <p className="mb-6 font-mono text-sm text-sky-200">{t(config.topicTitleKey)}</p>
+            <p className="technical-label mb-6">{t(config.topicTitleKey)}</p>
 
-            <h1 className="max-w-5xl font-serif text-5xl font-semibold leading-[1.08] text-white md:text-7xl">
+            <h1 className="display-title max-w-5xl text-5xl leading-[1.05] text-white md:text-7xl xl:text-8xl">
               {t(config.titleKey)}
             </h1>
-            <p className="mt-6 max-w-3xl text-base leading-8 text-slate-300 md:text-lg">
+            <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
               {t(config.subtitleKey)}
             </p>
 
@@ -74,9 +74,9 @@ function TrackPage({ kind }: { kind: TrackKind }) {
               <Network className="h-5 w-5 text-sky-300" />
               <h2 className="text-base font-semibold">{t(config.topicTitleKey)}</h2>
             </div>
-            <p className="mt-3 text-sm leading-7 text-slate-300">{t(config.overviewKey)}</p>
+            <p className="mt-3 line-clamp-4 text-sm leading-7 text-slate-300">{t(config.overviewKey)}</p>
             <div className="mt-5 flex flex-wrap gap-2">
-              {config.focusKeys.map((key) => (
+              {config.focusKeys.slice(0, 4).map((key) => (
                 <span key={key} className="rounded-lg border border-sky-200/15 bg-slate-900/60 px-3 py-1.5 text-xs text-slate-200">
                   {t(key)}
                 </span>
@@ -129,9 +129,9 @@ function TrackPage({ kind }: { kind: TrackKind }) {
             </div>
             <div className="research-index-list">
               {config.topics.map((topic) => (
-                <div key={topic.label} className="research-index-row">
-                  <span>{topic.label}</span>
-                  <span className="text-sky-300">{topic.meta}</span>
+                <div key={topic.labelKey} className="research-index-row">
+                  <span>{t(topic.labelKey)}</span>
+                  <span className="text-sky-300">{t(topic.metaKey)}</span>
                 </div>
               ))}
             </div>

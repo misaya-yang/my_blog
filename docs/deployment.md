@@ -129,7 +129,8 @@ The repository includes `vercel.json`. Known public/owner routes are routed to t
     { "source": "/write/:slug", "destination": "/index.html" },
     { "source": "/tags/:slug", "destination": "/index.html" },
     { "source": "/categories/:slug", "destination": "/index.html" },
-    { "source": "/404", "destination": "/index.html" }
+    { "source": "/404", "destination": "/index.html" },
+    { "source": "/:path*", "destination": "/api/index" }
   ]
 }
 ```
@@ -216,15 +217,17 @@ www  A    76.76.21.21
 
 The `yang.misaya.online` record is managed separately and is not part of the Vercel blog deployment.
 
-Latest verified deployment after the Agent + Projects removal release:
+Latest verified deployment after the liquid-glass UI, i18n, and routing release:
 
-- Deployment URL: https://my-blog-ai88iejin-zedpl28174-3992s-projects.vercel.app
-- Vercel deployment id: `dpl_7pkfvzCqfUQMN6phryHammtNPjbW`
+- Deployment URL: https://my-blog-bbeobzf33-zedpl28174-3992s-projects.vercel.app
+- Vercel deployment id: `dpl_2UPDim2jHQSRivHhfFtTkiedZqeg`
 - Verified production alias: https://misaya.online
+- Verified secondary alias: https://www.misaya.online
 
 Open the production URL and verify:
 
 - `/` renders the blog frontend.
+- `/projects` renders the site-owned 404 page rather than the Vercel platform 404.
 - `/api/trpc/posts.list?batch=1&input=...` is reachable through the tRPC client from the UI.
 - The IsoHC post appears publicly after `pnpm db:seed`.
 - The EVQ-Cosh post remains a draft while related work may be under double-blind review.

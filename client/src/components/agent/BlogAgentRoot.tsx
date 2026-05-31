@@ -328,9 +328,9 @@ export function AgentLauncher({
       aria-label={label}
       title={tooltip}
       onClick={onClick}
-      className="fixed bottom-5 right-5 z-[60] inline-flex h-12 items-center gap-3 rounded-full border border-sky-300/35 bg-slate-950/85 px-4 text-sm font-semibold text-white shadow-[0_18px_52px_rgba(15,23,42,0.45)] backdrop-blur-xl transition hover:border-sky-200/70 hover:bg-slate-900 sm:bottom-6 sm:right-6"
+      className="agent-liquid-launcher fixed bottom-5 right-5 z-[60] inline-flex h-12 items-center gap-3 rounded-full border px-4 text-sm font-semibold text-white transition hover:border-sky-200/70 sm:bottom-6 sm:right-6"
     >
-      <span className="grid h-8 w-8 place-items-center rounded-full bg-sky-400/15 text-sky-200">
+      <span className="grid h-8 w-8 place-items-center rounded-full border border-sky-200/20 bg-sky-300/15 text-sky-100">
         {open ? <X className="h-4 w-4" /> : <MessageCircle className="h-4 w-4" />}
       </span>
       <span className="hidden sm:inline">{label}</span>
@@ -427,7 +427,7 @@ export function AgentPanel({
   }
 
   return (
-    <section className="flex h-full min-h-[420px] flex-col overflow-hidden rounded-lg border border-sky-300/25 bg-slate-950/92 text-slate-100 shadow-[0_28px_90px_rgba(2,6,23,0.55)] backdrop-blur-xl">
+    <section className="agent-liquid-panel flex h-full min-h-[420px] flex-col overflow-hidden rounded-lg border text-slate-100">
       <header className="flex items-start justify-between gap-4 border-b border-sky-300/15 px-4 py-3">
         <div className="flex min-w-0 items-start gap-3">
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-sky-300/25 bg-sky-400/10 text-sky-200">
@@ -511,7 +511,7 @@ export function AgentPanel({
                   type="button"
                   disabled={sending}
                   onClick={() => onPrompt(prompt)}
-                  className="rounded-lg border border-sky-300/15 bg-white/[0.03] px-3 py-2 text-left text-sm leading-6 text-slate-200 transition hover:border-sky-300/35 hover:bg-sky-400/10 disabled:opacity-60"
+                  className="rounded-lg border border-sky-300/15 bg-white/[0.04] px-3 py-2 text-left text-sm font-medium leading-6 text-slate-200 transition hover:border-sky-300/40 hover:bg-sky-300/10 disabled:opacity-60"
                 >
                   {prompt}
                 </button>
@@ -584,7 +584,7 @@ export function AgentPanel({
       />
 
       <form onSubmit={submit} className="border-t border-sky-300/15 p-3">
-        <div className="flex items-end gap-2 rounded-lg border border-sky-300/20 bg-slate-900/70 p-2">
+        <div className="flex items-end gap-2 rounded-lg border border-sky-300/20 bg-slate-950/45 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
           <Button
             type="button"
             size="icon"

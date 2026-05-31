@@ -84,18 +84,18 @@ function AnalyticsRouteTracker() {
 
 function App() {
   return (
-    <ErrorBoundary>
-      <ThemeProvider defaultTheme="dark">
-        <LanguageProvider>
+    <ThemeProvider defaultTheme="dark">
+      <LanguageProvider>
+        <ErrorBoundary>
           <Suspense fallback={null}>
             <Toaster />
           </Suspense>
           <AnalyticsRouteTracker />
           <Router />
           <BlogAgentRoot />
-        </LanguageProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
+        </ErrorBoundary>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 

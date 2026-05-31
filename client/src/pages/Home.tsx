@@ -92,9 +92,9 @@ export default function Home() {
       <SiteHeader active="home" />
 
       <main className="relative z-10">
-        <section className="container grid gap-8 px-4 pb-9 pt-12 sm:px-6 md:pt-16 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_400px]">
+        <section className="container grid gap-10 px-4 pb-12 pt-14 sm:px-6 md:pt-20 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px]">
           <div className="min-w-0">
-            <div className="signal-chip mb-8">
+            <div className="signal-chip mb-9">
               <Sparkles className="h-4 w-4 text-sky-300" />
               <span>{t("home.chip1")}</span>
               <span className="text-slate-500">·</span>
@@ -103,14 +103,14 @@ export default function Home() {
               <span>{t("home.chip3")}</span>
             </div>
 
-            <h1 className="max-w-5xl font-serif text-5xl font-semibold leading-[1.08] text-white md:text-7xl">
+            <h1 className="display-title max-w-5xl text-5xl leading-[1.05] text-white md:text-7xl xl:text-8xl">
               {t("home.title")}
             </h1>
-            <p className="mt-6 max-w-3xl text-base leading-8 text-slate-300 md:text-lg">
+            <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
               {t("home.subtitle")}
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-9 flex flex-wrap gap-3">
               <div className="glass-panel flex items-center gap-3 px-3 py-2">
                 <span className="grid h-11 w-11 place-items-center overflow-hidden rounded-full bg-gradient-to-br from-sky-300 to-blue-700 text-sm font-semibold text-white">
                   MY
@@ -139,12 +139,12 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="mt-8 grid max-w-5xl gap-4 md:grid-cols-2">
+            <div className="mt-10 grid max-w-5xl gap-5 md:grid-cols-2">
               {portalTracks.map((track) => {
                 const config = trackConfigs[track];
                 return (
                   <Link key={track} href={config.href}>
-                    <article className="glass-panel group min-h-[13rem] p-5 transition hover:border-sky-300/60">
+                    <article className="glass-panel group min-h-[12rem] p-5 transition hover:-translate-y-0.5 hover:border-sky-300/60 sm:p-6">
                       <div className="mb-4 flex items-center justify-between gap-4">
                         <div className="signal-chip">
                           <Sparkles className="h-4 w-4" />
@@ -152,10 +152,10 @@ export default function Home() {
                         </div>
                         <ArrowRight className="h-5 w-5 text-sky-300 transition-transform group-hover:translate-x-1" />
                       </div>
-                      <h2 className="font-serif text-2xl font-semibold leading-tight text-white">
+                      <h2 className="display-title text-2xl leading-tight text-white">
                         {t(config.titleKey)}
                       </h2>
-                      <p className="mt-3 text-sm leading-7 text-slate-300">
+                      <p className="mt-4 line-clamp-2 text-sm leading-7 text-slate-300">
                         {t(config.overviewKey)}
                       </p>
                     </article>
@@ -164,30 +164,30 @@ export default function Home() {
               })}
             </div>
 
-            <form onSubmit={submitSearch} className="glass-panel mt-8 flex max-w-4xl items-center gap-4 px-5 py-4">
+            <form onSubmit={submitSearch} className="glass-panel mt-9 flex max-w-3xl items-center gap-4 px-5 py-4">
               <Search className="h-6 w-6 shrink-0 text-slate-400" />
               <Input
                 placeholder={t("home.searchPlaceholder")}
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
-                className="h-11 border-0 bg-transparent px-0 text-base text-white shadow-none placeholder:text-slate-500 focus-visible:ring-0"
+                className="h-11 border-0 bg-transparent px-0 text-base font-medium text-white shadow-none placeholder:text-slate-500 focus-visible:ring-0"
               />
               <Button type="submit" size="sm" className="hidden bg-sky-400 text-slate-950 hover:bg-sky-300 sm:inline-flex">
                 {t("discovery.searchButton")}
               </Button>
             </form>
 
-            <div className="mt-4 flex max-w-4xl flex-wrap gap-2">
+            <div className="mt-4 flex max-w-3xl flex-wrap gap-2">
               <Link href="/archive" className="article-tag">{t("nav.archive")}</Link>
               <Link href="/search" className="article-tag">{t("nav.search")}</Link>
               <Link href="/categories/ai-algorithms" className="article-tag">{t("home.algorithmsLabel")}</Link>
               <Link href="/categories/ai-applications" className="article-tag">{t("home.applicationsLabel")}</Link>
             </div>
 
-            <SubscriptionForm className="mt-6 max-w-4xl" surface="home" />
+            <SubscriptionForm className="mt-6 max-w-3xl" surface="home" />
 
             {hasMeaningfulStats && (
-              <div className="mt-5 grid max-w-4xl gap-3 sm:grid-cols-3">
+              <div className="mt-5 grid max-w-3xl gap-3 sm:grid-cols-3">
                 <StatTile icon={<FileText className="h-5 w-5" />} value={posts?.posts?.length || 0} label={t("home.statArticles")} />
                 <StatTile icon={<Folder className="h-5 w-5" />} value={categories?.length || 0} label={t("home.statCategories")} />
                 <StatTile icon={<Eye className="h-5 w-5" />} value={totalViews} label={t("home.statViews")} />
@@ -196,12 +196,12 @@ export default function Home() {
           </div>
 
           <aside className="grid gap-5 self-start lg:pt-1">
-            <section className="glass-panel p-6">
+            <section className="glass-panel p-5 sm:p-6">
               <div className="mb-4 flex items-center gap-2 text-white">
                 <UserRound className="h-5 w-5 text-sky-300" />
                 <h2 className="text-lg font-semibold">{t("home.aboutTitle")}</h2>
               </div>
-              <p className="text-sm leading-7 text-slate-300">
+              <p className="line-clamp-3 text-sm leading-7 text-slate-300">
                 {t("home.aboutDescription")}
               </p>
 
@@ -210,7 +210,7 @@ export default function Home() {
                 <h3 className="text-sm font-semibold">{t("home.researchDirection")}</h3>
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
-                {focusTagKeys.slice(0, 6).map((key) => (
+                {focusTagKeys.slice(0, 4).map((key) => (
                   <span key={key} className="rounded-lg border border-sky-200/15 bg-slate-900/60 px-3 py-1.5 text-xs text-slate-200">
                     {t(key)}
                   </span>
@@ -224,7 +224,6 @@ export default function Home() {
               <ul className="mt-3 space-y-2 text-sm text-slate-400">
                 <li>• {t("home.recentFocus1")}</li>
                 <li>• {t("home.recentFocus2")}</li>
-                <li>• {t("home.recentFocus3")}</li>
               </ul>
             </section>
 
@@ -234,7 +233,7 @@ export default function Home() {
                 <h2 className="text-base font-semibold">{t("home.hotTags")}</h2>
               </div>
               <div className="flex flex-wrap gap-2">
-                {visibleTags.slice(0, 12).map((tag: any) => (
+                {visibleTags.slice(0, 8).map((tag: any) => (
                   tag.slug ? (
                     <Link key={tag.id ?? tag.name} href={`/tags/${tag.slug}`} className="rounded-lg border border-slate-600/50 bg-slate-900/55 px-3 py-1.5 text-xs text-slate-300 hover:border-sky-300/45 hover:text-white">
                       {tag.name}
@@ -294,15 +293,15 @@ export default function Home() {
             <div className="research-index-list">
               <Link href="/algorithms" className="research-index-row">
                 <span>{t("home.algorithmsLabel")}</span>
-                <span className="text-sky-300">Models</span>
+                <span className="text-sky-300">{t("home.indexModels")}</span>
               </Link>
               <Link href="/applications" className="research-index-row">
                 <span>{t("home.applicationsLabel")}</span>
-                <span className="text-sky-300">Systems</span>
+                <span className="text-sky-300">{t("home.indexSystems")}</span>
               </Link>
               <Link href="/tags/harness-engine" className="research-index-row">
-                <span>Agent Harness</span>
-                <span className="text-sky-300">Evaluation</span>
+                <span>{t("home.indexAgentHarness")}</span>
+                <span className="text-sky-300">{t("home.indexEvaluation")}</span>
               </Link>
             </div>
           </aside>

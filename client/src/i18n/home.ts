@@ -4,8 +4,8 @@ const home: TranslationDict = {
   // Hero section
   "home.title": { en: "AI Algorithms & Application Systems", zh: "AI 算法与应用系统" },
   "home.subtitle": {
-    en: "A technical notebook for model mechanisms and AI application engineering: Transformers, long-context algorithms, agent systems, RAG, context engines, evaluation harnesses, and the practical constraints behind reliable AI systems.",
-    zh: "记录模型机制与 AI 应用工程：Transformer、长上下文算法、Agent 系统、RAG、Context Engine、评测 Harness，以及可靠 AI 系统背后的工程约束。",
+    en: "Technical notes on model mechanisms and AI application engineering: long context, agents, RAG, context engines, and evaluation harnesses.",
+    zh: "记录模型机制与 AI 应用工程：长上下文、Agent、RAG、Context Engine 与评测 Harness。",
   },
   "home.chip1": { en: "RoPE", zh: "RoPE" },
   "home.chip2": { en: "Long Context", zh: "长上下文" },
@@ -21,15 +21,15 @@ const home: TranslationDict = {
   "home.searchShortcut": { en: "⌘ K", zh: "⌘ K" },
 
   // Stats
-  "home.statArticles": { en: "Articles / Continuously Updated", zh: "文章 / 持续更新中" },
-  "home.statCategories": { en: "Categories / Systematically Organized", zh: "分类 / 系统化整理" },
-  "home.statViews": { en: "Views / Total Reads", zh: "阅读量 / 总计浏览次数" },
+  "home.statArticles": { en: "Articles", zh: "文章" },
+  "home.statCategories": { en: "Categories", zh: "分类" },
+  "home.statViews": { en: "Views", zh: "阅读量" },
 
   // Sidebar - About
   "home.aboutTitle": { en: "About Me", zh: "关于我" },
   "home.aboutDescription": {
-    en: "Passionate about deep learning and algorithm research, focusing on large model training and inference, position encoding mechanisms, long-sequence modeling, and the practical application of frontier AI technologies.",
-    zh: "热衷于深度学习与算法研究，关注大模型的训练与推理、位置编码机制、长序列建模以及前沿 AI 技术的落地与应用。",
+    en: "Research notes on model mechanisms, long-context behavior, agent infrastructure, and reliable AI application systems.",
+    zh: "聚焦模型机制、长上下文行为、Agent 基础设施，以及可靠 AI 应用系统。",
   },
   "home.researchDirection": { en: "Research Directions", zh: "研究方向" },
   "home.recentFocus": { en: "Recent Focus", zh: "近期关注" },
@@ -55,6 +55,10 @@ const home: TranslationDict = {
 
   // Research Index sidebar
   "home.researchIndex": { en: "Research Index", zh: "研究索引" },
+  "home.indexModels": { en: "Models", zh: "模型" },
+  "home.indexSystems": { en: "Systems", zh: "系统" },
+  "home.indexAgentHarness": { en: "Agent Harness", zh: "Agent Harness" },
+  "home.indexEvaluation": { en: "Evaluation", zh: "评测" },
 
   // Focus tags (static research topics)
   "home.focusTag1": { en: "Transformer Architecture", zh: "Transformer 架构" },
@@ -128,8 +132,8 @@ const home: TranslationDict = {
   "track.algorithms.chip3": { en: "Reliability", zh: "可靠性" },
   "track.algorithms.title": { en: "AI Algorithm Research", zh: "AI 算法研究" },
   "track.algorithms.subtitle": {
-    en: "Research notes on model architecture, positional encoding, long-context behavior, residual stability, and the mechanisms that make modern AI systems efficient and reliable.",
-    zh: "围绕模型架构、位置编码、长上下文行为、残差稳定性，以及现代 AI 系统高效可靠背后的机制展开研究记录。",
+    en: "Research notes on architecture, positional encoding, long-context behavior, and residual stability.",
+    zh: "围绕模型架构、位置编码、长上下文行为与残差稳定性展开研究记录。",
   },
   "track.algorithms.overview": {
     en: "This track keeps the mathematical and architectural side of the blog: hypotheses, derivations, invariants, and implementation implications for deep learning systems.",
@@ -141,8 +145,8 @@ const home: TranslationDict = {
   "track.applications.chip3": { en: "Evaluation", zh: "评测" },
   "track.applications.title": { en: "AI Application Engineering", zh: "AI 应用工程" },
   "track.applications.subtitle": {
-    en: "Technical essays on agent systems, harness engines, RAG, context engineering, fine-tuning, tool use, and the failure modes that appear when AI capabilities become real software.",
-    zh: "记录 Agent 系统、Harness Engine、RAG、Context Engineering、微调、工具调用，以及 AI 能力变成真实软件后出现的失败模式。",
+    en: "Technical essays on agents, harness engines, RAG, context engineering, tool use, and evaluation loops.",
+    zh: "记录 Agent、Harness Engine、RAG、Context Engineering、工具调用与评测循环。",
   },
   "track.applications.overview": {
     en: "This track is written as engineering analysis rather than product marketing: system boundaries, protocols, trade-offs, evaluation loops, and lessons from building AI application infrastructure.",
@@ -155,6 +159,26 @@ const home: TranslationDict = {
   "track.applications.focus4": { en: "Context Engineering", zh: "Context Engineering" },
   "track.applications.focus5": { en: "Fine-tuning", zh: "微调" },
   "track.applications.focus6": { en: "Evaluation", zh: "评测" },
+  "track.topic.positionEncoding": { en: "Position Encoding", zh: "位置编码" },
+  "track.topic.rope": { en: "RoPE", zh: "RoPE" },
+  "track.topic.isohc": { en: "IsoHC", zh: "IsoHC" },
+  "track.topic.stability": { en: "Stability", zh: "稳定性" },
+  "track.topic.longContext": { en: "Long Context", zh: "长上下文" },
+  "track.topic.scaling": { en: "Scaling", zh: "扩展" },
+  "track.topic.residualMixing": { en: "Residual Mixing", zh: "残差混合" },
+  "track.topic.architecture": { en: "Architecture", zh: "架构" },
+  "track.topic.agentSystems": { en: "Agent Systems", zh: "Agent 系统" },
+  "track.topic.toolUse": { en: "Tool Use", zh: "工具调用" },
+  "track.topic.harnessEngine": { en: "Harness Engine", zh: "Harness Engine" },
+  "track.topic.evaluation": { en: "Evaluation", zh: "评测" },
+  "track.topic.ragRetrieval": { en: "RAG & Retrieval", zh: "RAG 与检索" },
+  "track.topic.grounding": { en: "Grounding", zh: "接地" },
+  "track.topic.contextEngineering": { en: "Context Engineering", zh: "Context Engineering" },
+  "track.topic.memory": { en: "Memory", zh: "记忆" },
+  "track.topic.fineTuning": { en: "Fine-tuning", zh: "微调" },
+  "track.topic.adaptation": { en: "Adaptation", zh: "适配" },
+  "track.topic.observability": { en: "Observability", zh: "可观测性" },
+  "track.topic.reliability": { en: "Reliability", zh: "可靠性" },
 };
 
 export default home;

@@ -215,7 +215,7 @@ export default function PostDetail() {
           <article className="glass-panel max-w-4xl p-5 sm:p-8 lg:p-10">
             {/* Post Header */}
             <div className="mb-8">
-              <h1 className="mb-5 font-serif text-4xl font-semibold leading-tight text-white md:text-6xl">
+              <h1 className="display-title mb-5 text-4xl leading-tight text-white md:text-6xl">
                 {post.title}
               </h1>
 

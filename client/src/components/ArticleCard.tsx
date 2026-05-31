@@ -16,14 +16,18 @@ function formatDate(value: string | Date | null, locale: string, fallback: strin
   });
 }
 
-function topicLabel(post: any, track?: "algorithms" | "applications") {
+function topicLabel(
+  post: any,
+  t: (key: string, vars?: Record<string, string | number>) => string,
+  track?: "algorithms" | "applications"
+) {
   if (post.category?.name) return post.category.name;
   if (track === "applications") {
-    if (post.slug?.includes("harness")) return "Harness Engine";
-    if (post.slug?.includes("rag")) return "RAG";
-    return "Agent Systems";
+    if (post.slug?.includes("harness")) return t("track.topic.harnessEngine");
+    if (post.slug?.includes("rag")) return t("track.topic.ragRetrieval");
+    return t("track.topic.agentSystems");
   }
-  return post.slug?.includes("isohc") ? "Residual Mixing" : "RoPE";
+  return post.slug?.includes("isohc") ? t("track.topic.residualMixing") : t("track.topic.rope");
 }
 
 export function ArticleCard({
@@ -39,7 +43,7 @@ export function ArticleCard({
   t: (key: string, vars?: Record<string, string | number>) => string;
   track?: "algorithms" | "applications";
 }) {
-  const visibleTags = Array.isArray(post.tags) ? post.tags.slice(0, 3) : [];
+  const visibleTags = Array.isArray(post.tags) ? post.tags.slice(0, 2) : [];
   const articleNumber = String(index + 1).padStart(2, "0");
 
   return (
@@ -60,10 +64,10 @@ export function ArticleCard({
             </span>
             {post.category?.slug ? (
               <Link className="article-tag" href={`/categories/${post.category.slug}`}>
-                {topicLabel(post, track)}
+                {topicLabel(post, t, track)}
               </Link>
             ) : (
-              <span className="article-tag">{topicLabel(post, track)}</span>
+              <span className="article-tag">{topicLabel(post, t, track)}</span>
             )}
             {visibleTags.map((tag: any) => (
               <Link key={tag.slug} className="article-tag" href={`/tags/${tag.slug}`}>

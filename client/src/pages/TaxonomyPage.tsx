@@ -101,9 +101,9 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
                     </div>
                     <div className="mt-4 grid gap-2">
                       {matchingTrack.topics.map((topic) => (
-                        <div key={topic.label} className="research-index-row min-h-[3.5rem] px-4 py-3 text-sm">
-                          <span>{topic.label}</span>
-                          <span className="text-sky-300">{topic.meta}</span>
+                        <div key={topic.labelKey} className="research-index-row min-h-[3.5rem] px-4 py-3 text-sm">
+                          <span>{t(topic.labelKey)}</span>
+                          <span className="text-sky-300">{t(topic.metaKey)}</span>
                         </div>
                       ))}
                     </div>

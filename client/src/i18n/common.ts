@@ -45,6 +45,38 @@ const common: TranslationDict = {
   // Email
   "common.emailCopied": { en: "Email copied", zh: "邮箱已复制" },
 
+  // Error boundary
+  "common.errorBoundary.title": {
+    en: "An unexpected error occurred.",
+    zh: "页面出现异常。",
+  },
+  "common.errorBoundary.description": {
+    en: "The page could not recover cleanly. Reload to try again, or return to the home page.",
+    zh: "页面未能自动恢复。请刷新后重试，或返回首页。",
+  },
+  "common.errorBoundary.reload": { en: "Reload Page", zh: "刷新页面" },
+
+  // Shared UI primitives
+  "common.ui.carousel": { en: "carousel", zh: "轮播" },
+  "common.ui.slide": { en: "slide", zh: "幻灯片" },
+  "common.ui.previousSlide": { en: "Previous slide", zh: "上一张幻灯片" },
+  "common.ui.nextSlide": { en: "Next slide", zh: "下一张幻灯片" },
+  "common.ui.pagination": { en: "pagination", zh: "分页" },
+  "common.ui.previousPage": { en: "Previous", zh: "上一页" },
+  "common.ui.nextPage": { en: "Next", zh: "下一页" },
+  "common.ui.goToPreviousPage": { en: "Go to previous page", zh: "前往上一页" },
+  "common.ui.goToNextPage": { en: "Go to next page", zh: "前往下一页" },
+  "common.ui.morePages": { en: "More pages", zh: "更多页面" },
+  "common.ui.breadcrumb": { en: "breadcrumb", zh: "面包屑" },
+  "common.ui.more": { en: "More", zh: "更多" },
+  "common.ui.sidebar": { en: "Sidebar", zh: "侧边栏" },
+  "common.ui.mobileSidebarDescription": {
+    en: "Displays the mobile sidebar.",
+    zh: "显示移动端侧边栏。",
+  },
+  "common.ui.toggleSidebar": { en: "Toggle Sidebar", zh: "切换侧边栏" },
+  "common.ui.loading": { en: "Loading", zh: "加载中" },
+
   // Engagement
   "engagement.subscribe.title": { en: "Follow updates", zh: "订阅更新" },
   "engagement.subscribe.articleTitle": { en: "Get future notes", zh: "接收后续笔记" },

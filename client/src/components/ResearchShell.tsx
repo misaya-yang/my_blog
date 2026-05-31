@@ -131,7 +131,7 @@ export function SiteHeader({ active = "home", backHref, backLabel, compact }: Si
             </Link>
           )}
           <button type="button" className="nav-ink px-3" onClick={toggleLanguage}>
-            {language === "en" ? "中文" : "EN"}
+            {language === "en" ? t("nav.switchToZh") : t("nav.switchToEn")}
           </button>
           {isAuthenticated ? (
             <Button variant="outline" size="sm" className="glass-button hidden gap-2 sm:inline-flex" onClick={logout}>
@@ -202,7 +202,7 @@ export function SiteHeader({ active = "home", backHref, backLabel, compact }: Si
                   {t("nav.email")}
                 </button>
                 <button type="button" className="nav-ink h-11 justify-start" onClick={toggleLanguage}>
-                  {language === "en" ? "中文" : "EN"}
+                  {language === "en" ? t("nav.switchToZh") : t("nav.switchToEn")}
                 </button>
                 {isAuthenticated ? (
                   <SheetClose asChild>
