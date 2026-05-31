@@ -23,7 +23,9 @@ import {
   FileText,
   Folder,
   GraduationCap,
+  GitBranch,
   Mail,
+  Map,
   Search,
   Settings2,
   Sparkles,
@@ -66,6 +68,11 @@ function getArticleTrack(post: ArticleCardPost): ArticleTrack {
   return post.category?.slug === "ai-applications"
     ? "applications"
     : "algorithms";
+}
+
+function countTrackPosts(posts: ArticleCardPost[], track: TrackKind) {
+  const categorySlug = trackConfigs[track].categorySlug;
+  return posts.filter(post => post.category?.slug === categorySlug).length;
 }
 
 export default function Home() {
@@ -137,7 +144,7 @@ export default function Home() {
               <span>{t("home.chip3")}</span>
             </div>
 
-            <h1 className="display-title max-w-5xl text-5xl leading-[1.05] text-white md:text-7xl xl:text-8xl">
+            <h1 className="display-title max-w-5xl text-4xl leading-[1.06] text-white md:text-6xl xl:text-7xl">
               {t("home.title")}
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
@@ -182,6 +189,7 @@ export default function Home() {
             <div className="mt-10 grid max-w-5xl gap-5 md:grid-cols-2">
               {portalTracks.map(track => {
                 const config = trackConfigs[track];
+                const publicCount = countTrackPosts(publishedPosts, track);
                 return (
                   <Link key={track} href={config.href}>
                     <article className="glass-panel track-portal-card group min-h-[12rem] p-5 transition hover:-translate-y-0.5 hover:border-sky-300/60 sm:p-6">
@@ -202,22 +210,81 @@ export default function Home() {
                       <p className="track-portal-copy mt-4 text-sm leading-7 text-slate-300">
                         {t(config.overviewKey)}
                       </p>
-                      <span className="track-portal-cta mt-4 inline-flex items-center gap-2 text-xs font-semibold text-sky-200">
-                        {t("home.readMore")}
-                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                      </span>
+                      <div className="track-portal-cta flex flex-wrap items-center gap-2 text-xs font-semibold text-sky-200">
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200/15 px-2.5 py-1">
+                          <GitBranch className="h-3.5 w-3.5" />
+                          {t("home.pathCount", { count: config.series.length })}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200/15 px-2.5 py-1">
+                          {t("home.publicNotes", { count: publicCount })}
+                        </span>
+                        <span className="ml-auto inline-flex items-center gap-1.5">
+                          {t("home.readMore")}
+                          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                        </span>
+                      </div>
                     </article>
                   </Link>
                 );
               })}
             </div>
 
+            <section className="research-map-strip mt-8 max-w-5xl">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-white">
+                  <Map className="h-5 w-5 text-sky-300" />
+                  <h2 className="text-base font-semibold">
+                    {t("home.activeSeries")}
+                  </h2>
+                </div>
+                <Link
+                  href="#research-index"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-200 hover:text-white"
+                >
+                  {t("home.researchIndexKicker")}
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+              <div className="research-series-grid">
+                {portalTracks.flatMap(track =>
+                  trackConfigs[track].series.map(series => (
+                    <Link
+                      key={series.slug}
+                      href={trackConfigs[track].href}
+                      className="series-card"
+                    >
+                      <span className="series-card-track">
+                        {t(
+                          track === "algorithms"
+                            ? "home.algorithmsLabel"
+                            : "home.applicationsLabel"
+                        )}
+                      </span>
+                      <h3>{t(series.titleKey)}</h3>
+                      <p>{t(series.promiseKey)}</p>
+                      <div className="series-card-concepts">
+                        {series.conceptKeys.slice(0, 3).map(key => (
+                          <span key={key}>{t(key)}</span>
+                        ))}
+                      </div>
+                    </Link>
+                  ))
+                )}
+              </div>
+            </section>
+
             <form
               onSubmit={submitSearch}
               className="glass-panel mt-9 flex max-w-3xl items-center gap-4 px-5 py-4"
             >
               <Search className="h-6 w-6 shrink-0 text-slate-400" />
+              <label className="sr-only" htmlFor="home-search-query">
+                {t("home.searchPlaceholder")}
+              </label>
               <Input
+                id="home-search-query"
+                type="search"
+                autoComplete="search"
                 placeholder={t("home.searchPlaceholder")}
                 value={searchQuery}
                 onChange={event => setSearchQuery(event.target.value)}
@@ -233,6 +300,9 @@ export default function Home() {
             </form>
 
             <div className="mt-4 flex max-w-3xl flex-wrap gap-2">
+              <Link href="/search" className="article-tag">
+                {t("nav.search")}
+              </Link>
               <Link href="/archive" className="article-tag">
                 {t("nav.archive")}
               </Link>

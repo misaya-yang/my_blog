@@ -1,0 +1,578 @@
+{
+  "generatedAt": "2026-05-31T06:54:23.416Z",
+  "results": [
+    {
+      "bodyScrollWidth": 1280,
+      "documentScrollWidth": 1280,
+      "entry": {
+        "exists": true,
+        "itemCount": 6,
+        "labels": [
+          "核心主张",
+          "前置背景",
+          "问题边界",
+          "核心抽象",
+          "实现映射",
+          "边界与限制"
+        ],
+        "text": "阅读入口这篇文章怎么读核心主张Agent Loop 将 ReAct 式多步行为收束为可观测运行时：用状态机、上下文构建器、决策合约、工具运行时、预算、检查点和 trace 管理模型行动。前置背景AgentLoop · Tool Use · Context Engineering · Session Management问题边界这里的 Agent Loop 指运行时抽象，而不是某个已经完整商品化的产品声明。讨论重点放在架构边界、状态转移、工具治理、会话恢复和评测面上，不依赖私有实验数据或未公开指标。 在博客 Agent、文档助手、工具型 Assistant 等场景里，这个抽象可以逐步落地：先保存会话和 trace，再引入受控工具，最后扩展到文件、权限、限流和人工确认。复杂度应随着真实任务需求增加，而不是一开始就堆叠多 Agent 或重型编排。核心抽象AgentLoop · Agent Loop: 从 ReAct 模式到可观测运行时实现映射代码草图 · 架构表格 · 公式 / 推导 · 运行时或架构映射边界与限制AgentLoop 不是越复杂越好。 简单 FAQ 或固定流程任务不一定需要 "
+      },
+      "forms": {
+        "feedbackControls": {
+          "feedbackButtons": 0,
+          "feedbackSection": true,
+          "feedbackTextarea": 1
+        },
+        "subscriptionControls": {
+          "emailInputs": 2,
+          "rssLinks": 1,
+          "subscribeButtons": 1
+        }
+      },
+      "horizontalOverflow": false,
+      "kind": "application",
+      "overflowOffenders": [],
+      "route": "agent-loop-observable-tool-using-agents",
+      "series": {
+        "exists": true,
+        "footerExists": true,
+        "hiddenLeak": false,
+        "links": [
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "从系列开头读"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "系列上一篇"
+          },
+          {
+            "href": "/applications",
+            "text": "继续技术区"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "系列上一篇Evidence Packet: Agentic RAG 的上下文编译接口"
+          }
+        ],
+        "text": "系列位置Agent Runtime Systems第 3 / 3 篇 · 从受控评测走向可观测的多步 Agent 运行时。从系列开头读系列上一篇继续技术区"
+      },
+      "technical": {
+        "codeBlockCount": 10,
+        "copyButtonCount": 10,
+        "copyButtons": [
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          }
+        ],
+        "formulaBlockCount": 4,
+        "formulaBlocks": [
+          {
+            "clientWidth": 814,
+            "scrollWidth": 814,
+            "scrollable": true
+          },
+          {
+            "clientWidth": 814,
+            "scrollWidth": 814,
+            "scrollable": true
+          },
+          {
+            "clientWidth": 814,
+            "scrollWidth": 814,
+            "scrollable": true
+          },
+          {
+            "clientWidth": 814,
+            "scrollWidth": 814,
+            "scrollable": true
+          }
+        ],
+        "tableWrapCount": 3,
+        "tableWraps": [
+          {
+            "clientWidth": 812,
+            "scrollWidth": 812,
+            "scrollable": true
+          },
+          {
+            "clientWidth": 812,
+            "scrollWidth": 812,
+            "scrollable": true
+          },
+          {
+            "clientWidth": 812,
+            "scrollWidth": 812,
+            "scrollable": true
+          }
+        ]
+      },
+      "title": "Agent Loop: 从 ReAct 模式到可观测运行时",
+      "toc": {
+        "desktopCount": 20,
+        "mobileCount": 20,
+        "mobileDetailsPresent": true
+      },
+      "url": "http://localhost:3000/post/agent-loop-observable-tool-using-agents",
+      "viewport": {
+        "height": 800,
+        "name": "desktop",
+        "width": 1280
+      },
+      "viewportHeight": 800,
+      "viewportWidth": 1280
+    },
+    {
+      "bodyScrollWidth": 1280,
+      "documentScrollWidth": 1280,
+      "entry": {
+        "exists": true,
+        "itemCount": 6,
+        "labels": [
+          "核心主张",
+          "前置背景",
+          "问题边界",
+          "核心抽象",
+          "实现映射",
+          "边界与限制"
+        ],
+        "text": "阅读入口这篇文章怎么读核心主张IsoHC constrains residual stream mixing to a fixed vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.前置背景IsoHC · Hyper-Connections · Residual Stability · Orthogonal Projection问题边界Residual architectures are stable partly because they keep an identity path through depth: x {l+1}=x l+F(x l,\\theta l). Hyper Connection style models generalize this idea by expanding the residual stream into multiple parallel streams. A simplified residual "
+      },
+      "forms": {
+        "feedbackControls": {
+          "feedbackButtons": 0,
+          "feedbackSection": true,
+          "feedbackTextarea": 1
+        },
+        "subscriptionControls": {
+          "emailInputs": 2,
+          "rssLinks": 1,
+          "subscribeButtons": 1
+        }
+      },
+      "horizontalOverflow": false,
+      "kind": "algorithm",
+      "overflowOffenders": [],
+      "route": "isohc-fixed-vector-isometric-residual-mixing",
+      "series": {
+        "exists": true,
+        "footerExists": false,
+        "hiddenLeak": false,
+        "links": [
+          {
+            "href": "/algorithms",
+            "text": "继续技术区"
+          }
+        ],
+        "text": "系列位置Residual Stability第 1 / 1 篇 · 残差流混合、不变量和稳定性约束。继续技术区"
+      },
+      "technical": {
+        "codeBlockCount": 0,
+        "copyButtonCount": 0,
+        "copyButtons": [],
+        "formulaBlockCount": 0,
+        "formulaBlocks": [],
+        "tableWrapCount": 0,
+        "tableWraps": []
+      },
+      "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+      "toc": {
+        "desktopCount": 11,
+        "mobileCount": 11,
+        "mobileDetailsPresent": true
+      },
+      "url": "http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing",
+      "viewport": {
+        "height": 800,
+        "name": "desktop",
+        "width": 1280
+      },
+      "viewportHeight": 800,
+      "viewportWidth": 1280
+    },
+    {
+      "bodyScrollWidth": 390,
+      "documentScrollWidth": 390,
+      "entry": {
+        "exists": true,
+        "itemCount": 6,
+        "labels": [
+          "核心主张",
+          "前置背景",
+          "问题边界",
+          "核心抽象",
+          "实现映射",
+          "边界与限制"
+        ],
+        "text": "阅读入口这篇文章怎么读核心主张Agent Loop 将 ReAct 式多步行为收束为可观测运行时：用状态机、上下文构建器、决策合约、工具运行时、预算、检查点和 trace 管理模型行动。前置背景AgentLoop · Tool Use · Context Engineering · Session Management问题边界这里的 Agent Loop 指运行时抽象，而不是某个已经完整商品化的产品声明。讨论重点放在架构边界、状态转移、工具治理、会话恢复和评测面上，不依赖私有实验数据或未公开指标。 在博客 Agent、文档助手、工具型 Assistant 等场景里，这个抽象可以逐步落地：先保存会话和 trace，再引入受控工具，最后扩展到文件、权限、限流和人工确认。复杂度应随着真实任务需求增加，而不是一开始就堆叠多 Agent 或重型编排。核心抽象AgentLoop · Agent Loop: 从 ReAct 模式到可观测运行时实现映射代码草图 · 架构表格 · 公式 / 推导 · 运行时或架构映射边界与限制AgentLoop 不是越复杂越好。 简单 FAQ 或固定流程任务不一定需要 "
+      },
+      "forms": {
+        "feedbackControls": {
+          "feedbackButtons": 0,
+          "feedbackSection": true,
+          "feedbackTextarea": 1
+        },
+        "subscriptionControls": {
+          "emailInputs": 2,
+          "rssLinks": 1,
+          "subscribeButtons": 1
+        }
+      },
+      "horizontalOverflow": false,
+      "kind": "application",
+      "overflowOffenders": [],
+      "route": "agent-loop-observable-tool-using-agents",
+      "series": {
+        "exists": true,
+        "footerExists": true,
+        "hiddenLeak": false,
+        "links": [
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "从系列开头读"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "系列上一篇"
+          },
+          {
+            "href": "/applications",
+            "text": "继续技术区"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "系列上一篇Evidence Packet: Agentic RAG 的上下文编译接口"
+          }
+        ],
+        "text": "系列位置Agent Runtime Systems第 3 / 3 篇 · 从受控评测走向可观测的多步 Agent 运行时。从系列开头读系列上一篇继续技术区"
+      },
+      "technical": {
+        "codeBlockCount": 10,
+        "copyButtonCount": 10,
+        "copyButtons": [
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          },
+          {
+            "height": 32,
+            "label": "复制代码",
+            "opacity": "0.9",
+            "width": 32
+          }
+        ],
+        "formulaBlockCount": 4,
+        "formulaBlocks": [
+          {
+            "clientWidth": 316,
+            "scrollWidth": 316,
+            "scrollable": true
+          },
+          {
+            "clientWidth": 316,
+            "scrollWidth": 316,
+            "scrollable": true
+          },
+          {
+            "clientWidth": 316,
+            "scrollWidth": 316,
+            "scrollable": true
+          },
+          {
+            "clientWidth": 316,
+            "scrollWidth": 411,
+            "scrollable": true
+          }
+        ],
+        "tableWrapCount": 3,
+        "tableWraps": [
+          {
+            "clientWidth": 314,
+            "scrollWidth": 672,
+            "scrollable": true
+          },
+          {
+            "clientWidth": 314,
+            "scrollWidth": 672,
+            "scrollable": true
+          },
+          {
+            "clientWidth": 314,
+            "scrollWidth": 672,
+            "scrollable": true
+          }
+        ]
+      },
+      "title": "Agent Loop: 从 ReAct 模式到可观测运行时",
+      "toc": {
+        "desktopCount": 20,
+        "mobileCount": 20,
+        "mobileDetailsPresent": true
+      },
+      "url": "http://localhost:3000/post/agent-loop-observable-tool-using-agents",
+      "viewport": {
+        "height": 844,
+        "name": "mobile",
+        "width": 390
+      },
+      "viewportHeight": 844,
+      "viewportWidth": 390
+    },
+    {
+      "bodyScrollWidth": 390,
+      "documentScrollWidth": 390,
+      "entry": {
+        "exists": true,
+        "itemCount": 6,
+        "labels": [
+          "核心主张",
+          "前置背景",
+          "问题边界",
+          "核心抽象",
+          "实现映射",
+          "边界与限制"
+        ],
+        "text": "阅读入口这篇文章怎么读核心主张IsoHC constrains residual stream mixing to a fixed vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.前置背景IsoHC · Hyper-Connections · Residual Stability · Orthogonal Projection问题边界Residual architectures are stable partly because they keep an identity path through depth: x {l+1}=x l+F(x l,\\theta l). Hyper Connection style models generalize this idea by expanding the residual stream into multiple parallel streams. A simplified residual "
+      },
+      "forms": {
+        "feedbackControls": {
+          "feedbackButtons": 0,
+          "feedbackSection": true,
+          "feedbackTextarea": 1
+        },
+        "subscriptionControls": {
+          "emailInputs": 2,
+          "rssLinks": 1,
+          "subscribeButtons": 1
+        }
+      },
+      "horizontalOverflow": false,
+      "kind": "algorithm",
+      "overflowOffenders": [],
+      "route": "isohc-fixed-vector-isometric-residual-mixing",
+      "series": {
+        "exists": true,
+        "footerExists": false,
+        "hiddenLeak": false,
+        "links": [
+          {
+            "href": "/algorithms",
+            "text": "继续技术区"
+          }
+        ],
+        "text": "系列位置Residual Stability第 1 / 1 篇 · 残差流混合、不变量和稳定性约束。继续技术区"
+      },
+      "technical": {
+        "codeBlockCount": 0,
+        "copyButtonCount": 0,
+        "copyButtons": [],
+        "formulaBlockCount": 0,
+        "formulaBlocks": [],
+        "tableWrapCount": 0,
+        "tableWraps": []
+      },
+      "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+      "toc": {
+        "desktopCount": 11,
+        "mobileCount": 11,
+        "mobileDetailsPresent": true
+      },
+      "url": "http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing",
+      "viewport": {
+        "height": 844,
+        "name": "mobile",
+        "width": 390
+      },
+      "viewportHeight": 844,
+      "viewportWidth": 390
+    }
+  ],
+  "tocClickResults": [
+    {
+      "route": "agent-loop-observable-tool-using-agents",
+      "viewport": "desktop",
+      "targetHref": "#heading-1",
+      "count": 1,
+      "before": 0,
+      "after": {
+        "activeHref": "#heading-0",
+        "scrollY": 1785,
+        "targetTop": 463
+      },
+      "passed": true
+    },
+    {
+      "route": "isohc-fixed-vector-isometric-residual-mixing",
+      "viewport": "desktop",
+      "targetHref": "#heading-1",
+      "count": 1,
+      "before": 0,
+      "after": {
+        "activeHref": "#heading-0",
+        "scrollY": 1805,
+        "targetTop": 479
+      },
+      "passed": true
+    }
+  ],
+  "copyResults": [
+    {
+      "route": "agent-loop-observable-tool-using-agents",
+      "viewport": "desktop",
+      "copyButtonCount": 10,
+      "handledToast": true,
+      "passed": true
+    },
+    {
+      "route": "isohc-fixed-vector-isometric-residual-mixing",
+      "viewport": "desktop",
+      "copyButtonCount": 0,
+      "handledToast": null,
+      "passed": null,
+      "skipped": true
+    }
+  ],
+  "screenshotResults": [
+    {
+      "route": "agent-loop-observable-tool-using-agents",
+      "viewport": "desktop",
+      "status": "captured"
+    },
+    {
+      "route": "isohc-fixed-vector-isometric-residual-mixing",
+      "viewport": "desktop",
+      "status": "captured"
+    },
+    {
+      "route": "agent-loop-observable-tool-using-agents",
+      "viewport": "mobile",
+      "status": "captured"
+    },
+    {
+      "route": "isohc-fixed-vector-isometric-residual-mixing",
+      "viewport": "mobile",
+      "status": "captured"
+    }
+  ],
+  "readinessFailures": [],
+  "consoleErrors": [],
+  "pass": {
+    "allRoutesReady": true,
+    "noOverflow": true,
+    "entryLayer": true,
+    "seriesNoHiddenLeak": true,
+    "tocPresent": true,
+    "technicalRendering": true,
+    "copyCodeHandled": true,
+    "tocClick": true,
+    "formsPresent": true,
+    "noConsoleErrors": true
+  }
+}

@@ -154,6 +154,18 @@ type VitePluginOptions = {
   mode?: string;
 };
 
+function getNodeModulePackageName(id: string) {
+  const normalizedId = id.split(path.sep).join("/");
+  const nodeModulePath = normalizedId.split("/node_modules/").pop();
+  if (!nodeModulePath) return undefined;
+
+  const [scopeOrName, packageName] = nodeModulePath.split("/");
+  if (!scopeOrName) return undefined;
+  return scopeOrName.startsWith("@") && packageName
+    ? `${scopeOrName}/${packageName}`
+    : scopeOrName;
+}
+
 export function createVitePlugins({ mode = process.env.NODE_ENV || "development" }: VitePluginOptions = {}) {
   const isProduction = mode === "production" || process.env.NODE_ENV === "production";
   const plugins: PluginOption[] = [react(), tailwindcss()];
@@ -186,13 +198,17 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks(id) {
           if (!id.includes("node_modules")) return undefined;
-          if (id.includes("@tiptap")) return "editor";
+          const packageName = getNodeModulePackageName(id);
+          if (!packageName) return undefined;
+          if (packageName.startsWith("@tiptap/")) return "editor";
           if (
-            id.includes("react") ||
-            id.includes("wouter") ||
-            id.includes("@tanstack") ||
-            id.includes("@trpc") ||
-            id.includes("superjson")
+            packageName === "react" ||
+            packageName === "react-dom" ||
+            packageName === "scheduler" ||
+            packageName === "wouter" ||
+            packageName.startsWith("@tanstack/") ||
+            packageName.startsWith("@trpc/") ||
+            packageName === "superjson"
           ) {
             return "app-vendor";
           }

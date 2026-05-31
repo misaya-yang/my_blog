@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-05-31T05:26:30.504Z",
+  "generatedAt": "2026-05-31T08:41:40.115Z",
   "git": {
-    "branch": "codex/ai-app-track",
-    "commit": "2518e19",
+    "branch": "main",
+    "commit": "636c543",
     "dirty": true
   },
   "commands": [],
@@ -14,8 +14,31 @@
       "expectedContent": "home page shell and research index",
       "requiresSeededDatabase": false,
       "statusResult": {
-        "state": "skipped",
-        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
       }
     },
     {
@@ -25,8 +48,31 @@
       "expectedContent": "AI algorithm track page",
       "requiresSeededDatabase": false,
       "statusResult": {
-        "state": "skipped",
-        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
       }
     },
     {
@@ -36,8 +82,31 @@
       "expectedContent": "AI application engineering track page",
       "requiresSeededDatabase": false,
       "statusResult": {
-        "state": "skipped",
-        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
       }
     },
     {
@@ -47,8 +116,133 @@
       "expectedContent": "visitor and admin login surface",
       "requiresSeededDatabase": false,
       "statusResult": {
-        "state": "skipped",
-        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/archive",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "public archive route",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/categories/ai-applications",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "public AI Applications category route",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/tags/agent-systems",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "public Agent Systems tag route",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
       }
     },
     {
@@ -58,8 +252,31 @@
       "expectedContent": "client-rendered not found page",
       "requiresSeededDatabase": false,
       "statusResult": {
-        "state": "skipped",
-        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "AI Tech Blog",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "AI Tech Blog",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
       }
     },
     {
@@ -69,8 +286,31 @@
       "expectedContent": "server-level not found status",
       "requiresSeededDatabase": false,
       "statusResult": {
-        "state": "skipped",
-        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+        "state": "checked",
+        "status": 404,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "404 · AI Tech Blog",
+          "description": "The requested page could not be found.",
+          "canonical": "http://localhost:3000/not-a-real-route",
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "404",
+            "description": "The requested page could not be found.",
+            "image": "http://localhost:3000/og-default.svg",
+            "type": "website",
+            "url": "http://localhost:3000/not-a-real-route"
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "404",
+            "description": "The requested page could not be found.",
+            "image": "http://localhost:3000/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
       }
     },
     {
@@ -80,8 +320,33 @@
       "expectedContent": "public seeded algorithm article",
       "requiresSeededDatabase": true,
       "statusResult": {
-        "state": "skipped",
-        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "IsoHC: Fixed-Vector Isometric Residual Mixing · AI Tech Blog",
+          "description": "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.",
+          "canonical": "http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing",
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+            "description": "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.",
+            "image": "http://localhost:3000/og-default.svg",
+            "type": "article",
+            "url": "http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing"
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+            "description": "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.",
+            "image": "http://localhost:3000/og-default.svg"
+          },
+          "jsonLdTypes": [
+            "BlogPosting"
+          ]
+        },
+        "error": null
       }
     },
     {
@@ -91,8 +356,33 @@
       "expectedContent": "public seeded application article",
       "requiresSeededDatabase": true,
       "statusResult": {
-        "state": "skipped",
-        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context · AI Tech Blog",
+          "description": "A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals.",
+          "canonical": "http://localhost:3000/post/agent-harness-engine-evaluating-tool-using-agents",
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "description": "A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals.",
+            "image": "http://localhost:3000/og-default.svg",
+            "type": "article",
+            "url": "http://localhost:3000/post/agent-harness-engine-evaluating-tool-using-agents"
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "description": "A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals.",
+            "image": "http://localhost:3000/og-default.svg"
+          },
+          "jsonLdTypes": [
+            "BlogPosting"
+          ]
+        },
+        "error": null
       }
     },
     {
@@ -102,8 +392,12 @@
       "expectedContent": "robots directives and sitemap pointer",
       "requiresSeededDatabase": false,
       "statusResult": {
-        "state": "skipped",
-        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/plain; charset=utf-8",
+        "metadata": null,
+        "error": null
       }
     },
     {
@@ -113,8 +407,12 @@
       "expectedContent": "public route and article sitemap",
       "requiresSeededDatabase": true,
       "statusResult": {
-        "state": "skipped",
-        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "application/xml; charset=utf-8",
+        "metadata": null,
+        "error": null
       }
     },
     {
@@ -124,452 +422,71 @@
       "expectedContent": "public article feed",
       "requiresSeededDatabase": true,
       "statusResult": {
-        "state": "skipped",
-        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "application/rss+xml; charset=utf-8",
+        "metadata": null,
+        "error": null
       }
     }
   ],
   "dist": {
     "html": {
       "file": "index.html",
-      "rawBytes": 2773,
-      "gzipBytes": 869
+      "rawBytes": 2677,
+      "gzipBytes": 847
     },
     "javascript": [
       {
-        "file": "assets/app-vendor-ClZb-DNB.js",
-        "rawBytes": 1393129,
-        "gzipBytes": 422839
+        "file": "assets/MarkdownRenderer-mAf6anjI.js",
+        "rawBytes": 456827,
+        "gzipBytes": 137405
       },
       {
-        "file": "assets/wasm-CG6Dc4jp.js",
-        "rawBytes": 622336,
-        "gzipBytes": 230293
+        "file": "assets/app-vendor-BdG3WRU2.js",
+        "rawBytes": 297880,
+        "gzipBytes": 90823
       },
       {
-        "file": "assets/emacs-lisp-C9XAeP06.js",
-        "rawBytes": 779854,
-        "gzipBytes": 196031
+        "file": "assets/index-Cewg5Hoa.js",
+        "rawBytes": 173551,
+        "gzipBytes": 55588
       },
       {
-        "file": "assets/cytoscape.esm-DtBltrT8.js",
-        "rawBytes": 442408,
-        "gzipBytes": 141909
+        "file": "assets/index-y1r8ryl7.js",
+        "rawBytes": 156968,
+        "gzipBytes": 47579
       },
       {
-        "file": "assets/mermaid.core-DKrNY-A4.js",
-        "rawBytes": 451914,
-        "gzipBytes": 126054
+        "file": "assets/select-DNHQYq-l.js",
+        "rawBytes": 50493,
+        "gzipBytes": 17951
       },
       {
-        "file": "assets/treemap-KMMF4GRG-ben4GhP8.js",
-        "rawBytes": 330005,
-        "gzipBytes": 80449
+        "file": "assets/Manage-CKiz2h6H.js",
+        "rawBytes": 55958,
+        "gzipBytes": 14009
       },
       {
-        "file": "assets/wolfram-lXgVvXCa.js",
-        "rawBytes": 262391,
-        "gzipBytes": 77136
+        "file": "assets/Editor-BUv4awsy.js",
+        "rawBytes": 40383,
+        "gzipBytes": 11131
       },
       {
-        "file": "assets/MarkdownRenderer-RK7BUmW_.js",
-        "rawBytes": 175678,
-        "gzipBytes": 53828
+        "file": "assets/index-CczHSCOW.js",
+        "rawBytes": 33427,
+        "gzipBytes": 9549
       },
       {
-        "file": "assets/cpp-CofmeUqb.js",
-        "rawBytes": 626081,
-        "gzipBytes": 44821
+        "file": "assets/PostDetail-Bosb906_.js",
+        "rawBytes": 25227,
+        "gzipBytes": 7770
       },
       {
-        "file": "assets/architectureDiagram-VXUJARFQ-D9ZhTeqO.js",
-        "rawBytes": 148643,
-        "gzipBytes": 42069
-      },
-      {
-        "file": "assets/objective-cpp-CLxacb5B.js",
-        "rawBytes": 171972,
-        "gzipBytes": 30622
-      },
-      {
-        "file": "assets/index-COZIVeWf.js",
-        "rawBytes": 89386,
-        "gzipBytes": 28568
-      },
-      {
-        "file": "assets/php-CDn_0X-4.js",
-        "rawBytes": 110999,
-        "gzipBytes": 28515
-      },
-      {
-        "file": "assets/blade-DVc8C-J4.js",
-        "rawBytes": 103803,
-        "gzipBytes": 28140
-      },
-      {
-        "file": "assets/sequenceDiagram-WL72ISMW-qAH5PRYP.js",
-        "rawBytes": 97816,
-        "gzipBytes": 26861
-      },
-      {
-        "file": "assets/hack-CaT9iCJl.js",
-        "rawBytes": 80241,
-        "gzipBytes": 26205
-      },
-      {
-        "file": "assets/mdx-Cmh6b_Ma.js",
-        "rawBytes": 136114,
-        "gzipBytes": 23351
-      },
-      {
-        "file": "assets/objective-c-DXmwc3jG.js",
-        "rawBytes": 105413,
-        "gzipBytes": 23325
-      },
-      {
-        "file": "assets/cose-bilkent-S5V4N54A-BCa5OGaE.js",
-        "rawBytes": 81707,
-        "gzipBytes": 22479
-      },
-      {
-        "file": "assets/ganttDiagram-LVOFAZNH-BtGRL3UO.js",
-        "rawBytes": 62776,
-        "gzipBytes": 21328
-      },
-      {
-        "file": "assets/blockDiagram-VD42YOAC-DEW59thq.js",
-        "rawBytes": 71815,
-        "gzipBytes": 20500
-      },
-      {
-        "file": "assets/c4Diagram-YG6GDRKO-LFH7LoCw.js",
-        "rawBytes": 70141,
-        "gzipBytes": 19688
-      },
-      {
-        "file": "assets/flowDiagram-NV44I4VS-E3dzTc84.js",
-        "rawBytes": 60456,
-        "gzipBytes": 19449
-      },
-      {
-        "file": "assets/vue-vine-_Ih-lPRR.js",
-        "rawBytes": 190220,
-        "gzipBytes": 18070
-      },
-      {
-        "file": "assets/angular-ts-BwZT4LLn.js",
-        "rawBytes": 183820,
-        "gzipBytes": 16631
-      },
-      {
-        "file": "assets/jsx-g9-lgVsj.js",
-        "rawBytes": 177792,
-        "gzipBytes": 16607
-      },
-      {
-        "file": "assets/javascript-wDzz0qaB.js",
-        "rawBytes": 174827,
-        "gzipBytes": 16513
-      },
-      {
-        "file": "assets/tsx-COt5Ahok.js",
-        "rawBytes": 175536,
-        "gzipBytes": 16507
-      },
-      {
-        "file": "assets/typescript-BPQ3VLAy.js",
-        "rawBytes": 181080,
-        "gzipBytes": 16039
-      },
-      {
-        "file": "assets/r-DiinP2Uv.js",
-        "rawBytes": 55807,
-        "gzipBytes": 15126
-      },
-      {
-        "file": "assets/racket-BqYA7rlc.js",
-        "rawBytes": 92389,
-        "gzipBytes": 15018
-      },
-      {
-        "file": "assets/chunk-B4BG7PRW-BddslLIe.js",
-        "rawBytes": 45319,
-        "gzipBytes": 14704
-      },
-      {
-        "file": "assets/swift-Dg5xB15N.js",
-        "rawBytes": 86607,
-        "gzipBytes": 14701
-      },
-      {
-        "file": "assets/less-B1dDrJ26.js",
-        "rawBytes": 97633,
-        "gzipBytes": 14697
-      },
-      {
-        "file": "assets/stata-BH5u7GGu.js",
-        "rawBytes": 56991,
-        "gzipBytes": 12362
-      },
-      {
-        "file": "assets/css-DPfMkruS.js",
-        "rawBytes": 49023,
-        "gzipBytes": 11853
-      },
-      {
-        "file": "assets/chunk-DI55MBZ5-eV8t9Mtg.js",
-        "rawBytes": 36338,
-        "gzipBytes": 11849
-      },
-      {
-        "file": "assets/html-GMplVEZG.js",
-        "rawBytes": 57247,
-        "gzipBytes": 11686
-      },
-      {
-        "file": "assets/xychartDiagram-PRI3JC2R-CD2jiqov.js",
-        "rawBytes": 40217,
-        "gzipBytes": 11455
-      },
-      {
-        "file": "assets/fortran-free-form-D22FLkUw.js",
-        "rawBytes": 87145,
-        "gzipBytes": 10915
-      },
-      {
-        "file": "assets/cobol-nwyudZeR.js",
-        "rawBytes": 39148,
-        "gzipBytes": 10869
-      },
-      {
-        "file": "assets/vyper-CDx5xZoG.js",
-        "rawBytes": 74648,
-        "gzipBytes": 10735
-      },
-      {
-        "file": "assets/c-BIGW1oBm.js",
-        "rawBytes": 72113,
-        "gzipBytes": 10505
-      },
-      {
-        "file": "assets/csharp-CX12Zw3r.js",
-        "rawBytes": 85615,
-        "gzipBytes": 10200
-      },
-      {
-        "file": "assets/quadrantDiagram-AYHSOK5B-CdGSxhnz.js",
-        "rawBytes": 33847,
-        "gzipBytes": 9959
-      },
-      {
-        "file": "assets/layout-DZaLePKI.js",
-        "rawBytes": 27206,
-        "gzipBytes": 9681
-      },
-      {
-        "file": "assets/imba-DGztddWO.js",
-        "rawBytes": 49930,
-        "gzipBytes": 9455
-      },
-      {
-        "file": "assets/requirementDiagram-UZGBJVZJ-B90_gvWx.js",
-        "rawBytes": 30092,
-        "gzipBytes": 9430
-      },
-      {
-        "file": "assets/asciidoc-Dv7Oe6Be.js",
-        "rawBytes": 131513,
-        "gzipBytes": 9336
-      },
-      {
-        "file": "assets/mojo-1DNp92w6.js",
-        "rawBytes": 69290,
-        "gzipBytes": 9183
-      },
-      {
-        "file": "assets/python-B6aJPvgy.js",
-        "rawBytes": 69952,
-        "gzipBytes": 9133
-      },
-      {
-        "file": "assets/erDiagram-Q2GNP2WA-C9Zt9vXd.js",
-        "rawBytes": 25247,
-        "gzipBytes": 8839
-      },
-      {
-        "file": "assets/d-85-TOEBH.js",
-        "rawBytes": 43795,
-        "gzipBytes": 8471
-      },
-      {
-        "file": "assets/everforest-dark-BgDCqdQA.js",
-        "rawBytes": 53745,
-        "gzipBytes": 8419
-      },
-      {
-        "file": "assets/everforest-light-C8M2exoo.js",
-        "rawBytes": 53748,
-        "gzipBytes": 8419
-      },
-      {
-        "file": "assets/bsl-BO_Y6i37.js",
-        "rawBytes": 33867,
-        "gzipBytes": 8347
-      },
-      {
-        "file": "assets/journeyDiagram-XKPGCS4Q-KbE7qgzy.js",
-        "rawBytes": 23546,
-        "gzipBytes": 8328
-      },
-      {
-        "file": "assets/timeline-definition-IT6M3QCI-B6A1eFGj.js",
-        "rawBytes": 23594,
-        "gzipBytes": 8231
-      },
-      {
-        "file": "assets/asm-D_Q5rh1f.js",
-        "rawBytes": 40717,
-        "gzipBytes": 8206
-      },
-      {
-        "file": "assets/ballerina-BFfxhgS-.js",
-        "rawBytes": 58693,
-        "gzipBytes": 8150
-      },
-      {
-        "file": "assets/sankeyDiagram-TZEHDZUN-DIghIFU-.js",
-        "rawBytes": 22115,
-        "gzipBytes": 8144
-      },
-      {
-        "file": "assets/catppuccin-frappe-DFWUc33u.js",
-        "rawBytes": 47258,
-        "gzipBytes": 8015
-      },
-      {
-        "file": "assets/catppuccin-macchiato-DQyhUUbL.js",
-        "rawBytes": 47263,
-        "gzipBytes": 8007
-      },
-      {
-        "file": "assets/catppuccin-latte-C9dUb6Cb.js",
-        "rawBytes": 47256,
-        "gzipBytes": 8002
-      },
-      {
-        "file": "assets/catppuccin-mocha-D87Tk5Gz.js",
-        "rawBytes": 47255,
-        "gzipBytes": 8001
-      },
-      {
-        "file": "assets/stylus-BEDo0Tqx.js",
-        "rawBytes": 31074,
-        "gzipBytes": 7986
-      },
-      {
-        "file": "assets/astro-CbQHKStN.js",
-        "rawBytes": 24008,
-        "gzipBytes": 7544
-      },
-      {
-        "file": "assets/gitGraphDiagram-NY62KEGX-Dg7gbPud.js",
-        "rawBytes": 24140,
-        "gzipBytes": 7441
-      },
-      {
-        "file": "assets/sql-BLtJtn59.js",
-        "rawBytes": 23407,
-        "gzipBytes": 7398
-      },
-      {
-        "file": "assets/mindmap-definition-VGOIOE7T-CVR-VuTb.js",
-        "rawBytes": 20922,
-        "gzipBytes": 7298
-      },
-      {
-        "file": "assets/kanban-definition-3W4ZIXB7-9OE5gYCZ.js",
-        "rawBytes": 20206,
-        "gzipBytes": 7174
-      },
-      {
-        "file": "assets/Editor-CClxKnxg.js",
-        "rawBytes": 24865,
-        "gzipBytes": 6957
-      },
-      {
-        "file": "assets/viml-CJc9bBzg.js",
-        "rawBytes": 20365,
-        "gzipBytes": 6727
-      },
-      {
-        "file": "assets/apex-C7Pw0Ztw.js",
-        "rawBytes": 46115,
-        "gzipBytes": 6684
-      },
-      {
-        "file": "assets/mdc-DUICxH0z.js",
-        "rawBytes": 19634,
-        "gzipBytes": 6663
-      },
-      {
-        "file": "assets/latex-BUKiar2Z.js",
-        "rawBytes": 72194,
-        "gzipBytes": 6616
-      },
-      {
-        "file": "assets/Manage-OK758gD9.js",
-        "rawBytes": 28202,
-        "gzipBytes": 6566
-      },
-      {
-        "file": "assets/haskell-Df6bDoY_.js",
-        "rawBytes": 41490,
-        "gzipBytes": 6435
-      },
-      {
-        "file": "assets/coffee-Ch7k5sss.js",
-        "rawBytes": 27422,
-        "gzipBytes": 6352
-      },
-      {
-        "file": "assets/tokyo-night-hegEt444.js",
-        "rawBytes": 35665,
-        "gzipBytes": 6235
-      },
-      {
-        "file": "assets/shellscript-Yzrsuije.js",
-        "rawBytes": 41479,
-        "gzipBytes": 6092
-      },
-      {
-        "file": "assets/common-lisp-Cg-RD9OK.js",
-        "rawBytes": 22581,
-        "gzipBytes": 6061
-      },
-      {
-        "file": "assets/ada-bCR0ucgS.js",
-        "rawBytes": 48082,
-        "gzipBytes": 6030
-      },
-      {
-        "file": "assets/applescript-Co6uUVPk.js",
-        "rawBytes": 29571,
-        "gzipBytes": 5929
-      },
-      {
-        "file": "assets/haxe-CzTSHFRz.js",
-        "rawBytes": 35164,
-        "gzipBytes": 5911
-      },
-      {
-        "file": "assets/abap-BdImnpbu.js",
-        "rawBytes": 15852,
-        "gzipBytes": 5905
-      },
-      {
-        "file": "assets/houston-DnULxvSX.js",
-        "rawBytes": 35422,
-        "gzipBytes": 5782
+        "file": "assets/ManageAgent-DpgVkxSi.js",
+        "rawBytes": 23096,
+        "gzipBytes": 5869
       },
       {
         "file": "__manus__/debug-collector.js",
@@ -577,1369 +494,154 @@
         "gzipBytes": 5705
       },
       {
-        "file": "assets/diagram-PSM6KHXK-wEe7bKUW.js",
+        "file": "assets/metadata-DkczQkwt.js",
         "rawBytes": 15875,
-        "gzipBytes": 5677
+        "gzipBytes": 5397
       },
       {
-        "file": "assets/ruby-BvKwtOVI.js",
-        "rawBytes": 45912,
-        "gzipBytes": 5676
+        "file": "assets/Home-BoOdppOS.js",
+        "rawBytes": 12895,
+        "gzipBytes": 3942
       },
       {
-        "file": "assets/markdown-Cvjx9yec.js",
-        "rawBytes": 59335,
-        "gzipBytes": 5643
-      },
-      {
-        "file": "assets/one-dark-pro-DVMEJ2y_.js",
-        "rawBytes": 33787,
-        "gzipBytes": 5519
-      },
-      {
-        "file": "assets/poimandres-CS3Unz2-.js",
-        "rawBytes": 33494,
-        "gzipBytes": 5498
-      },
-      {
-        "file": "assets/templ-W15q3VgB.js",
-        "rawBytes": 24064,
-        "gzipBytes": 5394
-      },
-      {
-        "file": "assets/go-Dn2_MT6a.js",
-        "rawBytes": 46775,
-        "gzipBytes": 5184
-      },
-      {
-        "file": "assets/nushell-C-sUppwS.js",
-        "rawBytes": 20400,
-        "gzipBytes": 5181
-      },
-      {
-        "file": "assets/night-owl-C39BiMTA.js",
-        "rawBytes": 28913,
-        "gzipBytes": 5156
-      },
-      {
-        "file": "assets/gherkin-DyxjwDmM.js",
-        "rawBytes": 11946,
-        "gzipBytes": 5054
-      },
-      {
-        "file": "assets/ocaml-C0hk2d4L.js",
-        "rawBytes": 62449,
-        "gzipBytes": 5019
-      },
-      {
-        "file": "assets/system-verilog-CnnmHF94.js",
-        "rawBytes": 26203,
-        "gzipBytes": 4852
-      },
-      {
-        "file": "assets/metadata-DKrASP8I.js",
-        "rawBytes": 13857,
-        "gzipBytes": 4836
-      },
-      {
-        "file": "assets/PostDetail-Dc7KF7-Q.js",
-        "rawBytes": 15828,
-        "gzipBytes": 4770
-      },
-      {
-        "file": "assets/wikitext-BhOHFoWU.js",
-        "rawBytes": 55885,
-        "gzipBytes": 4760
-      },
-      {
-        "file": "assets/perl-C0TMdlhV.js",
-        "rawBytes": 43156,
-        "gzipBytes": 4669
-      },
-      {
-        "file": "assets/_baseUniq-BOncFHFS.js",
-        "rawBytes": 11891,
-        "gzipBytes": 4652
-      },
-      {
-        "file": "assets/crystal-tKQVLTB8.js",
-        "rawBytes": 29388,
-        "gzipBytes": 4444
-      },
-      {
-        "file": "assets/nginx-DknmC5AR.js",
-        "rawBytes": 35374,
-        "gzipBytes": 4428
-      },
-      {
-        "file": "assets/erlang-DsQrWhSR.js",
-        "rawBytes": 37480,
-        "gzipBytes": 4404
-      },
-      {
-        "file": "assets/nord-Ddv68eIx.js",
-        "rawBytes": 26723,
-        "gzipBytes": 4395
-      },
-      {
-        "file": "assets/julia-C8NyazO9.js",
-        "rawBytes": 31066,
-        "gzipBytes": 4327
-      },
-      {
-        "file": "assets/java-CylS5w8V.js",
-        "rawBytes": 27219,
-        "gzipBytes": 4263
-      },
-      {
-        "file": "assets/apl-dKokRX4l.js",
-        "rawBytes": 24039,
-        "gzipBytes": 4199
-      },
-      {
-        "file": "assets/scss-OYdSNvt2.js",
-        "rawBytes": 27204,
-        "gzipBytes": 4199
-      },
-      {
-        "file": "assets/gruvbox-light-hard-CH1njM8p.js",
-        "rawBytes": 22636,
-        "gzipBytes": 4184
-      },
-      {
-        "file": "assets/gruvbox-light-medium-DRw_LuNl.js",
-        "rawBytes": 22640,
-        "gzipBytes": 4184
-      },
-      {
-        "file": "assets/gruvbox-light-soft-hJgmCMqR.js",
-        "rawBytes": 22636,
-        "gzipBytes": 4183
-      },
-      {
-        "file": "assets/gruvbox-dark-medium-GsRaNv29.js",
-        "rawBytes": 22637,
-        "gzipBytes": 4177
-      },
-      {
-        "file": "assets/gruvbox-dark-hard-CFHQjOhq.js",
-        "rawBytes": 22633,
-        "gzipBytes": 4175
-      },
-      {
-        "file": "assets/gruvbox-dark-soft-CVdnzihN.js",
-        "rawBytes": 22633,
-        "gzipBytes": 4174
-      },
-      {
-        "file": "assets/fsharp-CXgrBDvD.js",
-        "rawBytes": 25305,
-        "gzipBytes": 4133
-      },
-      {
-        "file": "assets/dagre-6UL2VRFP-DLyngBbn.js",
-        "rawBytes": 11010,
-        "gzipBytes": 4107
-      },
-      {
-        "file": "assets/powershell-Dpen1YoG.js",
-        "rawBytes": 20151,
-        "gzipBytes": 4068
-      },
-      {
-        "file": "assets/dracula-soft-BXkSAIEj.js",
-        "rawBytes": 21076,
-        "gzipBytes": 4035
-      },
-      {
-        "file": "assets/angular-html-CU67Zn6k.js",
-        "rawBytes": 24287,
-        "gzipBytes": 4010
-      },
-      {
-        "file": "assets/dracula-BzJJZx-M.js",
-        "rawBytes": 21066,
-        "gzipBytes": 4004
-      },
-      {
-        "file": "assets/scala-C151Ov-r.js",
-        "rawBytes": 28884,
-        "gzipBytes": 3935
-      },
-      {
-        "file": "assets/kusto-BvAqAH-y.js",
-        "rawBytes": 15165,
-        "gzipBytes": 3917
-      },
-      {
-        "file": "assets/rose-pine-moon-NleAzG8P.js",
-        "rawBytes": 21753,
-        "gzipBytes": 3890
-      },
-      {
-        "file": "assets/rose-pine-dawn-CnK8MTSM.js",
-        "rawBytes": 21754,
-        "gzipBytes": 3889
-      },
-      {
-        "file": "assets/vhdl-CeAyd5Ju.js",
-        "rawBytes": 24264,
-        "gzipBytes": 3873
-      },
-      {
-        "file": "assets/twig-CO9l9SDP.js",
-        "rawBytes": 21364,
-        "gzipBytes": 3872
-      },
-      {
-        "file": "assets/rose-pine-BHrmToEH.js",
-        "rawBytes": 21743,
-        "gzipBytes": 3871
-      },
-      {
-        "file": "assets/prolog-CbFg5uaA.js",
-        "rawBytes": 11356,
-        "gzipBytes": 3834
-      },
-      {
-        "file": "assets/snazzy-light-Bw305WKR.js",
-        "rawBytes": 20773,
-        "gzipBytes": 3830
-      },
-      {
-        "file": "assets/sas-cz2c8ADy.js",
-        "rawBytes": 9062,
-        "gzipBytes": 3813
-      },
-      {
-        "file": "assets/codeql-DsOJ9woJ.js",
-        "rawBytes": 26883,
-        "gzipBytes": 3791
-      },
-      {
-        "file": "assets/gdscript-DTMYz4Jt.js",
-        "rawBytes": 18975,
-        "gzipBytes": 3739
-      },
-      {
-        "file": "assets/apache-Pmp26Uib.js",
-        "rawBytes": 12456,
-        "gzipBytes": 3722
-      },
-      {
-        "file": "assets/one-light-PoHY5YXO.js",
-        "rawBytes": 25298,
-        "gzipBytes": 3675
-      },
-      {
-        "file": "assets/cadence-Bv_4Rxtq.js",
-        "rawBytes": 23669,
-        "gzipBytes": 3665
-      },
-      {
-        "file": "assets/stateDiagram-FKZM4ZOC-B1HFObTE.js",
-        "rawBytes": 10394,
-        "gzipBytes": 3645
-      },
-      {
-        "file": "assets/groovy-gcz8RCvz.js",
-        "rawBytes": 19179,
-        "gzipBytes": 3599
-      },
-      {
-        "file": "assets/marko-CPi9NSCl.js",
-        "rawBytes": 25437,
-        "gzipBytes": 3566
-      },
-      {
-        "file": "assets/mermaid-DKYwYmdq.js",
-        "rawBytes": 28504,
-        "gzipBytes": 3552
-      },
-      {
-        "file": "assets/razor-WgofotgN.js",
-        "rawBytes": 25561,
-        "gzipBytes": 3444
-      },
-      {
-        "file": "assets/cmake-D1j8_8rp.js",
-        "rawBytes": 9855,
-        "gzipBytes": 3373
-      },
-      {
-        "file": "assets/gnuplot-DdkO51Og.js",
-        "rawBytes": 14783,
-        "gzipBytes": 3271
-      },
-      {
-        "file": "assets/purescript-CklMAg4u.js",
-        "rawBytes": 24686,
-        "gzipBytes": 3246
-      },
-      {
-        "file": "assets/bat-BkioyH1T.js",
-        "rawBytes": 12888,
-        "gzipBytes": 3223
-      },
-      {
-        "file": "assets/liquid-DYVedYrR.js",
-        "rawBytes": 18089,
-        "gzipBytes": 3155
-      },
-      {
-        "file": "assets/nim-CVrawwO9.js",
-        "rawBytes": 22460,
-        "gzipBytes": 3155
-      },
-      {
-        "file": "assets/material-theme-ocean-CyktbL80.js",
-        "rawBytes": 18629,
-        "gzipBytes": 3135
-      },
-      {
-        "file": "assets/github-dark-default-Cuk6v7N8.js",
-        "rawBytes": 14435,
-        "gzipBytes": 3132
-      },
-      {
-        "file": "assets/luau-CXu1NL6O.js",
-        "rawBytes": 13842,
-        "gzipBytes": 3129
-      },
-      {
-        "file": "assets/material-theme-palenight-Csfq5Kiy.js",
-        "rawBytes": 18635,
-        "gzipBytes": 3128
-      },
-      {
-        "file": "assets/github-dark-dimmed-DH5Ifo-i.js",
-        "rawBytes": 14433,
-        "gzipBytes": 3125
-      },
-      {
-        "file": "assets/solidity-BbcW6ACK.js",
-        "rawBytes": 16239,
-        "gzipBytes": 3124
-      },
-      {
-        "file": "assets/material-theme-D5KoaKCx.js",
-        "rawBytes": 18615,
-        "gzipBytes": 3114
-      },
-      {
-        "file": "assets/material-theme-lighter-B0m2ddpp.js",
-        "rawBytes": 18634,
-        "gzipBytes": 3114
-      },
-      {
-        "file": "assets/material-theme-darker-BfHTSMKl.js",
-        "rawBytes": 18629,
-        "gzipBytes": 3113
-      },
-      {
-        "file": "assets/lua-BbnMAYS6.js",
-        "rawBytes": 15205,
-        "gzipBytes": 3093
-      },
-      {
-        "file": "assets/github-dark-high-contrast-E3gJ1_iC.js",
-        "rawBytes": 14595,
-        "gzipBytes": 3087
-      },
-      {
-        "file": "assets/move-Bu9oaDYs.js",
-        "rawBytes": 17331,
-        "gzipBytes": 3080
-      },
-      {
-        "file": "assets/ayu-dark-Cv9koXgw.js",
-        "rawBytes": 14949,
-        "gzipBytes": 3079
-      },
-      {
-        "file": "assets/Home-B7ldx5xt.js",
-        "rawBytes": 9914,
-        "gzipBytes": 3072
-      },
-      {
-        "file": "assets/matlab-D7o27uSR.js",
-        "rawBytes": 16086,
-        "gzipBytes": 3064
-      },
-      {
-        "file": "assets/vitesse-dark-D0r3Knsf.js",
-        "rawBytes": 13759,
-        "gzipBytes": 3063
-      },
-      {
-        "file": "assets/vitesse-black-Bkuqu6BP.js",
-        "rawBytes": 13677,
-        "gzipBytes": 3059
-      },
-      {
-        "file": "assets/tex-Cppo0RY3.js",
-        "rawBytes": 9653,
-        "gzipBytes": 3046
-      },
-      {
-        "file": "assets/github-light-default-D7oLnXFd.js",
-        "rawBytes": 14156,
-        "gzipBytes": 3040
-      },
-      {
-        "file": "assets/svelte-3Dk4HxPD.js",
-        "rawBytes": 17814,
-        "gzipBytes": 3037
-      },
-      {
-        "file": "assets/vitesse-light-CVO1_9PV.js",
-        "rawBytes": 13616,
-        "gzipBytes": 3036
-      },
-      {
-        "file": "assets/github-light-high-contrast-BfjtVDDH.js",
-        "rawBytes": 14275,
-        "gzipBytes": 3022
-      },
-      {
-        "file": "assets/plsql-ChMvpjG-.js",
-        "rawBytes": 8512,
-        "gzipBytes": 2996
-      },
-      {
-        "file": "assets/kanagawa-dragon-CkXjmgJE.js",
-        "rawBytes": 17127,
-        "gzipBytes": 2948
-      },
-      {
-        "file": "assets/glimmer-js-Rg0-pVw9.js",
-        "rawBytes": 20071,
-        "gzipBytes": 2947
-      },
-      {
-        "file": "assets/raku-DXvB9xmW.js",
-        "rawBytes": 10472,
-        "gzipBytes": 2944
-      },
-      {
-        "file": "assets/glimmer-ts-U6CK756n.js",
-        "rawBytes": 20071,
-        "gzipBytes": 2942
-      },
-      {
-        "file": "assets/kanagawa-lotus-CfQXZHmo.js",
-        "rawBytes": 17126,
-        "gzipBytes": 2932
-      },
-      {
-        "file": "assets/kanagawa-wave-DWedfzmr.js",
-        "rawBytes": 17123,
-        "gzipBytes": 2929
-      },
-      {
-        "file": "assets/wit-5i3qLPDT.js",
-        "rawBytes": 21467,
-        "gzipBytes": 2888
-      },
-      {
-        "file": "assets/synthwave-84-CbfX1IO0.js",
-        "rawBytes": 14036,
-        "gzipBytes": 2866
-      },
-      {
-        "file": "assets/elixir-CDX3lj18.js",
-        "rawBytes": 16321,
-        "gzipBytes": 2797
-      },
-      {
-        "file": "assets/v-BcVCzyr7.js",
-        "rawBytes": 13214,
-        "gzipBytes": 2741
-      },
-      {
-        "file": "assets/rust-B1yitclQ.js",
-        "rawBytes": 15069,
-        "gzipBytes": 2716
-      },
-      {
-        "file": "assets/vue-CCoi5OLL.js",
-        "rawBytes": 21062,
+        "file": "assets/Track-BfoQcbtQ.js",
+        "rawBytes": 7040,
         "gzipBytes": 2690
       },
       {
-        "file": "assets/ManageAgent-DL7BJgdC.js",
-        "rawBytes": 8895,
-        "gzipBytes": 2621
+        "file": "assets/Login-Cesnmeib.js",
+        "rawBytes": 6056,
+        "gzipBytes": 1987
       },
       {
-        "file": "assets/actionscript-3-CfeIJUat.js",
-        "rawBytes": 14049,
-        "gzipBytes": 2580
+        "file": "assets/SubscriptionForm-C-Wm936l.js",
+        "rawBytes": 4912,
+        "gzipBytes": 1867
       },
       {
-        "file": "assets/pug-CGlum2m_.js",
-        "rawBytes": 13842,
-        "gzipBytes": 2578
+        "file": "assets/Search-Btyey-to.js",
+        "rawBytes": 4415,
+        "gzipBytes": 1803
       },
       {
-        "file": "assets/laserwave-DUszq2jm.js",
-        "rawBytes": 11499,
-        "gzipBytes": 2577
+        "file": "assets/Archive-CPldWuOC.js",
+        "rawBytes": 4357,
+        "gzipBytes": 1719
       },
       {
-        "file": "assets/qss-IeuSbFQv.js",
-        "rawBytes": 7472,
-        "gzipBytes": 2575
+        "file": "assets/TaxonomyPage-bYzj7A7u.js",
+        "rawBytes": 4380,
+        "gzipBytes": 1629
       },
       {
-        "file": "assets/typespec-Df68jz8_.js",
-        "rawBytes": 23656,
-        "gzipBytes": 2562
+        "file": "assets/index-DLAXL5e8.js",
+        "rawBytes": 3524,
+        "gzipBytes": 1601
       },
       {
-        "file": "assets/github-dark-DHJKELXO.js",
-        "rawBytes": 11405,
-        "gzipBytes": 2552
+        "file": "assets/tabs-CX5UGkcL.js",
+        "rawBytes": 3533,
+        "gzipBytes": 1510
       },
       {
-        "file": "assets/systemd-4A_iFExJ.js",
-        "rawBytes": 7869,
-        "gzipBytes": 2546
+        "file": "assets/ArticleCard-BwG6IzEi.js",
+        "rawBytes": 2884,
+        "gzipBytes": 1178
       },
       {
-        "file": "assets/graphql-ChdNCCLP.js",
-        "rawBytes": 18002,
-        "gzipBytes": 2521
+        "file": "assets/NotFound-D0uPzK1Y.js",
+        "rawBytes": 2381,
+        "gzipBytes": 1064
       },
       {
-        "file": "assets/terraform-BETggiCN.js",
-        "rawBytes": 11389,
-        "gzipBytes": 2509
+        "file": "assets/tracks-DrC2v8cU.js",
+        "rawBytes": 3486,
+        "gzipBytes": 989
       },
       {
-        "file": "assets/github-light-DAi9KRSo.js",
-        "rawBytes": 11184,
-        "gzipBytes": 2508
+        "file": "assets/About-DEEBkjmr.js",
+        "rawBytes": 2238,
+        "gzipBytes": 880
       },
       {
-        "file": "assets/diagram-QEK2KX5R-dxwT2C6F.js",
-        "rawBytes": 5916,
-        "gzipBytes": 2498
+        "file": "assets/sonner-Bx36vPOY.js",
+        "rawBytes": 1291,
+        "gzipBytes": 809
       },
       {
-        "file": "assets/sass-Cj5Yp3dK.js",
-        "rawBytes": 9289,
-        "gzipBytes": 2492
+        "file": "assets/index-De8yi4SU.js",
+        "rawBytes": 1310,
+        "gzipBytes": 662
       },
       {
-        "file": "assets/clarity-D53aC0YG.js",
-        "rawBytes": 14275,
-        "gzipBytes": 2462
-      },
-      {
-        "file": "assets/rst-B0xPkSld.js",
-        "rawBytes": 10673,
-        "gzipBytes": 2416
-      },
-      {
-        "file": "assets/handlebars-BL8al0AC.js",
-        "rawBytes": 12150,
-        "gzipBytes": 2377
-      },
-      {
-        "file": "assets/andromeeda-C-Jbm3Hp.js",
-        "rawBytes": 8976,
-        "gzipBytes": 2351
-      },
-      {
-        "file": "assets/vb-D17OF-Vu.js",
-        "rawBytes": 6093,
-        "gzipBytes": 2340
-      },
-      {
-        "file": "assets/pieDiagram-ADFJNKIX-BsDVbwWw.js",
-        "rawBytes": 5248,
-        "gzipBytes": 2329
-      },
-      {
-        "file": "assets/linear-rbFWxyv6.js",
-        "rawBytes": 5661,
-        "gzipBytes": 2312
-      },
-      {
-        "file": "assets/aurora-x-D-2ljcwZ.js",
-        "rawBytes": 13659,
-        "gzipBytes": 2283
-      },
-      {
-        "file": "assets/light-plus-B7mTdjB0.js",
-        "rawBytes": 9941,
-        "gzipBytes": 2274
-      },
-      {
-        "file": "assets/yaml-Buea-lGh.js",
-        "rawBytes": 10506,
-        "gzipBytes": 2274
-      },
-      {
-        "file": "assets/dream-maker-BtqSS_iP.js",
-        "rawBytes": 10469,
-        "gzipBytes": 2251
-      },
-      {
-        "file": "assets/dax-CEL-wOlO.js",
-        "rawBytes": 5365,
-        "gzipBytes": 2226
-      },
-      {
-        "file": "assets/nix-BbRYJGeE.js",
-        "rawBytes": 14565,
-        "gzipBytes": 2204
-      },
-      {
-        "file": "assets/hlsl-D3lLCCz7.js",
-        "rawBytes": 7264,
-        "gzipBytes": 2188
-      },
-      {
-        "file": "assets/wasm-MzD3tlZU.js",
-        "rawBytes": 12007,
-        "gzipBytes": 2188
-      },
-      {
-        "file": "assets/kotlin-BdnUsdx6.js",
-        "rawBytes": 8785,
-        "gzipBytes": 2130
-      },
-      {
-        "file": "assets/defaultLocale-C4B-KCzX.js",
-        "rawBytes": 4547,
-        "gzipBytes": 2128
-      },
-      {
-        "file": "assets/elm-DbKCFpqz.js",
-        "rawBytes": 10968,
-        "gzipBytes": 2119
-      },
-      {
-        "file": "assets/puppet-BMWR74SV.js",
-        "rawBytes": 11437,
-        "gzipBytes": 2114
-      },
-      {
-        "file": "assets/dark-plus-eOWES_5F.js",
-        "rawBytes": 9097,
-        "gzipBytes": 2099
-      },
-      {
-        "file": "assets/slack-ochin-DqwNpetd.js",
-        "rawBytes": 9431,
-        "gzipBytes": 2095
-      },
-      {
-        "file": "assets/shaderlab-Dg9Lc6iA.js",
-        "rawBytes": 5922,
-        "gzipBytes": 2082
-      },
-      {
-        "file": "assets/cue-D82EKSYY.js",
-        "rawBytes": 16204,
-        "gzipBytes": 2057
-      },
-      {
-        "file": "assets/scheme-C98Dy4si.js",
-        "rawBytes": 7169,
-        "gzipBytes": 2053
-      },
-      {
-        "file": "assets/sdbl-DVxCFoDh.js",
-        "rawBytes": 4702,
-        "gzipBytes": 2011
-      },
-      {
-        "file": "assets/llvm-BtvRca6l.js",
-        "rawBytes": 5040,
-        "gzipBytes": 2009
-      },
-      {
-        "file": "assets/riscv-BM1_JUlF.js",
-        "rawBytes": 6914,
-        "gzipBytes": 1980
-      },
-      {
-        "file": "assets/plastic-3e1v2bzS.js",
-        "rawBytes": 9295,
-        "gzipBytes": 1979
-      },
-      {
-        "file": "assets/vesper-DU1UobuO.js",
-        "rawBytes": 12692,
-        "gzipBytes": 1973
-      },
-      {
-        "file": "assets/slack-dark-BthQWCQV.js",
-        "rawBytes": 9117,
-        "gzipBytes": 1967
-      },
-      {
-        "file": "assets/lean-DP1Csr6i.js",
-        "rawBytes": 5852,
-        "gzipBytes": 1936
-      },
-      {
-        "file": "assets/hcl-BWvSN4gD.js",
-        "rawBytes": 10053,
-        "gzipBytes": 1931
-      },
-      {
-        "file": "assets/coq-DkFqJrB1.js",
-        "rawBytes": 5526,
-        "gzipBytes": 1915
-      },
-      {
-        "file": "assets/dart-CF10PKvl.js",
-        "rawBytes": 7812,
-        "gzipBytes": 1914
-      },
-      {
-        "file": "assets/postcss-CXtECtnM.js",
-        "rawBytes": 6417,
-        "gzipBytes": 1914
-      },
-      {
-        "file": "assets/monokai-D4h5O-jR.js",
-        "rawBytes": 7884,
-        "gzipBytes": 1908
-      },
-      {
-        "file": "assets/verilog-BQ8w6xss.js",
-        "rawBytes": 5931,
-        "gzipBytes": 1893
-      },
-      {
-        "file": "assets/min-light-CTRr51gU.js",
-        "rawBytes": 6969,
-        "gzipBytes": 1889
-      },
-      {
-        "file": "assets/diagram-S2PKOQOG-BAe0sIi7.js",
-        "rawBytes": 4310,
-        "gzipBytes": 1884
-      },
-      {
-        "file": "assets/graph-CqNivb1B.js",
-        "rawBytes": 5920,
-        "gzipBytes": 1869
-      },
-      {
-        "file": "assets/jison-wvAkD_A8.js",
-        "rawBytes": 9690,
-        "gzipBytes": 1854
-      },
-      {
-        "file": "assets/ara-BRHolxvo.js",
-        "rawBytes": 6362,
-        "gzipBytes": 1812
-      },
-      {
-        "file": "assets/haml-B8DHNrY2.js",
-        "rawBytes": 8263,
-        "gzipBytes": 1807
-      },
-      {
-        "file": "assets/solarized-dark-DXbdFlpD.js",
-        "rawBytes": 6846,
-        "gzipBytes": 1796
-      },
-      {
-        "file": "assets/vue-html-DAAvJJDi.js",
-        "rawBytes": 8667,
-        "gzipBytes": 1775
-      },
-      {
-        "file": "assets/Search-CvltdKdl.js",
-        "rawBytes": 4344,
-        "gzipBytes": 1772
-      },
-      {
-        "file": "assets/make-CHLpvVh8.js",
-        "rawBytes": 8961,
-        "gzipBytes": 1767
-      },
-      {
-        "file": "assets/fish-BvzEVeQv.js",
-        "rawBytes": 13038,
-        "gzipBytes": 1735
-      },
-      {
-        "file": "assets/gdshader-DkwncUOv.js",
-        "rawBytes": 6326,
-        "gzipBytes": 1730
-      },
-      {
-        "file": "assets/solarized-light-L9t79GZl.js",
-        "rawBytes": 6480,
-        "gzipBytes": 1730
-      },
-      {
-        "file": "assets/cypher-COkxafJQ.js",
-        "rawBytes": 5956,
-        "gzipBytes": 1725
-      },
-      {
-        "file": "assets/min-dark-CafNBF8u.js",
-        "rawBytes": 6291,
-        "gzipBytes": 1709
-      },
-      {
-        "file": "assets/pascal-D93ZcfNL.js",
-        "rawBytes": 4150,
-        "gzipBytes": 1671
-      },
-      {
-        "file": "assets/typst-DHCkPAjA.js",
-        "rawBytes": 8387,
-        "gzipBytes": 1669
-      },
-      {
-        "file": "assets/soy-Brmx7dQM.js",
-        "rawBytes": 6981,
-        "gzipBytes": 1657
-      },
-      {
-        "file": "assets/hjson-D5-asLiD.js",
-        "rawBytes": 12053,
-        "gzipBytes": 1641
-      },
-      {
-        "file": "assets/smalltalk-BERRCDM3.js",
-        "rawBytes": 6587,
-        "gzipBytes": 1622
-      },
-      {
-        "file": "assets/ssh-config-_ykCGR6B.js",
-        "rawBytes": 3617,
-        "gzipBytes": 1602
-      },
-      {
-        "file": "assets/red-bN70gL4F.js",
-        "rawBytes": 6262,
-        "gzipBytes": 1600
-      },
-      {
-        "file": "assets/zig-VOosw3JB.js",
-        "rawBytes": 5340,
-        "gzipBytes": 1554
-      },
-      {
-        "file": "assets/TaxonomyPage-DpXwXFiH.js",
-        "rawBytes": 4187,
-        "gzipBytes": 1538
-      },
-      {
-        "file": "assets/fennel-BYunw83y.js",
-        "rawBytes": 4768,
-        "gzipBytes": 1534
-      },
-      {
-        "file": "assets/powerquery-CEu0bR-o.js",
-        "rawBytes": 5903,
-        "gzipBytes": 1521
-      },
-      {
-        "file": "assets/splunk-BtCnVYZw.js",
-        "rawBytes": 3436,
-        "gzipBytes": 1520
-      },
-      {
-        "file": "assets/tcl-dwOrl1Do.js",
-        "rawBytes": 4429,
-        "gzipBytes": 1515
-      },
-      {
-        "file": "assets/talonscript-CkByrt1z.js",
-        "rawBytes": 6757,
-        "gzipBytes": 1491
-      },
-      {
-        "file": "assets/logo-BtOb2qkB.js",
-        "rawBytes": 3127,
-        "gzipBytes": 1470
-      },
-      {
-        "file": "assets/arc-0THMZ6z2.js",
-        "rawBytes": 3422,
-        "gzipBytes": 1468
-      },
-      {
-        "file": "assets/tracks-Dz5LU9jN.js",
-        "rawBytes": 4370,
-        "gzipBytes": 1456
-      },
-      {
-        "file": "assets/Archive-CRpr5qp0.js",
-        "rawBytes": 3725,
-        "gzipBytes": 1437
-      },
-      {
-        "file": "assets/beancount-k_qm7-4y.js",
-        "rawBytes": 10373,
-        "gzipBytes": 1437
-      },
-      {
-        "file": "assets/Login-VcLDBagQ.js",
-        "rawBytes": 4374,
-        "gzipBytes": 1434
-      },
-      {
-        "file": "assets/Track-DlDh-WwZ.js",
-        "rawBytes": 3847,
-        "gzipBytes": 1428
-      },
-      {
-        "file": "assets/SubscriptionForm-DZCLf6vE.js",
-        "rawBytes": 3707,
-        "gzipBytes": 1423
-      },
-      {
-        "file": "assets/clojure-P80f7IUj.js",
-        "rawBytes": 6413,
-        "gzipBytes": 1419
-      },
-      {
-        "file": "assets/regexp-CDVJQ6XC.js",
-        "rawBytes": 7988,
-        "gzipBytes": 1418
-      },
-      {
-        "file": "assets/glsl-DplSGwfg.js",
-        "rawBytes": 3634,
-        "gzipBytes": 1407
-      },
-      {
-        "file": "assets/proto-DyJlTyXw.js",
-        "rawBytes": 6521,
-        "gzipBytes": 1407
-      },
-      {
-        "file": "assets/jinja-4LBKfQ-Z.js",
-        "rawBytes": 5685,
-        "gzipBytes": 1397
-      },
-      {
-        "file": "assets/wgsl-Dx-B1_4e.js",
-        "rawBytes": 5144,
-        "gzipBytes": 1391
-      },
-      {
-        "file": "assets/prisma-Dd19v3D-.js",
-        "rawBytes": 6330,
-        "gzipBytes": 1390
-      },
-      {
-        "file": "assets/awk-DMzUqQB5.js",
-        "rawBytes": 5461,
-        "gzipBytes": 1383
-      },
-      {
-        "file": "assets/pkl-u5AG7uiY.js",
-        "rawBytes": 10372,
-        "gzipBytes": 1382
-      },
-      {
-        "file": "assets/qml-3beO22l8.js",
-        "rawBytes": 5336,
-        "gzipBytes": 1381
-      },
-      {
-        "file": "assets/gdresource-B7Tvp0Sc.js",
-        "rawBytes": 5259,
-        "gzipBytes": 1325
-      },
-      {
-        "file": "assets/_basePickBy-BBXrw1Jn.js",
-        "rawBytes": 2585,
-        "gzipBytes": 1288
-      },
-      {
-        "file": "assets/zenscript-DVFEvuxE.js",
-        "rawBytes": 3912,
-        "gzipBytes": 1284
-      },
-      {
-        "file": "assets/toml-vGWfd6FD.js",
-        "rawBytes": 6426,
-        "gzipBytes": 1282
-      },
-      {
-        "file": "assets/select-B5g94Cg3.js",
-        "rawBytes": 3607,
-        "gzipBytes": 1274
-      },
-      {
-        "file": "assets/ts-tags-zn1MmPIZ.js",
-        "rawBytes": 8948,
-        "gzipBytes": 1224
-      },
-      {
-        "file": "assets/xml-sdJ4AIDG.js",
-        "rawBytes": 5384,
-        "gzipBytes": 1214
-      },
-      {
-        "file": "assets/genie-D0YGMca9.js",
-        "rawBytes": 3356,
-        "gzipBytes": 1209
-      },
-      {
-        "file": "assets/vala-CsfeWuGM.js",
-        "rawBytes": 3370,
-        "gzipBytes": 1189
-      },
-      {
-        "file": "assets/hy-DFXneXwc.js",
-        "rawBytes": 2648,
-        "gzipBytes": 1181
-      },
-      {
-        "file": "assets/mipsasm-CKIfxQSi.js",
-        "rawBytes": 3259,
-        "gzipBytes": 1177
-      },
-      {
-        "file": "assets/hurl-irOxFIW8.js",
-        "rawBytes": 3652,
-        "gzipBytes": 1162
-      },
-      {
-        "file": "assets/polar-C0HS_06l.js",
-        "rawBytes": 4671,
-        "gzipBytes": 1124
-      },
-      {
-        "file": "assets/http-jrhK8wxY.js",
-        "rawBytes": 4549,
-        "gzipBytes": 1117
-      },
-      {
-        "file": "assets/rel-C3B-1QV4.js",
-        "rawBytes": 3368,
-        "gzipBytes": 1107
-      },
-      {
-        "file": "assets/narrat-DRg8JJMk.js",
-        "rawBytes": 3672,
-        "gzipBytes": 1106
-      },
-      {
-        "file": "assets/nextflow-CUEJCptM.js",
-        "rawBytes": 4155,
-        "gzipBytes": 1098
-      },
-      {
-        "file": "assets/wenyan-BV7otONQ.js",
-        "rawBytes": 2157,
-        "gzipBytes": 1090
-      },
-      {
-        "file": "assets/bicep-6nHXG8SA.js",
-        "rawBytes": 4306,
-        "gzipBytes": 1077
-      },
-      {
-        "file": "assets/rosmsg-BJDFO7_C.js",
-        "rawBytes": 4523,
-        "gzipBytes": 1059
-      },
-      {
-        "file": "assets/jsonnet-DFQXde-d.js",
-        "rawBytes": 3618,
-        "gzipBytes": 1045
-      },
-      {
-        "file": "assets/kdl-DV7GczEv.js",
-        "rawBytes": 3629,
-        "gzipBytes": 1042
-      },
-      {
-        "file": "assets/turtle-BsS91CYL.js",
-        "rawBytes": 3700,
-        "gzipBytes": 977
-      },
-      {
-        "file": "assets/po-BTJTHyun.js",
-        "rawBytes": 3239,
-        "gzipBytes": 909
-      },
-      {
-        "file": "assets/fluent-C4IJs8-o.js",
-        "rawBytes": 3610,
-        "gzipBytes": 901
-      },
-      {
-        "file": "assets/log-2UxHyX5q.js",
-        "rawBytes": 2852,
-        "gzipBytes": 899
-      },
-      {
-        "file": "assets/hxml-Bvhsp5Yf.js",
-        "rawBytes": 1743,
-        "gzipBytes": 884
-      },
-      {
-        "file": "assets/About-Dwsn9hD0.js",
-        "rawBytes": 2161,
-        "gzipBytes": 851
-      },
-      {
-        "file": "assets/tasl-QIJgUcNo.js",
-        "rawBytes": 3288,
-        "gzipBytes": 848
-      },
-      {
-        "file": "assets/erb-BOJIQeun.js",
-        "rawBytes": 2607,
-        "gzipBytes": 844
-      },
-      {
-        "file": "assets/bibtex-CHM0blh-.js",
-        "rawBytes": 4795,
-        "gzipBytes": 834
-      },
-      {
-        "file": "assets/json5-C9tS-k6U.js",
-        "rawBytes": 3254,
-        "gzipBytes": 832
-      },
-      {
-        "file": "assets/gleam-BspZqrRM.js",
-        "rawBytes": 2577,
-        "gzipBytes": 819
-      },
-      {
-        "file": "assets/sparql-rVzFXLq3.js",
-        "rawBytes": 1480,
-        "gzipBytes": 818
-      },
-      {
-        "file": "assets/cairo-KRGpt6FW.js",
-        "rawBytes": 2936,
-        "gzipBytes": 805
-      },
-      {
-        "file": "assets/jsonc-Des-eS-w.js",
-        "rawBytes": 3109,
-        "gzipBytes": 797
-      },
-      {
-        "file": "assets/jsonl-DcaNXYhu.js",
-        "rawBytes": 3011,
-        "gzipBytes": 792
-      },
-      {
-        "file": "assets/json-Cp-IABpG.js",
-        "rawBytes": 2824,
-        "gzipBytes": 780
-      },
-      {
-        "file": "assets/desktop-BmXAJ9_W.js",
-        "rawBytes": 1833,
-        "gzipBytes": 763
-      },
-      {
-        "file": "assets/berry-D08WgyRC.js",
-        "rawBytes": 2363,
-        "gzipBytes": 760
-      },
-      {
-        "file": "assets/NotFound-Cqh3xPtF.js",
-        "rawBytes": 1617,
-        "gzipBytes": 748
-      },
-      {
-        "file": "assets/edge-BkV0erSs.js",
-        "rawBytes": 2363,
-        "gzipBytes": 702
-      },
-      {
-        "file": "assets/reg-C-SQnVFl.js",
-        "rawBytes": 2345,
-        "gzipBytes": 697
-      },
-      {
-        "file": "assets/diff-D97Zzqfu.js",
-        "rawBytes": 2569,
-        "gzipBytes": 695
-      },
-      {
-        "file": "assets/input-BNQJlTxV.js",
-        "rawBytes": 1267,
+        "file": "assets/input-Boy8zNJW.js",
+        "rawBytes": 1269,
         "gzipBytes": 637
       },
       {
-        "file": "assets/chunk-TZMSLE5B-DKyIH-lH.js",
-        "rawBytes": 1437,
-        "gzipBytes": 635
+        "file": "assets/badge-BIeBduyv.js",
+        "rawBytes": 1184,
+        "gzipBytes": 578
       },
       {
-        "file": "assets/jssm-C2t-YnRu.js",
-        "rawBytes": 2238,
-        "gzipBytes": 622
+        "file": "assets/tags-0EeQwxJ7.js",
+        "rawBytes": 909,
+        "gzipBytes": 463
       },
       {
-        "file": "assets/docker-BcOcwvcX.js",
-        "rawBytes": 1741,
-        "gzipBytes": 600
+        "file": "assets/mail-BIe28pqL.js",
+        "rawBytes": 835,
+        "gzipBytes": 438
       },
       {
-        "file": "assets/tabs-BXaZeRu9.js",
-        "rawBytes": 1338,
-        "gzipBytes": 584
+        "file": "assets/shield-check-t5Oi4Ql2.js",
+        "rawBytes": 488,
+        "gzipBytes": 350
       },
       {
-        "file": "assets/badge-Bdkya8Ql.js",
-        "rawBytes": 1183,
-        "gzipBytes": 576
+        "file": "assets/network-DcHJ2VtE.js",
+        "rawBytes": 553,
+        "gzipBytes": 335
       },
       {
-        "file": "assets/ordinal-Cboi1Yqb.js",
-        "rawBytes": 1189,
-        "gzipBytes": 573
+        "file": "assets/AgentMarkdown-C-jIP0eb.js",
+        "rawBytes": 522,
+        "gzipBytes": 330
       },
       {
-        "file": "assets/fortran-fixed-form-BZjJHVRy.js",
-        "rawBytes": 1101,
-        "gzipBytes": 544
-      },
-      {
-        "file": "assets/dotenv-Da5cRb03.js",
-        "rawBytes": 1422,
-        "gzipBytes": 534
-      },
-      {
-        "file": "assets/git-commit-F4YmCXRG.js",
-        "rawBytes": 1230,
-        "gzipBytes": 527
-      },
-      {
-        "file": "assets/xsl-CtQFsRM5.js",
-        "rawBytes": 1385,
-        "gzipBytes": 522
-      },
-      {
-        "file": "assets/ini-BEwlwnbL.js",
-        "rawBytes": 1525,
-        "gzipBytes": 499
-      },
-      {
-        "file": "assets/html-derivative-BFtXZ54Q.js",
-        "rawBytes": 900,
-        "gzipBytes": 495
-      },
-      {
-        "file": "assets/infoDiagram-F6ZHWCRC-CCuLchUp.js",
-        "rawBytes": 696,
-        "gzipBytes": 461
-      },
-      {
-        "file": "assets/qmldir-C8lEn-DE.js",
-        "rawBytes": 1002,
-        "gzipBytes": 452
-      },
-      {
-        "file": "assets/git-rebase-r7XF79zn.js",
-        "rawBytes": 983,
-        "gzipBytes": 436
-      },
-      {
-        "file": "assets/shellsession-BADoaaVG.js",
-        "rawBytes": 711,
-        "gzipBytes": 426
-      },
-      {
-        "file": "assets/csv-fuZLfV_i.js",
-        "rawBytes": 1143,
-        "gzipBytes": 369
-      },
-      {
-        "file": "assets/chunk-QN33PNHL-Cil1X8bc.js",
-        "rawBytes": 506,
-        "gzipBytes": 361
-      },
-      {
-        "file": "assets/tsv-B_m7g4N7.js",
-        "rawBytes": 739,
-        "gzipBytes": 342
-      },
-      {
-        "file": "assets/codeowners-Bp6g37R7.js",
-        "rawBytes": 547,
+        "file": "assets/git-branch-BCCLYx_m.js",
+        "rawBytes": 443,
         "gzipBytes": 318
       },
       {
-        "file": "assets/classDiagram-2ON5EDUG-MDCjWv9O.js",
-        "rawBytes": 435,
-        "gzipBytes": 304
+        "file": "assets/copy-BmbgUIMH.js",
+        "rawBytes": 400,
+        "gzipBytes": 307
       },
       {
-        "file": "assets/classDiagram-v2-WZHVMYZB-MDCjWv9O.js",
-        "rawBytes": 435,
-        "gzipBytes": 304
+        "file": "assets/calendar-hSrVD9r0.js",
+        "rawBytes": 426,
+        "gzipBytes": 302
       },
       {
-        "file": "assets/stateDiagram-v2-4FDKWEC3-B3YfqQU4.js",
-        "rawBytes": 396,
-        "gzipBytes": 288
+        "file": "assets/eye-CDlHeOut.js",
+        "rawBytes": 420,
+        "gzipBytes": 301
       },
       {
-        "file": "assets/chunk-FMBD7UC4-3nUdwRmU.js",
-        "rawBytes": 366,
-        "gzipBytes": 272
-      },
-      {
-        "file": "assets/sonner-DZNdbFk6.js",
-        "rawBytes": 303,
-        "gzipBytes": 221
-      },
-      {
-        "file": "assets/chunk-55IACEB6-CgRz69Qr.js",
-        "rawBytes": 235,
-        "gzipBytes": 209
-      },
-      {
-        "file": "assets/chunk-4BX2VUAB-DftiuMLP.js",
-        "rawBytes": 227,
-        "gzipBytes": 172
-      },
-      {
-        "file": "assets/chunk-QZHKN3VN-Cov3655u.js",
-        "rawBytes": 193,
-        "gzipBytes": 162
-      },
-      {
-        "file": "assets/init-Gi6I4Gst.js",
-        "rawBytes": 147,
-        "gzipBytes": 129
-      },
-      {
-        "file": "assets/channel-CQ8pHB0h.js",
-        "rawBytes": 113,
-        "gzipBytes": 126
-      },
-      {
-        "file": "assets/clone-DAYn6LpD.js",
-        "rawBytes": 96,
-        "gzipBytes": 111
+        "file": "assets/hash-Simb8_7b.js",
+        "rawBytes": 465,
+        "gzipBytes": 295
       }
     ],
     "css": [
       {
-        "file": "assets/index-VNRXOcEx.css",
-        "rawBytes": 165329,
-        "gzipBytes": 27446
+        "file": "assets/index-CmnEKwTQ.css",
+        "rawBytes": 173188,
+        "gzipBytes": 28814
       },
       {
-        "file": "assets/app-vendor-DvXFAOB1.css",
+        "file": "assets/katex-DvXFAOB1.css",
         "rawBytes": 29193,
         "gzipBytes": 8033
       },
@@ -1965,7 +667,7 @@
       "/algorithms",
       "/applications",
       "/login",
-      "/post/isohc-fixed-vector-isometric-residual-mixing"
+      "/tags/agent-systems"
     ],
     "note": "Use the Codex Browser plugin for rendered desktop/mobile checks; package script records the required viewport and route set."
   },
@@ -1989,10 +691,10 @@
       "evidence": "client/public/rss.xml not found"
     },
     {
-      "id": "large-initial-js",
+      "id": "missing-canonical",
       "severity": "warning",
-      "summary": "Largest JavaScript chunk is above the 200 kB gzip target.",
-      "evidence": "assets/app-vendor-ClZb-DNB.js: 412.9 kB gzip"
+      "summary": "One or more checked HTML routes are missing canonical URLs.",
+      "evidence": "/, /algorithms, /applications, /login, /archive, /categories/ai-applications, /tags/agent-systems, /404"
     }
   ]
 }

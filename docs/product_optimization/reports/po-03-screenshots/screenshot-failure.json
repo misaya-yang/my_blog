@@ -1,0 +1,5 @@
+{
+  "status": "screenshot_failed",
+  "at": "2026-05-31T06:36:42.945Z",
+  "message": "Timed out running CDP command \"Page.captureScreenshot\" for tab 1"
+}

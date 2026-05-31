@@ -29,6 +29,62 @@ const categorySeeds = [
   },
 ];
 
+const seriesSeeds = [
+  {
+    slug: "agent-runtime-systems",
+    title: "Agent Runtime Systems",
+    promise:
+      "A practical path from controlled agent evaluation to observable multi-step runtimes.",
+    track: "applications",
+    orderedPostSlugs: [
+      "agent-harness-engine-evaluating-tool-using-agents",
+      "rag-evidence-packet-context-compiler",
+      "agent-loop-observable-tool-using-agents",
+    ],
+    expectedNext: [
+      "Tool ABI: typed capabilities for agent runtimes",
+      "Context Budget: deciding what enters a model window",
+    ],
+  },
+  {
+    slug: "agentic-rag-infrastructure",
+    title: "Agentic RAG Infrastructure",
+    promise:
+      "A focused series on turning retrieval output into governed, citable agent context.",
+    track: "applications",
+    orderedPostSlugs: ["rag-evidence-packet-context-compiler"],
+    expectedNext: [
+      "Hybrid retrieval as evidence construction",
+      "Retrieval evals for citation-grade answers",
+    ],
+  },
+  {
+    slug: "long-context-position-encoding",
+    title: "Long Context and Position Encoding",
+    promise:
+      "Mechanistic notes on RoPE, spectral allocation, and long-context behavior.",
+    track: "algorithms",
+    orderedPostSlugs: [],
+    privatePostSlugs: ["evq-cosh-frequency-allocation"],
+    expectedNext: [
+      "RoPE spectral budget note, pending publication",
+      "Long-context extrapolation failure modes",
+    ],
+  },
+  {
+    slug: "residual-stability",
+    title: "Residual Stability",
+    promise:
+      "Residual stream mixing, invariants, and stability constraints for deep architectures.",
+    track: "algorithms",
+    orderedPostSlugs: ["isohc-fixed-vector-isometric-residual-mixing"],
+    expectedNext: [
+      "Residual mixing diagnostics",
+      "Orthogonal constraints in deep sequence models",
+    ],
+  },
+];
+
 const posts = [
   {
     title: "EVQ-Cosh: RoPE as a Finite Spectral Budget",
@@ -37,6 +93,7 @@ const posts = [
     categorySlug: "ai-algorithms",
     status: "draft",
     visibility: "hidden",
+    pinnedTrack: "algorithms",
     excerpt:
       "EVQ-Cosh treats RoPE inverse frequencies as a finite spectral allocation problem and derives a closed-form initialization rule for rotary channels.",
     tags: [
@@ -54,6 +111,9 @@ const posts = [
     categorySlug: "ai-algorithms",
     status: "published",
     visibility: "public",
+    publishedAt: "2026-05-31T00:00:00.000Z",
+    featuredRank: 4,
+    pinnedTrack: "algorithms",
     excerpt:
       "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.",
     tags: [
@@ -73,6 +133,9 @@ const posts = [
     categorySlug: "ai-applications",
     status: "published",
     visibility: "public",
+    publishedAt: "2026-05-31T00:10:00.000Z",
+    featuredRank: 3,
+    pinnedTrack: "applications",
     excerpt:
       "A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals.",
     tags: [
@@ -93,6 +156,9 @@ const posts = [
     categorySlug: "ai-applications",
     status: "published",
     visibility: "public",
+    publishedAt: "2026-05-31T00:20:00.000Z",
+    featuredRank: 2,
+    pinnedTrack: "applications",
     excerpt:
       "把知识库从 top-k chunk 搜索升级为面向 Agent 的上下文编译器，用 Evidence Packet 统一检索信号、来源引用、权限范围、token budget、trace 和评测。",
     tags: [
@@ -114,6 +180,9 @@ const posts = [
     categorySlug: "ai-applications",
     status: "published",
     visibility: "public",
+    publishedAt: "2026-05-31T00:30:00.000Z",
+    featuredRank: 1,
+    pinnedTrack: "applications",
     excerpt:
       "Agent Loop 将 ReAct 式多步行为收束为可观测运行时：用状态机、上下文构建器、决策合约、工具运行时、预算、检查点和 trace 管理模型行动。",
     tags: [
@@ -129,6 +198,95 @@ const posts = [
     ],
   },
 ];
+
+const primarySeriesByPostSlug = buildPrimarySeriesByPostSlug(seriesSeeds);
+
+function buildPrimarySeriesByPostSlug(series) {
+  const byPostSlug = new Map();
+
+  for (const item of series) {
+    const publicSlugs = item.orderedPostSlugs ?? [];
+    const privateSlugs = item.privatePostSlugs ?? [];
+
+    [...publicSlugs, ...privateSlugs].forEach((postSlug, index) => {
+      if (byPostSlug.has(postSlug)) return;
+      byPostSlug.set(postSlug, {
+        seriesSlug: item.slug,
+        seriesTitle: item.title,
+        seriesOrder: index + 1,
+      });
+    });
+  }
+
+  return byPostSlug;
+}
+
+function getPostSeriesMetadata(postSeed) {
+  return primarySeriesByPostSlug.get(postSeed.slug) ?? {
+    seriesSlug: null,
+    seriesTitle: null,
+    seriesOrder: null,
+  };
+}
+
+function getCanonicalPublishedAt(postSeed) {
+  if (postSeed.status !== "published") return null;
+  return new Date(postSeed.publishedAt);
+}
+
+function assertValidDate(value, label) {
+  if (!(value instanceof Date) || Number.isNaN(value.getTime())) {
+    throw new Error(`Invalid ${label}`);
+  }
+}
+
+function validateContentSeeds() {
+  const postsBySlug = new Map();
+
+  for (const postSeed of posts) {
+    if (postsBySlug.has(postSeed.slug)) {
+      throw new Error(`Duplicate post slug: ${postSeed.slug}`);
+    }
+    postsBySlug.set(postSeed.slug, postSeed);
+
+    if (!postSeed.excerpt?.trim()) {
+      throw new Error(`Missing excerpt for ${postSeed.slug}`);
+    }
+    if (!postSeed.tags?.length) {
+      throw new Error(`Missing tags for ${postSeed.slug}`);
+    }
+
+    if (postSeed.status === "published" && postSeed.visibility === "public") {
+      const publishedAt = getCanonicalPublishedAt(postSeed);
+      assertValidDate(publishedAt, `publishedAt for ${postSeed.slug}`);
+      if (!primarySeriesByPostSlug.has(postSeed.slug)) {
+        throw new Error(`Missing primary series for public post ${postSeed.slug}`);
+      }
+    }
+  }
+
+  for (const seriesSeed of seriesSeeds) {
+    if (!seriesSeed.slug || !seriesSeed.title || !seriesSeed.promise || !seriesSeed.track) {
+      throw new Error(`Incomplete series seed: ${seriesSeed.slug || "(missing slug)"}`);
+    }
+
+    for (const postSlug of seriesSeed.orderedPostSlugs ?? []) {
+      const postSeed = postsBySlug.get(postSlug);
+      if (!postSeed) throw new Error(`Unknown post slug in series ${seriesSeed.slug}: ${postSlug}`);
+      if (postSeed.status !== "published" || postSeed.visibility !== "public") {
+        throw new Error(`Public series ${seriesSeed.slug} includes non-public post ${postSlug}`);
+      }
+    }
+
+    for (const postSlug of seriesSeed.privatePostSlugs ?? []) {
+      const postSeed = postsBySlug.get(postSlug);
+      if (!postSeed) throw new Error(`Unknown private post slug in series ${seriesSeed.slug}: ${postSlug}`);
+      if (postSeed.status === "published" && postSeed.visibility === "public") {
+        throw new Error(`Private series association includes public post ${postSlug}`);
+      }
+    }
+  }
+}
 
 async function upsertTags(tags) {
   const tagIds = [];
@@ -150,6 +308,8 @@ async function seed() {
   console.log("Starting seed...");
 
   try {
+    validateContentSeeds();
+
     const ownerOpenId = process.env.OWNER_OPEN_ID;
     if (!ownerOpenId) {
       console.error("OWNER_OPEN_ID not found");
@@ -216,12 +376,14 @@ async function seed() {
       const content = fs.readFileSync(postSeed.contentPath, "utf-8");
       const tagIds = await upsertTags(postSeed.tags);
       const category = categoryBySlug.get(postSeed.categorySlug);
+      const seriesMetadata = getPostSeriesMetadata(postSeed);
+      const canonicalPublishedAt = getCanonicalPublishedAt(postSeed);
 
       if (!category) {
         throw new Error(`Missing category seed for ${postSeed.categorySlug}`);
       }
 
-      const [post] = await sql`
+      let [post] = await sql`
         INSERT INTO posts (
           title,
           slug,
@@ -231,6 +393,11 @@ async function seed() {
           visibility,
           category_id,
           author_id,
+          series_slug,
+          series_title,
+          series_order,
+          featured_rank,
+          pinned_track,
           published_at,
           view_count
         )
@@ -243,7 +410,12 @@ async function seed() {
           ${postSeed.visibility},
           ${category.id},
           ${owner.id},
-          ${postSeed.status === "published" ? new Date() : null},
+          ${seriesMetadata.seriesSlug},
+          ${seriesMetadata.seriesTitle},
+          ${seriesMetadata.seriesOrder},
+          ${postSeed.featuredRank ?? null},
+          ${postSeed.pinnedTrack ?? null},
+          ${canonicalPublishedAt},
           0
         )
         ON CONFLICT (slug) DO UPDATE SET
@@ -254,10 +426,41 @@ async function seed() {
           visibility = EXCLUDED.visibility,
           category_id = EXCLUDED.category_id,
           author_id = EXCLUDED.author_id,
-          published_at = EXCLUDED.published_at,
-          updated_at = now()
+          series_slug = EXCLUDED.series_slug,
+          series_title = EXCLUDED.series_title,
+          series_order = EXCLUDED.series_order,
+          featured_rank = EXCLUDED.featured_rank,
+          pinned_track = EXCLUDED.pinned_track,
+          published_at = CASE
+            WHEN EXCLUDED.status = 'published'
+            THEN COALESCE(posts.published_at, EXCLUDED.published_at)
+            ELSE NULL
+          END
+        WHERE posts.title IS DISTINCT FROM EXCLUDED.title
+          OR posts.content IS DISTINCT FROM EXCLUDED.content
+          OR posts.excerpt IS DISTINCT FROM EXCLUDED.excerpt
+          OR posts.status IS DISTINCT FROM EXCLUDED.status
+          OR posts.visibility IS DISTINCT FROM EXCLUDED.visibility
+          OR posts.category_id IS DISTINCT FROM EXCLUDED.category_id
+          OR posts.author_id IS DISTINCT FROM EXCLUDED.author_id
+          OR posts.series_slug IS DISTINCT FROM EXCLUDED.series_slug
+          OR posts.series_title IS DISTINCT FROM EXCLUDED.series_title
+          OR posts.series_order IS DISTINCT FROM EXCLUDED.series_order
+          OR posts.featured_rank IS DISTINCT FROM EXCLUDED.featured_rank
+          OR posts.pinned_track IS DISTINCT FROM EXCLUDED.pinned_track
+          OR (posts.published_at IS NULL AND EXCLUDED.published_at IS NOT NULL)
+          OR (EXCLUDED.status <> 'published' AND posts.published_at IS NOT NULL)
         RETURNING id
       `;
+
+      if (!post) {
+        [post] = await sql`
+          SELECT id
+          FROM posts
+          WHERE slug = ${postSeed.slug}
+          LIMIT 1
+        `;
+      }
 
       await sql`DELETE FROM post_tags WHERE post_id = ${post.id}`;
       for (const tagId of tagIds) {

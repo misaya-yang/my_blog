@@ -1,0 +1,99 @@
+- region "Notifications alt+T"
+- banner:
+  - link "AI Tech Blog":
+    - /url: /
+    - generic: AI Tech Blog
+  - navigation:
+    - link "首页":
+      - /url: /
+    - link "AI 算法":
+      - /url: /algorithms
+    - link "AI 应用":
+      - /url: /applications
+    - link "归档":
+      - /url: /archive
+    - link "关于":
+      - /url: /about
+    - button "EN"
+    - link "登录":
+      - /url: /login
+      - button "登录"
+- main:
+  - paragraph: 算法索引
+  - heading "AI 算法研究" [level=1]
+  - paragraph: 围绕模型架构、位置编码、长上下文行为与残差稳定性展开研究记录。
+  - paragraph: 沿着不变量阅读：保留什么量、由哪个投影约束、架构在哪里为稳定性付出代价。
+  - text: 阅读路径
+  - heading "Residual Stability" [level=2]
+  - paragraph: 残差流混合、不变量和稳定性约束。
+  - generic: 残差混合
+  - generic: 稳定性
+  - generic: 架构
+  - 'link "01 IsoHC: Fixed-Vector Isometric Residual Mixing"':
+    - /url: /post/isohc-fixed-vector-isometric-residual-mixing
+    - generic: "01"
+    - strong: "IsoHC: Fixed-Vector Isometric Residual Mixing"
+  - paragraph: 后续计划
+  - generic: Residual diagnostics
+  - generic: Orthogonal constraints
+  - text: 阅读路径
+  - heading "Long Context and Position Encoding" [level=2]
+  - paragraph: 关于 RoPE、频谱分配和长上下文行为的机制笔记。
+  - generic: 位置编码
+  - generic: RoPE
+  - generic: 长上下文
+  - generic: 还没有公开文章接入；先保留规划路径。
+  - paragraph: 后续计划
+  - generic: RoPE spectral budget
+  - generic: Extrapolation failures
+  - generic: "1"
+  - generic: 文章
+  - generic: "4"
+  - generic: 专题 / 技术地图
+  - generic: "21"
+  - generic: 阅读量
+  - complementary:
+    - heading "算法索引" [level=2]
+    - paragraph: 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。
+    - generic: Transformer 架构
+    - generic: 大语言模型 (LLM)
+    - generic: 位置编码
+    - generic: RoPE
+  - heading "技术文章" [level=2]
+  - link "返回总览":
+    - /url: /
+    - text: 返回总览
+  - article:
+    - 'link "IsoHC: Fixed-Vector Isometric Residual Mixing"':
+      - /url: /post/isohc-fixed-vector-isometric-residual-mixing
+      - generic: "01"
+    - generic: 最新
+    - link "AI Algorithms":
+      - /url: /categories/ai-algorithms
+    - link "IsoHC":
+      - /url: /tags/isohc
+    - link "Hyper-Connections":
+      - /url: /tags/hyper-connections
+    - 'link "IsoHC: Fixed-Vector Isometric Residual Mixing"':
+      - /url: /post/isohc-fixed-vector-isometric-residual-mixing
+      - 'heading "IsoHC: Fixed-Vector Isometric Residual Mixing" [level=3]'
+    - paragraph: IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.
+    - text: 2026年5月31日
+    - text: 4 分钟阅读
+    - text: 21 次阅读
+    - link "阅读全文":
+      - /url: /post/isohc-fixed-vector-isometric-residual-mixing
+      - text: 阅读全文
+  - complementary:
+    - heading "技术节点" [level=2]
+    - generic: 位置编码
+    - generic: RoPE
+    - generic: IsoHC
+    - generic: 稳定性
+    - generic: 长上下文
+    - generic: 扩展
+    - generic: 残差混合
+    - generic: 架构
+    - generic: 专题通过标签和系列文章表达。
+- button "AI 助手":
+  - generic: AI 助手

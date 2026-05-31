@@ -3,6 +3,7 @@ import { ArticleFeedback } from "@/components/ArticleFeedback";
 import { ResearchWaveVisual, SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
 import { SubscriptionForm } from "@/components/SubscriptionForm";
 import { Button } from "@/components/ui/button";
+import { trackConfigs } from "@/lib/tracks";
 import { trpc } from "@/lib/trpc";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
 import { buildArticleJsonLd, buildArticleMetadata, buildRouteMetadata } from "@shared/metadata";
@@ -36,6 +37,287 @@ function postVisualVariant(slug?: string) {
     return "matrix";
   }
   return slug?.includes("isohc") ? "orbit" : "wave";
+}
+
+type Translate = (key: string, vars?: Record<string, string | number>) => string;
+
+type ArticleTag = {
+  slug: string;
+  name: string;
+};
+
+type ArticleCategory = {
+  slug: string;
+  name: string;
+};
+
+type ArticlePostModel = {
+  id: number;
+  slug: string;
+  title: string;
+  content: string;
+  excerpt?: string | null;
+  seriesSlug?: string | null;
+  seriesTitle?: string | null;
+  seriesOrder?: number | null;
+  category?: ArticleCategory | null;
+  tags?: ArticleTag[];
+};
+
+type PostLink = {
+  slug: string;
+  title: string;
+};
+
+type PostContextModel = {
+  previous?: PostLink | null;
+  next?: PostLink | null;
+  related?: PostLink[] | null;
+};
+
+type ArticleHeading = {
+  id: string;
+  text: string;
+  level: number;
+};
+
+type ArticleEntryItem = {
+  key: string;
+  label: string;
+  value: string;
+  muted?: boolean;
+};
+
+type SeriesContext = {
+  title: string;
+  promise: string;
+  positionLabel: string;
+  previous?: PostLink;
+  next?: PostLink;
+  first?: PostLink;
+  isFirst: boolean;
+};
+
+const publicArticleTitlesBySlug: Record<string, string> = {
+  "agent-harness-engine-evaluating-tool-using-agents":
+    "Agent Harness Engine: Evaluating Tool-Using Agents",
+  "rag-evidence-packet-context-compiler": "Evidence Packet: Agentic RAG 的上下文编译接口",
+  "agent-loop-observable-tool-using-agents": "Agent Loop: 从 ReAct 模式到可观测运行时",
+  "isohc-fixed-vector-isometric-residual-mixing": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+};
+
+function buildArticleEntryItems(
+  post: ArticlePostModel,
+  headings: ArticleHeading[],
+  t: Translate
+): ArticleEntryItem[] {
+  const excerpt = cleanText(post.excerpt ?? "");
+  const boundary = extractSectionPreview(post.content, [
+    "problem boundary",
+    "design boundary",
+    "motivation",
+  ]);
+  const abstraction = buildMainAbstraction(post, headings);
+  const background = buildRequiredBackground(post.tags ?? []);
+  const implementation = buildImplementationMapping(post.content, headings, t);
+  const limitations = extractSectionPreview(post.content, [
+    "limits and boundaries",
+    "boundaries",
+    "evidence framing",
+    "failure modes",
+  ]);
+
+  return [
+    excerpt
+      ? { key: "core", label: t("post.entry.coreClaim"), value: truncateText(excerpt, 280) }
+      : null,
+    background
+      ? { key: "background", label: t("post.entry.background"), value: background }
+      : null,
+    boundary
+      ? { key: "boundary", label: t("post.entry.problemBoundary"), value: boundary }
+      : null,
+    abstraction
+      ? { key: "abstraction", label: t("post.entry.mainAbstraction"), value: abstraction }
+      : null,
+    implementation
+      ? { key: "implementation", label: t("post.entry.implementation"), value: implementation }
+      : null,
+    limitations
+      ? { key: "limitations", label: t("post.entry.limitations"), value: limitations }
+      : {
+          key: "limitations",
+          label: t("post.entry.limitations"),
+          value: t("post.entry.limitationsFallback"),
+          muted: true,
+        },
+  ].filter(Boolean) as ArticleEntryItem[];
+}
+
+function buildSeriesContext(
+  post: ArticlePostModel,
+  postContext: PostContextModel | undefined,
+  t: Translate
+): SeriesContext | null {
+  const candidates = Object.values(trackConfigs).flatMap((track) =>
+    track.series.filter((series) => series.postSlugs.includes(post.slug))
+  );
+  const match =
+    candidates.find((series) => series.slug === post.seriesSlug) ?? candidates[0];
+
+  if (!match) return null;
+
+  const seriesSlugs = match.postSlugs;
+  const currentIndex = seriesSlugs.indexOf(post.slug);
+  if (currentIndex < 0) return null;
+
+  const toPostLink = (slug: string): PostLink => ({
+    slug,
+    title: resolvePostTitle(slug, post, postContext),
+  });
+
+  return {
+    title: t(match.titleKey),
+    promise: t(match.promiseKey),
+    positionLabel: t("post.series.position", {
+      current: currentIndex + 1,
+      total: seriesSlugs.length,
+    }),
+    previous: seriesSlugs[currentIndex - 1] ? toPostLink(seriesSlugs[currentIndex - 1]) : undefined,
+    next: seriesSlugs[currentIndex + 1] ? toPostLink(seriesSlugs[currentIndex + 1]) : undefined,
+    first: seriesSlugs[0] ? toPostLink(seriesSlugs[0]) : undefined,
+    isFirst: currentIndex === 0,
+  };
+}
+
+function resolvePostTitle(
+  slug: string,
+  currentPost: ArticlePostModel,
+  postContext: PostContextModel | undefined
+) {
+  if (slug === currentPost.slug) return currentPost.title;
+  const contextLinks = [
+    postContext?.previous,
+    postContext?.next,
+    ...(postContext?.related ?? []),
+  ].filter(Boolean) as PostLink[];
+  return (
+    contextLinks.find((link) => link.slug === slug)?.title ??
+    publicArticleTitlesBySlug[slug] ??
+    slug.replace(/-/g, " ")
+  );
+}
+
+function buildMainAbstraction(post: ArticlePostModel, headings: ArticleHeading[]) {
+  const priorityTagSlugs = [
+    "agent-loop",
+    "harness-engine",
+    "context-compiler",
+    "agentic-rag",
+    "knowledge-base",
+    "isohc",
+    "residual-stability",
+    "rope",
+    "position-encoding",
+  ];
+  const primaryTag = priorityTagSlugs
+    .map((slug) => (post.tags ?? []).find((tag) => tag.slug === slug))
+    .find(Boolean);
+  const technicalHeading = headings.find((heading) => {
+    const normalized = normalizeText(stripHeadingPrefix(heading.text));
+    return (
+      heading.level <= 2 &&
+      !normalized.includes("boundary") &&
+      !normalized.includes("motivation") &&
+      !normalized.includes("references") &&
+      !normalized.includes("core takeaway")
+    );
+  });
+
+  const parts = [
+    primaryTag?.name,
+    technicalHeading ? stripHeadingPrefix(technicalHeading.text) : null,
+  ].filter(Boolean);
+
+  return parts.length ? parts.join(" · ") : "";
+}
+
+function buildRequiredBackground(tags: ArticleTag[]) {
+  const genericSlugs = new Set([
+    "agent-systems",
+    "transformer",
+    "evaluation",
+    "observability",
+    "ai",
+  ]);
+  const backgroundTags = tags
+    .filter((tag) => !genericSlugs.has(tag.slug))
+    .slice(0, 4)
+    .map((tag) => tag.name);
+
+  return backgroundTags.join(" · ");
+}
+
+function buildImplementationMapping(content: string, headings: ArticleHeading[], t: Translate) {
+  const signals: string[] = [];
+  if (/```/.test(content)) signals.push(t("post.entry.signalCode"));
+  if (/\n\|.+\|\n\|[-:\s|]+\|/.test(content)) signals.push(t("post.entry.signalTable"));
+  if (/\$\$|\\\(|\\\[/.test(content)) signals.push(t("post.entry.signalFormula"));
+  if (headings.some((heading) => /implementation|runtime stack|architecture|stack map/i.test(heading.text))) {
+    signals.push(t("post.entry.signalArchitecture"));
+  }
+  if (headings.some((heading) => /evaluation|evidence/i.test(heading.text))) {
+    signals.push(t("post.entry.signalEvaluation"));
+  }
+
+  return Array.from(new Set(signals)).slice(0, 4).join(" · ");
+}
+
+function extractSectionPreview(content: string, targetHeadings: string[]) {
+  const lines = content.split(/\r?\n/);
+  const targetSet = targetHeadings.map(normalizeText);
+
+  for (let index = 0; index < lines.length; index++) {
+    const headingMatch = /^(#{2,3})\s+(.+)$/.exec(lines[index]);
+    if (!headingMatch) continue;
+
+    const headingText = normalizeText(stripHeadingPrefix(headingMatch[2]));
+    if (!targetSet.some((target) => headingText.includes(target))) continue;
+
+    const bodyLines: string[] = [];
+    for (let bodyIndex = index + 1; bodyIndex < lines.length; bodyIndex++) {
+      if (/^#{1,3}\s+/.test(lines[bodyIndex])) break;
+      bodyLines.push(lines[bodyIndex]);
+    }
+
+    const preview = cleanText(bodyLines.join("\n"));
+    if (preview) return truncateText(preview, 260);
+  }
+
+  return "";
+}
+
+function stripHeadingPrefix(value: string) {
+  return value.replace(/^\s*\d+[\).\s-]+/, "").trim();
+}
+
+function cleanText(value: string) {
+  return value
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[*_`>#|-]/g, " ")
+    .replace(/\$\$/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizeText(value: string) {
+  return cleanText(value).toLowerCase();
+}
+
+function truncateText(value: string, maxLength: number) {
+  return value.length > maxLength ? `${value.slice(0, maxLength).trim()}...` : value;
 }
 
 export default function PostDetail() {
@@ -121,7 +403,21 @@ export default function PostDetail() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [headings]);
 
-  const handleShare = (platform: string) => {
+  const copyToClipboard = useCallback(
+    async (value: string, successMessage: string) => {
+      try {
+        await navigator.clipboard.writeText(value);
+        toast.success(successMessage);
+        return true;
+      } catch {
+        toast.error(t("common.clipboardUnavailable"));
+        return false;
+      }
+    },
+    [t]
+  );
+
+  const handleShare = async (platform: string) => {
     const url = window.location.href;
     const title = post?.title || "";
 
@@ -132,8 +428,7 @@ export default function PostDetail() {
     };
 
     if (platform === "copy") {
-      navigator.clipboard.writeText(url);
-      toast.success(t("post.linkCopied"));
+      await copyToClipboard(url, t("post.linkCopied"));
     } else if (platform === "wechat") {
       // Open QR code in new window for WeChat sharing
       window.open(shareUrls.wechat, "_blank", "width=400,height=400");
@@ -143,19 +438,18 @@ export default function PostDetail() {
     }
   };
 
-  const copyEmail = () => {
-    navigator.clipboard.writeText("zedpl28174@gmail.com");
-    toast.success(t("common.emailCopied"));
+  const copyEmail = async () => {
+    await copyToClipboard("zedpl28174@gmail.com", t("common.emailCopied"));
   };
 
   const copyCode = useCallback(
-    (code: string, id: string) => {
-      navigator.clipboard.writeText(code);
+    async (code: string, id: string) => {
+      const copied = await copyToClipboard(code, t("post.codeCopied"));
+      if (!copied) return;
       setCopiedCode(id);
-      toast.success(t("post.codeCopied"));
       setTimeout(() => setCopiedCode(null), 2000);
     },
-    [t]
+    [copyToClipboard, t]
   );
 
   // Calculate reading time
@@ -190,13 +484,16 @@ export default function PostDetail() {
     );
   }
 
-  const readingTime = calculateReadingTime(post.content || "");
-  const postTags = Array.isArray((post as any).tags) ? (post as any).tags : [];
-  const postCategory = (post as any).category;
+  const articlePost = post as ArticlePostModel;
+  const readingTime = calculateReadingTime(articlePost.content || "");
+  const postTags = Array.isArray(articlePost.tags) ? articlePost.tags : [];
+  const postCategory = articlePost.category;
   const continueTrackHref = postCategory?.slug === "ai-applications" ? "/applications" : "/algorithms";
   const continueTrackLabel = postCategory?.slug === "ai-applications"
     ? t("home.applicationsLabel")
     : t("home.algorithmsLabel");
+  const articleEntryItems = buildArticleEntryItems(articlePost, headings, t);
+  const seriesContext = buildSeriesContext(articlePost, postContext as PostContextModel | undefined, t);
 
   return (
     <div className="space-page text-foreground">
@@ -212,10 +509,10 @@ export default function PostDetail() {
       <div className="container relative z-10 max-w-7xl px-4 py-8 sm:px-6 md:py-12">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
           {/* Main Content */}
-          <article className="glass-panel max-w-4xl p-5 sm:p-8 lg:p-10">
+          <article className="glass-panel reading-surface max-w-4xl p-5 sm:p-8 lg:p-10">
             {/* Post Header */}
             <div className="mb-8">
-              <h1 className="display-title mb-5 text-4xl leading-tight text-white md:text-6xl">
+              <h1 className="article-page-title mb-5">
                 {post.title}
               </h1>
 
@@ -288,7 +585,68 @@ export default function PostDetail() {
                 </div>
               )}
 
-              <div className="flex flex-wrap gap-2">
+              {(articleEntryItems.length > 0 || seriesContext) && (
+                <section className="article-entry-layer" aria-labelledby="article-entry-title">
+                  <div className="article-entry-heading">
+                    <p className="article-entry-kicker">{t("post.entry.kicker")}</p>
+                    <h2 id="article-entry-title">{t("post.entry.title")}</h2>
+                  </div>
+
+                  {articleEntryItems.length > 0 && (
+                    <dl className="article-entry-grid">
+                      {articleEntryItems.map((item) => (
+                        <div
+                          key={item.key}
+                          className={item.muted ? "article-entry-item article-entry-item-muted" : "article-entry-item"}
+                        >
+                          <dt>{item.label}</dt>
+                          <dd>{item.value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  )}
+
+                  {seriesContext && (
+                    <div className="article-series-inline">
+                      <div className="min-w-0">
+                        <span className="article-series-label">{t("post.series.label")}</span>
+                        <p className="article-series-title">{seriesContext.title}</p>
+                        <p className="article-series-meta">
+                          {seriesContext.positionLabel}
+                          {seriesContext.promise ? ` · ${seriesContext.promise}` : ""}
+                        </p>
+                      </div>
+                      <div className="article-series-actions">
+                        {!seriesContext.isFirst && seriesContext.first && (
+                          <Link href={`/post/${seriesContext.first.slug}`} className="article-series-action">
+                            {t("post.series.start")}
+                          </Link>
+                        )}
+                        {seriesContext.previous && (
+                          <Link href={`/post/${seriesContext.previous.slug}`} className="article-series-action">
+                            <ArrowLeft className="h-3.5 w-3.5" />
+                            {t("post.series.previous")}
+                          </Link>
+                        )}
+                        {seriesContext.next ? (
+                          <Link href={`/post/${seriesContext.next.slug}`} className="article-series-action article-series-action-primary">
+                            {t("post.series.next")}
+                            <ArrowRight className="h-3.5 w-3.5" />
+                          </Link>
+                        ) : (
+                          <Link href={continueTrackHref} className="article-series-action">
+                            {t("post.series.track")}
+                            <ArrowRight className="h-3.5 w-3.5" />
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </section>
+              )}
+
+              <div className="article-secondary-actions" aria-label={t("post.share")}>
+                <span className="article-secondary-label">{t("post.share")}</span>
                 <Button
                   variant="outline"
                   size="sm"
@@ -342,7 +700,7 @@ export default function PostDetail() {
               <div className="mt-7">
                 <ResearchWaveVisual
                   variant={postVisualVariant(post.slug)}
-                  className="h-[150px] sm:h-[180px]"
+                  className="article-header-visual h-[120px] sm:h-[150px]"
                 />
               </div>
             </div>
@@ -405,6 +763,47 @@ export default function PostDetail() {
                   </Link>
                 </Button>
               </div>
+
+              {seriesContext && (seriesContext.previous || seriesContext.next) && (
+                <div className="article-series-footer mb-6">
+                  <div className="mb-4">
+                    <span className="article-series-label">{t("post.series.continuity")}</span>
+                    <p className="article-series-title">
+                      {seriesContext.title} · {seriesContext.positionLabel}
+                    </p>
+                  </div>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {seriesContext.previous && (
+                      <Link
+                        href={`/post/${seriesContext.previous.slug}`}
+                        className="article-series-footer-link"
+                      >
+                        <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
+                          <ArrowLeft className="h-3.5 w-3.5" />
+                          {t("post.series.previous")}
+                        </span>
+                        <span className="line-clamp-2 text-sm font-semibold leading-6 text-white">
+                          {seriesContext.previous.title}
+                        </span>
+                      </Link>
+                    )}
+                    {seriesContext.next && (
+                      <Link
+                        href={`/post/${seriesContext.next.slug}`}
+                        className="article-series-footer-link md:text-right"
+                      >
+                        <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400 md:justify-end">
+                          {t("post.series.next")}
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </span>
+                        <span className="line-clamp-2 text-sm font-semibold leading-6 text-white">
+                          {seriesContext.next.title}
+                        </span>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {(postContext?.previous || postContext?.next) && (
                 <div className="grid gap-3 md:grid-cols-2">
@@ -498,7 +897,7 @@ export default function PostDetail() {
 
           {/* Table of Contents */}
           <aside className="hidden lg:block">
-            <div className="glass-panel sticky top-24 p-5">
+            <div className="glass-panel toc-surface sticky top-24 p-5">
               <h3 className="section-title mb-4">
                 {t("post.toc")}
               </h3>

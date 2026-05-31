@@ -45,7 +45,7 @@ export function SpaceBackdrop({ subtle = false }: { subtle?: boolean }) {
     >
       <div className="space-grid" />
       <div className="space-stars" />
-      <div className="planet-horizon" />
+      {!subtle && <div className="planet-horizon" />}
     </div>
   );
 }
@@ -261,6 +261,7 @@ export function ResearchWaveVisual({
   return (
     <div
       className={cn("research-visual", `research-visual-${variant}`, className)}
+      aria-hidden="true"
     >
       <div className="visual-grid" />
       <svg viewBox="0 0 640 300" aria-hidden="true" focusable="false">

@@ -44,6 +44,10 @@ const common: TranslationDict = {
 
   // Email
   "common.emailCopied": { en: "Email copied", zh: "邮箱已复制" },
+  "common.clipboardUnavailable": {
+    en: "Clipboard permission is unavailable. Please copy manually.",
+    zh: "浏览器暂时无法写入剪贴板，请手动复制。",
+  },
 
   // Error boundary
   "common.errorBoundary.title": {
@@ -84,8 +88,8 @@ const common: TranslationDict = {
     zh: "接收后续笔记",
   },
   "engagement.subscribe.description": {
-    en: "Leave an email to get occasional article updates. RSS stays available if you prefer a reader.",
-    zh: "留下邮箱接收不定期文章更新；如果你更喜欢阅读器，也可以直接使用 RSS。",
+    en: "Leave an email and topic preference for future updates. Email delivery is not automated yet; RSS is available now.",
+    zh: "留下邮箱和主题偏好，供后续更新使用。当前邮件发送尚未自动化；现在可以直接使用 RSS。",
   },
   "engagement.subscribe.rss": { en: "RSS", zh: "RSS" },
   "engagement.subscribe.emailPlaceholder": {
@@ -124,8 +128,8 @@ const common: TranslationDict = {
     zh: "你已在列表中，偏好已刷新。",
   },
   "engagement.subscribe.privacy": {
-    en: "Only email and optional topics are stored.",
-    zh: "仅保存邮箱和可选主题偏好。",
+    en: "Only email and optional topics are stored. No delivery provider is connected yet.",
+    zh: "仅保存邮箱和可选主题偏好；当前尚未接入邮件发送服务。",
   },
   "engagement.feedback.title": {
     en: "Was this useful?",

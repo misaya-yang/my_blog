@@ -1,0 +1,22 @@
+[
+  {
+    "route": "agent-loop-observable-tool-using-agents",
+    "viewport": "desktop",
+    "status": "captured"
+  },
+  {
+    "route": "isohc-fixed-vector-isometric-residual-mixing",
+    "viewport": "desktop",
+    "status": "captured"
+  },
+  {
+    "route": "agent-loop-observable-tool-using-agents",
+    "viewport": "mobile",
+    "status": "captured"
+  },
+  {
+    "route": "isohc-fixed-vector-isometric-residual-mixing",
+    "viewport": "mobile",
+    "status": "captured"
+  }
+]

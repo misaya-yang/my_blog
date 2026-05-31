@@ -1,0 +1,5665 @@
+{
+  "checkedAt": "2026-05-31T06:21:03.722Z",
+  "baseUrl": "http://localhost:3000",
+  "routes": [
+    {
+      "route": "/",
+      "routeLabel": "home",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "ready": {
+        "h1": "AI 算法与应用系统",
+        "hasMain": true,
+        "pathname": "/",
+        "skeletons": 0,
+        "textLength": 2106,
+        "title": "AI 算法与应用系统 · AI Tech Blog"
+      },
+      "metrics": {
+        "aboveFoldHeadings": [
+          {
+            "tag": "H1",
+            "text": "AI 算法与应用系统",
+            "top": 195
+          },
+          {
+            "tag": "H2",
+            "text": "AI 算法研究",
+            "top": 530
+          },
+          {
+            "tag": "H2",
+            "text": "AI 应用工程",
+            "top": 786
+          }
+        ],
+        "articleCardCount": 4,
+        "clientWidth": 390,
+        "firstViewportText": "RoPE · 长上下文 · Agent 评测 AI 算法与应用系统 记录模型机制与 AI 应用工程：长上下文、Agent、RAG、Context Engine 与评测 Harness。 MY Misaya Yang AI 系统研究笔记 AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读全文 AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 篇公开笔记 阅读全文 进行中的系列 研究地图 AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构 AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文 AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性 AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测 搜索 归档 AI 算法 AI 应用 订阅更新 留下邮箱接收不定期文章更新；如果你更喜欢阅读器，也可以直接使用 RSS。 订阅 接收语言 中文 EN 仅保存邮箱和可选主题偏好。 4 文章 2 分类 40 阅读量 关于我 聚焦模型机制、长上下文行为、Agent 基础设施，以及可靠 AI 应用系统。 研究方向 Transformer 架构 大语言模型 (LLM) 位置编码 RoPE 近期关注 • 频域视角下的位置编码与外推能力 • 大模型高效训练与推理优化 热门标签 Agent Systems Agentic RAG AgentLoop Context Compiler Context Engineering Evaluation Fine-tuning GNN 最新文章 01 最新 AI Applications Agent Systems AgentLoop Agen",
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/login",
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": "打开导航",
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "打开导航"
+          },
+          {
+            "ariaLabel": "Google Scholar",
+            "href": "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Google Scholar"
+          },
+          {
+            "ariaLabel": "邮箱",
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "邮箱"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 "
+          },
+          {
+            "ariaLabel": null,
+            "href": "#research-index",
+            "placeholder": null,
+            "tag": "a",
+            "text": "研究地图"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engin"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": "搜索文章、关键词、主题...",
+            "tag": "input",
+            "text": "搜索文章、关键词、主题..."
+          },
+          {
+            "ariaLabel": null,
+            "href": "/search",
+            "placeholder": null,
+            "tag": "a",
+            "text": "搜索"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/archive",
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用"
+          },
+          {
+            "ariaLabel": "RSS",
+            "href": "/rss.xml",
+            "placeholder": null,
+            "tag": "a",
+            "text": "RSS"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": "you@example.com",
+            "tag": "input",
+            "text": "you@example.com"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "订阅"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": "可选主题：RoPE、Agent、RAG...",
+            "tag": "input",
+            "text": "可选主题：RoPE、Agent、RAG..."
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "中文"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agentic-rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-loop",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Compiler"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/context-engineering",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/evaluation",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evaluation"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/fine-tuning",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Fine-tuning"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/gnn",
+            "placeholder": null,
+            "tag": "a",
+            "text": "GNN"
+          },
+          {
+            "ariaLabel": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "01"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          }
+        ],
+        "h1": "AI 算法与应用系统",
+        "h2s": [
+          "AI 算法研究",
+          "AI 应用工程",
+          "进行中的系列",
+          "订阅更新",
+          "关于我",
+          "热门标签",
+          "最新文章",
+          "研究索引"
+        ],
+        "horizontalOverflow": false,
+        "linkSample": [
+          {
+            "href": "/",
+            "text": "AI Tech Blog"
+          },
+          {
+            "href": "/",
+            "text": "首页"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/about",
+            "text": "关于"
+          },
+          {
+            "href": "/login",
+            "text": "登录"
+          },
+          {
+            "href": "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
+            "text": "Google Scholar"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读全文"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 篇公开笔记 阅读全文"
+          },
+          {
+            "href": "#research-index",
+            "text": "研究地图"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测"
+          },
+          {
+            "href": "/search",
+            "text": "搜索"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/categories/ai-algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/rss.xml",
+            "text": "RSS"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agentic-rag",
+            "text": "Agentic RAG"
+          },
+          {
+            "href": "/tags/agent-loop",
+            "text": "AgentLoop"
+          },
+          {
+            "href": "/tags/context-compiler",
+            "text": "Context Compiler"
+          },
+          {
+            "href": "/tags/context-engineering",
+            "text": "Context Engineering"
+          },
+          {
+            "href": "/tags/evaluation",
+            "text": "Evaluation"
+          },
+          {
+            "href": "/tags/fine-tuning",
+            "text": "Fine-tuning"
+          },
+          {
+            "href": "/tags/gnn",
+            "text": "GNN"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "01"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agent-loop",
+            "text": "AgentLoop"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "02"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agentic-rag",
+            "text": "Agentic RAG"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "03"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/harness-engine",
+            "text": "Harness Engine"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "04"
+          },
+          {
+            "href": "/categories/ai-algorithms",
+            "text": "AI Algorithms"
+          },
+          {
+            "href": "/tags/isohc",
+            "text": "IsoHC"
+          },
+          {
+            "href": "/tags/hyper-connections",
+            "text": "Hyper-Connections"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 模型"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 系统"
+          },
+          {
+            "href": "/tags/harness-engine",
+            "text": "Agent Harness 评测"
+          }
+        ],
+        "pathname": "/",
+        "routeLinkCoverage": {
+          "algorithms": true,
+          "applications": true,
+          "archive": true,
+          "category": true,
+          "search": true,
+          "tag": true
+        },
+        "scrollWidth": 390,
+        "searchFormCount": 3,
+        "seriesCardCount": 4,
+        "skeletonCount": 0,
+        "title": "AI 算法与应用系统 · AI Tech Blog",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/",
+      "routeLabel": "home",
+      "viewport": {
+        "name": "tablet",
+        "width": 768,
+        "height": 1024
+      },
+      "ready": {
+        "h1": "AI 算法与应用系统",
+        "hasMain": true,
+        "pathname": "/",
+        "skeletons": 0,
+        "textLength": 2120,
+        "title": "AI 算法与应用系统 · AI Tech Blog"
+      },
+      "metrics": {
+        "aboveFoldHeadings": [
+          {
+            "tag": "H1",
+            "text": "AI 算法与应用系统",
+            "top": 219
+          },
+          {
+            "tag": "H2",
+            "text": "AI 算法研究",
+            "top": 584
+          },
+          {
+            "tag": "H2",
+            "text": "AI 应用工程",
+            "top": 584
+          },
+          {
+            "tag": "H2",
+            "text": "进行中的系列",
+            "top": 806
+          },
+          {
+            "tag": "H3",
+            "text": "Residual Stability",
+            "top": 886
+          },
+          {
+            "tag": "H3",
+            "text": "Long Context and Position Encoding",
+            "top": 886
+          }
+        ],
+        "articleCardCount": 4,
+        "clientWidth": 768,
+        "firstViewportText": "RoPE · 长上下文 · Agent 评测 AI 算法与应用系统 记录模型机制与 AI 应用工程：长上下文、Agent、RAG、Context Engine 与评测 Harness。 MY Misaya Yang AI 系统研究笔记 AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读全文 AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 篇公开笔记 阅读全文 进行中的系列 研究地图 AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构 AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文 AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性 AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测 搜索 搜索 归档 AI 算法 AI 应用 订阅更新 留下邮箱接收不定期文章更新；如果你更喜欢阅读器，也可以直接使用 RSS。 RSS 订阅 接收语言 中文 EN 仅保存邮箱和可选主题偏好。 4 文章 2 分类 40 阅读量 关于我 聚焦模型机制、长上下文行为、Agent 基础设施，以及可靠 AI 应用系统。 研究方向 Transformer 架构 大语言模型 (LLM) 位置编码 RoPE 近期关注 • 频域视角下的位置编码与外推能力 • 大模型高效训练与推理优化 热门标签 Agent Systems Agentic RAG AgentLoop Context Compiler Context Engineering Evaluation Fine-tuning GNN 最新文章 01 最新 AI Applications Agent Systems AgentLo",
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/login",
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": "打开导航",
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "打开导航"
+          },
+          {
+            "ariaLabel": "Google Scholar",
+            "href": "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Google Scholar"
+          },
+          {
+            "ariaLabel": "邮箱",
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "邮箱"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 "
+          },
+          {
+            "ariaLabel": null,
+            "href": "#research-index",
+            "placeholder": null,
+            "tag": "a",
+            "text": "研究地图"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engin"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": "搜索文章、关键词、主题...",
+            "tag": "input",
+            "text": "搜索文章、关键词、主题..."
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "搜索"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/search",
+            "placeholder": null,
+            "tag": "a",
+            "text": "搜索"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/archive",
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用"
+          },
+          {
+            "ariaLabel": "RSS",
+            "href": "/rss.xml",
+            "placeholder": null,
+            "tag": "a",
+            "text": "RSS"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": "you@example.com",
+            "tag": "input",
+            "text": "you@example.com"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "订阅"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": "可选主题：RoPE、Agent、RAG...",
+            "tag": "input",
+            "text": "可选主题：RoPE、Agent、RAG..."
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "中文"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agentic-rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-loop",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Compiler"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/context-engineering",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/evaluation",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evaluation"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/fine-tuning",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Fine-tuning"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/gnn",
+            "placeholder": null,
+            "tag": "a",
+            "text": "GNN"
+          },
+          {
+            "ariaLabel": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "01"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          }
+        ],
+        "h1": "AI 算法与应用系统",
+        "h2s": [
+          "AI 算法研究",
+          "AI 应用工程",
+          "进行中的系列",
+          "订阅更新",
+          "关于我",
+          "热门标签",
+          "最新文章",
+          "研究索引"
+        ],
+        "horizontalOverflow": false,
+        "linkSample": [
+          {
+            "href": "/",
+            "text": "AI Tech Blog"
+          },
+          {
+            "href": "/",
+            "text": "首页"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/about",
+            "text": "关于"
+          },
+          {
+            "href": "/login",
+            "text": "登录"
+          },
+          {
+            "href": "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
+            "text": "Google Scholar"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读全文"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 篇公开笔记 阅读全文"
+          },
+          {
+            "href": "#research-index",
+            "text": "研究地图"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测"
+          },
+          {
+            "href": "/search",
+            "text": "搜索"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/categories/ai-algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/rss.xml",
+            "text": "RSS"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agentic-rag",
+            "text": "Agentic RAG"
+          },
+          {
+            "href": "/tags/agent-loop",
+            "text": "AgentLoop"
+          },
+          {
+            "href": "/tags/context-compiler",
+            "text": "Context Compiler"
+          },
+          {
+            "href": "/tags/context-engineering",
+            "text": "Context Engineering"
+          },
+          {
+            "href": "/tags/evaluation",
+            "text": "Evaluation"
+          },
+          {
+            "href": "/tags/fine-tuning",
+            "text": "Fine-tuning"
+          },
+          {
+            "href": "/tags/gnn",
+            "text": "GNN"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "01"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agent-loop",
+            "text": "AgentLoop"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "02"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agentic-rag",
+            "text": "Agentic RAG"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "03"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/harness-engine",
+            "text": "Harness Engine"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "04"
+          },
+          {
+            "href": "/categories/ai-algorithms",
+            "text": "AI Algorithms"
+          },
+          {
+            "href": "/tags/isohc",
+            "text": "IsoHC"
+          },
+          {
+            "href": "/tags/hyper-connections",
+            "text": "Hyper-Connections"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 模型"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 系统"
+          },
+          {
+            "href": "/tags/harness-engine",
+            "text": "Agent Harness 评测"
+          }
+        ],
+        "pathname": "/",
+        "routeLinkCoverage": {
+          "algorithms": true,
+          "applications": true,
+          "archive": true,
+          "category": true,
+          "search": true,
+          "tag": true
+        },
+        "scrollWidth": 768,
+        "searchFormCount": 3,
+        "seriesCardCount": 4,
+        "skeletonCount": 0,
+        "title": "AI 算法与应用系统 · AI Tech Blog",
+        "viewport": {
+          "height": 1024,
+          "width": 768
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/",
+      "routeLabel": "home",
+      "viewport": {
+        "name": "desktop",
+        "width": 1280,
+        "height": 800
+      },
+      "ready": {
+        "h1": "AI 算法与应用系统",
+        "hasMain": true,
+        "pathname": "/",
+        "skeletons": 0,
+        "textLength": 2141,
+        "title": "AI 算法与应用系统 · AI Tech Blog"
+      },
+      "metrics": {
+        "aboveFoldHeadings": [
+          {
+            "tag": "H1",
+            "text": "AI 算法与应用系统",
+            "top": 219
+          },
+          {
+            "tag": "H2",
+            "text": "AI 算法研究",
+            "top": 596
+          },
+          {
+            "tag": "H2",
+            "text": "AI 应用工程",
+            "top": 596
+          },
+          {
+            "tag": "H2",
+            "text": "关于我",
+            "top": 178
+          },
+          {
+            "tag": "H3",
+            "text": "研究方向",
+            "top": 306
+          },
+          {
+            "tag": "H3",
+            "text": "近期关注",
+            "top": 438
+          },
+          {
+            "tag": "H2",
+            "text": "热门标签",
+            "top": 600
+          }
+        ],
+        "articleCardCount": 4,
+        "clientWidth": 1280,
+        "firstViewportText": "RoPE · 长上下文 · Agent 评测 AI 算法与应用系统 记录模型机制与 AI 应用工程：长上下文、Agent、RAG、Context Engine 与评测 Harness。 MY Misaya Yang AI 系统研究笔记 AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读全文 AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 篇公开笔记 阅读全文 进行中的系列 研究地图 AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构 AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文 AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性 AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测 搜索 搜索 归档 AI 算法 AI 应用 订阅更新 留下邮箱接收不定期文章更新；如果你更喜欢阅读器，也可以直接使用 RSS。 RSS 订阅 接收语言 中文 EN 仅保存邮箱和可选主题偏好。 4 文章 2 分类 40 阅读量 关于我 聚焦模型机制、长上下文行为、Agent 基础设施，以及可靠 AI 应用系统。 研究方向 Transformer 架构 大语言模型 (LLM) 位置编码 RoPE 近期关注 • 频域视角下的位置编码与外推能力 • 大模型高效训练与推理优化 热门标签 Agent Systems Agentic RAG AgentLoop Context Compiler Context Engineering Evaluation Fine-tuning GNN 最新文章 01 最新 AI Applications Agent Systems AgentLo",
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "首页"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/archive",
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/about",
+            "placeholder": null,
+            "tag": "a",
+            "text": "关于"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/login",
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": "Google Scholar",
+            "href": "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Google Scholar"
+          },
+          {
+            "ariaLabel": "邮箱",
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "邮箱"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 "
+          },
+          {
+            "ariaLabel": null,
+            "href": "#research-index",
+            "placeholder": null,
+            "tag": "a",
+            "text": "研究地图"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engin"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": "搜索文章、关键词、主题...",
+            "tag": "input",
+            "text": "搜索文章、关键词、主题..."
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "搜索"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/search",
+            "placeholder": null,
+            "tag": "a",
+            "text": "搜索"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/archive",
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用"
+          },
+          {
+            "ariaLabel": "RSS",
+            "href": "/rss.xml",
+            "placeholder": null,
+            "tag": "a",
+            "text": "RSS"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": "you@example.com",
+            "tag": "input",
+            "text": "you@example.com"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "订阅"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": "可选主题：RoPE、Agent、RAG...",
+            "tag": "input",
+            "text": "可选主题：RoPE、Agent、RAG..."
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "中文"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agentic-rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-loop",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Compiler"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/context-engineering",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/evaluation",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evaluation"
+          }
+        ],
+        "h1": "AI 算法与应用系统",
+        "h2s": [
+          "AI 算法研究",
+          "AI 应用工程",
+          "进行中的系列",
+          "订阅更新",
+          "关于我",
+          "热门标签",
+          "最新文章",
+          "研究索引"
+        ],
+        "horizontalOverflow": false,
+        "linkSample": [
+          {
+            "href": "/",
+            "text": "AI Tech Blog"
+          },
+          {
+            "href": "/",
+            "text": "首页"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/about",
+            "text": "关于"
+          },
+          {
+            "href": "/login",
+            "text": "登录"
+          },
+          {
+            "href": "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
+            "text": "Google Scholar"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读全文"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 篇公开笔记 阅读全文"
+          },
+          {
+            "href": "#research-index",
+            "text": "研究地图"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测"
+          },
+          {
+            "href": "/search",
+            "text": "搜索"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/categories/ai-algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/rss.xml",
+            "text": "RSS"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agentic-rag",
+            "text": "Agentic RAG"
+          },
+          {
+            "href": "/tags/agent-loop",
+            "text": "AgentLoop"
+          },
+          {
+            "href": "/tags/context-compiler",
+            "text": "Context Compiler"
+          },
+          {
+            "href": "/tags/context-engineering",
+            "text": "Context Engineering"
+          },
+          {
+            "href": "/tags/evaluation",
+            "text": "Evaluation"
+          },
+          {
+            "href": "/tags/fine-tuning",
+            "text": "Fine-tuning"
+          },
+          {
+            "href": "/tags/gnn",
+            "text": "GNN"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "01"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agent-loop",
+            "text": "AgentLoop"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "02"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agentic-rag",
+            "text": "Agentic RAG"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "03"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/harness-engine",
+            "text": "Harness Engine"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "04"
+          },
+          {
+            "href": "/categories/ai-algorithms",
+            "text": "AI Algorithms"
+          },
+          {
+            "href": "/tags/isohc",
+            "text": "IsoHC"
+          },
+          {
+            "href": "/tags/hyper-connections",
+            "text": "Hyper-Connections"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 模型"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 系统"
+          },
+          {
+            "href": "/tags/harness-engine",
+            "text": "Agent Harness 评测"
+          }
+        ],
+        "pathname": "/",
+        "routeLinkCoverage": {
+          "algorithms": true,
+          "applications": true,
+          "archive": true,
+          "category": true,
+          "search": true,
+          "tag": true
+        },
+        "scrollWidth": 1280,
+        "searchFormCount": 3,
+        "seriesCardCount": 4,
+        "skeletonCount": 0,
+        "title": "AI 算法与应用系统 · AI Tech Blog",
+        "viewport": {
+          "height": 800,
+          "width": 1280
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/",
+      "routeLabel": "home",
+      "viewport": {
+        "name": "wide",
+        "width": 1440,
+        "height": 900
+      },
+      "ready": {
+        "h1": "AI 算法与应用系统",
+        "hasMain": true,
+        "pathname": "/",
+        "skeletons": 0,
+        "textLength": 2141,
+        "title": "AI 算法与应用系统 · AI Tech Blog"
+      },
+      "metrics": {
+        "aboveFoldHeadings": [
+          {
+            "tag": "H1",
+            "text": "AI 算法与应用系统",
+            "top": 219
+          },
+          {
+            "tag": "H2",
+            "text": "AI 算法研究",
+            "top": 596
+          },
+          {
+            "tag": "H2",
+            "text": "AI 应用工程",
+            "top": 596
+          },
+          {
+            "tag": "H2",
+            "text": "进行中的系列",
+            "top": 818
+          },
+          {
+            "tag": "H3",
+            "text": "Residual Stability",
+            "top": 899
+          },
+          {
+            "tag": "H3",
+            "text": "Long Context and Position Encoding",
+            "top": 899
+          },
+          {
+            "tag": "H3",
+            "text": "Agent Runtime Systems",
+            "top": 899
+          },
+          {
+            "tag": "H2",
+            "text": "关于我",
+            "top": 178
+          },
+          {
+            "tag": "H3",
+            "text": "研究方向",
+            "top": 306
+          },
+          {
+            "tag": "H3",
+            "text": "近期关注",
+            "top": 438
+          },
+          {
+            "tag": "H2",
+            "text": "热门标签",
+            "top": 600
+          }
+        ],
+        "articleCardCount": 4,
+        "clientWidth": 1440,
+        "firstViewportText": "RoPE · 长上下文 · Agent 评测 AI 算法与应用系统 记录模型机制与 AI 应用工程：长上下文、Agent、RAG、Context Engine 与评测 Harness。 MY Misaya Yang AI 系统研究笔记 AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读全文 AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 篇公开笔记 阅读全文 进行中的系列 研究地图 AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构 AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文 AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性 AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测 搜索 搜索 归档 AI 算法 AI 应用 订阅更新 留下邮箱接收不定期文章更新；如果你更喜欢阅读器，也可以直接使用 RSS。 RSS 订阅 接收语言 中文 EN 仅保存邮箱和可选主题偏好。 4 文章 2 分类 40 阅读量 关于我 聚焦模型机制、长上下文行为、Agent 基础设施，以及可靠 AI 应用系统。 研究方向 Transformer 架构 大语言模型 (LLM) 位置编码 RoPE 近期关注 • 频域视角下的位置编码与外推能力 • 大模型高效训练与推理优化 热门标签 Agent Systems Agentic RAG AgentLoop Context Compiler Context Engineering Evaluation Fine-tuning GNN 最新文章 01 最新 AI Applications Agent Systems AgentLo",
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "首页"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/archive",
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/about",
+            "placeholder": null,
+            "tag": "a",
+            "text": "关于"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/login",
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": "Google Scholar",
+            "href": "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Google Scholar"
+          },
+          {
+            "ariaLabel": "邮箱",
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "邮箱"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 "
+          },
+          {
+            "ariaLabel": null,
+            "href": "#research-index",
+            "placeholder": null,
+            "tag": "a",
+            "text": "研究地图"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engin"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": "搜索文章、关键词、主题...",
+            "tag": "input",
+            "text": "搜索文章、关键词、主题..."
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "搜索"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/search",
+            "placeholder": null,
+            "tag": "a",
+            "text": "搜索"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/archive",
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用"
+          },
+          {
+            "ariaLabel": "RSS",
+            "href": "/rss.xml",
+            "placeholder": null,
+            "tag": "a",
+            "text": "RSS"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": "you@example.com",
+            "tag": "input",
+            "text": "you@example.com"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "订阅"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": "可选主题：RoPE、Agent、RAG...",
+            "tag": "input",
+            "text": "可选主题：RoPE、Agent、RAG..."
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "中文"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agentic-rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-loop",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Compiler"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/context-engineering",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/evaluation",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evaluation"
+          }
+        ],
+        "h1": "AI 算法与应用系统",
+        "h2s": [
+          "AI 算法研究",
+          "AI 应用工程",
+          "进行中的系列",
+          "订阅更新",
+          "关于我",
+          "热门标签",
+          "最新文章",
+          "研究索引"
+        ],
+        "horizontalOverflow": false,
+        "linkSample": [
+          {
+            "href": "/",
+            "text": "AI Tech Blog"
+          },
+          {
+            "href": "/",
+            "text": "首页"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/about",
+            "text": "关于"
+          },
+          {
+            "href": "/login",
+            "text": "登录"
+          },
+          {
+            "href": "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
+            "text": "Google Scholar"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读全文"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 篇公开笔记 阅读全文"
+          },
+          {
+            "href": "#research-index",
+            "text": "研究地图"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测"
+          },
+          {
+            "href": "/search",
+            "text": "搜索"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/categories/ai-algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/rss.xml",
+            "text": "RSS"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agentic-rag",
+            "text": "Agentic RAG"
+          },
+          {
+            "href": "/tags/agent-loop",
+            "text": "AgentLoop"
+          },
+          {
+            "href": "/tags/context-compiler",
+            "text": "Context Compiler"
+          },
+          {
+            "href": "/tags/context-engineering",
+            "text": "Context Engineering"
+          },
+          {
+            "href": "/tags/evaluation",
+            "text": "Evaluation"
+          },
+          {
+            "href": "/tags/fine-tuning",
+            "text": "Fine-tuning"
+          },
+          {
+            "href": "/tags/gnn",
+            "text": "GNN"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "01"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agent-loop",
+            "text": "AgentLoop"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "02"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agentic-rag",
+            "text": "Agentic RAG"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "03"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/harness-engine",
+            "text": "Harness Engine"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "04"
+          },
+          {
+            "href": "/categories/ai-algorithms",
+            "text": "AI Algorithms"
+          },
+          {
+            "href": "/tags/isohc",
+            "text": "IsoHC"
+          },
+          {
+            "href": "/tags/hyper-connections",
+            "text": "Hyper-Connections"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法 模型"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用 系统"
+          },
+          {
+            "href": "/tags/harness-engine",
+            "text": "Agent Harness 评测"
+          }
+        ],
+        "pathname": "/",
+        "routeLinkCoverage": {
+          "algorithms": true,
+          "applications": true,
+          "archive": true,
+          "category": true,
+          "search": true,
+          "tag": true
+        },
+        "scrollWidth": 1440,
+        "searchFormCount": 3,
+        "seriesCardCount": 4,
+        "skeletonCount": 0,
+        "title": "AI 算法与应用系统 · AI Tech Blog",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/algorithms",
+      "routeLabel": "algorithms",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "ready": {
+        "h1": "AI 算法研究",
+        "hasMain": true,
+        "pathname": "/algorithms",
+        "skeletons": 0,
+        "textLength": 869,
+        "title": "AI 算法研究 · AI Tech Blog"
+      },
+      "metrics": {
+        "aboveFoldHeadings": [
+          {
+            "tag": "H1",
+            "text": "AI 算法研究",
+            "top": 167
+          },
+          {
+            "tag": "H2",
+            "text": "Residual Stability",
+            "top": 476
+          }
+        ],
+        "articleCardCount": 1,
+        "clientWidth": 390,
+        "firstViewportText": "算法索引 AI 算法研究 围绕模型架构、位置编码、长上下文行为与残差稳定性展开研究记录。 沿着不变量阅读：保留什么量、由哪个投影约束、架构在哪里为稳定性付出代价。 阅读路径 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构 01 IsoHC: Fixed-Vector Isometric Residual Mixing 后续计划 Residual diagnostics Orthogonal constraints 阅读路径 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文 还没有公开文章接入；先保留规划路径。 后续计划 RoPE spectral budget Extrapolation failures 1 文章 4 专题 / 技术地图 21 阅读量 算法索引 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 Transformer 架构 大语言模型 (LLM) 位置编码 RoPE 技术文章 返回总览 01 最新 AI Algorithms IsoHC Hyper-Connections IsoHC: Fixed-Vector Isometric Residual Mixing IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures. 2026年5月31日 4 分钟阅读 21 次阅读 阅读全文 技术节点 位置编码 RoPE IsoHC 稳定性 长上下文 扩展 残差混合 架构 专题通过标签和系列文章表达。",
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/login",
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": "打开导航",
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "打开导航"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "placeholder": null,
+            "tag": "a",
+            "text": "01 IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "返回总览"
+          },
+          {
+            "ariaLabel": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "placeholder": null,
+            "tag": "a",
+            "text": "01"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Algorithms"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/isohc",
+            "placeholder": null,
+            "tag": "a",
+            "text": "IsoHC"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/hyper-connections",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Hyper-Connections"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "placeholder": null,
+            "tag": "a",
+            "text": "IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文"
+          },
+          {
+            "ariaLabel": "AI 助手",
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "AI 助手"
+          }
+        ],
+        "h1": "AI 算法研究",
+        "h2s": [
+          "Residual Stability",
+          "Long Context and Position Encoding",
+          "算法索引",
+          "技术文章",
+          "技术节点"
+        ],
+        "horizontalOverflow": false,
+        "linkSample": [
+          {
+            "href": "/",
+            "text": "AI Tech Blog"
+          },
+          {
+            "href": "/",
+            "text": "首页"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/about",
+            "text": "关于"
+          },
+          {
+            "href": "/login",
+            "text": "登录"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "01 IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "href": "/",
+            "text": "返回总览"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "01"
+          },
+          {
+            "href": "/categories/ai-algorithms",
+            "text": "AI Algorithms"
+          },
+          {
+            "href": "/tags/isohc",
+            "text": "IsoHC"
+          },
+          {
+            "href": "/tags/hyper-connections",
+            "text": "Hyper-Connections"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "阅读全文"
+          }
+        ],
+        "pathname": "/algorithms",
+        "routeLinkCoverage": {
+          "algorithms": true,
+          "applications": true,
+          "archive": true,
+          "category": true,
+          "search": false,
+          "tag": true
+        },
+        "scrollWidth": 390,
+        "searchFormCount": 0,
+        "seriesCardCount": 2,
+        "skeletonCount": 0,
+        "title": "AI 算法研究 · AI Tech Blog",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/algorithms",
+      "routeLabel": "algorithms",
+      "viewport": {
+        "name": "desktop",
+        "width": 1280,
+        "height": 800
+      },
+      "ready": {
+        "h1": "AI 算法研究",
+        "hasMain": true,
+        "pathname": "/algorithms",
+        "skeletons": 0,
+        "textLength": 896,
+        "title": "AI 算法研究 · AI Tech Blog"
+      },
+      "metrics": {
+        "aboveFoldHeadings": [
+          {
+            "tag": "H1",
+            "text": "AI 算法研究",
+            "top": 191
+          },
+          {
+            "tag": "H2",
+            "text": "Residual Stability",
+            "top": 481
+          },
+          {
+            "tag": "H2",
+            "text": "Long Context and Position Encoding",
+            "top": 481
+          },
+          {
+            "tag": "H2",
+            "text": "算法索引",
+            "top": 170
+          }
+        ],
+        "articleCardCount": 1,
+        "clientWidth": 1280,
+        "firstViewportText": "算法索引 AI 算法研究 围绕模型架构、位置编码、长上下文行为与残差稳定性展开研究记录。 沿着不变量阅读：保留什么量、由哪个投影约束、架构在哪里为稳定性付出代价。 阅读路径 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构 01 IsoHC: Fixed-Vector Isometric Residual Mixing 后续计划 Residual diagnostics Orthogonal constraints 阅读路径 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文 还没有公开文章接入；先保留规划路径。 后续计划 RoPE spectral budget Extrapolation failures 1 文章 4 专题 / 技术地图 21 阅读量 算法索引 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 Transformer 架构 大语言模型 (LLM) 位置编码 RoPE 技术文章 返回总览 01 最新 AI Algorithms IsoHC Hyper-Connections IsoHC: Fixed-Vector Isometric Residual Mixing IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures. 2026年5月31日 4 分钟阅读 21 次阅读 阅读全文 技术节点 位置编码 RoPE IsoHC 稳定性 长上下文 扩展 残差混合 架构 专题通过标签和系列文章表达。",
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "首页"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/archive",
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/about",
+            "placeholder": null,
+            "tag": "a",
+            "text": "关于"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/login",
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "placeholder": null,
+            "tag": "a",
+            "text": "01 IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "返回总览"
+          },
+          {
+            "ariaLabel": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "placeholder": null,
+            "tag": "a",
+            "text": "01"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Algorithms"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/isohc",
+            "placeholder": null,
+            "tag": "a",
+            "text": "IsoHC"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/hyper-connections",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Hyper-Connections"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "placeholder": null,
+            "tag": "a",
+            "text": "IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文"
+          },
+          {
+            "ariaLabel": "AI 助手",
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "AI 助手"
+          }
+        ],
+        "h1": "AI 算法研究",
+        "h2s": [
+          "Residual Stability",
+          "Long Context and Position Encoding",
+          "算法索引",
+          "技术文章",
+          "技术节点"
+        ],
+        "horizontalOverflow": false,
+        "linkSample": [
+          {
+            "href": "/",
+            "text": "AI Tech Blog"
+          },
+          {
+            "href": "/",
+            "text": "首页"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/about",
+            "text": "关于"
+          },
+          {
+            "href": "/login",
+            "text": "登录"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "01 IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "href": "/",
+            "text": "返回总览"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "01"
+          },
+          {
+            "href": "/categories/ai-algorithms",
+            "text": "AI Algorithms"
+          },
+          {
+            "href": "/tags/isohc",
+            "text": "IsoHC"
+          },
+          {
+            "href": "/tags/hyper-connections",
+            "text": "Hyper-Connections"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "阅读全文"
+          }
+        ],
+        "pathname": "/algorithms",
+        "routeLinkCoverage": {
+          "algorithms": true,
+          "applications": true,
+          "archive": true,
+          "category": true,
+          "search": false,
+          "tag": true
+        },
+        "scrollWidth": 1280,
+        "searchFormCount": 0,
+        "seriesCardCount": 2,
+        "skeletonCount": 0,
+        "title": "AI 算法研究 · AI Tech Blog",
+        "viewport": {
+          "height": 800,
+          "width": 1280
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/applications",
+      "routeLabel": "applications",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "ready": {
+        "h1": "AI 应用工程",
+        "hasMain": true,
+        "pathname": "/applications",
+        "skeletons": 0,
+        "textLength": 1551,
+        "title": "AI 应用工程 · AI Tech Blog"
+      },
+      "metrics": {
+        "aboveFoldHeadings": [
+          {
+            "tag": "H1",
+            "text": "AI 应用工程",
+            "top": 167
+          },
+          {
+            "tag": "H2",
+            "text": "Agent Runtime Systems",
+            "top": 502
+          }
+        ],
+        "articleCardCount": 3,
+        "clientWidth": 390,
+        "firstViewportText": "应用索引 AI 应用工程 记录 Agent、Harness Engine、RAG、Context Engineering、工具调用与评测循环。 沿着运行时边界阅读：什么进入上下文、什么留下 trace，以及如何评测 Agent 行为而不是讲故事。 阅读路径 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性 01 Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context 02 Evidence Packet: Agentic RAG 的上下文编译接口 03 Agent Loop: 从 ReAct 模式到可观测运行时 后续计划 Tool ABI Context Budget 阅读路径 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测 01 Evidence Packet: Agentic RAG 的上下文编译接口 后续计划 Hybrid Retrieval Retrieval Eval 3 文章 6 专题 / 技术地图 19 阅读量 应用索引 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 Agent 系统 Harness Engine RAG 与检索 Context Engineering 技术文章 返回总览 01 最新 AI Applications Agent Systems AgentLoop Agent Loop: 从 ReAct 模式到可观测运行时 Agent Loop 将 ReAct 式多步行为收束为可观测运行时：用状态机、上下文构建器、决策合约、工具运行时、预算、检查点和 trace 管理模型行动。 2026年5月31日 12 分钟阅读 9 次阅读 阅读全文 02 研究 AI Applications Agent Systems Agentic RAG Evidence Packet: Agentic RAG 的上下文编译接口 把知识库从 top-k chunk 搜索升级为面向 ",
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/login",
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": "打开导航",
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "打开导航"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "01 Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "02 Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "03 Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "01 Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "返回总览"
+          },
+          {
+            "ariaLabel": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "01"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-loop",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文"
+          },
+          {
+            "ariaLabel": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "02"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agentic-rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文"
+          },
+          {
+            "ariaLabel": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "03"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/harness-engine",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Harness Engine"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文"
+          },
+          {
+            "ariaLabel": "AI 助手",
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "AI 助手"
+          }
+        ],
+        "h1": "AI 应用工程",
+        "h2s": [
+          "Agent Runtime Systems",
+          "Agentic RAG Infrastructure",
+          "应用索引",
+          "技术文章",
+          "技术节点"
+        ],
+        "horizontalOverflow": false,
+        "linkSample": [
+          {
+            "href": "/",
+            "text": "AI Tech Blog"
+          },
+          {
+            "href": "/",
+            "text": "首页"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/about",
+            "text": "关于"
+          },
+          {
+            "href": "/login",
+            "text": "登录"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "01 Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "02 Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "03 Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "01 Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "href": "/",
+            "text": "返回总览"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "01"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agent-loop",
+            "text": "AgentLoop"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "02"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agentic-rag",
+            "text": "Agentic RAG"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "03"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/harness-engine",
+            "text": "Harness Engine"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "阅读全文"
+          }
+        ],
+        "pathname": "/applications",
+        "routeLinkCoverage": {
+          "algorithms": true,
+          "applications": true,
+          "archive": true,
+          "category": true,
+          "search": false,
+          "tag": true
+        },
+        "scrollWidth": 390,
+        "searchFormCount": 0,
+        "seriesCardCount": 2,
+        "skeletonCount": 0,
+        "title": "AI 应用工程 · AI Tech Blog",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/applications",
+      "routeLabel": "applications",
+      "viewport": {
+        "name": "desktop",
+        "width": 1280,
+        "height": 800
+      },
+      "ready": {
+        "h1": "AI 应用工程",
+        "hasMain": true,
+        "pathname": "/applications",
+        "skeletons": 0,
+        "textLength": 1578,
+        "title": "AI 应用工程 · AI Tech Blog"
+      },
+      "metrics": {
+        "aboveFoldHeadings": [
+          {
+            "tag": "H1",
+            "text": "AI 应用工程",
+            "top": 191
+          },
+          {
+            "tag": "H2",
+            "text": "Agent Runtime Systems",
+            "top": 481
+          },
+          {
+            "tag": "H2",
+            "text": "Agentic RAG Infrastructure",
+            "top": 481
+          },
+          {
+            "tag": "H2",
+            "text": "应用索引",
+            "top": 170
+          }
+        ],
+        "articleCardCount": 3,
+        "clientWidth": 1280,
+        "firstViewportText": "应用索引 AI 应用工程 记录 Agent、Harness Engine、RAG、Context Engineering、工具调用与评测循环。 沿着运行时边界阅读：什么进入上下文、什么留下 trace，以及如何评测 Agent 行为而不是讲故事。 阅读路径 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性 01 Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context 02 Evidence Packet: Agentic RAG 的上下文编译接口 03 Agent Loop: 从 ReAct 模式到可观测运行时 后续计划 Tool ABI Context Budget 阅读路径 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测 01 Evidence Packet: Agentic RAG 的上下文编译接口 后续计划 Hybrid Retrieval Retrieval Eval 3 文章 6 专题 / 技术地图 19 阅读量 应用索引 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 Agent 系统 Harness Engine RAG 与检索 Context Engineering 技术文章 返回总览 01 最新 AI Applications Agent Systems AgentLoop Agent Loop: 从 ReAct 模式到可观测运行时 Agent Loop 将 ReAct 式多步行为收束为可观测运行时：用状态机、上下文构建器、决策合约、工具运行时、预算、检查点和 trace 管理模型行动。 2026年5月31日 12 分钟阅读 9 次阅读 阅读全文 02 研究 AI Applications Agent Systems Agentic RAG Evidence Packet: Agentic RAG 的上下文编译接口 把知识库从 top-k chunk 搜索升级为面向 ",
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "首页"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/archive",
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/about",
+            "placeholder": null,
+            "tag": "a",
+            "text": "关于"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/login",
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "01 Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "02 Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "03 Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "01 Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "返回总览"
+          },
+          {
+            "ariaLabel": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "01"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-loop",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文"
+          },
+          {
+            "ariaLabel": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "02"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agentic-rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文"
+          },
+          {
+            "ariaLabel": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "03"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/harness-engine",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Harness Engine"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文"
+          },
+          {
+            "ariaLabel": "AI 助手",
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "AI 助手"
+          }
+        ],
+        "h1": "AI 应用工程",
+        "h2s": [
+          "Agent Runtime Systems",
+          "Agentic RAG Infrastructure",
+          "应用索引",
+          "技术文章",
+          "技术节点"
+        ],
+        "horizontalOverflow": false,
+        "linkSample": [
+          {
+            "href": "/",
+            "text": "AI Tech Blog"
+          },
+          {
+            "href": "/",
+            "text": "首页"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/about",
+            "text": "关于"
+          },
+          {
+            "href": "/login",
+            "text": "登录"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "01 Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "02 Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "03 Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "01 Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "href": "/",
+            "text": "返回总览"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "01"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agent-loop",
+            "text": "AgentLoop"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "02"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agentic-rag",
+            "text": "Agentic RAG"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "03"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/harness-engine",
+            "text": "Harness Engine"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "阅读全文"
+          }
+        ],
+        "pathname": "/applications",
+        "routeLinkCoverage": {
+          "algorithms": true,
+          "applications": true,
+          "archive": true,
+          "category": true,
+          "search": false,
+          "tag": true
+        },
+        "scrollWidth": 1280,
+        "searchFormCount": 0,
+        "seriesCardCount": 2,
+        "skeletonCount": 0,
+        "title": "AI 应用工程 · AI Tech Blog",
+        "viewport": {
+          "height": 800,
+          "width": 1280
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/archive",
+      "routeLabel": "archive",
+      "viewport": {
+        "name": "desktop",
+        "width": 1280,
+        "height": 800
+      },
+      "ready": {
+        "h1": "文章归档",
+        "hasMain": true,
+        "pathname": "/archive",
+        "skeletons": 0,
+        "textLength": 615,
+        "title": "文章归档 · AI Tech Blog"
+      },
+      "metrics": {
+        "aboveFoldHeadings": [
+          {
+            "tag": "H1",
+            "text": "文章归档",
+            "top": 183
+          },
+          {
+            "tag": "H2",
+            "text": "2026年5月",
+            "top": 375
+          }
+        ],
+        "articleCardCount": 0,
+        "clientWidth": 1280,
+        "firstViewportText": "时间索引 文章归档 4 篇公开文章，按月份组织，便于快速回溯。 2026年5月 4 篇文章 5月31日 Agent Loop: 从 ReAct 模式到可观测运行时 AI Applications Agent Systems AgentLoop Tool Use Context Engineering 12 分钟阅读 5月31日 Evidence Packet: Agentic RAG 的上下文编译接口 AI Applications Agent Systems Agentic RAG RAG Knowledge Base 10 分钟阅读 5月31日 Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context AI Applications Agent Systems Harness Engine RAG Context Engineering 3 分钟阅读 5月31日 IsoHC: Fixed-Vector Isometric Residual Mixing AI Algorithms IsoHC Hyper-Connections Residual Stability Orthogonal Projection 4 分钟阅读",
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "首页"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/archive",
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/about",
+            "placeholder": null,
+            "tag": "a",
+            "text": "关于"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/login",
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-loop",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/tool-use",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Tool Use"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/context-engineering",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agentic-rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "RAG"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/knowledge-base",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Knowledge Base"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/harness-engine",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Harness Engine"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "RAG"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/context-engineering",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "placeholder": null,
+            "tag": "a",
+            "text": "IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Algorithms"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/isohc",
+            "placeholder": null,
+            "tag": "a",
+            "text": "IsoHC"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/hyper-connections",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Hyper-Connections"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/residual-stability",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Residual Stability"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/orthogonal-projection",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Orthogonal Projection"
+          },
+          {
+            "ariaLabel": "AI 助手",
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "AI 助手"
+          }
+        ],
+        "h1": "文章归档",
+        "h2s": [
+          "2026年5月"
+        ],
+        "horizontalOverflow": false,
+        "linkSample": [
+          {
+            "href": "/",
+            "text": "AI Tech Blog"
+          },
+          {
+            "href": "/",
+            "text": "首页"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/about",
+            "text": "关于"
+          },
+          {
+            "href": "/login",
+            "text": "登录"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agent-loop",
+            "text": "AgentLoop"
+          },
+          {
+            "href": "/tags/tool-use",
+            "text": "Tool Use"
+          },
+          {
+            "href": "/tags/context-engineering",
+            "text": "Context Engineering"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agentic-rag",
+            "text": "Agentic RAG"
+          },
+          {
+            "href": "/tags/rag",
+            "text": "RAG"
+          },
+          {
+            "href": "/tags/knowledge-base",
+            "text": "Knowledge Base"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/harness-engine",
+            "text": "Harness Engine"
+          },
+          {
+            "href": "/tags/rag",
+            "text": "RAG"
+          },
+          {
+            "href": "/tags/context-engineering",
+            "text": "Context Engineering"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "href": "/categories/ai-algorithms",
+            "text": "AI Algorithms"
+          },
+          {
+            "href": "/tags/isohc",
+            "text": "IsoHC"
+          },
+          {
+            "href": "/tags/hyper-connections",
+            "text": "Hyper-Connections"
+          },
+          {
+            "href": "/tags/residual-stability",
+            "text": "Residual Stability"
+          },
+          {
+            "href": "/tags/orthogonal-projection",
+            "text": "Orthogonal Projection"
+          }
+        ],
+        "pathname": "/archive",
+        "routeLinkCoverage": {
+          "algorithms": true,
+          "applications": true,
+          "archive": true,
+          "category": true,
+          "search": false,
+          "tag": true
+        },
+        "scrollWidth": 1280,
+        "searchFormCount": 0,
+        "seriesCardCount": 0,
+        "skeletonCount": 0,
+        "title": "文章归档 · AI Tech Blog",
+        "viewport": {
+          "height": 800,
+          "width": 1280
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/search",
+      "routeLabel": "search",
+      "viewport": {
+        "name": "desktop",
+        "width": 1280,
+        "height": 800
+      },
+      "ready": {
+        "h1": "搜索研究索引",
+        "hasMain": true,
+        "pathname": "/search",
+        "skeletons": 0,
+        "textLength": 1126,
+        "title": "搜索研究索引 · AI Tech Blog"
+      },
+      "metrics": {
+        "aboveFoldHeadings": [
+          {
+            "tag": "H1",
+            "text": "搜索研究索引",
+            "top": 183
+          },
+          {
+            "tag": "H2",
+            "text": "最新公开文章",
+            "top": 480
+          }
+        ],
+        "articleCardCount": 0,
+        "clientWidth": 1280,
+        "firstViewportText": "全站搜索 搜索研究索引 跨标题、摘要、正文、分类与标签搜索所有公开文章。 搜索 最新公开文章 归档 Agent Loop: 从 ReAct 模式到可观测运行时 Agent Loop 将 ReAct 式多步行为收束为可观测运行时：用状态机、上下文构建器、决策合约、工具运行时、预算、检查点和 trace 管理模型行动。 2026年5月31日 12 分钟阅读 AI Applications Agent Systems AgentLoop Tool Use Context Engineering Evidence Packet: Agentic RAG 的上下文编译接口 把知识库从 top-k chunk 搜索升级为面向 Agent 的上下文编译器，用 Evidence Packet 统一检索信号、来源引用、权限范围、token budget、trace 和评测。 2026年5月31日 10 分钟阅读 AI Applications Agent Systems Agentic RAG RAG Knowledge Base Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals. 2026年5月31日 3 分钟阅读 AI Applications Agent Systems Harness Engine RAG Context Engineering IsoHC: Fixed-Vector Isometric Residual Mixing IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures. 2026年5月31日 4 分钟阅读 AI Algor",
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "首页"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/archive",
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/about",
+            "placeholder": null,
+            "tag": "a",
+            "text": "关于"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/login",
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": "agent、RoPE、context engineering...",
+            "tag": "input",
+            "text": "agent、RoPE、context engineering..."
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "搜索"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/archive",
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-loop",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/tool-use",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Tool Use"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/context-engineering",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agentic-rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "RAG"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/knowledge-base",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Knowledge Base"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/harness-engine",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Harness Engine"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "RAG"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/context-engineering",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "placeholder": null,
+            "tag": "a",
+            "text": "IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Algorithms"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/isohc",
+            "placeholder": null,
+            "tag": "a",
+            "text": "IsoHC"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/hyper-connections",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Hyper-Connections"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/residual-stability",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Residual Stability"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/orthogonal-projection",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Orthogonal Projection"
+          }
+        ],
+        "h1": "搜索研究索引",
+        "h2s": [
+          "最新公开文章"
+        ],
+        "horizontalOverflow": false,
+        "linkSample": [
+          {
+            "href": "/",
+            "text": "AI Tech Blog"
+          },
+          {
+            "href": "/",
+            "text": "首页"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/about",
+            "text": "关于"
+          },
+          {
+            "href": "/login",
+            "text": "登录"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agent-loop",
+            "text": "AgentLoop"
+          },
+          {
+            "href": "/tags/tool-use",
+            "text": "Tool Use"
+          },
+          {
+            "href": "/tags/context-engineering",
+            "text": "Context Engineering"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agentic-rag",
+            "text": "Agentic RAG"
+          },
+          {
+            "href": "/tags/rag",
+            "text": "RAG"
+          },
+          {
+            "href": "/tags/knowledge-base",
+            "text": "Knowledge Base"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/harness-engine",
+            "text": "Harness Engine"
+          },
+          {
+            "href": "/tags/rag",
+            "text": "RAG"
+          },
+          {
+            "href": "/tags/context-engineering",
+            "text": "Context Engineering"
+          },
+          {
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "text": "IsoHC: Fixed-Vector Isometric Residual Mixing"
+          },
+          {
+            "href": "/categories/ai-algorithms",
+            "text": "AI Algorithms"
+          },
+          {
+            "href": "/tags/isohc",
+            "text": "IsoHC"
+          },
+          {
+            "href": "/tags/hyper-connections",
+            "text": "Hyper-Connections"
+          },
+          {
+            "href": "/tags/residual-stability",
+            "text": "Residual Stability"
+          },
+          {
+            "href": "/tags/orthogonal-projection",
+            "text": "Orthogonal Projection"
+          }
+        ],
+        "pathname": "/search",
+        "routeLinkCoverage": {
+          "algorithms": true,
+          "applications": true,
+          "archive": true,
+          "category": true,
+          "search": false,
+          "tag": true
+        },
+        "scrollWidth": 1280,
+        "searchFormCount": 1,
+        "seriesCardCount": 0,
+        "skeletonCount": 0,
+        "title": "搜索研究索引 · AI Tech Blog",
+        "viewport": {
+          "height": 800,
+          "width": 1280
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/tags/harness-engine",
+      "routeLabel": "tag-harness-engine",
+      "viewport": {
+        "name": "desktop",
+        "width": 1280,
+        "height": 800
+      },
+      "ready": {
+        "h1": "Harness Engine",
+        "hasMain": true,
+        "pathname": "/tags/harness-engine",
+        "skeletons": 0,
+        "textLength": 480,
+        "title": "Harness Engine · AI Tech Blog"
+      },
+      "metrics": {
+        "aboveFoldHeadings": [
+          {
+            "tag": "H1",
+            "text": "Harness Engine",
+            "top": 183
+          },
+          {
+            "tag": "H2",
+            "text": "相关标签",
+            "top": 146
+          },
+          {
+            "tag": "H2",
+            "text": "技术文章",
+            "top": 379
+          },
+          {
+            "tag": "H3",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "top": 501
+          }
+        ],
+        "articleCardCount": 1,
+        "clientWidth": 1280,
+        "firstViewportText": "标签索引 Harness Engine 1 篇文章 相关标签 Agent Systems Context Engineering Evaluation Fine-tuning Observability RAG Tool Use 技术文章 归档 01 最新 AI Applications Agent Systems Harness Engine Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals. 2026年5月31日 3 分钟阅读 10 次阅读 阅读全文",
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "首页"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/archive",
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/about",
+            "placeholder": null,
+            "tag": "a",
+            "text": "关于"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/login",
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/context-engineering",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/evaluation",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evaluation"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/fine-tuning",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Fine-tuning"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/observability",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Observability"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "RAG"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/tool-use",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Tool Use"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/archive",
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档"
+          },
+          {
+            "ariaLabel": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "01"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/harness-engine",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Harness Engine"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文"
+          },
+          {
+            "ariaLabel": "AI 助手",
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "AI 助手"
+          }
+        ],
+        "h1": "Harness Engine",
+        "h2s": [
+          "相关标签",
+          "技术文章"
+        ],
+        "horizontalOverflow": false,
+        "linkSample": [
+          {
+            "href": "/",
+            "text": "AI Tech Blog"
+          },
+          {
+            "href": "/",
+            "text": "首页"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/about",
+            "text": "关于"
+          },
+          {
+            "href": "/login",
+            "text": "登录"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/context-engineering",
+            "text": "Context Engineering"
+          },
+          {
+            "href": "/tags/evaluation",
+            "text": "Evaluation"
+          },
+          {
+            "href": "/tags/fine-tuning",
+            "text": "Fine-tuning"
+          },
+          {
+            "href": "/tags/observability",
+            "text": "Observability"
+          },
+          {
+            "href": "/tags/rag",
+            "text": "RAG"
+          },
+          {
+            "href": "/tags/tool-use",
+            "text": "Tool Use"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "01"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/harness-engine",
+            "text": "Harness Engine"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "阅读全文"
+          }
+        ],
+        "pathname": "/tags/harness-engine",
+        "routeLinkCoverage": {
+          "algorithms": true,
+          "applications": true,
+          "archive": true,
+          "category": true,
+          "search": false,
+          "tag": true
+        },
+        "scrollWidth": 1280,
+        "searchFormCount": 0,
+        "seriesCardCount": 0,
+        "skeletonCount": 0,
+        "title": "Harness Engine · AI Tech Blog",
+        "viewport": {
+          "height": 800,
+          "width": 1280
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/categories/ai-applications",
+      "routeLabel": "category-ai-applications",
+      "viewport": {
+        "name": "desktop",
+        "width": 1280,
+        "height": 800
+      },
+      "ready": {
+        "h1": "AI Applications",
+        "hasMain": true,
+        "pathname": "/categories/ai-applications",
+        "skeletons": 0,
+        "textLength": 1209,
+        "title": "AI Applications · AI Tech Blog"
+      },
+      "metrics": {
+        "aboveFoldHeadings": [
+          {
+            "tag": "H1",
+            "text": "AI Applications",
+            "top": 183
+          },
+          {
+            "tag": "H2",
+            "text": "相关标签",
+            "top": 146
+          },
+          {
+            "tag": "H2",
+            "text": "应用索引",
+            "top": 472
+          }
+        ],
+        "articleCardCount": 3,
+        "clientWidth": 1280,
+        "firstViewportText": "分类索引 AI Applications Agent systems, RAG, context engineering, evaluation harnesses, fine-tuning, and AI application infrastructure 3 篇文章 相关标签 Agent Systems Context Engineering Evaluation Observability RAG Tool Use Agentic RAG AgentLoop Context Compiler Fine-tuning Guardrails Harness Engine Hybrid Search Knowledge Base Rate Limiting Session Management 应用索引 Agent 系统 工具调用 Harness Engine 评测 RAG 与检索 接地 Context Engineering 记忆 微调 适配 可观测性 可靠性 技术文章 归档 01 最新 AI Applications Agent Systems AgentLoop Agent Loop: 从 ReAct 模式到可观测运行时 Agent Loop 将 ReAct 式多步行为收束为可观测运行时：用状态机、上下文构建器、决策合约、工具运行时、预算、检查点和 trace 管理模型行动。 2026年5月31日 12 分钟阅读 9 次阅读 阅读全文 02 研究 AI Applications Agent Systems Agentic RAG Evidence Packet: Agentic RAG 的上下文编译接口 把知识库从 top-k chunk 搜索升级为面向 Agent 的上下文编译器，用 Evidence Packet 统一检索信号、来源引用、权限范围、token budget、trace 和评测。 2026年5月31日 10 分钟阅读 0 次阅读 阅读全文 03 研究 AI Applications Agent Systems Harness Engine Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context A harness engine makes too",
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/",
+            "placeholder": null,
+            "tag": "a",
+            "text": "首页"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/algorithms",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/archive",
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/about",
+            "placeholder": null,
+            "tag": "a",
+            "text": "关于"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/login",
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": null,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/context-engineering",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/evaluation",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evaluation"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/observability",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Observability"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "RAG"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/tool-use",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Tool Use"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agentic-rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-loop",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Compiler"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/fine-tuning",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Fine-tuning"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/guardrails",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Guardrails"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/harness-engine",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Harness Engine"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/hybrid-search",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Hybrid Search"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/knowledge-base",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Knowledge Base"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/rate-limiting",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Rate Limiting"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/session-management",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Session Management"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/archive",
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档"
+          },
+          {
+            "ariaLabel": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "01"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-loop",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文"
+          },
+          {
+            "ariaLabel": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "placeholder": null,
+            "tag": "a",
+            "text": "02"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/categories/ai-applications",
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agent-systems",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems"
+          },
+          {
+            "ariaLabel": null,
+            "href": "/tags/agentic-rag",
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG"
+          }
+        ],
+        "h1": "AI Applications",
+        "h2s": [
+          "相关标签",
+          "应用索引",
+          "技术文章"
+        ],
+        "horizontalOverflow": false,
+        "linkSample": [
+          {
+            "href": "/",
+            "text": "AI Tech Blog"
+          },
+          {
+            "href": "/",
+            "text": "首页"
+          },
+          {
+            "href": "/algorithms",
+            "text": "AI 算法"
+          },
+          {
+            "href": "/applications",
+            "text": "AI 应用"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/about",
+            "text": "关于"
+          },
+          {
+            "href": "/login",
+            "text": "登录"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/context-engineering",
+            "text": "Context Engineering"
+          },
+          {
+            "href": "/tags/evaluation",
+            "text": "Evaluation"
+          },
+          {
+            "href": "/tags/observability",
+            "text": "Observability"
+          },
+          {
+            "href": "/tags/rag",
+            "text": "RAG"
+          },
+          {
+            "href": "/tags/tool-use",
+            "text": "Tool Use"
+          },
+          {
+            "href": "/tags/agentic-rag",
+            "text": "Agentic RAG"
+          },
+          {
+            "href": "/tags/agent-loop",
+            "text": "AgentLoop"
+          },
+          {
+            "href": "/tags/context-compiler",
+            "text": "Context Compiler"
+          },
+          {
+            "href": "/tags/fine-tuning",
+            "text": "Fine-tuning"
+          },
+          {
+            "href": "/tags/guardrails",
+            "text": "Guardrails"
+          },
+          {
+            "href": "/tags/harness-engine",
+            "text": "Harness Engine"
+          },
+          {
+            "href": "/tags/hybrid-search",
+            "text": "Hybrid Search"
+          },
+          {
+            "href": "/tags/knowledge-base",
+            "text": "Knowledge Base"
+          },
+          {
+            "href": "/tags/rate-limiting",
+            "text": "Rate Limiting"
+          },
+          {
+            "href": "/tags/session-management",
+            "text": "Session Management"
+          },
+          {
+            "href": "/archive",
+            "text": "归档"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "01"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agent-loop",
+            "text": "AgentLoop"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时"
+          },
+          {
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "02"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/agentic-rag",
+            "text": "Agentic RAG"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口"
+          },
+          {
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "text": "阅读全文"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "03"
+          },
+          {
+            "href": "/categories/ai-applications",
+            "text": "AI Applications"
+          },
+          {
+            "href": "/tags/agent-systems",
+            "text": "Agent Systems"
+          },
+          {
+            "href": "/tags/harness-engine",
+            "text": "Harness Engine"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+          },
+          {
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "text": "阅读全文"
+          }
+        ],
+        "pathname": "/categories/ai-applications",
+        "routeLinkCoverage": {
+          "algorithms": true,
+          "applications": true,
+          "archive": true,
+          "category": true,
+          "search": false,
+          "tag": true
+        },
+        "scrollWidth": 1280,
+        "searchFormCount": 0,
+        "seriesCardCount": 0,
+        "skeletonCount": 0,
+        "title": "AI Applications · AI Tech Blog",
+        "viewport": {
+          "height": 800,
+          "width": 1280
+        }
+      },
+      "consoleErrors": []
+    }
+  ],
+  "focusableAudit": [
+    {
+      "ariaLabel": null,
+      "href": "/",
+      "index": 0,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AI Tech Blog"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/",
+      "index": 1,
+      "placeholder": null,
+      "tag": "a",
+      "text": "首页"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/algorithms",
+      "index": 2,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AI 算法"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/applications",
+      "index": 3,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AI 应用"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/archive",
+      "index": 4,
+      "placeholder": null,
+      "tag": "a",
+      "text": "归档"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/about",
+      "index": 5,
+      "placeholder": null,
+      "tag": "a",
+      "text": "关于"
+    },
+    {
+      "ariaLabel": null,
+      "href": null,
+      "index": 6,
+      "placeholder": null,
+      "tag": "button",
+      "text": "EN"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/login",
+      "index": 7,
+      "placeholder": null,
+      "tag": "a",
+      "text": "登录"
+    },
+    {
+      "ariaLabel": null,
+      "href": null,
+      "index": 8,
+      "placeholder": null,
+      "tag": "button",
+      "text": "登录"
+    },
+    {
+      "ariaLabel": "Google Scholar",
+      "href": "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
+      "index": 9,
+      "placeholder": null,
+      "tag": "a",
+      "text": "Google Scholar"
+    },
+    {
+      "ariaLabel": "邮箱",
+      "href": null,
+      "index": 10,
+      "placeholder": null,
+      "tag": "button",
+      "text": "邮箱"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/algorithms",
+      "index": 11,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读全文"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/applications",
+      "index": 12,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 篇公开笔记 阅读全文"
+    },
+    {
+      "ariaLabel": null,
+      "href": "#research-index",
+      "index": 13,
+      "placeholder": null,
+      "tag": "a",
+      "text": "研究地图"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/algorithms",
+      "index": 14,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/algorithms",
+      "index": 15,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/applications",
+      "index": 16,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/applications",
+      "index": 17,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测"
+    },
+    {
+      "ariaLabel": null,
+      "href": null,
+      "index": 18,
+      "placeholder": "搜索文章、关键词、主题...",
+      "tag": "input",
+      "text": "搜索文章、关键词、主题..."
+    },
+    {
+      "ariaLabel": null,
+      "href": null,
+      "index": 19,
+      "placeholder": null,
+      "tag": "button",
+      "text": "搜索"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/search",
+      "index": 20,
+      "placeholder": null,
+      "tag": "a",
+      "text": "搜索"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/archive",
+      "index": 21,
+      "placeholder": null,
+      "tag": "a",
+      "text": "归档"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/categories/ai-algorithms",
+      "index": 22,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AI 算法"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/categories/ai-applications",
+      "index": 23,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AI 应用"
+    },
+    {
+      "ariaLabel": "RSS",
+      "href": "/rss.xml",
+      "index": 24,
+      "placeholder": null,
+      "tag": "a",
+      "text": "RSS"
+    },
+    {
+      "ariaLabel": null,
+      "href": null,
+      "index": 25,
+      "placeholder": "you@example.com",
+      "tag": "input",
+      "text": "you@example.com"
+    },
+    {
+      "ariaLabel": null,
+      "href": null,
+      "index": 26,
+      "placeholder": null,
+      "tag": "button",
+      "text": "订阅"
+    },
+    {
+      "ariaLabel": null,
+      "href": null,
+      "index": 27,
+      "placeholder": "可选主题：RoPE、Agent、RAG...",
+      "tag": "input",
+      "text": "可选主题：RoPE、Agent、RAG..."
+    },
+    {
+      "ariaLabel": null,
+      "href": null,
+      "index": 28,
+      "placeholder": null,
+      "tag": "button",
+      "text": "中文"
+    },
+    {
+      "ariaLabel": null,
+      "href": null,
+      "index": 29,
+      "placeholder": null,
+      "tag": "button",
+      "text": "EN"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/tags/agent-systems",
+      "index": 30,
+      "placeholder": null,
+      "tag": "a",
+      "text": "Agent Systems"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/tags/agentic-rag",
+      "index": 31,
+      "placeholder": null,
+      "tag": "a",
+      "text": "Agentic RAG"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/tags/agent-loop",
+      "index": 32,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AgentLoop"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/tags/context-compiler",
+      "index": 33,
+      "placeholder": null,
+      "tag": "a",
+      "text": "Context Compiler"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/tags/context-engineering",
+      "index": 34,
+      "placeholder": null,
+      "tag": "a",
+      "text": "Context Engineering"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/tags/evaluation",
+      "index": 35,
+      "placeholder": null,
+      "tag": "a",
+      "text": "Evaluation"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/tags/fine-tuning",
+      "index": 36,
+      "placeholder": null,
+      "tag": "a",
+      "text": "Fine-tuning"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/tags/gnn",
+      "index": 37,
+      "placeholder": null,
+      "tag": "a",
+      "text": "GNN"
+    },
+    {
+      "ariaLabel": "Agent Loop: 从 ReAct 模式到可观测运行时",
+      "href": "/post/agent-loop-observable-tool-using-agents",
+      "index": 38,
+      "placeholder": null,
+      "tag": "a",
+      "text": "01"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/categories/ai-applications",
+      "index": 39,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AI Applications"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/tags/agent-systems",
+      "index": 40,
+      "placeholder": null,
+      "tag": "a",
+      "text": "Agent Systems"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/tags/agent-loop",
+      "index": 41,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AgentLoop"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/post/agent-loop-observable-tool-using-agents",
+      "index": 42,
+      "placeholder": null,
+      "tag": "a",
+      "text": "Agent Loop: 从 ReAct 模式到可观测运行时"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/post/agent-loop-observable-tool-using-agents",
+      "index": 43,
+      "placeholder": null,
+      "tag": "a",
+      "text": "阅读全文"
+    },
+    {
+      "ariaLabel": "Evidence Packet: Agentic RAG 的上下文编译接口",
+      "href": "/post/rag-evidence-packet-context-compiler",
+      "index": 44,
+      "placeholder": null,
+      "tag": "a",
+      "text": "02"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/categories/ai-applications",
+      "index": 45,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AI Applications"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/tags/agent-systems",
+      "index": 46,
+      "placeholder": null,
+      "tag": "a",
+      "text": "Agent Systems"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/tags/agentic-rag",
+      "index": 47,
+      "placeholder": null,
+      "tag": "a",
+      "text": "Agentic RAG"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/post/rag-evidence-packet-context-compiler",
+      "index": 48,
+      "placeholder": null,
+      "tag": "a",
+      "text": "Evidence Packet: Agentic RAG 的上下文编译接口"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/post/rag-evidence-packet-context-compiler",
+      "index": 49,
+      "placeholder": null,
+      "tag": "a",
+      "text": "阅读全文"
+    },
+    {
+      "ariaLabel": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+      "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+      "index": 50,
+      "placeholder": null,
+      "tag": "a",
+      "text": "03"
+    },
+    {
+      "ariaLabel": null,
+      "href": "/categories/ai-applications",
+      "index": 51,
+      "placeholder": null,
+      "tag": "a",
+      "text": "AI Applications"
+    }
+  ]
+}

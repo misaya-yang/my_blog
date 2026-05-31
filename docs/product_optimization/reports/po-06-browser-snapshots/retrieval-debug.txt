@@ -1,0 +1,76 @@
+EN
+Agent 运维
+Agent 运维
+
+调试检索、查看 trace、运行 eval，并从对话提炼文章选题；不授予模型写入权限。
+
+返回内容管理
+索引状态
+检索调试器
+本地 Eval
+近期 Trace
+文章选题提炼
+调试检索
+Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context
+来源
+
+# Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context Agent systems become difficult to reason about when the model, tools, memory, retrieval, and evaluator are all allowed to move at the same time. A harness engine gives the system a n
+
+Matched: harness, engine, context
+
+Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context
+来源
+
+## 1. Problem Boundary Tool-using agents fail in ways that ordinary request-response applications do not. A model can call the right tool with the wrong argument, retrieve a plausible but irrelevant document, stop early after partial progress, or loop because
+
+Matched: harness, engine, context, boundary
+
+Agent Loop: 从 ReAct 模式到可观测运行时
+来源
+
+## Design Boundary 这里的 Agent Loop 指运行时抽象，而不是某个已经完整商品化的产品声明。讨论重点放在架构边界、状态转移、工具治理、会话恢复和评测面上，不依赖私有实验数据或未公开指标。 在博客 Agent、文档助手、工具型 Assistant 等场景里，这个抽象可以逐步落地：先保存会话和 trace，再引入受控工具，最后扩展到文件、权限、限流和人工确认。复杂度应随着真实任务需求增加，而不是一开始就堆叠多 Agent 或重型编排。
+
+Matched: engine, context, boundary
+
+Evidence Packet: Agentic RAG 的上下文编译接口
+来源
+
+## Design Boundary Evidence Packet 是接口层和工程抽象，不等同于宣称已经完成一整套企业级 RAG 平台。它适合用来描述博客 Agent、文档助手和通用 Assistant 的后续演进方向：知识如何被检索、裁剪、授权、引用和评测。 文章只讨论公开可复用的系统设计，不披露私有实验指标、未发布结果或敏感实现细节。涉及 Qdrant、BM25、rerank、MMR、GraphRAG 等组件时，它们代表可替换的参考技术路线，而不是固定依赖。
+
+Matched: engine, context, boundary
+
+Evidence Packet: Agentic RAG 的上下文编译接口
+来源
+
+## 1. Problem Boundary 传统 RAG 接口通常接近： ```ts search(query) => Chunk[] ``` 这个接口适合原型，但对 Agent 不够。Agent 需要的不只是文本，还需要围绕文本的证据结构： - 候选是 dense 召回、BM25 召回，还是二者融合得到的。 - 结果是否经过 rerank，是否为了多样性做过 MMR。 - chunk 属于哪个文档、章节、页码、版本和权限范围。 - 如果上下文超预算，哪些证据可以删，哪些必须保留。 - 最终回答应该引用哪一个 s
+
+Matched: engine, context, boundary
+
+Public blog overview
+来源
+
+ies: ai-applications, ai-algorithms. Tags: agent-systems, agent-loop, tool-use, context-engineering, session-management, rate-limiting, guardrails, evaluation, observability, agentic-rag, rag, knowledge-base, context-compiler, hybrid-search, harness-engine, fi
+
+Matched: harness, engine, context
+
+Agent Loop: 从 ReAct 模式到可观测运行时
+来源
+
+## 6. Context Builder AgentLoop 每一轮都要重新构建上下文。上下文不是聊天历史追加，而是状态到模型输入的投影。 ```text Context = System Policy + Goal + Current Plan + Relevant Memory + Evidence Packet + Recent Observations + Tool Schemas + Budget Summary ``` Context Builder 的职责是选择，不是堆叠。它决定哪些 observa
+
+Matched: engine, context
+
+IsoHC: Fixed-Vector Isometric Residual Mixing
+来源
+
+## 8. Precision and Engineering Considerations Projection precision is an important engineering detail. The projection operation is numerically more sensitive than ordinary unconstrained matrix multiplication, especially when low-precision arithmetic is used t
+
+Matched: engine
+
+诊断
+
+查询词: harness, engine, context, boundary
+
+Retrieved 8 public sources.
+Inspect source slugs and headings before changing retrieval.
+If expected posts are missing, run the golden eval set to compare source recall.

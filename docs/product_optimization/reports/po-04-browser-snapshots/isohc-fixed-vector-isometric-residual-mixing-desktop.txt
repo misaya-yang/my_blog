@@ -1,0 +1,147 @@
+- region "Notifications alt+T"
+- banner:
+  - link "返回":
+    - /url: /
+    - generic: 返回
+  - navigation:
+    - button "EN"
+    - link "登录":
+      - /url: /login
+      - button "登录"
+- article:
+  - 'heading "IsoHC: Fixed-Vector Isometric Residual Mixing" [level=1]'
+  - generic: Misaya Yang
+  - link "学术":
+    - /url: https://scholar.google.com/citations?user=6X9HlDAAAAAJ
+    - text: 学术
+  - button "邮箱":
+    - text: 邮箱
+  - text: 2026年5月31日
+  - text: 26 次阅读
+  - text: 6 分钟阅读
+  - link "AI Algorithms":
+    - /url: /categories/ai-algorithms
+    - text: AI Algorithms
+  - link "IsoHC":
+    - /url: /tags/isohc
+    - text: IsoHC
+  - link "Hyper-Connections":
+    - /url: /tags/hyper-connections
+    - text: Hyper-Connections
+  - link "Residual Stability":
+    - /url: /tags/residual-stability
+    - text: Residual Stability
+  - link "Orthogonal Projection":
+    - /url: /tags/orthogonal-projection
+    - text: Orthogonal Projection
+  - link "Transformer":
+    - /url: /tags/transformer
+    - text: Transformer
+  - link "GNN":
+    - /url: /tags/gnn
+    - text: GNN
+  - region "这篇文章怎么读":
+    - paragraph: 阅读入口
+    - heading "这篇文章怎么读" [level=2]
+    - term: 核心主张
+    - definition: IsoHC constrains residual stream mixing to a fixed vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.
+    - term: 前置背景
+    - definition: IsoHC · Hyper-Connections · Residual Stability · Orthogonal Projection
+    - term: 问题边界
+    - definition: "Residual architectures are stable partly because they keep an identity path through depth: x {l+1}=x l+F(x l,\\theta l). Hyper Connection style models generalize this idea by expanding the residual stream into multiple parallel streams. A simplified residual tr..."
+    - term: 核心抽象
+    - definition: IsoHC · From Mean Preservation to Isometry
+    - term: 实现映射
+    - definition: 公式 / 推导 · 运行时或架构映射 · 证据或评测面
+    - term: 边界与限制
+    - definition: "The repository evaluates IsoHC through projection sanity checks, residual only propagation probes, Transformer smoke tests, real text diagnostics, and GNN variants. The public technical conclusion should be framed carefully: IsoHC is a stability mechanism, not..."
+    - text: 系列位置
+    - paragraph: Residual Stability
+    - paragraph: 第 1 / 1 篇 · 残差流混合、不变量和稳定性约束。
+    - link "继续技术区":
+      - /url: /algorithms
+      - text: 继续技术区
+  - generic "分享":
+    - generic: 分享
+    - button "Twitter":
+      - text: Twitter
+    - button "LinkedIn":
+      - text: LinkedIn
+    - button "微信":
+      - text: 微信
+    - button "复制链接":
+      - text: 复制链接
+  - heading "继续阅读" [level=2]
+  - link "继续浏览 AI 算法":
+    - /url: /algorithms
+    - text: 继续浏览 AI 算法
+  - region "这篇文章有帮助吗？":
+    - heading "这篇文章有帮助吗？" [level=2]
+    - paragraph: 提交一条私密反馈，说明哪里有帮助或哪里还需要补充。
+    - paragraph: 你可以匿名提交。
+    - link "发邮件":
+      - /url: mailto:zedpl28174@gmail.com?subject=Feedback%3A%20IsoHC%3A%20Fixed-Vector%20Isometric%20Residual%20Mixing
+      - text: 发邮件
+    - button "有帮助":
+      - text: 有帮助
+    - button "帮助不大":
+      - text: 帮助不大
+    - generic: 可选补充：哪里清楚，哪里还缺？
+    - textbox "可选补充：哪里清楚，哪里还缺？"
+    - generic: 可选昵称
+    - textbox "可选昵称"
+    - generic: 可选回复邮箱
+    - textbox "可选回复邮箱"
+    - paragraph: 回复邮箱完全可选，仅在需要跟进时使用。
+    - button "发送反馈" [disabled]
+  - region "订阅更新":
+    - heading "接收后续笔记" [level=2]
+    - paragraph: 留下邮箱接收不定期文章更新；如果你更喜欢阅读器，也可以直接使用 RSS。
+    - link "RSS":
+      - /url: /rss.xml
+      - generic: RSS
+    - generic: you@example.com
+    - textbox "you@example.com"
+    - button "订阅"
+    - generic: 可选主题：RoPE、Agent、RAG...
+    - textbox "可选主题：RoPE、Agent、RAG..."
+    - group "接收语言":
+      - generic: 接收语言
+      - button "中文" [pressed]
+      - button "EN"
+    - generic: 仅保存邮箱和可选主题偏好。
+  - heading "Misaya Yang" [level=3]
+  - paragraph: 关注深度学习、Transformer、大语言模型与位置编码机制。
+  - link "Google Scholar":
+    - /url: https://scholar.google.com/citations?user=6X9HlDAAAAAJ
+    - button "Google Scholar":
+      - text: Google Scholar
+  - button "联系":
+    - text: 联系
+- complementary:
+  - heading "目录" [level=3]
+  - navigation:
+    - link "1. Motivation":
+      - /url: "#heading-0"
+    - link "2. From Mean Preservation to Isometry":
+      - /url: "#heading-1"
+    - link "3. Exact Invariants":
+      - /url: "#heading-2"
+    - link "4. Fixed-Vector Orthogonal Decomposition":
+      - /url: "#heading-3"
+    - link "5. Differentiable Projection":
+      - /url: "#heading-4"
+    - link "6. Gradient Stability Interpretation":
+      - /url: "#heading-5"
+    - link "7. Implementation Mapping":
+      - /url: "#heading-6"
+    - link "8. Precision and Engineering Considerations":
+      - /url: "#heading-7"
+    - link "9. Relation to Doubly Stochastic Mixing":
+      - /url: "#heading-8"
+    - link "10. Evidence Framing":
+      - /url: "#heading-9"
+    - link "11. Core Takeaway":
+      - /url: "#heading-10"
+- button "AI 助手":
+  - generic: AI 助手

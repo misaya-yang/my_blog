@@ -1,0 +1,160 @@
+{
+  "generatedAt": "2026-05-31T08:43:15.658Z",
+  "git": {
+    "branch": "main",
+    "commit": "636c543",
+    "dirty": true
+  },
+  "baseUrl": "http://localhost:3000/",
+  "publicInventory": [
+    {
+      "slug": "agent-loop-observable-tool-using-agents",
+      "title": "Agent Loop: 从 ReAct 模式到可观测运行时",
+      "categorySlug": "ai-applications",
+      "tagSlugs": [
+        "agent-loop",
+        "agent-systems",
+        "context-engineering",
+        "evaluation",
+        "guardrails",
+        "observability",
+        "rate-limiting",
+        "session-management",
+        "tool-use"
+      ],
+      "publishedAt": "2026-05-31T00:30:00.000Z",
+      "updatedAt": "2026-05-31T08:18:36.199Z",
+      "seriesSlug": "agent-runtime-systems",
+      "seriesOrder": 3
+    },
+    {
+      "slug": "rag-evidence-packet-context-compiler",
+      "title": "Evidence Packet: Agentic RAG 的上下文编译接口",
+      "categorySlug": "ai-applications",
+      "tagSlugs": [
+        "agent-systems",
+        "agentic-rag",
+        "context-compiler",
+        "context-engineering",
+        "evaluation",
+        "hybrid-search",
+        "knowledge-base",
+        "observability",
+        "rag"
+      ],
+      "publishedAt": "2026-05-31T00:20:00.000Z",
+      "updatedAt": "2026-05-31T08:07:00.906Z",
+      "seriesSlug": "agent-runtime-systems",
+      "seriesOrder": 2
+    },
+    {
+      "slug": "agent-harness-engine-evaluating-tool-using-agents",
+      "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+      "categorySlug": "ai-applications",
+      "tagSlugs": [
+        "agent-systems",
+        "context-engineering",
+        "evaluation",
+        "fine-tuning",
+        "harness-engine",
+        "observability",
+        "rag",
+        "tool-use"
+      ],
+      "publishedAt": "2026-05-31T00:10:00.000Z",
+      "updatedAt": "2026-05-31T08:06:48.744Z",
+      "seriesSlug": "agent-runtime-systems",
+      "seriesOrder": 1
+    },
+    {
+      "slug": "isohc-fixed-vector-isometric-residual-mixing",
+      "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+      "categorySlug": "ai-algorithms",
+      "tagSlugs": [
+        "gnn",
+        "hyper-connections",
+        "isohc",
+        "orthogonal-projection",
+        "residual-stability",
+        "transformer"
+      ],
+      "publishedAt": "2026-05-31T00:00:00.000Z",
+      "updatedAt": "2026-05-31T08:06:38.178Z",
+      "seriesSlug": "residual-stability",
+      "seriesOrder": 1
+    }
+  ],
+  "nonPublicInventory": [
+    {
+      "slug": "evq-cosh-frequency-allocation",
+      "title": "EVQ-Cosh: RoPE as a Finite Spectral Budget",
+      "status": "draft",
+      "visibility": "hidden"
+    }
+  ],
+  "metadataIssues": [],
+  "generatedAssets": {
+    "sitemap": {
+      "ok": true,
+      "publicSlugs": [
+        "agent-harness-engine-evaluating-tool-using-agents",
+        "agent-loop-observable-tool-using-agents",
+        "isohc-fixed-vector-isometric-residual-mixing",
+        "rag-evidence-packet-context-compiler"
+      ],
+      "missingPublicSlugs": [],
+      "leakedNonPublicSlugs": []
+    },
+    "rss": {
+      "ok": true,
+      "publicSlugs": [
+        "agent-harness-engine-evaluating-tool-using-agents",
+        "agent-loop-observable-tool-using-agents",
+        "isohc-fixed-vector-isometric-residual-mixing",
+        "rag-evidence-packet-context-compiler"
+      ],
+      "missingPublicSlugs": [],
+      "leakedNonPublicSlugs": []
+    },
+    "archive": {
+      "ok": true,
+      "publicSlugs": [
+        "agent-harness-engine-evaluating-tool-using-agents",
+        "agent-loop-observable-tool-using-agents",
+        "isohc-fixed-vector-isometric-residual-mixing",
+        "rag-evidence-packet-context-compiler"
+      ],
+      "missingPublicSlugs": []
+    }
+  },
+  "agentKnowledge": {
+    "ok": true,
+    "chunkCount": 57,
+    "publicPostCount": 4,
+    "indexedPublicPostCount": 4,
+    "hiddenOrDraftExcludedCount": 1,
+    "stalePublicPostSlugs": [],
+    "extraIndexedPostSlugs": [],
+    "indexedPostSlugs": [
+      "agent-harness-engine-evaluating-tool-using-agents",
+      "agent-loop-observable-tool-using-agents",
+      "isohc-fixed-vector-isometric-residual-mixing",
+      "rag-evidence-packet-context-compiler"
+    ],
+    "nonPublicIndexedSlugs": [],
+    "lastReindexAt": "2026-05-31T08:42:59.432Z"
+  },
+  "dateDrift": {
+    "comparedPublicPosts": 4,
+    "publishedAtChanged": [],
+    "updatedAtChangedWithoutMaterialChange": []
+  },
+  "routeChecks": [
+    {
+      "path": "(all)",
+      "state": "skipped",
+      "reason": "Set AUDIT_BASE_URL to run HTTP route freshness checks."
+    }
+  ],
+  "blockers": []
+}

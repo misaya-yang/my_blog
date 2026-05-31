@@ -142,6 +142,36 @@ describe("AI public knowledge chunks", () => {
     expect(results.every((result) => result.visibilitySnapshot === "public")).toBe(true);
   });
 
+  it("uses lightweight concept expansion before pgvector", () => {
+    const chunks = buildPublicKnowledgeChunks(posts);
+    const results = searchPublicKnowledgeChunks(chunks, "agent evaluation runtime", {
+      limit: 4,
+    });
+
+    expect(results[0].postSlug).toBe("agent-harness");
+    expect(results[0].relevanceReason).toContain("agent");
+  });
+
+  it("does not retrieve public sources from weak out-of-scope query terms", () => {
+    const chunks = buildPublicKnowledgeChunks([
+      ...posts,
+      post({
+        id: 5,
+        title: "Agent Operations Boundary",
+        slug: "agent-ops-boundary",
+        content: "## Guardrails\nHidden/admin/draft content must stay out of public discovery.",
+        category: applications,
+        tags: [harnessTag],
+      }),
+    ]);
+
+    expect(searchPublicKnowledgeChunks(chunks, "What is the weather in Tokyo tomorrow?")).toEqual([]);
+    expect(searchPublicKnowledgeChunks(chunks, "Can you explain EVQ-Cosh hidden details?")).toEqual([]);
+    expect(searchPublicKnowledgeChunks(chunks, "secret hidden harness").map((result) => result.postSlug)).toContain(
+      "agent-harness"
+    );
+  });
+
   it("drops stale chunks when a public post becomes hidden before reindexing", () => {
     const updatedPosts = posts.map((item) =>
       item.slug === "agent-harness" ? { ...item, visibility: "admin" as const } : item

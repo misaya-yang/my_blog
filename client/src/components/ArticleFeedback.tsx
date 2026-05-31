@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Mail, ThumbsDown, ThumbsUp } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useId, useState } from "react";
 import { toast } from "sonner";
 
 type FeedbackType = "useful" | "not_useful";
@@ -34,6 +34,10 @@ export function ArticleFeedback({
   const [replyEmail, setReplyEmail] = useState("");
   const [visitorName, setVisitorName] = useState("");
   const [sent, setSent] = useState(false);
+  const messageId = useId();
+  const visitorNameId = useId();
+  const replyEmailId = useId();
+  const statusId = useId();
 
   const feedback = trpc.engagement.feedback.create.useMutation({
     onSuccess: () => {
@@ -123,35 +127,63 @@ export function ArticleFeedback({
           </button>
         </div>
 
-        <Textarea
-          value={message}
-          onChange={(event) => setMessage(event.target.value)}
-          maxLength={600}
-          placeholder={t("engagement.feedback.messagePlaceholder")}
-          className="min-h-24 border-sky-200/15 bg-slate-950/35 text-white placeholder:text-slate-500"
-        />
-
-        <div className="grid gap-3 md:grid-cols-2">
-          {!isVisitor && (
-            <Input
-              value={visitorName}
-              onChange={(event) => setVisitorName(event.target.value)}
-              maxLength={80}
-              placeholder={t("engagement.feedback.namePlaceholder")}
-              className="border-sky-200/15 bg-slate-950/35 text-white placeholder:text-slate-500"
-            />
-          )}
-          <Input
-            type="email"
-            value={replyEmail}
-            onChange={(event) => setReplyEmail(event.target.value)}
-            placeholder={t("engagement.feedback.emailPlaceholder")}
-            className="border-sky-200/15 bg-slate-950/35 text-white placeholder:text-slate-500"
+        <div>
+          <label className="sr-only" htmlFor={messageId}>
+            {t("engagement.feedback.messagePlaceholder")}
+          </label>
+          <Textarea
+            id={messageId}
+            value={message}
+            onChange={(event) => setMessage(event.target.value)}
+            maxLength={600}
+            placeholder={t("engagement.feedback.messagePlaceholder")}
+            aria-describedby={statusId}
+            className="min-h-24 border-sky-200/15 bg-slate-950/35 text-white placeholder:text-slate-500"
           />
         </div>
 
+        <div className="grid gap-3 md:grid-cols-2">
+          {!isVisitor && (
+            <div>
+              <label className="sr-only" htmlFor={visitorNameId}>
+                {t("engagement.feedback.namePlaceholder")}
+              </label>
+              <Input
+                id={visitorNameId}
+                value={visitorName}
+                onChange={(event) => setVisitorName(event.target.value)}
+                maxLength={80}
+                placeholder={t("engagement.feedback.namePlaceholder")}
+                autoComplete="name"
+                aria-describedby={statusId}
+                className="border-sky-200/15 bg-slate-950/35 text-white placeholder:text-slate-500"
+              />
+            </div>
+          )}
+          <div>
+            <label className="sr-only" htmlFor={replyEmailId}>
+              {t("engagement.feedback.emailPlaceholder")}
+            </label>
+            <Input
+              id={replyEmailId}
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              value={replyEmail}
+              onChange={(event) => setReplyEmail(event.target.value)}
+              placeholder={t("engagement.feedback.emailPlaceholder")}
+              aria-describedby={statusId}
+              className="border-sky-200/15 bg-slate-950/35 text-white placeholder:text-slate-500"
+            />
+          </div>
+        </div>
+
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="min-h-5 text-xs leading-5 text-slate-500">
+          <p
+            id={statusId}
+            className="min-h-5 text-xs leading-5 text-slate-500"
+            aria-live="polite"
+          >
             {feedback.error ? (
               <span className="text-red-200">
                 {feedback.error.message.includes("Too many")

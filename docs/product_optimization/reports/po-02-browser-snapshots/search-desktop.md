@@ -1,0 +1,115 @@
+- region "Notifications alt+T"
+- banner:
+  - link "AI Tech Blog":
+    - /url: /
+    - generic: AI Tech Blog
+  - navigation:
+    - link "首页":
+      - /url: /
+    - link "AI 算法":
+      - /url: /algorithms
+    - link "AI 应用":
+      - /url: /applications
+    - link "归档":
+      - /url: /archive
+    - link "关于":
+      - /url: /about
+    - button "EN"
+    - link "登录":
+      - /url: /login
+      - button "登录"
+- main:
+  - text: 全站搜索
+  - heading "搜索研究索引" [level=1]
+  - paragraph: 跨标题、摘要、正文、分类与标签搜索所有公开文章。
+  - textbox "agent、RoPE、context engineering..."
+  - button "搜索"
+  - heading "最新公开文章" [level=2]
+  - link "归档":
+    - /url: /archive
+  - article:
+    - 'link "Agent Loop: 从 ReAct 模式到可观测运行时"':
+      - /url: /post/agent-loop-observable-tool-using-agents
+    - paragraph: Agent Loop 将 ReAct 式多步行为收束为可观测运行时：用状态机、上下文构建器、决策合约、工具运行时、预算、检查点和 trace 管理模型行动。
+    - text: 2026年5月31日
+    - text: 12 分钟阅读
+    - link "AI Applications":
+      - /url: /categories/ai-applications
+      - text: AI Applications
+    - link "Agent Systems":
+      - /url: /tags/agent-systems
+      - text: Agent Systems
+    - link "AgentLoop":
+      - /url: /tags/agent-loop
+      - text: AgentLoop
+    - link "Tool Use":
+      - /url: /tags/tool-use
+      - text: Tool Use
+    - link "Context Engineering":
+      - /url: /tags/context-engineering
+      - text: Context Engineering
+  - article:
+    - 'link "Evidence Packet: Agentic RAG 的上下文编译接口"':
+      - /url: /post/rag-evidence-packet-context-compiler
+    - paragraph: 把知识库从 top-k chunk 搜索升级为面向 Agent 的上下文编译器，用 Evidence Packet 统一检索信号、来源引用、权限范围、token budget、trace 和评测。
+    - text: 2026年5月31日
+    - text: 10 分钟阅读
+    - link "AI Applications":
+      - /url: /categories/ai-applications
+      - text: AI Applications
+    - link "Agent Systems":
+      - /url: /tags/agent-systems
+      - text: Agent Systems
+    - link "Agentic RAG":
+      - /url: /tags/agentic-rag
+      - text: Agentic RAG
+    - link "RAG":
+      - /url: /tags/rag
+      - text: RAG
+    - link "Knowledge Base":
+      - /url: /tags/knowledge-base
+      - text: Knowledge Base
+  - article:
+    - 'link "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"':
+      - /url: /post/agent-harness-engine-evaluating-tool-using-agents
+    - paragraph: A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals.
+    - text: 2026年5月31日
+    - text: 3 分钟阅读
+    - link "AI Applications":
+      - /url: /categories/ai-applications
+      - text: AI Applications
+    - link "Agent Systems":
+      - /url: /tags/agent-systems
+      - text: Agent Systems
+    - link "Harness Engine":
+      - /url: /tags/harness-engine
+      - text: Harness Engine
+    - link "RAG":
+      - /url: /tags/rag
+      - text: RAG
+    - link "Context Engineering":
+      - /url: /tags/context-engineering
+      - text: Context Engineering
+  - article:
+    - 'link "IsoHC: Fixed-Vector Isometric Residual Mixing"':
+      - /url: /post/isohc-fixed-vector-isometric-residual-mixing
+    - paragraph: IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.
+    - text: 2026年5月31日
+    - text: 4 分钟阅读
+    - link "AI Algorithms":
+      - /url: /categories/ai-algorithms
+      - text: AI Algorithms
+    - link "IsoHC":
+      - /url: /tags/isohc
+      - text: IsoHC
+    - link "Hyper-Connections":
+      - /url: /tags/hyper-connections
+      - text: Hyper-Connections
+    - link "Residual Stability":
+      - /url: /tags/residual-stability
+      - text: Residual Stability
+    - link "Orthogonal Projection":
+      - /url: /tags/orthogonal-projection
+      - text: Orthogonal Projection
+- button "AI 助手":
+  - generic: AI 助手

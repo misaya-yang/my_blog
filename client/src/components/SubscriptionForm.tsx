@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, MailPlus, Rss } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useId, useState } from "react";
 import { toast } from "sonner";
 
 type SubscriptionFormProps = {
@@ -37,6 +37,9 @@ export function SubscriptionForm({
   );
   const [interests, setInterests] = useState("");
   const [status, setStatus] = useState<SubscriptionStatus>("idle");
+  const emailId = useId();
+  const interestsId = useId();
+  const statusId = useId();
   const titleKey =
     surface === "article"
       ? "engagement.subscribe.articleTitle"
@@ -104,12 +107,19 @@ export function SubscriptionForm({
 
       <form onSubmit={handleSubmit} className="grid gap-3">
         <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
+          <label className="sr-only" htmlFor={emailId}>
+            {t("engagement.subscribe.emailPlaceholder")}
+          </label>
           <Input
+            id={emailId}
             type="email"
+            inputMode="email"
+            autoComplete="email"
             required
             value={email}
             onChange={event => setEmail(event.target.value)}
             placeholder={t("engagement.subscribe.emailPlaceholder")}
+            aria-describedby={statusId}
             className="border-sky-200/15 bg-slate-950/40 text-white placeholder:text-slate-500"
           />
           <Button
@@ -129,14 +139,23 @@ export function SubscriptionForm({
         </div>
 
         <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
+          <label className="sr-only" htmlFor={interestsId}>
+            {t("engagement.subscribe.interestsPlaceholder")}
+          </label>
           <Input
+            id={interestsId}
             value={interests}
             onChange={event => setInterests(event.target.value)}
             placeholder={t("engagement.subscribe.interestsPlaceholder")}
             className="border-sky-200/15 bg-slate-950/40 text-white placeholder:text-slate-500"
             maxLength={240}
+            aria-describedby={statusId}
           />
-          <div className="subscription-language-control">
+          <div
+            className="subscription-language-control"
+            role="group"
+            aria-label={t("engagement.subscribe.languageLabel")}
+          >
             <span className="subscription-language-label">
               {t("engagement.subscribe.languageLabel")}
             </span>
@@ -162,7 +181,11 @@ export function SubscriptionForm({
         </div>
       </form>
 
-      <div className="min-h-5 text-xs leading-5 text-slate-500">
+      <div
+        id={statusId}
+        className="min-h-5 text-xs leading-5 text-slate-500"
+        aria-live="polite"
+      >
         <span className={statusMessage.className}>{statusMessage.text}</span>
       </div>
     </section>

@@ -1,0 +1,95 @@
+{
+  "phase": "PO-08",
+  "browser": "Codex in-app Browser only",
+  "generatedAt": "2026-05-31T08:18:54.713Z",
+  "checks": [
+    {
+      "name": "home public inventory",
+      "status": "pass",
+      "url": "http://localhost:3000/",
+      "artifacts": {
+        "text": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-08-browser-snapshots/home.txt",
+        "screenshot": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-08-screenshots/home.png"
+      },
+      "evidence": {
+        "hasAgentLoop": true,
+        "hasEvidencePacket": true,
+        "hasIsohc": true,
+        "hiddenTitleAbsent": true
+      }
+    },
+    {
+      "name": "archive public inventory",
+      "status": "pass",
+      "url": "http://localhost:3000/archive",
+      "artifacts": {
+        "text": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-08-browser-snapshots/archive.txt",
+        "screenshot": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-08-screenshots/archive.png"
+      },
+      "evidence": {
+        "hasAgentLoop": true,
+        "hasEvidencePacket": true,
+        "hasIsohc": true,
+        "hiddenTitleAbsent": true
+      }
+    },
+    {
+      "name": "rss feed freshness",
+      "status": "pass",
+      "url": "http://localhost:3000/rss.xml",
+      "artifacts": {
+        "text": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-08-browser-snapshots/rss.xml.txt",
+        "screenshot": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-08-screenshots/rss.xml.png"
+      },
+      "evidence": {
+        "publicSlugMatches": 4,
+        "hiddenSlugAbsent": true
+      }
+    },
+    {
+      "name": "sitemap freshness",
+      "status": "pass",
+      "url": "http://localhost:3000/sitemap.xml",
+      "artifacts": {
+        "text": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-08-browser-snapshots/sitemap.xml.txt",
+        "screenshot": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-08-screenshots/sitemap.xml.png"
+      },
+      "evidence": {
+        "publicSlugMatches": 4,
+        "hasArchive": true,
+        "hasCategory": true,
+        "hasTag": true,
+        "hiddenSlugAbsent": true
+      }
+    },
+    {
+      "name": "public article route",
+      "status": "pass",
+      "url": "http://localhost:3000/post/agent-loop-observable-tool-using-agents",
+      "artifacts": {
+        "text": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-08-browser-snapshots/public-article.txt",
+        "screenshot": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-08-screenshots/public-article.png"
+      },
+      "evidence": {
+        "hasTitle": true,
+        "hasSeries": true,
+        "hiddenTitleAbsent": true
+      }
+    },
+    {
+      "name": "manage agent knowledge status",
+      "status": "pass",
+      "url": "http://localhost:3000/manage/agent",
+      "artifacts": {
+        "text": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-08-browser-snapshots/manage-agent-index-status.txt",
+        "screenshot": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-08-screenshots/manage-agent-index-status.png"
+      },
+      "evidence": {
+        "hasAgentOps": true,
+        "hasCoverage": true,
+        "hasChunkCount": true,
+        "hasHiddenExcluded": true
+      }
+    }
+  ]
+}

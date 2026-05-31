@@ -1,0 +1,66 @@
+- region "Notifications alt+T"
+- banner:
+  - link "AI Tech Blog":
+    - /url: /
+    - generic: AI Tech Blog
+  - navigation:
+    - link "首页":
+      - /url: /
+    - link "AI 算法":
+      - /url: /algorithms
+    - link "AI 应用":
+      - /url: /applications
+    - link "归档":
+      - /url: /archive
+    - link "关于":
+      - /url: /about
+    - button "EN"
+    - link "登录":
+      - /url: /login
+      - button "登录"
+- main:
+  - text: 标签索引
+  - heading "Harness Engine" [level=1]
+  - paragraph: 1 篇文章
+  - complementary:
+    - heading "相关标签" [level=2]
+    - link "Agent Systems":
+      - /url: /tags/agent-systems
+    - link "Context Engineering":
+      - /url: /tags/context-engineering
+    - link "Evaluation":
+      - /url: /tags/evaluation
+    - link "Fine-tuning":
+      - /url: /tags/fine-tuning
+    - link "Observability":
+      - /url: /tags/observability
+    - link "RAG":
+      - /url: /tags/rag
+    - link "Tool Use":
+      - /url: /tags/tool-use
+  - heading "技术文章" [level=2]
+  - link "归档":
+    - /url: /archive
+  - article:
+    - 'link "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"':
+      - /url: /post/agent-harness-engine-evaluating-tool-using-agents
+      - generic: "01"
+    - generic: 最新
+    - link "AI Applications":
+      - /url: /categories/ai-applications
+    - link "Agent Systems":
+      - /url: /tags/agent-systems
+    - link "Harness Engine":
+      - /url: /tags/harness-engine
+    - 'link "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"':
+      - /url: /post/agent-harness-engine-evaluating-tool-using-agents
+      - 'heading "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context" [level=3]'
+    - paragraph: A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals.
+    - text: 2026年5月31日
+    - text: 3 分钟阅读
+    - text: 10 次阅读
+    - link "阅读全文":
+      - /url: /post/agent-harness-engine-evaluating-tool-using-agents
+      - text: 阅读全文
+- button "AI 助手":
+  - generic: AI 助手

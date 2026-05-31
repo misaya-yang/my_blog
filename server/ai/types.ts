@@ -116,8 +116,10 @@ export type AgentRunRecord = {
   conversationId?: string | null;
   status?: AgentRunStatus;
   model?: string | null;
+  question?: string | null;
   scopeType?: AgentScopeType;
   scopeValue?: string | null;
+  retrievalStrategy?: string | null;
   retrievedChunkIds?: string[];
   inputTokens?: number;
   outputTokens?: number;
@@ -150,16 +152,52 @@ export type AgentRetrievalDebugOutput = {
   scope: AgentScope;
   sourceIds: string[];
   sources: AgentSourceCard[];
+  diagnostics: {
+    status: "ready" | "no_sources";
+    terms: string[];
+    missingTerms: string[];
+    notes: string[];
+    suggestions: string[];
+  };
 };
 
 export type AgentEvalRunOutput = {
+  summary: {
+    total: number;
+    passed: number;
+    failed: number;
+    successCases: number;
+    refusalCases: number;
+    runAt: Date;
+    retrievalStrategy: string;
+    modelProvider: string;
+  };
   items: Array<{
     question: string;
+    expectedBehavior: "sources" | "refusal";
+    category: string;
     passed: boolean;
     sourceCount: number;
     topSourceTitle: string | null;
     sourceIds: string[];
+    expectedSourceSlugs: string[];
+    missingSourceSlugs: string[];
+    notes: string[];
   }>;
+};
+
+export type AgentKnowledgeIndexStatusOutput = {
+  chunkCount: number;
+  publicPostCount: number;
+  indexedPublicPostCount: number;
+  hiddenOrDraftExcludedCount: number;
+  lastReindexAt: Date | null;
+  latestReindexError: string | null;
+  reindexCommand: string;
+  publishCommand: string;
+  stalePublicPostSlugs: string[];
+  extraIndexedPostSlugs: string[];
+  indexedPostSlugs: string[];
 };
 
 export type AgentArticleIdeaOutput = {
@@ -168,6 +206,52 @@ export type AgentArticleIdeaOutput = {
     proposedTitle: string;
     rationale: string;
     seedQuestions: string[];
+  }>;
+};
+
+export type AgentQuestionRadarOutput = {
+  summary: {
+    totalRuns: number;
+    failedRuns: number;
+    noSourceRuns: number;
+    uniqueQuestions: number;
+  };
+  frequentQuestions: Array<{
+    question: string;
+    count: number;
+    scopeType: AgentScopeType;
+    scopeValue: string | null;
+    lastAskedAt: Date | null;
+    runIds: string[];
+    signalTypes: Array<"frequent" | "no_source" | "failed">;
+  }>;
+  noSourceRuns: Array<{
+    runId: string;
+    question: string | null;
+    scopeType: AgentScopeType | null;
+    scopeValue: string | null;
+    createdAt: Date | null;
+  }>;
+  failedRuns: Array<{
+    runId: string;
+    question: string | null;
+    errorCode: string | null;
+    scopeType: AgentScopeType | null;
+    scopeValue: string | null;
+    createdAt: Date | null;
+  }>;
+  scopeBreakdown: Array<{
+    scopeType: AgentScopeType | "unknown";
+    scopeValue: string | null;
+    count: number;
+  }>;
+  suggestedIdeas: Array<{
+    ideaId: string;
+    proposedTitle: string;
+    rationale: string;
+    supportCount: number;
+    sourceRunIds: string[];
+    status: "new";
   }>;
 };
 

@@ -134,6 +134,8 @@ export default function Manage() {
     trpc.engagement.feedback.list.useQuery({ limit: 20 }, { enabled: isAdmin });
   const { data: subscribersData, isLoading: subscribersLoading } =
     trpc.engagement.subscribers.list.useQuery(undefined, { enabled: isAdmin });
+  const { data: contentRadarData, isLoading: contentRadarLoading } =
+    trpc.engagement.contentRadar.summary.useQuery(undefined, { enabled: isAdmin });
 
   // 切换发布状态
   const updateMutation = trpc.posts.update.useMutation({
@@ -150,6 +152,17 @@ export default function Manage() {
     onSuccess: () => {
       toast.success(t("manage.engagement.feedbackReviewed"));
       utils.engagement.feedback.list.invalidate();
+      utils.engagement.contentRadar.summary.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message || t("manage.engagement.feedbackReviewFailed"));
+    },
+  });
+  const updateFeedbackStatus = trpc.engagement.feedback.updateStatus.useMutation({
+    onSuccess: () => {
+      toast.success(t("manage.engagement.feedbackReviewed"));
+      utils.engagement.feedback.list.invalidate();
+      utils.engagement.contentRadar.summary.invalidate();
     },
     onError: (error) => {
       toast.error(error.message || t("manage.engagement.feedbackReviewFailed"));
@@ -744,6 +757,8 @@ export default function Manage() {
           </div>
         </section>
 
+        <ContentRadarPanel loading={contentRadarLoading} radar={contentRadarData} />
+
         <section className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
           <div className="glass-panel p-5">
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -781,9 +796,7 @@ export default function Manage() {
                               : t("manage.engagement.notUseful")}
                           </Badge>
                           <Badge variant={item.status === "new" ? "default" : "secondary"}>
-                            {item.status === "new"
-                              ? t("manage.engagement.statusNew")
-                              : t("manage.engagement.statusReviewed")}
+                            {getFeedbackStatusLabel(item.status, t)}
                           </Badge>
                         </div>
                         <h4 className="line-clamp-1 text-sm font-semibold text-white">
@@ -794,7 +807,7 @@ export default function Manage() {
                         </p>
                         <p className="mt-2 text-xs text-slate-500">
                           {(item.visitorName || t("manage.engagement.anonymous"))}
-                          {item.replyEmail ? ` · ${item.replyEmail}` : ""}
+                          {item.replyEmail ? ` · ${maskEmail(item.replyEmail)}` : ""}
                           {item.createdAt
                             ? ` · ${new Date(item.createdAt).toLocaleString(language === "zh" ? "zh-CN" : "en-US")}`
                             : ""}
@@ -811,11 +824,23 @@ export default function Manage() {
                             variant="outline"
                             size="sm"
                             className="glass-button"
-                            disabled={markFeedbackReviewed.isPending}
+                            disabled={markFeedbackReviewed.isPending || updateFeedbackStatus.isPending}
                             onClick={() => markFeedbackReviewed.mutate({ id: item.id })}
                           >
                             <CheckCircle2 className="h-4 w-4" />
                             {t("manage.engagement.markReviewed")}
+                          </Button>
+                        )}
+                        {item.status !== "hidden" && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-amber-300/20 bg-amber-950/15 text-amber-100 hover:bg-amber-500/15"
+                            disabled={updateFeedbackStatus.isPending}
+                            onClick={() => updateFeedbackStatus.mutate({ id: item.id, status: "hidden" })}
+                          >
+                            <EyeOff className="h-4 w-4" />
+                            {t("manage.engagement.markHidden")}
                           </Button>
                         )}
                       </div>
@@ -866,7 +891,7 @@ export default function Manage() {
                     key={subscriber.id}
                     className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-3"
                   >
-                    <p className="truncate text-sm font-medium text-white">{subscriber.email}</p>
+                    <p className="truncate text-sm font-medium text-white">{maskEmail(subscriber.email)}</p>
                     <p className="mt-1 text-xs text-slate-500">
                       {(subscriber.preferredLanguage || "-").toUpperCase()}
                       {subscriber.interests ? ` · ${subscriber.interests}` : ""}
@@ -906,4 +931,131 @@ export default function Manage() {
       </AlertDialog>
     </div>
   );
+}
+
+function ContentRadarPanel({ loading, radar }: { loading: boolean; radar: any }) {
+  const { language, t } = useLanguage();
+  const opportunities = radar?.feedback?.opportunities ?? [];
+  const topInterests = radar?.subscriptions?.topInterests ?? [];
+  const languageBreakdown = radar?.subscriptions?.languageBreakdown ?? { zh: 0, en: 0, unknown: 0 };
+
+  return (
+    <section className="glass-panel mt-8 p-5">
+      <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <div className="mb-2 flex items-center gap-2 text-white">
+            <Bot className="h-5 w-5 text-sky-300" />
+            <h3 className="text-lg font-semibold">{t("manage.engagement.radarTitle")}</h3>
+          </div>
+          <p className="max-w-3xl text-sm leading-6 text-slate-400">
+            {t("manage.engagement.radarDescription")}
+          </p>
+        </div>
+        <Badge variant="outline" className="w-fit border-sky-200/20 text-sky-200">
+          {t("manage.engagement.deliveryStored")}
+        </Badge>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin text-sky-300" />
+        </div>
+      ) : (
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)]">
+          <div>
+            <div className="mb-3 grid gap-3 md:grid-cols-4">
+              <RadarMetric label={t("manage.engagement.radarNewFeedback")} value={String(radar?.feedback?.newCount ?? 0)} />
+              <RadarMetric label={t("manage.engagement.radarNotUseful")} value={String(radar?.feedback?.notUsefulCount ?? 0)} />
+              <RadarMetric label={t("manage.engagement.radarSubscribers")} value={String(radar?.subscriptions?.activeCount ?? 0)} />
+              <RadarMetric label={t("manage.engagement.radarHidden")} value={String(radar?.feedback?.hiddenCount ?? 0)} />
+            </div>
+            <h4 className="mb-3 text-sm font-semibold text-white">{t("manage.engagement.opportunitiesTitle")}</h4>
+            <div className="grid gap-3">
+              {opportunities.length === 0 ? (
+                <p className="rounded-lg border border-sky-200/10 bg-slate-950/25 p-4 text-sm text-slate-500">
+                  {t("manage.engagement.opportunitiesEmpty")}
+                </p>
+              ) : (
+                opportunities.map((item: any) => (
+                  <article key={item.postSlug || item.postId} className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0">
+                        <h5 className="line-clamp-1 text-sm font-semibold text-white">{item.postTitle}</h5>
+                        <p className="mt-1 text-xs text-slate-500">
+                          {t("manage.engagement.feedbackCount", { count: item.total })} · {t("manage.engagement.notUseful")} {item.notUseful} · {t("manage.engagement.statusNew")} {item.newCount}
+                        </p>
+                        {item.sampleMessages?.length > 0 && (
+                          <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-300">
+                            {item.sampleMessages[0]}
+                          </p>
+                        )}
+                        {item.latestAt && (
+                          <p className="mt-2 text-xs text-slate-500">
+                            {t("manage.engagement.latestSignal")}: {new Date(item.latestAt).toLocaleString(language === "zh" ? "zh-CN" : "en-US")}
+                          </p>
+                        )}
+                      </div>
+                      {item.postSlug && (
+                        <Button asChild variant="outline" size="sm" className="glass-button shrink-0">
+                          <Link href={`/post/${item.postSlug}`}>{t("manage.action.view")}</Link>
+                        </Button>
+                      )}
+                    </div>
+                  </article>
+                ))
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-4">
+            <h4 className="text-sm font-semibold text-white">{t("manage.engagement.subscriptionSummary")}</h4>
+            <p className="mt-2 text-sm leading-6 text-slate-400">
+              {t("manage.engagement.languageBreakdown", {
+                zh: languageBreakdown.zh,
+                en: languageBreakdown.en,
+                unknown: languageBreakdown.unknown,
+              })}
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {topInterests.length > 0 ? (
+                topInterests.map((item: any) => (
+                  <Badge key={item.phrase} variant="outline" className="border-cyan-200/20 text-cyan-100">
+                    {item.phrase} · {item.count}
+                  </Badge>
+                ))
+              ) : (
+                <span className="text-sm text-slate-500">{t("manage.engagement.noInterests")}</span>
+              )}
+            </div>
+            <p className="mt-4 text-xs leading-5 text-slate-500">
+              {t("manage.engagement.deliveryDescription")}
+            </p>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function RadarMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-3">
+      <p className="text-xs text-slate-500">{label}</p>
+      <p className="mt-1 text-xl font-semibold text-white">{value}</p>
+    </div>
+  );
+}
+
+function getFeedbackStatusLabel(status: string, t: (key: string) => string) {
+  if (status === "hidden") return t("manage.engagement.statusHidden");
+  if (status === "reviewed") return t("manage.engagement.statusReviewed");
+  return t("manage.engagement.statusNew");
+}
+
+function maskEmail(email?: string | null) {
+  if (!email) return "";
+  const [name, domain] = email.split("@");
+  if (!domain) return email;
+  const visible = name.slice(0, 2);
+  return `${visible}${name.length > 2 ? "***" : "*"}@${domain}`;
 }

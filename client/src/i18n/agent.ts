@@ -69,6 +69,30 @@ const agent: TranslationDict = {
     en: "I can summarize articles, compare tracks, and suggest source-grounded reading paths.",
     zh: "可以解读文章、比较技术区，并给出带来源的阅读路径。",
   },
+  "agent.welcome.postTitle": {
+    en: "Read this article with a companion",
+    zh: "带着伴读理解这篇文章",
+  },
+  "agent.welcome.postBody": {
+    en: "Ask for the core abstraction, prerequisites, implementation implications, or a reading checklist grounded in public posts.",
+    zh: "可以询问核心抽象、前置知识、实现含义，或生成基于公开文章的阅读清单。",
+  },
+  "agent.welcome.trackTitle": {
+    en: "Explore this research track",
+    zh: "探索这个研究方向",
+  },
+  "agent.welcome.trackBody": {
+    en: "Ask which article to read first, how concepts connect, or how to move through the track as a reading path.",
+    zh: "可以询问先读哪篇、概念如何连接，或让助手整理一条技术区阅读路径。",
+  },
+  "agent.welcome.discoveryTitle": {
+    en: "Turn the index into a reading plan",
+    zh: "把索引变成阅读计划",
+  },
+  "agent.welcome.discoveryBody": {
+    en: "Use public search, archive, tags, and categories to narrow a topic and find the right next article.",
+    zh: "基于公开搜索、归档、标签与分类缩小主题，找到下一篇该读的文章。",
+  },
   "agent.input.placeholder": {
     en: "Ask about an article, tag, or reading path...",
     zh: "询问文章、标签或阅读路径...",
@@ -105,6 +129,22 @@ const agent: TranslationDict = {
     en: "Attached",
     zh: "已挂载",
   },
+  "agent.context.count": {
+    en: "{count} attached",
+    zh: "已挂载 {count} 个",
+  },
+  "agent.context.supported": {
+    en: "Paste notes or attach .txt/.md files. Context is used only in this conversation.",
+    zh: "可粘贴笔记或添加 .txt/.md 文件；上下文只用于当前会话。",
+  },
+  "agent.context.limit": {
+    en: "Text is limited to 20k characters per attachment.",
+    zh: "每次上下文最多 20k 字符。",
+  },
+  "agent.context.lifecycle": {
+    en: "Attached context stays with this conversation; clearing is not available yet.",
+    zh: "已挂载上下文会跟随当前会话；暂未提供单独清除入口。",
+  },
   "agent.context.attached": {
     en: "Context attached to this conversation.",
     zh: "上下文已挂载到当前会话。",
@@ -124,6 +164,22 @@ const agent: TranslationDict = {
   "agent.prompts.postSummary": {
     en: "Summarize this article from a technical angle.",
     zh: "从技术角度总结这篇文章。",
+  },
+  "agent.prompts.postAbstraction": {
+    en: "Explain the core abstraction in this article.",
+    zh: "解释这篇文章里的核心抽象。",
+  },
+  "agent.prompts.postImplementation": {
+    en: "What implementation implications should I take away?",
+    zh: "这篇文章对实现有什么启发？",
+  },
+  "agent.prompts.postChecklist": {
+    en: "Generate a reading checklist for this article.",
+    zh: "为这篇文章生成阅读检查清单。",
+  },
+  "agent.prompts.postCompare": {
+    en: "Compare this article with another public post.",
+    zh: "把这篇文章和另一篇公开文章做对比。",
   },
   "agent.prompts.postAssumptions": {
     en: "What assumptions and failure modes matter here?",
@@ -145,6 +201,62 @@ const agent: TranslationDict = {
     en: "Suggest a source-grounded reading path.",
     zh: "推荐一条有来源依据的阅读路径。",
   },
+  "agent.prompts.applicationsFirst": {
+    en: "Which AI application article should I read first?",
+    zh: "AI 应用方向应该先读哪篇？",
+  },
+  "agent.prompts.applicationsPath": {
+    en: "Build a reading path for agent evaluation.",
+    zh: "为 Agent 评测整理一条阅读路径。",
+  },
+  "agent.prompts.applicationsCompare": {
+    en: "Compare Harness Engine, Evidence Packet, and Agent Loop.",
+    zh: "比较 Harness Engine、Evidence Packet 和 Agent Loop。",
+  },
+  "agent.prompts.applicationsMap": {
+    en: "Explain the AI Applications topic map.",
+    zh: "解释 AI 应用技术地图。",
+  },
+  "agent.prompts.algorithmsFirst": {
+    en: "Which AI algorithm article should I read first?",
+    zh: "AI 算法方向应该先读哪篇？",
+  },
+  "agent.prompts.algorithmsMap": {
+    en: "Explain the AI Algorithms research map.",
+    zh: "解释 AI 算法研究地图。",
+  },
+  "agent.prompts.algorithmsCompare": {
+    en: "Compare residual stability and long-context mechanisms.",
+    zh: "比较残差稳定性和长上下文机制。",
+  },
+  "agent.prompts.algorithmsPrereq": {
+    en: "What prerequisites do I need for the algorithm track?",
+    zh: "阅读算法方向需要哪些前置知识？",
+  },
+  "agent.prompts.searchSynthesize": {
+    en: "Synthesize these search results into a reading path.",
+    zh: "把这些搜索结果整理成阅读路径。",
+  },
+  "agent.prompts.searchNarrow": {
+    en: "Help me narrow this topic to the right public posts.",
+    zh: "帮我把这个主题收敛到合适的公开文章。",
+  },
+  "agent.prompts.archiveRecent": {
+    en: "What changed in the newest public articles?",
+    zh: "最新公开文章主要更新了什么？",
+  },
+  "agent.prompts.archiveSeries": {
+    en: "Group the archive into research series.",
+    zh: "按研究系列整理归档文章。",
+  },
+  "agent.prompts.topicMap": {
+    en: "Map this topic using public posts.",
+    zh: "用公开文章梳理这个主题。",
+  },
+  "agent.prompts.topicCompare": {
+    en: "Compare the main ideas inside this topic.",
+    zh: "比较这个主题下的主要观点。",
+  },
   "agent.sources.title": {
     en: "Sources",
     zh: "来源",
@@ -165,6 +277,30 @@ const agent: TranslationDict = {
     en: "Context",
     zh: "上下文",
   },
+  "agent.sources.reason": {
+    en: "Why this source",
+    zh: "引用原因",
+  },
+  "agent.sources.section": {
+    en: "Section",
+    zh: "小节",
+  },
+  "agent.sources.category": {
+    en: "Category",
+    zh: "分类",
+  },
+  "agent.sources.tags": {
+    en: "Tags",
+    zh: "标签",
+  },
+  "agent.sources.slug": {
+    en: "Slug",
+    zh: "Slug",
+  },
+  "agent.related.title": {
+    en: "Related questions",
+    zh: "相关问题",
+  },
   "agent.quota.remaining": {
     en: "{remaining} of {limit} left today",
     zh: "今日剩余 {remaining}/{limit}",
@@ -180,6 +316,14 @@ const agent: TranslationDict = {
   "agent.quota.blockedVisitor": {
     en: "Visitor limit reached. Please continue after the daily reset.",
     zh: "游客额度已用完，请在每日重置后继续。",
+  },
+  "agent.quota.lowDetail": {
+    en: "You are almost out of daily questions. Visitor identity gives a larger daily allowance when anonymous quota is low.",
+    zh: "今日提问额度快用完了；匿名额度不足时，可使用游客身份获得更高每日额度。",
+  },
+  "agent.quota.adminDetail": {
+    en: "Admin sessions use the admin quota tier for maintenance and QA.",
+    zh: "管理员会话使用独立额度层，用于维护和质量检查。",
   },
   "agent.error.bootstrap": {
     en: "The assistant could not load its session. You can try opening it again.",

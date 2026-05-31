@@ -1,0 +1,176 @@
+- region "Notifications alt+T"
+- banner:
+  - link "AI Tech Blog":
+    - /url: /
+    - generic: AI Tech Blog
+  - navigation:
+    - link "首页":
+      - /url: /
+    - link "AI 算法":
+      - /url: /algorithms
+    - link "AI 应用":
+      - /url: /applications
+    - link "归档":
+      - /url: /archive
+    - link "关于":
+      - /url: /about
+    - button "EN"
+    - link "登录":
+      - /url: /login
+      - button "登录"
+- main:
+  - paragraph: 应用索引
+  - heading "AI 应用工程" [level=1]
+  - paragraph: 记录 Agent、Harness Engine、RAG、Context Engineering、工具调用与评测循环。
+  - paragraph: 沿着运行时边界阅读：什么进入上下文、什么留下 trace，以及如何评测 Agent 行为而不是讲故事。
+  - text: 阅读路径
+  - heading "Agent Runtime Systems" [level=2]
+  - paragraph: 从受控评测走向可观测的多步 Agent 运行时。
+  - generic: Agent 系统
+  - generic: Harness Engine
+  - generic: 可观测性
+  - 'link "01 Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"':
+    - /url: /post/agent-harness-engine-evaluating-tool-using-agents
+    - generic: "01"
+    - strong: "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+  - 'link "02 Evidence Packet: Agentic RAG 的上下文编译接口"':
+    - /url: /post/rag-evidence-packet-context-compiler
+    - generic: "02"
+    - strong: "Evidence Packet: Agentic RAG 的上下文编译接口"
+  - 'link "03 Agent Loop: 从 ReAct 模式到可观测运行时"':
+    - /url: /post/agent-loop-observable-tool-using-agents
+    - generic: "03"
+    - strong: "Agent Loop: 从 ReAct 模式到可观测运行时"
+  - paragraph: 后续计划
+  - generic: Tool ABI
+  - generic: Context Budget
+  - text: 阅读路径
+  - heading "Agentic RAG Infrastructure" [level=2]
+  - paragraph: 检索如何变成可治理、可引用的 Agent 上下文。
+  - generic: RAG 与检索
+  - generic: Context Engineering
+  - generic: 评测
+  - 'link "01 Evidence Packet: Agentic RAG 的上下文编译接口"':
+    - /url: /post/rag-evidence-packet-context-compiler
+    - generic: "01"
+    - strong: "Evidence Packet: Agentic RAG 的上下文编译接口"
+  - paragraph: 后续计划
+  - generic: Hybrid Retrieval
+  - generic: Retrieval Eval
+  - generic: "3"
+  - generic: 文章
+  - generic: "6"
+  - generic: 专题 / 技术地图
+  - generic: "42"
+  - generic: 阅读量
+  - complementary:
+    - heading "应用索引" [level=2]
+    - paragraph: 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。
+    - generic: Agent 系统
+    - generic: Harness Engine
+    - generic: RAG 与检索
+    - generic: Context Engineering
+  - heading "技术文章" [level=2]
+  - link "返回总览":
+    - /url: /
+    - text: 返回总览
+  - article:
+    - 'link "Agent Loop: 从 ReAct 模式到可观测运行时"':
+      - /url: /post/agent-loop-observable-tool-using-agents
+      - generic: "01"
+    - generic: 最新
+    - link "AI Applications":
+      - /url: /categories/ai-applications
+    - link "Agent Systems":
+      - /url: /tags/agent-systems
+    - link "AgentLoop":
+      - /url: /tags/agent-loop
+    - 'link "Agent Loop: 从 ReAct 模式到可观测运行时"':
+      - /url: /post/agent-loop-observable-tool-using-agents
+      - 'heading "Agent Loop: 从 ReAct 模式到可观测运行时" [level=3]'
+    - paragraph: Agent Loop 将 ReAct 式多步行为收束为可观测运行时：用状态机、上下文构建器、决策合约、工具运行时、预算、检查点和 trace 管理模型行动。
+    - text: 2026年5月31日
+    - text: 12 分钟阅读
+    - text: 32 次阅读
+    - link "阅读全文":
+      - /url: /post/agent-loop-observable-tool-using-agents
+      - text: 阅读全文
+  - article:
+    - 'link "Evidence Packet: Agentic RAG 的上下文编译接口"':
+      - /url: /post/rag-evidence-packet-context-compiler
+      - generic: "02"
+    - generic: 研究
+    - link "AI Applications":
+      - /url: /categories/ai-applications
+    - link "Agent Systems":
+      - /url: /tags/agent-systems
+    - link "Agentic RAG":
+      - /url: /tags/agentic-rag
+    - 'link "Evidence Packet: Agentic RAG 的上下文编译接口"':
+      - /url: /post/rag-evidence-packet-context-compiler
+      - 'heading "Evidence Packet: Agentic RAG 的上下文编译接口" [level=3]'
+    - paragraph: 把知识库从 top-k chunk 搜索升级为面向 Agent 的上下文编译器，用 Evidence Packet 统一检索信号、来源引用、权限范围、token budget、trace 和评测。
+    - text: 2026年5月31日
+    - text: 10 分钟阅读
+    - text: 0 次阅读
+    - link "阅读全文":
+      - /url: /post/rag-evidence-packet-context-compiler
+      - text: 阅读全文
+  - article:
+    - 'link "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"':
+      - /url: /post/agent-harness-engine-evaluating-tool-using-agents
+      - generic: "03"
+    - generic: 研究
+    - link "AI Applications":
+      - /url: /categories/ai-applications
+    - link "Agent Systems":
+      - /url: /tags/agent-systems
+    - link "Harness Engine":
+      - /url: /tags/harness-engine
+    - 'link "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"':
+      - /url: /post/agent-harness-engine-evaluating-tool-using-agents
+      - 'heading "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context" [level=3]'
+    - paragraph: A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals.
+    - text: 2026年5月31日
+    - text: 3 分钟阅读
+    - text: 10 次阅读
+    - link "阅读全文":
+      - /url: /post/agent-harness-engine-evaluating-tool-using-agents
+      - text: 阅读全文
+  - complementary:
+    - heading "技术节点" [level=2]
+    - generic: Agent 系统
+    - generic: 工具调用
+    - generic: Harness Engine
+    - generic: 评测
+    - generic: RAG 与检索
+    - generic: 接地
+    - generic: Context Engineering
+    - generic: 记忆
+    - generic: 微调
+    - generic: 适配
+    - generic: 可观测性
+    - generic: 可靠性
+    - generic: 专题通过标签和系列文章表达。
+- button "AI 助手" [expanded] [active]:
+  - generic: AI 助手
+- heading "博客 Agent" [level=2]
+- paragraph: 基于公开文章回答
+- button "关闭助手":
+- text: 技术区
+- generic "anonymous quota":
+  - text: 今日还可问 0 次
+- button "历史":
+  - text: 历史
+- generic: 今日提问额度快用完了；匿名额度不足时，可使用游客身份获得更高每日额度。
+- heading "探索这个研究方向" [level=3]
+- paragraph: 可以询问先读哪篇、概念如何连接，或让助手整理一条技术区阅读路径。
+- button "AI 应用方向应该先读哪篇？"
+- button "为 Agent 评测整理一条阅读路径。"
+- button "比较 Harness Engine、Evidence Packet 和 Agent Loop。"
+- button "解释 AI 应用技术地图。"
+- button "会话上下文":
+  - generic: 会话上下文
+- button "添加会话上下文":
+- textbox "询问文章、标签或阅读路径..."
+- button "发送" [disabled]:

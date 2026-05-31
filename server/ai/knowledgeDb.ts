@@ -1,12 +1,13 @@
 import { and, eq } from "drizzle-orm";
 import { aiKnowledgeChunks } from "../../drizzle/schema.js";
-import { getDb, getPublicDiscoveryPosts } from "../db.js";
+import { getDb, getPostsCount, getPublicDiscoveryPosts } from "../db.js";
 import {
   buildPublicKnowledgeChunks,
   searchPublicKnowledgeChunks,
   type KnowledgeChunkDraft,
   type KnowledgeSearchResult,
 } from "./knowledge.js";
+import type { AgentKnowledgeIndexStatusOutput } from "./types.js";
 
 export type KnowledgeReindexResult = {
   created: number;
@@ -63,6 +64,53 @@ export async function searchPublicKnowledgeChunkSources(params: {
     limit: params.limit,
     scope: params.scope,
   });
+}
+
+export async function getKnowledgeIndexStatus(): Promise<AgentKnowledgeIndexStatusOutput> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const [publicPosts, totalPostCount, rows] = await Promise.all([
+    getPublicDiscoveryPosts(),
+    getPostsCount({}),
+    db.select().from(aiKnowledgeChunks),
+  ]);
+
+  const publicPostSlugs = new Set(publicPosts.map((post) => post.slug));
+  const publicRows = rows.filter(
+    (row) =>
+      row.statusSnapshot === "published" &&
+      row.visibilitySnapshot === "public"
+  );
+  const indexedPostSlugs = Array.from(
+    new Set(publicRows.map((row) => row.postSlug).filter((slug): slug is string => Boolean(slug)))
+  ).sort();
+  const indexedPostSlugSet = new Set(indexedPostSlugs);
+  const lastReindexAt = rows.reduce<Date | null>((latest, row) => {
+    const value = row.updatedAt ?? row.createdAt;
+    if (!value) return latest;
+    if (!latest || value > latest) return value;
+    return latest;
+  }, null);
+
+  return {
+    chunkCount: publicRows.length,
+    publicPostCount: publicPosts.length,
+    indexedPublicPostCount: indexedPostSlugs.filter((slug) => publicPostSlugs.has(slug)).length,
+    hiddenOrDraftExcludedCount: Math.max(0, totalPostCount - publicPosts.length),
+    lastReindexAt,
+    latestReindexError: null,
+    reindexCommand: "pnpm ai:reindex",
+    publishCommand: "pnpm content:publish",
+    stalePublicPostSlugs: publicPosts
+      .map((post) => post.slug)
+      .filter((slug) => !indexedPostSlugSet.has(slug))
+      .sort(),
+    extraIndexedPostSlugs: indexedPostSlugs
+      .filter((slug) => !publicPostSlugs.has(slug))
+      .sort(),
+    indexedPostSlugs,
+  };
 }
 
 function toInsertValue(chunk: KnowledgeChunkDraft): typeof aiKnowledgeChunks.$inferInsert {

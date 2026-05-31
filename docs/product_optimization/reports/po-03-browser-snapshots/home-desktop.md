@@ -1,0 +1,254 @@
+- region "Notifications alt+T"
+- banner:
+  - link "AI Tech Blog":
+    - /url: /
+    - generic: AI Tech Blog
+  - navigation:
+    - link "首页":
+      - /url: /
+    - link "AI 算法":
+      - /url: /algorithms
+    - link "AI 应用":
+      - /url: /applications
+    - link "归档":
+      - /url: /archive
+    - link "关于":
+      - /url: /about
+    - button "EN"
+    - link "登录":
+      - /url: /login
+      - button "登录"
+- main:
+  - generic: RoPE
+  - generic: ·
+  - generic: 长上下文
+  - generic: ·
+  - generic: Agent 评测
+  - heading "AI 算法与应用系统" [level=1]
+  - paragraph: 记录模型机制与 AI 应用工程：长上下文、Agent、RAG、Context Engine 与评测 Harness。
+  - generic: MY
+  - paragraph: Misaya Yang
+  - paragraph: AI 系统研究笔记
+  - link "Google Scholar":
+    - /url: https://scholar.google.com/citations?user=6X9HlDAAAAAJ
+  - button "邮箱":
+  - link:
+    - /url: /algorithms
+    - article:
+      - text: AI 算法
+      - heading "AI 算法研究" [level=2]
+      - paragraph: 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。
+      - text: 2 条路径
+      - generic: 1 篇公开笔记
+      - text: 阅读全文
+  - link:
+    - /url: /applications
+    - article:
+      - text: AI 应用
+      - heading "AI 应用工程" [level=2]
+      - paragraph: 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。
+      - text: 2 条路径
+      - generic: 3 篇公开笔记
+      - text: 阅读全文
+  - heading "进行中的系列" [level=2]
+  - link "研究地图":
+    - /url: "#research-index"
+    - text: 研究地图
+  - link "AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构":
+    - /url: /algorithms
+    - generic: AI 算法
+    - heading "Residual Stability" [level=3]
+    - paragraph: 残差流混合、不变量和稳定性约束。
+    - generic: 残差混合
+    - generic: 稳定性
+    - generic: 架构
+  - link "AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文":
+    - /url: /algorithms
+    - generic: AI 算法
+    - heading "Long Context and Position Encoding" [level=3]
+    - paragraph: 关于 RoPE、频谱分配和长上下文行为的机制笔记。
+    - generic: 位置编码
+    - generic: RoPE
+    - generic: 长上下文
+  - link "AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性":
+    - /url: /applications
+    - generic: AI 应用
+    - heading "Agent Runtime Systems" [level=3]
+    - paragraph: 从受控评测走向可观测的多步 Agent 运行时。
+    - generic: Agent 系统
+    - generic: Harness Engine
+    - generic: 可观测性
+  - link "AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测":
+    - /url: /applications
+    - generic: AI 应用
+    - heading "Agentic RAG Infrastructure" [level=3]
+    - paragraph: 检索如何变成可治理、可引用的 Agent 上下文。
+    - generic: RAG 与检索
+    - generic: Context Engineering
+    - generic: 评测
+  - generic: 搜索文章、关键词、主题...
+  - searchbox "搜索文章、关键词、主题..."
+  - button "搜索"
+  - link "搜索":
+    - /url: /search
+  - link "归档":
+    - /url: /archive
+  - link "AI 算法":
+    - /url: /categories/ai-algorithms
+  - link "AI 应用":
+    - /url: /categories/ai-applications
+  - region "订阅更新":
+    - heading "订阅更新" [level=2]
+    - paragraph: 留下邮箱接收不定期文章更新；如果你更喜欢阅读器，也可以直接使用 RSS。
+    - link "RSS":
+      - /url: /rss.xml
+      - generic: RSS
+    - generic: you@example.com
+    - textbox "you@example.com"
+    - button "订阅"
+    - generic: 可选主题：RoPE、Agent、RAG...
+    - textbox "可选主题：RoPE、Agent、RAG..."
+    - group "接收语言":
+      - generic: 接收语言
+      - button "中文" [pressed]
+      - button "EN"
+    - generic: 仅保存邮箱和可选主题偏好。
+  - generic: "4"
+  - generic: 文章
+  - generic: "2"
+  - generic: 分类
+  - generic: "48"
+  - generic: 阅读量
+  - complementary:
+    - heading "关于我" [level=2]
+    - paragraph: 聚焦模型机制、长上下文行为、Agent 基础设施，以及可靠 AI 应用系统。
+    - heading "研究方向" [level=3]
+    - generic: Transformer 架构
+    - generic: 大语言模型 (LLM)
+    - generic: 位置编码
+    - generic: RoPE
+    - heading "近期关注" [level=3]
+    - list:
+      - listitem: • 频域视角下的位置编码与外推能力
+      - listitem: • 大模型高效训练与推理优化
+    - heading "热门标签" [level=2]
+    - link "Agent Systems":
+      - /url: /tags/agent-systems
+    - link "Agentic RAG":
+      - /url: /tags/agentic-rag
+    - link "AgentLoop":
+      - /url: /tags/agent-loop
+    - link "Context Compiler":
+      - /url: /tags/context-compiler
+    - link "Context Engineering":
+      - /url: /tags/context-engineering
+    - link "Evaluation":
+      - /url: /tags/evaluation
+    - link "Fine-tuning":
+      - /url: /tags/fine-tuning
+    - link "GNN":
+      - /url: /tags/gnn
+  - heading "最新文章" [level=2]
+  - article:
+    - 'link "Agent Loop: 从 ReAct 模式到可观测运行时"':
+      - /url: /post/agent-loop-observable-tool-using-agents
+      - generic: "01"
+    - generic: 最新
+    - link "AI Applications":
+      - /url: /categories/ai-applications
+    - link "Agent Systems":
+      - /url: /tags/agent-systems
+    - link "AgentLoop":
+      - /url: /tags/agent-loop
+    - 'link "Agent Loop: 从 ReAct 模式到可观测运行时"':
+      - /url: /post/agent-loop-observable-tool-using-agents
+      - 'heading "Agent Loop: 从 ReAct 模式到可观测运行时" [level=3]'
+    - paragraph: Agent Loop 将 ReAct 式多步行为收束为可观测运行时：用状态机、上下文构建器、决策合约、工具运行时、预算、检查点和 trace 管理模型行动。
+    - text: 2026年5月31日
+    - text: 12 分钟阅读
+    - text: 17 次阅读
+    - link "阅读全文":
+      - /url: /post/agent-loop-observable-tool-using-agents
+      - text: 阅读全文
+  - article:
+    - 'link "Evidence Packet: Agentic RAG 的上下文编译接口"':
+      - /url: /post/rag-evidence-packet-context-compiler
+      - generic: "02"
+    - generic: 研究
+    - link "AI Applications":
+      - /url: /categories/ai-applications
+    - link "Agent Systems":
+      - /url: /tags/agent-systems
+    - link "Agentic RAG":
+      - /url: /tags/agentic-rag
+    - 'link "Evidence Packet: Agentic RAG 的上下文编译接口"':
+      - /url: /post/rag-evidence-packet-context-compiler
+      - 'heading "Evidence Packet: Agentic RAG 的上下文编译接口" [level=3]'
+    - paragraph: 把知识库从 top-k chunk 搜索升级为面向 Agent 的上下文编译器，用 Evidence Packet 统一检索信号、来源引用、权限范围、token budget、trace 和评测。
+    - text: 2026年5月31日
+    - text: 10 分钟阅读
+    - text: 0 次阅读
+    - link "阅读全文":
+      - /url: /post/rag-evidence-packet-context-compiler
+      - text: 阅读全文
+  - article:
+    - 'link "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"':
+      - /url: /post/agent-harness-engine-evaluating-tool-using-agents
+      - generic: "03"
+    - generic: 研究
+    - link "AI Applications":
+      - /url: /categories/ai-applications
+    - link "Agent Systems":
+      - /url: /tags/agent-systems
+    - link "Harness Engine":
+      - /url: /tags/harness-engine
+    - 'link "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"':
+      - /url: /post/agent-harness-engine-evaluating-tool-using-agents
+      - 'heading "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context" [level=3]'
+    - paragraph: A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals.
+    - text: 2026年5月31日
+    - text: 3 分钟阅读
+    - text: 10 次阅读
+    - link "阅读全文":
+      - /url: /post/agent-harness-engine-evaluating-tool-using-agents
+      - text: 阅读全文
+  - article:
+    - 'link "IsoHC: Fixed-Vector Isometric Residual Mixing"':
+      - /url: /post/isohc-fixed-vector-isometric-residual-mixing
+      - generic: "04"
+    - generic: 研究
+    - link "AI Algorithms":
+      - /url: /categories/ai-algorithms
+    - link "IsoHC":
+      - /url: /tags/isohc
+    - link "Hyper-Connections":
+      - /url: /tags/hyper-connections
+    - 'link "IsoHC: Fixed-Vector Isometric Residual Mixing"':
+      - /url: /post/isohc-fixed-vector-isometric-residual-mixing
+      - 'heading "IsoHC: Fixed-Vector Isometric Residual Mixing" [level=3]'
+    - paragraph: IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.
+    - text: 2026年5月31日
+    - text: 4 分钟阅读
+    - text: 21 次阅读
+    - link "阅读全文":
+      - /url: /post/isohc-fixed-vector-isometric-residual-mixing
+      - text: 阅读全文
+  - complementary:
+    - heading "研究索引" [level=2]
+    - link "AI 算法 模型":
+      - /url: /algorithms
+      - generic: AI 算法
+      - generic: 模型
+    - link "AI 应用 系统":
+      - /url: /applications
+      - generic: AI 应用
+      - generic: 系统
+    - link "Agent Harness 评测":
+      - /url: /tags/harness-engine
+      - generic: Agent Harness
+      - generic: 评测
+- contentinfo:
+  - paragraph: © 2026 AI Tech Blog. 保留所有权利.
+  - paragraph: Misaya Yang · Transformer systems · Long-context mechanisms
+- button "AI 助手":
+  - generic: AI 助手

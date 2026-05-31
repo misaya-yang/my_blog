@@ -70,6 +70,11 @@ const home: TranslationDict = {
 
   // Research Index sidebar
   "home.researchIndex": { en: "Research Index", zh: "研究索引" },
+  "home.researchIndexKicker": { en: "Working map", zh: "研究地图" },
+  "home.activeSeries": { en: "Active series", zh: "进行中的系列" },
+  "home.startHere": { en: "Start here", zh: "从这里开始" },
+  "home.pathCount": { en: "{count} paths", zh: "{count} 条路径" },
+  "home.publicNotes": { en: "{count} public notes", zh: "{count} 篇公开笔记" },
   "home.indexModels": { en: "Models", zh: "模型" },
   "home.indexSystems": { en: "Systems", zh: "系统" },
   "home.indexAgentHarness": { en: "Agent Harness", zh: "Agent Harness" },
@@ -187,6 +192,22 @@ const home: TranslationDict = {
   "track.backHome": { en: "Back to Portal", zh: "返回总览" },
   "track.statTopics": { en: "Topics / Technical Map", zh: "专题 / 技术地图" },
   "track.topicNodes": { en: "Technical Nodes", zh: "技术节点" },
+  "track.seriesTitle": { en: "Reading paths", zh: "阅读路径" },
+  "track.seriesEmpty": {
+    en: "No public article is attached yet; the planned path is still visible.",
+    zh: "还没有公开文章接入；先保留规划路径。",
+  },
+  "track.nextPlanned": { en: "Next planned", zh: "后续计划" },
+  "track.readingOrder": { en: "Reading order", zh: "阅读顺序" },
+  "track.researchMap": { en: "Research map", zh: "研究地图" },
+  "track.algorithms.mapNote": {
+    en: "Follow the invariant: what quantity is preserved, what projection enforces it, and where the architecture pays for the constraint.",
+    zh: "沿着不变量阅读：保留什么量、由哪个投影约束、架构在哪里为稳定性付出代价。",
+  },
+  "track.applications.mapNote": {
+    en: "Follow the runtime boundary: what enters context, what becomes a trace, and how agent behavior is evaluated instead of narrated.",
+    zh: "沿着运行时边界阅读：什么进入上下文、什么留下 trace，以及如何评测 Agent 行为而不是讲故事。",
+  },
   "track.topicHint": {
     en: "Topics are represented as tags and article series.",
     zh: "专题通过标签和系列文章表达。",
@@ -252,6 +273,52 @@ const home: TranslationDict = {
   "track.topic.adaptation": { en: "Adaptation", zh: "适配" },
   "track.topic.observability": { en: "Observability", zh: "可观测性" },
   "track.topic.reliability": { en: "Reliability", zh: "可靠性" },
+  "series.agentRuntime.title": {
+    en: "Agent Runtime Systems",
+    zh: "Agent Runtime Systems",
+  },
+  "series.agentRuntime.promise": {
+    en: "From controlled evaluation to observable multi-step agent runtimes.",
+    zh: "从受控评测走向可观测的多步 Agent 运行时。",
+  },
+  "series.agentRuntime.next1": { en: "Tool ABI", zh: "Tool ABI" },
+  "series.agentRuntime.next2": { en: "Context Budget", zh: "Context Budget" },
+  "series.agenticRag.title": {
+    en: "Agentic RAG Infrastructure",
+    zh: "Agentic RAG Infrastructure",
+  },
+  "series.agenticRag.promise": {
+    en: "How retrieval becomes governed, citable context for agents.",
+    zh: "检索如何变成可治理、可引用的 Agent 上下文。",
+  },
+  "series.agenticRag.next1": { en: "Hybrid Retrieval", zh: "Hybrid Retrieval" },
+  "series.agenticRag.next2": { en: "Retrieval Eval", zh: "Retrieval Eval" },
+  "series.longContext.title": {
+    en: "Long Context and Position Encoding",
+    zh: "Long Context and Position Encoding",
+  },
+  "series.longContext.promise": {
+    en: "Mechanistic notes on RoPE, spectral allocation, and long-context behavior.",
+    zh: "关于 RoPE、频谱分配和长上下文行为的机制笔记。",
+  },
+  "series.longContext.next1": { en: "RoPE spectral budget", zh: "RoPE spectral budget" },
+  "series.longContext.next2": { en: "Extrapolation failures", zh: "Extrapolation failures" },
+  "series.residualStability.title": {
+    en: "Residual Stability",
+    zh: "Residual Stability",
+  },
+  "series.residualStability.promise": {
+    en: "Residual stream mixing, invariants, and stability constraints.",
+    zh: "残差流混合、不变量和稳定性约束。",
+  },
+  "series.residualStability.next1": {
+    en: "Residual diagnostics",
+    zh: "Residual diagnostics",
+  },
+  "series.residualStability.next2": {
+    en: "Orthogonal constraints",
+    zh: "Orthogonal constraints",
+  },
 };
 
 export default home;

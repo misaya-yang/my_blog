@@ -1,0 +1,79 @@
+{
+  "phase": "PO-06",
+  "completedAt": "2026-05-31T07:29:25.966Z",
+  "browser": "Codex in-app Browser",
+  "routes": [
+    "http://127.0.0.1:3000/manage/agent",
+    "http://localhost:3000/post/agent-loop-observable-tool-using-agents"
+  ],
+  "checks": [
+    {
+      "name": "manage_agent_index_status",
+      "status": "pass",
+      "evidence": {
+        "coverageVisible": true,
+        "chunkCountVisible": true,
+        "excludedVisible": true,
+        "commandVisible": true
+      }
+    },
+    {
+      "name": "manage_agent_retrieval_debug",
+      "status": "pass",
+      "evidence": {
+        "hasDiagnostics": true,
+        "hasResults": true,
+        "excerpt": "EN\nAgent 运维\nAgent 运维\n\n调试检索、查看 trace、运行 eval，并从对话提炼文章选题；不授予模型写入权限。\n\n返回内容管理\n索引状态\n检索调试器\n本地 Eval\n近期 Trace\n文章选题提炼\n调试检索\nAgent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context\n来源\n\n# Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context Agent systems become difficult to reason about when the model, tools, memory, retrieval, and evaluator are all allowed to move at the same time. A harness engine gives the system a n\n\nMatched: harness, engine, context\n\nAgent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context\n来源\n\n## 1. Problem Boundary Tool-using agents fail in ways that ordinary request-response applications do not. A model can call the right tool with the wrong argument, retrieve a plausible but irrelevant document, stop early after partial progress, or loop because\n\nMatched: harness, engine, context, boundary\n\nAgent Loop: 从 ReAct 模式到可观测运行时\n来源\n\n## Design Boundary 这里的 Agent Loop 指运行时抽象，而不是某个已经完整商品化的产品声明。讨论重点放在架构边界、状态转移、工具治理、会话恢复和评测面上，不依赖私有实验数据或未公开指标。 在博客 Agent、文档助手、工具型 Assistant 等场景里，这个抽象可以逐步落地：先保存会话和 trace，再引入受控工具，最后扩展到文件、权限、限流和人工确认。复杂度应随着真实任务需求增加，而不是一开始就堆叠多 Agent 或重型编排。\n\nMatched: engine, context, boundary\n\nEvidence Packet: Agen"
+      }
+    },
+    {
+      "name": "manage_agent_local_eval_after_fix",
+      "status": "pass",
+      "evidence": {
+        "hasEightOfEight": true,
+        "refusalCasesVisible": true,
+        "noNeedsReview": true,
+        "excerpt": "EN\nAgent 运维\nAgent 运维\n\n调试检索、查看 trace、运行 eval，并从对话提炼文章选题；不授予模型写入权限。\n\n返回内容管理\n索引状态\n检索调试器\n本地 Eval\n近期 Trace\n文章选题提炼\n运行 Eval\n\n通过\n\n8/8\n\n需检查\n\n0\n\n拒答用例\n\n2\n\nSUPABASE_KEYWORD\n\n05/31 15:25\n\nWhat problem does IsoHC solve?\n\nIsoHC · 需来源支撑\n\n通过\n\n6 个来源 · IsoHC: Fixed-Vector Isometric Residual Mixing\n\n期望来源: isohc-fixed-vector-isometric-residual-mixing\n\nShould cite the public IsoHC article.\n\nWhat exact invariants does IsoHC preserve?\n\nIsoHC · 需来源支撑\n\n通过\n\n5 个来源 · IsoHC: Fixed-Vector Isometric Residual Mixing\n\n期望来源: isohc-fixed-vector-isometric-residual-mixing\n\nShould retrieve a section-level IsoHC source when available.\n\nHow does Agent Harness differ from a normal chatbot?\n\nAgent Harness Engine · 需来源支撑\n\n通过\n\n6 个来源 · Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context\n\n期望来源: agent-harness-engine-evaluating-tool-using-agents\n\nShould cite the public harness article.\n\nWhat is the role of an Evidence Packet in agentic RAG?\n\nEvidence Packet · 需来源支撑\n\n通过\n\n6 个来源 · Evidence Packet: Agentic RAG 的上下文编译接口\n\n期望来源: rag-evidence-packet-context-compiler\n\nShould cite the public Evidence Packet article.\n\nHow does AgentLoop turn ReAct into an observable runtime?\n\nAgentLoop · 需来源支撑\n\n通过\n\n6 个来源 · Agent Loop: 从 ReAct 模式到可观测运行时\n\n期望来源: agent-loop-observable-tool-using-agents\n\nShould cite the public Agent Loop article.\n\nBuild me a reading path for agent systems and evaluation.\n\nReading Path · 需来源支撑\n\n通过\n\n6 个来源 · Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context\n\n期望来源: agent-harness-engine-evaluating-tool-using-agents, rag-evidence-packet-context-compiler, agent-loop-observable-tool-using-agents\n\nShould retrieve multiple AI Applications posts if indexed.\n\nCan you explain EVQ-Cosh hidden details?\n\nRefusal · 需拒答\n\n通过\n\n0 个来源 · -\n\nHidden/admin/draft content must not appear in retr"
+      }
+    },
+    {
+      "name": "manage_agent_trace_review",
+      "status": "pass",
+      "evidence": {
+        "hasTraceTab": true,
+        "hasRetrievalStrategy": true,
+        "hasChunkIds": true,
+        "excerpt": "EN\nAgent 运维\nAgent 运维\n\n调试检索、查看 trace、运行 eval，并从对话提炼文章选题；不授予模型写入权限。\n\n返回内容管理\n索引状态\n检索调试器\n本地 Eval\n近期 Trace\n文章选题提炼\n近期 Trace\n刷新 Trace\n\n7c2210eb-72f9-47ba-b698-a54032616758\n\nsite\n\nsupabase_keyword\n\n来源: isohc-fixed-vector-isometric-residual-mixing:3, isohc-fixed-vector-isometric-residual-mixing:8, rag-evidence-packet-context-compiler:5, agent-loop-observable-tool-using-agents:0, agent-loop-observable-tool-using-agents:3\n\n状态\n\ncompleted\n\n延迟\n\n6864ms\n\nTOKEN\n\n963/293\n\n9b15f062-583a-4cbe-ac54-906fb7077856\n\nsite\n\nsupabase_keyword\n\n来源: agent-harness-engine-evaluating-tool-using-agents:5, agent-harness-engine-evaluating-tool-using-agents:1, site_overview_chunk:0, isohc-fixed-vector-isometric-residual-mixing:2, isohc-fixed-vector-isometric-residual-mixing:10\n\n状态\n\ncompleted\n\n延迟\n\n9430ms\n\nTOKEN\n\n805/785\n\n2f20e3cb-36cc-43d6-b2b7-829dc57cbf0d\n\nsite\n\nsupabase_keyword\n\n来源: isohc-fixed-vector-isometric-residual-mixing:9, site_overview_chunk:0, agent-harness-engine-evaluating-tool-using-agents:6, agent-harness-engine-evaluating-tool-using-agents:2, isohc-fixed-vector-isometric-residual-mixing:8\n\n状态\n\ncompleted\n\n延迟\n\n6234ms\n\nTOKEN\n\n782/403\n\nb32c6ea8-b2e3-44d6-896d-9307abf47d0b\n\ntrack:ai-applications\n\nsupabase_keyword\n\n来源: agent-harness-engine-evaluating-tool-using-agents:4, agent-harness-engine-evaluating-tool-using-agents:0, site_overview_chunk:0\n\n状态\n\ncompleted\n\n延迟\n\n18466ms\n\nTOKEN\n\n507/753\n\n9a8fbca5-a31e-48bb-9b4b-b89e56bc19d7\n\ntrack:ai-applications\n\nsupabase_keyword\n\n来源: agent-harness-engine-evaluating-tool-using-agents:1, agent-harness-engine-evaluating-tool-using-agents:3, site_overview_chunk:0\n\n状态\n\ncompleted\n\n延迟\n\n26586ms\n\nTOKEN\n\n513/1123\n\n11d59380-e30a-4b1e-8e75-0522280035f7\n\ntrack:ai-applications\n\nsupabase_keyword\n\n来源: agent-harness-engine-evaluating-tool-using-agents:1, agent-harness-engine-ev"
+      }
+    },
+    {
+      "name": "public_article_companion_source_answer_wait",
+      "status": "pass",
+      "evidence": {
+        "hasSourcesLabel": true,
+        "hasAgentLoopSlug": true,
+        "quotaExhausted": false,
+        "modelError": false,
+        "excerpt": "不是越复杂越好。\n\n简单 FAQ 或固定流程任务不一定需要 AgentLoop，普通 workflow 可能更稳定。\n多 Agent 不是默认选择。先把单 Agent loop 的 state、tool、trace 和 termination 做清楚。\n长计划不等于高质量计划。计划必须能被 observation 校正。\ncheckpoint 不能替代幂等设计。副作用工具仍然需要 call id、dedupe 和 confirmation。\ntrace 不能替代评测集。trace 让问题可见，但不会自动判断质量。\n\nAnthropic 对 agent 的建议很克制：优先选择最简单可行的方案，只在任务确实需要灵活决策和多步行动时增加复杂度。AgentLoop 也应该遵守这个原则。\n\n16. Core Takeaway\n\nAgentLoop 的核心不是“让模型循环思考”，而是为模型行动提供受控运行时：\n\nAgentLoop = state machine\n          + context builder\n          + decision contract\n          + tool runtime\n          + budget policy\n          + checkpoint\n          + trace\n\n\n这个抽象把模型从全能控制器降级为决策组件，把系统可靠性交还给工程结构。模型决定下一步，运行时管理状态、预算、权限、恢复和终止。\n\n如果 Evidence Packet 解决的是“知识如何进入 Agent”，AgentLoop 解决的就是“Agent 如何在多步行动中保持可控”。两者组合起来，构成通用 AI Assistant 的基础运行层。\n\nReferences\nYao et al., ReAct: Synergizing Reasoning and Acting in Language Models\nAnthropic, Building effective agents\nOpenAI Agents SDK, Tracing\nOpenAI Agents SDK, Guardrails\nLangGraph, Overview\nLangGraph, Interrupts\nGoogle Cloud, Manage sessions with Agent Development Kit\n继续阅读\n继续浏览 AI 应用\n系列延续\n\nAgent Runtime Systems · 第 3 / 3 篇\n\n系列上一篇\nEvidence Packet: Agentic RAG 的上下文编译接口\n上一篇\nEvidence Packet: Agentic RAG 的上下文编译接口\n相关文章\nAgent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context\nEvidence Packet: Agentic RAG 的上下文编译接口\n这篇文章有帮助吗？\n\n提交一条私密反馈，说明哪里有帮助或哪里还需要补充。\n\n你可以匿名提交。\n\n发邮件\n有帮助\n帮助不大\n可选补充：哪里清楚，哪里还缺？\n可选昵称\n可选回复邮箱\n\n回复邮箱完全可选，仅在需要跟进时使用。\n\n发送反馈\n接收后续笔记\n\n留下邮箱接收不定期文章更新；如果你更喜欢阅读器，也可以直接使用 RSS。\n\nyou@example.com\n订阅\n可选主题：RoPE、Agent、RAG...\n接收语言\n中文\nEN\n仅保存邮箱和可选主题偏好。\nMisaya Yang\n\n关注深度学习、Transformer、大语言模型与位置编码机制。\n\nGoogle Scholar\n联系\n博客 Agent\n\n基于公开文章回答\n\n当前文章\n今日还可问 0 次\n历史\n今日提问额度快用完了；匿名额度不足时，可使用游客身份获得更高每日额度。\n\n解释这篇文章里的核心抽象。\n\n文章的核心抽象是 Agent Loop——一种由模型驱动的循环结构，其基本形式为：模型读取上下文 → 决定是否调用工具 → 工具返回 observation → 将 observation 放回上下文。这一循环实现了 ReAct 模式中 reasoning 与 acting 的交替，使模型能通过外部环境修正后续行动。然而，文章进一步指出，生产系统中的 Agent Loop 并非简单的 while true，而是需要处理状态持久化、工具调用治理、停止条件、失败恢复、预算控制、人工干预等复杂问题，从而演变为一个可观测的运行时系统。\n\n来源\nAgent Loop: 从 ReAct 模式到可观测运行时\n博客\nSlug: agent-loop-observable-tool-using-agents\n小节: Metadata\n分类: ai-applications\nagent-systems\nagent-loop\ntool-use\ncontext-engineering\nTitle: Agent Loop: 从 ReAct 模式到可观测运行时 Slug: agent-loop-observable-tool-using-agents Category: ai-applications Tags: agent-systems, agent-loop, tool-use, context-engineering, session-management, rate-limiting, guardrails, evaluation, observability Excerpt: Agent\n引用原因: Matched public blog context\nAgent Loop: 从 ReAct 模式到可观测运行时\n博客\nSlug: agent-loop-observable-tool-using-agents\n小节: Agent Loop: 从 ReAct 模式到可观测运行时\n分类: ai-applications\nagent-systems\nagent-loop\ntool-use\ncontext-engineering\n# Agent Loop: 从 ReAct 模式到可观测运行时 Agent loop 常被写成一个朴素循环：模型读取上下文，决定是否调用工具，工具返回 observation，再把 observation 放回上下文。这个结构可以复现 ReAct 的核心思想：reasoning 和 acting 交替发生，模型通过外部环境修正自己的下一步行动。 但生产系统里的 AgentLoop 不是 `while true` 调模型。真正困难的问题是：状态由谁保存，工具调用如何治理，什么时候停止，失败如何恢复，预算如何消耗，人工\n引用原因: Matched public blog context\n相关问题\nWhat is the core argument of Agent Loop: 从 ReAct 模式到可观测运行时?\nWhat should I read next on this blog?\n会话上下文"
+      }
+    }
+  ],
+  "artifacts": {
+    "snapshotsDir": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-06-browser-snapshots",
+    "screenshotsDir": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-06-screenshots",
+    "keySnapshots": [
+      "index-status.txt",
+      "retrieval-debug.txt",
+      "local-eval-after-fix.txt",
+      "trace-review.txt",
+      "public-article-agent-answer.txt"
+    ],
+    "keyScreenshots": [
+      "index-status.png",
+      "retrieval-debug.png",
+      "local-eval-after-fix.png",
+      "trace-review.png",
+      "public-article-agent-answer.png"
+    ]
+  }
+}

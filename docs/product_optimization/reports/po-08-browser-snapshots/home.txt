@@ -1,0 +1,178 @@
+AI Tech Blog
+EN
+RoPE
+·
+长上下文
+·
+Agent 评测
+AI 算法与应用系统
+
+记录模型机制与 AI 应用工程：长上下文、Agent、RAG、Context Engine 与评测 Harness。
+
+MY
+
+Misaya Yang
+
+AI 系统研究笔记
+
+AI 算法
+AI 算法研究
+
+这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。
+
+2 条路径
+1 篇公开笔记
+阅读全文
+AI 应用
+AI 应用工程
+
+这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。
+
+2 条路径
+3 篇公开笔记
+阅读全文
+进行中的系列
+研究地图
+AI 算法
+Residual Stability
+
+残差流混合、不变量和稳定性约束。
+
+残差混合
+稳定性
+架构
+AI 算法
+Long Context and Position Encoding
+
+关于 RoPE、频谱分配和长上下文行为的机制笔记。
+
+位置编码
+RoPE
+长上下文
+AI 应用
+Agent Runtime Systems
+
+从受控评测走向可观测的多步 Agent 运行时。
+
+Agent 系统
+Harness Engine
+可观测性
+AI 应用
+Agentic RAG Infrastructure
+
+检索如何变成可治理、可引用的 Agent 上下文。
+
+RAG 与检索
+Context Engineering
+评测
+搜索文章、关键词、主题...
+搜索
+归档
+AI 算法
+AI 应用
+订阅更新
+
+留下邮箱和主题偏好，供后续更新使用。当前邮件发送尚未自动化；现在可以直接使用 RSS。
+
+you@example.com
+订阅
+可选主题：RoPE、Agent、RAG...
+接收语言
+中文
+EN
+仅保存邮箱和可选主题偏好；当前尚未接入邮件发送服务。
+4
+文章
+2
+分类
+83
+阅读量
+关于我
+
+聚焦模型机制、长上下文行为、Agent 基础设施，以及可靠 AI 应用系统。
+
+研究方向
+Transformer 架构
+大语言模型 (LLM)
+位置编码
+RoPE
+近期关注
+• 频域视角下的位置编码与外推能力
+• 大模型高效训练与推理优化
+热门标签
+Agent Systems
+Agentic RAG
+AgentLoop
+Context Compiler
+Context Engineering
+Evaluation
+Fine-tuning
+GNN
+最新文章
+01
+最新
+AI Applications
+Agent Runtime Systems #3
+Agent Systems
+AgentLoop
+Agent Loop: 从 ReAct 模式到可观测运行时
+
+Agent Loop 将 ReAct 式多步行为收束为可观测运行时：用状态机、上下文构建器、决策合约、工具运行时、预算、检查点和 trace 管理模型行动。
+
+2026年5月31日
+12 分钟阅读
+42 次阅读
+阅读全文
+02
+研究
+AI Applications
+Agent Runtime Systems #2
+Agent Systems
+Agentic RAG
+Evidence Packet: Agentic RAG 的上下文编译接口
+
+把知识库从 top-k chunk 搜索升级为面向 Agent 的上下文编译器，用 Evidence Packet 统一检索信号、来源引用、权限范围、token budget、trace 和评测。
+
+2026年5月31日
+10 分钟阅读
+0 次阅读
+阅读全文
+03
+研究
+AI Applications
+Agent Runtime Systems #1
+Agent Systems
+Harness Engine
+Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context
+
+A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals.
+
+2026年5月31日
+3 分钟阅读
+10 次阅读
+阅读全文
+04
+研究
+AI Algorithms
+Residual Stability #1
+IsoHC
+Hyper-Connections
+IsoHC: Fixed-Vector Isometric Residual Mixing
+
+IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.
+
+2026年5月31日
+4 分钟阅读
+31 次阅读
+阅读全文
+研究索引
+AI 算法
+模型
+AI 应用
+系统
+Agent Harness
+评测
+
+© 2026 AI Tech Blog. 保留所有权利.
+
+Misaya Yang · Transformer systems · Long-context mechanisms

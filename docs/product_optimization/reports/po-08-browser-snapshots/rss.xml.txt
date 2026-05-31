@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>AI Tech Blog</title>
+    <link>http://localhost:3000/</link>
+    <description>Research notes by Misaya Yang on deep learning systems and AI application engineering.</description>
+    <language>zh-CN</language>
+    <atom:link href="http://localhost:3000/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Agent Loop: 从 ReAct 模式到可观测运行时</title>
+      <link>http://localhost:3000/post/agent-loop-observable-tool-using-agents</link>
+      <guid isPermaLink="true">http://localhost:3000/post/agent-loop-observable-tool-using-agents</guid>
+      <pubDate>Sun, 31 May 2026 00:30:00 GMT</pubDate>
+      <description>Agent Loop 将 ReAct 式多步行为收束为可观测运行时：用状态机、上下文构建器、决策合约、工具运行时、预算、检查点和 trace 管理模型行动。</description>
+      <author>zedpl28174@gmail.com (Misaya Yang)</author>
+      <category>AI Applications</category>
+      <category>Agent Systems</category>
+      <category>AgentLoop</category>
+      <category>Tool Use</category>
+      <category>Context Engineering</category>
+      <category>Session Management</category>
+      <category>Rate Limiting</category>
+      <category>Guardrails</category>
+      <category>Evaluation</category>
+      <category>Observability</category>
+    </item>
+    <item>
+      <title>Evidence Packet: Agentic RAG 的上下文编译接口</title>
+      <link>http://localhost:3000/post/rag-evidence-packet-context-compiler</link>
+      <guid isPermaLink="true">http://localhost:3000/post/rag-evidence-packet-context-compiler</guid>
+      <pubDate>Sun, 31 May 2026 00:20:00 GMT</pubDate>
+      <description>把知识库从 top-k chunk 搜索升级为面向 Agent 的上下文编译器，用 Evidence Packet 统一检索信号、来源引用、权限范围、token budget、trace 和评测。</description>
+      <author>zedpl28174@gmail.com (Misaya Yang)</author>
+      <category>AI Applications</category>
+      <category>Agent Systems</category>
+      <category>Agentic RAG</category>
+      <category>RAG</category>
+      <category>Knowledge Base</category>
+      <category>Context Compiler</category>
+      <category>Context Engineering</category>
+      <category>Hybrid Search</category>
+      <category>Evaluation</category>
+      <category>Observability</category>
+    </item>
+    <item>
+      <title>Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context</title>
+      <link>http://localhost:3000/post/agent-harness-engine-evaluating-tool-using-agents</link>
+      <guid isPermaLink="true">http://localhost:3000/post/agent-harness-engine-evaluating-tool-using-agents</guid>
+      <pubDate>Sun, 31 May 2026 00:10:00 GMT</pubDate>
+      <description>A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals.</description>
+      <author>zedpl28174@gmail.com (Misaya Yang)</author>
+      <category>AI Applications</category>
+      <category>Agent Systems</category>
+      <category>Harness Engine</category>
+      <category>RAG</category>
+      <category>Context Engineering</category>
+      <category>Fine-tuning</category>
+      <category>Evaluation</category>
+      <category>Observability</category>
+      <category>Tool Use</category>
+    </item>
+    <item>
+      <title>IsoHC: Fixed-Vector Isometric Residual Mixing</title>
+      <link>http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing</link>
+      <guid isPermaLink="true">http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing</guid>
+      <pubDate>Sun, 31 May 2026 00:00:00 GMT</pubDate>
+      <description>IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.</description>
+      <author>zedpl28174@gmail.com (Misaya Yang)</author>
+      <category>AI Algorithms</category>
+      <category>IsoHC</category>
+      <category>Hyper-Connections</category>
+      <category>Residual Stability</category>
+      <category>Orthogonal Projection</category>
+      <category>Transformer</category>
+      <category>GNN</category>
+    </item>
+  </channel>
+</rss>

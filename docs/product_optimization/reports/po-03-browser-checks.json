@@ -1,0 +1,5178 @@
+{
+  "checkedAt": "2026-05-31T06:34:29.150Z",
+  "baseUrl": "http://localhost:3000",
+  "routes": [
+    {
+      "route": "/",
+      "routeLabel": "home",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "ready": {
+        "h1": "AI 算法与应用系统",
+        "hasMain": true,
+        "pathname": "/",
+        "skeletons": 0,
+        "spinner": 0
+      },
+      "metrics": {
+        "clientWidth": 390,
+        "clipCandidates": [],
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 0,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 1,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/login",
+            "index": 2,
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 3,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": "打开导航",
+            "autocomplete": null,
+            "href": null,
+            "index": 4,
+            "placeholder": null,
+            "tag": "button",
+            "text": "打开导航",
+            "type": "button"
+          },
+          {
+            "ariaLabel": "Google Scholar",
+            "autocomplete": null,
+            "href": "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
+            "index": 5,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Google Scholar",
+            "type": null
+          },
+          {
+            "ariaLabel": "邮箱",
+            "autocomplete": null,
+            "href": null,
+            "index": 6,
+            "placeholder": null,
+            "tag": "button",
+            "text": "邮箱",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 7,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 8,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 篇公开笔记 阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#research-index",
+            "index": 9,
+            "placeholder": null,
+            "tag": "a",
+            "text": "研究地图",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 10,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 11,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 12,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 13,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "search",
+            "href": null,
+            "index": 14,
+            "placeholder": "搜索文章、关键词、主题...",
+            "tag": "input",
+            "text": "搜索文章、关键词、主题...",
+            "type": "search"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/search",
+            "index": 15,
+            "placeholder": null,
+            "tag": "a",
+            "text": "搜索",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/archive",
+            "index": 16,
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-algorithms",
+            "index": 17,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 18,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用",
+            "type": null
+          },
+          {
+            "ariaLabel": "RSS",
+            "autocomplete": null,
+            "href": "/rss.xml",
+            "index": 19,
+            "placeholder": null,
+            "tag": "a",
+            "text": "RSS",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "email",
+            "href": null,
+            "index": 20,
+            "placeholder": "you@example.com",
+            "tag": "input",
+            "text": "you@example.com",
+            "type": "email"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 21,
+            "placeholder": null,
+            "tag": "button",
+            "text": "订阅",
+            "type": "submit"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 22,
+            "placeholder": "可选主题：RoPE、Agent、RAG...",
+            "tag": "input",
+            "text": "可选主题：RoPE、Agent、RAG...",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 23,
+            "placeholder": null,
+            "tag": "button",
+            "text": "中文",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 24,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 25,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agentic-rag",
+            "index": 26,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-loop",
+            "index": 27,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/context-compiler",
+            "index": 28,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Compiler",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/context-engineering",
+            "index": 29,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/evaluation",
+            "index": 30,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evaluation",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/fine-tuning",
+            "index": 31,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Fine-tuning",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/gnn",
+            "index": 32,
+            "placeholder": null,
+            "tag": "a",
+            "text": "GNN",
+            "type": null
+          },
+          {
+            "ariaLabel": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 33,
+            "placeholder": null,
+            "tag": "a",
+            "text": "01",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 34,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 35,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-loop",
+            "index": 36,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 37,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 38,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 39,
+            "placeholder": null,
+            "tag": "a",
+            "text": "02",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 40,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 41,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agentic-rag",
+            "index": 42,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 43,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 44,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 45,
+            "placeholder": null,
+            "tag": "a",
+            "text": "03",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 46,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 47,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/harness-engine",
+            "index": 48,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Harness Engine",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 49,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 50,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+            "autocomplete": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "index": 51,
+            "placeholder": null,
+            "tag": "a",
+            "text": "04",
+            "type": null
+          }
+        ],
+        "formControls": [
+          {
+            "ariaLabel": null,
+            "autocomplete": "search",
+            "describedBy": null,
+            "hasLabel": true,
+            "id": "home-search-query",
+            "placeholder": "搜索文章、关键词、主题...",
+            "type": "search"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "email",
+            "describedBy": "_r_5_",
+            "hasLabel": true,
+            "id": "_r_3_",
+            "placeholder": "you@example.com",
+            "type": "email"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "describedBy": "_r_5_",
+            "hasLabel": true,
+            "id": "_r_4_",
+            "placeholder": "可选主题：RoPE、Agent、RAG...",
+            "type": null
+          }
+        ],
+        "h1": "AI 算法与应用系统",
+        "headingsAboveFold": [
+          {
+            "tag": "H1",
+            "text": "AI 算法与应用系统",
+            "top": 195
+          },
+          {
+            "tag": "H2",
+            "text": "AI 算法研究",
+            "top": 530
+          },
+          {
+            "tag": "H2",
+            "text": "AI 应用工程",
+            "top": 786
+          }
+        ],
+        "horizontalOverflow": false,
+        "pathname": "/",
+        "reducedMotionDefault": false,
+        "scrollWidth": 390,
+        "skeletonCount": 0,
+        "title": "AI 算法与应用系统 · AI Tech Blog",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/",
+      "routeLabel": "home",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "ready": {
+        "h1": "AI 算法与应用系统",
+        "hasMain": true,
+        "pathname": "/",
+        "skeletons": 0,
+        "spinner": 0
+      },
+      "metrics": {
+        "clientWidth": 768,
+        "clipCandidates": [],
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 0,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 1,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/login",
+            "index": 2,
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 3,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": "打开导航",
+            "autocomplete": null,
+            "href": null,
+            "index": 4,
+            "placeholder": null,
+            "tag": "button",
+            "text": "打开导航",
+            "type": "button"
+          },
+          {
+            "ariaLabel": "Google Scholar",
+            "autocomplete": null,
+            "href": "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
+            "index": 5,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Google Scholar",
+            "type": null
+          },
+          {
+            "ariaLabel": "邮箱",
+            "autocomplete": null,
+            "href": null,
+            "index": 6,
+            "placeholder": null,
+            "tag": "button",
+            "text": "邮箱",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 7,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 8,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 篇公开笔记 阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#research-index",
+            "index": 9,
+            "placeholder": null,
+            "tag": "a",
+            "text": "研究地图",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 10,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 11,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 12,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 13,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "search",
+            "href": null,
+            "index": 14,
+            "placeholder": "搜索文章、关键词、主题...",
+            "tag": "input",
+            "text": "搜索文章、关键词、主题...",
+            "type": "search"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 15,
+            "placeholder": null,
+            "tag": "button",
+            "text": "搜索",
+            "type": "submit"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/search",
+            "index": 16,
+            "placeholder": null,
+            "tag": "a",
+            "text": "搜索",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/archive",
+            "index": 17,
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-algorithms",
+            "index": 18,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 19,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用",
+            "type": null
+          },
+          {
+            "ariaLabel": "RSS",
+            "autocomplete": null,
+            "href": "/rss.xml",
+            "index": 20,
+            "placeholder": null,
+            "tag": "a",
+            "text": "RSS",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "email",
+            "href": null,
+            "index": 21,
+            "placeholder": "you@example.com",
+            "tag": "input",
+            "text": "you@example.com",
+            "type": "email"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 22,
+            "placeholder": null,
+            "tag": "button",
+            "text": "订阅",
+            "type": "submit"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 23,
+            "placeholder": "可选主题：RoPE、Agent、RAG...",
+            "tag": "input",
+            "text": "可选主题：RoPE、Agent、RAG...",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 24,
+            "placeholder": null,
+            "tag": "button",
+            "text": "中文",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 25,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 26,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agentic-rag",
+            "index": 27,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-loop",
+            "index": 28,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/context-compiler",
+            "index": 29,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Compiler",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/context-engineering",
+            "index": 30,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/evaluation",
+            "index": 31,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evaluation",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/fine-tuning",
+            "index": 32,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Fine-tuning",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/gnn",
+            "index": 33,
+            "placeholder": null,
+            "tag": "a",
+            "text": "GNN",
+            "type": null
+          },
+          {
+            "ariaLabel": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 34,
+            "placeholder": null,
+            "tag": "a",
+            "text": "01",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 35,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 36,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-loop",
+            "index": 37,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 38,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 39,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 40,
+            "placeholder": null,
+            "tag": "a",
+            "text": "02",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 41,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 42,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agentic-rag",
+            "index": 43,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 44,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 45,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 46,
+            "placeholder": null,
+            "tag": "a",
+            "text": "03",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 47,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 48,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/harness-engine",
+            "index": 49,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Harness Engine",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 50,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 51,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          }
+        ],
+        "formControls": [
+          {
+            "ariaLabel": null,
+            "autocomplete": "search",
+            "describedBy": null,
+            "hasLabel": true,
+            "id": "home-search-query",
+            "placeholder": "搜索文章、关键词、主题...",
+            "type": "search"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "email",
+            "describedBy": "_r_5_",
+            "hasLabel": true,
+            "id": "_r_3_",
+            "placeholder": "you@example.com",
+            "type": "email"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "describedBy": "_r_5_",
+            "hasLabel": true,
+            "id": "_r_4_",
+            "placeholder": "可选主题：RoPE、Agent、RAG...",
+            "type": null
+          }
+        ],
+        "h1": "AI 算法与应用系统",
+        "headingsAboveFold": [
+          {
+            "tag": "H1",
+            "text": "AI 算法与应用系统",
+            "top": 219
+          },
+          {
+            "tag": "H2",
+            "text": "AI 算法研究",
+            "top": 584
+          },
+          {
+            "tag": "H2",
+            "text": "AI 应用工程",
+            "top": 584
+          },
+          {
+            "tag": "H2",
+            "text": "进行中的系列",
+            "top": 806
+          },
+          {
+            "tag": "H3",
+            "text": "Residual Stability",
+            "top": 886
+          },
+          {
+            "tag": "H3",
+            "text": "Long Context and Position Encoding",
+            "top": 886
+          }
+        ],
+        "horizontalOverflow": false,
+        "pathname": "/",
+        "reducedMotionDefault": false,
+        "scrollWidth": 768,
+        "skeletonCount": 0,
+        "title": "AI 算法与应用系统 · AI Tech Blog",
+        "viewport": {
+          "height": 1024,
+          "width": 768
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/",
+      "routeLabel": "home",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "ready": {
+        "h1": "AI 算法与应用系统",
+        "hasMain": true,
+        "pathname": "/",
+        "skeletons": 0,
+        "spinner": 0
+      },
+      "metrics": {
+        "clientWidth": 1280,
+        "clipCandidates": [],
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 0,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 1,
+            "placeholder": null,
+            "tag": "a",
+            "text": "首页",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 2,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 3,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/archive",
+            "index": 4,
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/about",
+            "index": 5,
+            "placeholder": null,
+            "tag": "a",
+            "text": "关于",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 6,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/login",
+            "index": 7,
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 8,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": "Google Scholar",
+            "autocomplete": null,
+            "href": "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
+            "index": 9,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Google Scholar",
+            "type": null
+          },
+          {
+            "ariaLabel": "邮箱",
+            "autocomplete": null,
+            "href": null,
+            "index": 10,
+            "placeholder": null,
+            "tag": "button",
+            "text": "邮箱",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 11,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 12,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 篇公开笔记 阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#research-index",
+            "index": 13,
+            "placeholder": null,
+            "tag": "a",
+            "text": "研究地图",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 14,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 15,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 16,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 17,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "search",
+            "href": null,
+            "index": 18,
+            "placeholder": "搜索文章、关键词、主题...",
+            "tag": "input",
+            "text": "搜索文章、关键词、主题...",
+            "type": "search"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 19,
+            "placeholder": null,
+            "tag": "button",
+            "text": "搜索",
+            "type": "submit"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/search",
+            "index": 20,
+            "placeholder": null,
+            "tag": "a",
+            "text": "搜索",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/archive",
+            "index": 21,
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-algorithms",
+            "index": 22,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 23,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用",
+            "type": null
+          },
+          {
+            "ariaLabel": "RSS",
+            "autocomplete": null,
+            "href": "/rss.xml",
+            "index": 24,
+            "placeholder": null,
+            "tag": "a",
+            "text": "RSS",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "email",
+            "href": null,
+            "index": 25,
+            "placeholder": "you@example.com",
+            "tag": "input",
+            "text": "you@example.com",
+            "type": "email"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 26,
+            "placeholder": null,
+            "tag": "button",
+            "text": "订阅",
+            "type": "submit"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 27,
+            "placeholder": "可选主题：RoPE、Agent、RAG...",
+            "tag": "input",
+            "text": "可选主题：RoPE、Agent、RAG...",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 28,
+            "placeholder": null,
+            "tag": "button",
+            "text": "中文",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 29,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 30,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agentic-rag",
+            "index": 31,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-loop",
+            "index": 32,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/context-compiler",
+            "index": 33,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Compiler",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/context-engineering",
+            "index": 34,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/evaluation",
+            "index": 35,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evaluation",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/fine-tuning",
+            "index": 36,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Fine-tuning",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/gnn",
+            "index": 37,
+            "placeholder": null,
+            "tag": "a",
+            "text": "GNN",
+            "type": null
+          },
+          {
+            "ariaLabel": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 38,
+            "placeholder": null,
+            "tag": "a",
+            "text": "01",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 39,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 40,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-loop",
+            "index": 41,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 42,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 43,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 44,
+            "placeholder": null,
+            "tag": "a",
+            "text": "02",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 45,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 46,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agentic-rag",
+            "index": 47,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 48,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 49,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 50,
+            "placeholder": null,
+            "tag": "a",
+            "text": "03",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 51,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          }
+        ],
+        "formControls": [
+          {
+            "ariaLabel": null,
+            "autocomplete": "search",
+            "describedBy": null,
+            "hasLabel": true,
+            "id": "home-search-query",
+            "placeholder": "搜索文章、关键词、主题...",
+            "type": "search"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "email",
+            "describedBy": "_r_5_",
+            "hasLabel": true,
+            "id": "_r_3_",
+            "placeholder": "you@example.com",
+            "type": "email"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "describedBy": "_r_5_",
+            "hasLabel": true,
+            "id": "_r_4_",
+            "placeholder": "可选主题：RoPE、Agent、RAG...",
+            "type": null
+          }
+        ],
+        "h1": "AI 算法与应用系统",
+        "headingsAboveFold": [
+          {
+            "tag": "H1",
+            "text": "AI 算法与应用系统",
+            "top": 219
+          },
+          {
+            "tag": "H2",
+            "text": "AI 算法研究",
+            "top": 596
+          },
+          {
+            "tag": "H2",
+            "text": "AI 应用工程",
+            "top": 596
+          },
+          {
+            "tag": "H2",
+            "text": "关于我",
+            "top": 178
+          },
+          {
+            "tag": "H3",
+            "text": "研究方向",
+            "top": 306
+          },
+          {
+            "tag": "H3",
+            "text": "近期关注",
+            "top": 438
+          },
+          {
+            "tag": "H2",
+            "text": "热门标签",
+            "top": 600
+          }
+        ],
+        "horizontalOverflow": false,
+        "pathname": "/",
+        "reducedMotionDefault": false,
+        "scrollWidth": 1280,
+        "skeletonCount": 0,
+        "title": "AI 算法与应用系统 · AI Tech Blog",
+        "viewport": {
+          "height": 800,
+          "width": 1280
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/",
+      "routeLabel": "home",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "ready": {
+        "h1": "AI 算法与应用系统",
+        "hasMain": true,
+        "pathname": "/",
+        "skeletons": 0,
+        "spinner": 0
+      },
+      "metrics": {
+        "clientWidth": 1440,
+        "clipCandidates": [],
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 0,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 1,
+            "placeholder": null,
+            "tag": "a",
+            "text": "首页",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 2,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 3,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/archive",
+            "index": 4,
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/about",
+            "index": 5,
+            "placeholder": null,
+            "tag": "a",
+            "text": "关于",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 6,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/login",
+            "index": 7,
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 8,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": "Google Scholar",
+            "autocomplete": null,
+            "href": "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
+            "index": 9,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Google Scholar",
+            "type": null
+          },
+          {
+            "ariaLabel": "邮箱",
+            "autocomplete": null,
+            "href": null,
+            "index": 10,
+            "placeholder": null,
+            "tag": "button",
+            "text": "邮箱",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 11,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 AI 算法研究 这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。 2 条路径 1 篇公开笔记 阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 12,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 AI 应用工程 这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。 2 条路径 3 篇公开笔记 阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#research-index",
+            "index": 13,
+            "placeholder": null,
+            "tag": "a",
+            "text": "研究地图",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 14,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Residual Stability 残差流混合、不变量和稳定性约束。 残差混合 稳定性 架构",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 15,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法 Long Context and Position Encoding 关于 RoPE、频谱分配和长上下文行为的机制笔记。 位置编码 RoPE 长上下文",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 16,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agent Runtime Systems 从受控评测走向可观测的多步 Agent 运行时。 Agent 系统 Harness Engine 可观测性",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 17,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用 Agentic RAG Infrastructure 检索如何变成可治理、可引用的 Agent 上下文。 RAG 与检索 Context Engineering 评测",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "search",
+            "href": null,
+            "index": 18,
+            "placeholder": "搜索文章、关键词、主题...",
+            "tag": "input",
+            "text": "搜索文章、关键词、主题...",
+            "type": "search"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 19,
+            "placeholder": null,
+            "tag": "button",
+            "text": "搜索",
+            "type": "submit"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/search",
+            "index": 20,
+            "placeholder": null,
+            "tag": "a",
+            "text": "搜索",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/archive",
+            "index": 21,
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-algorithms",
+            "index": 22,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 23,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用",
+            "type": null
+          },
+          {
+            "ariaLabel": "RSS",
+            "autocomplete": null,
+            "href": "/rss.xml",
+            "index": 24,
+            "placeholder": null,
+            "tag": "a",
+            "text": "RSS",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "email",
+            "href": null,
+            "index": 25,
+            "placeholder": "you@example.com",
+            "tag": "input",
+            "text": "you@example.com",
+            "type": "email"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 26,
+            "placeholder": null,
+            "tag": "button",
+            "text": "订阅",
+            "type": "submit"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 27,
+            "placeholder": "可选主题：RoPE、Agent、RAG...",
+            "tag": "input",
+            "text": "可选主题：RoPE、Agent、RAG...",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 28,
+            "placeholder": null,
+            "tag": "button",
+            "text": "中文",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 29,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 30,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agentic-rag",
+            "index": 31,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-loop",
+            "index": 32,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/context-compiler",
+            "index": 33,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Compiler",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/context-engineering",
+            "index": 34,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/evaluation",
+            "index": 35,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evaluation",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/fine-tuning",
+            "index": 36,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Fine-tuning",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/gnn",
+            "index": 37,
+            "placeholder": null,
+            "tag": "a",
+            "text": "GNN",
+            "type": null
+          },
+          {
+            "ariaLabel": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 38,
+            "placeholder": null,
+            "tag": "a",
+            "text": "01",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 39,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 40,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-loop",
+            "index": 41,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 42,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 43,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 44,
+            "placeholder": null,
+            "tag": "a",
+            "text": "02",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 45,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 46,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agentic-rag",
+            "index": 47,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 48,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 49,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 50,
+            "placeholder": null,
+            "tag": "a",
+            "text": "03",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 51,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          }
+        ],
+        "formControls": [
+          {
+            "ariaLabel": null,
+            "autocomplete": "search",
+            "describedBy": null,
+            "hasLabel": true,
+            "id": "home-search-query",
+            "placeholder": "搜索文章、关键词、主题...",
+            "type": "search"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "email",
+            "describedBy": "_r_5_",
+            "hasLabel": true,
+            "id": "_r_3_",
+            "placeholder": "you@example.com",
+            "type": "email"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "describedBy": "_r_5_",
+            "hasLabel": true,
+            "id": "_r_4_",
+            "placeholder": "可选主题：RoPE、Agent、RAG...",
+            "type": null
+          }
+        ],
+        "h1": "AI 算法与应用系统",
+        "headingsAboveFold": [
+          {
+            "tag": "H1",
+            "text": "AI 算法与应用系统",
+            "top": 219
+          },
+          {
+            "tag": "H2",
+            "text": "AI 算法研究",
+            "top": 596
+          },
+          {
+            "tag": "H2",
+            "text": "AI 应用工程",
+            "top": 596
+          },
+          {
+            "tag": "H2",
+            "text": "进行中的系列",
+            "top": 818
+          },
+          {
+            "tag": "H3",
+            "text": "Residual Stability",
+            "top": 899
+          },
+          {
+            "tag": "H3",
+            "text": "Long Context and Position Encoding",
+            "top": 899
+          },
+          {
+            "tag": "H3",
+            "text": "Agent Runtime Systems",
+            "top": 899
+          },
+          {
+            "tag": "H2",
+            "text": "关于我",
+            "top": 178
+          },
+          {
+            "tag": "H3",
+            "text": "研究方向",
+            "top": 306
+          },
+          {
+            "tag": "H3",
+            "text": "近期关注",
+            "top": 438
+          },
+          {
+            "tag": "H2",
+            "text": "热门标签",
+            "top": 600
+          }
+        ],
+        "horizontalOverflow": false,
+        "pathname": "/",
+        "reducedMotionDefault": false,
+        "scrollWidth": 1440,
+        "skeletonCount": 0,
+        "title": "AI 算法与应用系统 · AI Tech Blog",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/algorithms",
+      "routeLabel": "algorithms",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "ready": {
+        "h1": "AI 算法研究",
+        "hasMain": true,
+        "pathname": "/algorithms",
+        "skeletons": 0,
+        "spinner": 0,
+        "title": "AI 算法研究 · AI Tech Blog"
+      },
+      "metrics": {
+        "clientWidth": 390,
+        "clipCandidates": [],
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 0,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 1,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/login",
+            "index": 2,
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 3,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": "打开导航",
+            "autocomplete": null,
+            "href": null,
+            "index": 4,
+            "placeholder": null,
+            "tag": "button",
+            "text": "打开导航",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "index": 5,
+            "placeholder": null,
+            "tag": "a",
+            "text": "01 IsoHC: Fixed-Vector Isometric Residual Mixing",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 6,
+            "placeholder": null,
+            "tag": "a",
+            "text": "返回总览",
+            "type": null
+          },
+          {
+            "ariaLabel": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+            "autocomplete": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "index": 7,
+            "placeholder": null,
+            "tag": "a",
+            "text": "01",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-algorithms",
+            "index": 8,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Algorithms",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/isohc",
+            "index": 9,
+            "placeholder": null,
+            "tag": "a",
+            "text": "IsoHC",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/hyper-connections",
+            "index": 10,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Hyper-Connections",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "index": 11,
+            "placeholder": null,
+            "tag": "a",
+            "text": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "index": 12,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "AI 助手",
+            "autocomplete": null,
+            "href": null,
+            "index": 13,
+            "placeholder": null,
+            "tag": "button",
+            "text": "AI 助手",
+            "type": "button"
+          }
+        ],
+        "formControls": [],
+        "h1": "AI 算法研究",
+        "headingsAboveFold": [
+          {
+            "tag": "H1",
+            "text": "AI 算法研究",
+            "top": 167
+          },
+          {
+            "tag": "H2",
+            "text": "Residual Stability",
+            "top": 476
+          }
+        ],
+        "horizontalOverflow": false,
+        "pathname": "/algorithms",
+        "reducedMotionDefault": false,
+        "scrollWidth": 390,
+        "skeletonCount": 0,
+        "title": "AI 算法研究 · AI Tech Blog",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/algorithms",
+      "routeLabel": "algorithms",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "ready": {
+        "h1": "AI 算法研究",
+        "hasMain": true,
+        "pathname": "/algorithms",
+        "skeletons": 0,
+        "spinner": 0,
+        "title": "AI 算法研究 · AI Tech Blog"
+      },
+      "metrics": {
+        "clientWidth": 1280,
+        "clipCandidates": [],
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 0,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 1,
+            "placeholder": null,
+            "tag": "a",
+            "text": "首页",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 2,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 3,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/archive",
+            "index": 4,
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/about",
+            "index": 5,
+            "placeholder": null,
+            "tag": "a",
+            "text": "关于",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 6,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/login",
+            "index": 7,
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 8,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "index": 9,
+            "placeholder": null,
+            "tag": "a",
+            "text": "01 IsoHC: Fixed-Vector Isometric Residual Mixing",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 10,
+            "placeholder": null,
+            "tag": "a",
+            "text": "返回总览",
+            "type": null
+          },
+          {
+            "ariaLabel": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+            "autocomplete": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "index": 11,
+            "placeholder": null,
+            "tag": "a",
+            "text": "01",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-algorithms",
+            "index": 12,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Algorithms",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/isohc",
+            "index": 13,
+            "placeholder": null,
+            "tag": "a",
+            "text": "IsoHC",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/hyper-connections",
+            "index": 14,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Hyper-Connections",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "index": 15,
+            "placeholder": null,
+            "tag": "a",
+            "text": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/isohc-fixed-vector-isometric-residual-mixing",
+            "index": 16,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "AI 助手",
+            "autocomplete": null,
+            "href": null,
+            "index": 17,
+            "placeholder": null,
+            "tag": "button",
+            "text": "AI 助手",
+            "type": "button"
+          }
+        ],
+        "formControls": [],
+        "h1": "AI 算法研究",
+        "headingsAboveFold": [
+          {
+            "tag": "H1",
+            "text": "AI 算法研究",
+            "top": 191
+          },
+          {
+            "tag": "H2",
+            "text": "Residual Stability",
+            "top": 481
+          },
+          {
+            "tag": "H2",
+            "text": "Long Context and Position Encoding",
+            "top": 481
+          },
+          {
+            "tag": "H2",
+            "text": "算法索引",
+            "top": 170
+          }
+        ],
+        "horizontalOverflow": false,
+        "pathname": "/algorithms",
+        "reducedMotionDefault": false,
+        "scrollWidth": 1280,
+        "skeletonCount": 0,
+        "title": "AI 算法研究 · AI Tech Blog",
+        "viewport": {
+          "height": 800,
+          "width": 1280
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/applications",
+      "routeLabel": "applications",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "ready": {
+        "h1": "AI 应用工程",
+        "hasMain": true,
+        "pathname": "/applications",
+        "skeletons": 0,
+        "spinner": 0,
+        "title": "AI 应用工程 · AI Tech Blog"
+      },
+      "metrics": {
+        "clientWidth": 390,
+        "clipCandidates": [],
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 0,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 1,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/login",
+            "index": 2,
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 3,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": "打开导航",
+            "autocomplete": null,
+            "href": null,
+            "index": 4,
+            "placeholder": null,
+            "tag": "button",
+            "text": "打开导航",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 5,
+            "placeholder": null,
+            "tag": "a",
+            "text": "01 Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 6,
+            "placeholder": null,
+            "tag": "a",
+            "text": "02 Evidence Packet: Agentic RAG 的上下文编译接口",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 7,
+            "placeholder": null,
+            "tag": "a",
+            "text": "03 Agent Loop: 从 ReAct 模式到可观测运行时",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 8,
+            "placeholder": null,
+            "tag": "a",
+            "text": "01 Evidence Packet: Agentic RAG 的上下文编译接口",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 9,
+            "placeholder": null,
+            "tag": "a",
+            "text": "返回总览",
+            "type": null
+          },
+          {
+            "ariaLabel": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 10,
+            "placeholder": null,
+            "tag": "a",
+            "text": "01",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 11,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 12,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-loop",
+            "index": 13,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 14,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 15,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 16,
+            "placeholder": null,
+            "tag": "a",
+            "text": "02",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 17,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 18,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agentic-rag",
+            "index": 19,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 20,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 21,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 22,
+            "placeholder": null,
+            "tag": "a",
+            "text": "03",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 23,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 24,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/harness-engine",
+            "index": 25,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Harness Engine",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 26,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 27,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "AI 助手",
+            "autocomplete": null,
+            "href": null,
+            "index": 28,
+            "placeholder": null,
+            "tag": "button",
+            "text": "AI 助手",
+            "type": "button"
+          }
+        ],
+        "formControls": [],
+        "h1": "AI 应用工程",
+        "headingsAboveFold": [
+          {
+            "tag": "H1",
+            "text": "AI 应用工程",
+            "top": 167
+          },
+          {
+            "tag": "H2",
+            "text": "Agent Runtime Systems",
+            "top": 502
+          }
+        ],
+        "horizontalOverflow": false,
+        "pathname": "/applications",
+        "reducedMotionDefault": false,
+        "scrollWidth": 390,
+        "skeletonCount": 0,
+        "title": "AI 应用工程 · AI Tech Blog",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/applications",
+      "routeLabel": "applications",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "ready": {
+        "h1": "AI 应用工程",
+        "hasMain": true,
+        "pathname": "/applications",
+        "skeletons": 0,
+        "spinner": 0,
+        "title": "AI 应用工程 · AI Tech Blog"
+      },
+      "metrics": {
+        "clientWidth": 1280,
+        "clipCandidates": [],
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 0,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Tech Blog",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 1,
+            "placeholder": null,
+            "tag": "a",
+            "text": "首页",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/algorithms",
+            "index": 2,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 算法",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 3,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI 应用",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/archive",
+            "index": 4,
+            "placeholder": null,
+            "tag": "a",
+            "text": "归档",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/about",
+            "index": 5,
+            "placeholder": null,
+            "tag": "a",
+            "text": "关于",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 6,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/login",
+            "index": 7,
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 8,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 9,
+            "placeholder": null,
+            "tag": "a",
+            "text": "01 Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 10,
+            "placeholder": null,
+            "tag": "a",
+            "text": "02 Evidence Packet: Agentic RAG 的上下文编译接口",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 11,
+            "placeholder": null,
+            "tag": "a",
+            "text": "03 Agent Loop: 从 ReAct 模式到可观测运行时",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 12,
+            "placeholder": null,
+            "tag": "a",
+            "text": "01 Evidence Packet: Agentic RAG 的上下文编译接口",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 13,
+            "placeholder": null,
+            "tag": "a",
+            "text": "返回总览",
+            "type": null
+          },
+          {
+            "ariaLabel": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 14,
+            "placeholder": null,
+            "tag": "a",
+            "text": "01",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 15,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 16,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-loop",
+            "index": 17,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 18,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-loop-observable-tool-using-agents",
+            "index": 19,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 20,
+            "placeholder": null,
+            "tag": "a",
+            "text": "02",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 21,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 22,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agentic-rag",
+            "index": 23,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agentic RAG",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 24,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 25,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 26,
+            "placeholder": null,
+            "tag": "a",
+            "text": "03",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 27,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 28,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/harness-engine",
+            "index": 29,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Harness Engine",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 30,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 31,
+            "placeholder": null,
+            "tag": "a",
+            "text": "阅读全文",
+            "type": null
+          },
+          {
+            "ariaLabel": "AI 助手",
+            "autocomplete": null,
+            "href": null,
+            "index": 32,
+            "placeholder": null,
+            "tag": "button",
+            "text": "AI 助手",
+            "type": "button"
+          }
+        ],
+        "formControls": [],
+        "h1": "AI 应用工程",
+        "headingsAboveFold": [
+          {
+            "tag": "H1",
+            "text": "AI 应用工程",
+            "top": 191
+          },
+          {
+            "tag": "H2",
+            "text": "Agent Runtime Systems",
+            "top": 481
+          },
+          {
+            "tag": "H2",
+            "text": "Agentic RAG Infrastructure",
+            "top": 481
+          },
+          {
+            "tag": "H2",
+            "text": "应用索引",
+            "top": 170
+          }
+        ],
+        "horizontalOverflow": false,
+        "pathname": "/applications",
+        "reducedMotionDefault": false,
+        "scrollWidth": 1280,
+        "skeletonCount": 0,
+        "title": "AI 应用工程 · AI Tech Blog",
+        "viewport": {
+          "height": 800,
+          "width": 1280
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/post/agent-loop-observable-tool-using-agents",
+      "routeLabel": "article-agent-loop",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "ready": {
+        "h1": "Agent Loop: 从 ReAct 模式到可观测运行时",
+        "hasMain": false,
+        "pathname": "/post/agent-loop-observable-tool-using-agents",
+        "skeletons": 0,
+        "spinner": 0
+      },
+      "metrics": {
+        "clientWidth": 390,
+        "clipCandidates": [],
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 0,
+            "placeholder": null,
+            "tag": "a",
+            "text": "返回",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 1,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/login",
+            "index": 2,
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 3,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": "打开导航",
+            "autocomplete": null,
+            "href": null,
+            "index": 4,
+            "placeholder": null,
+            "tag": "button",
+            "text": "打开导航",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
+            "index": 5,
+            "placeholder": null,
+            "tag": "a",
+            "text": "学术",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 6,
+            "placeholder": null,
+            "tag": "button",
+            "text": "邮箱",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 7,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 8,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-loop",
+            "index": 9,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/tool-use",
+            "index": 10,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Tool Use",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/context-engineering",
+            "index": 11,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/session-management",
+            "index": 12,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Session Management",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/rate-limiting",
+            "index": 13,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Rate Limiting",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/guardrails",
+            "index": 14,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Guardrails",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/evaluation",
+            "index": 15,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evaluation",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/observability",
+            "index": 16,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Observability",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 17,
+            "placeholder": null,
+            "tag": "button",
+            "text": "Twitter",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 18,
+            "placeholder": null,
+            "tag": "button",
+            "text": "LinkedIn",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 19,
+            "placeholder": null,
+            "tag": "button",
+            "text": "微信",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 20,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制链接",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-0",
+            "index": 21,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-1",
+            "index": 22,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Design Boundary",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-2",
+            "index": 23,
+            "placeholder": null,
+            "tag": "a",
+            "text": "1. From Pattern to Runtime",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-3",
+            "index": 24,
+            "placeholder": null,
+            "tag": "a",
+            "text": "2. State Transition View",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-4",
+            "index": 25,
+            "placeholder": null,
+            "tag": "a",
+            "text": "3. Runtime Stack",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-5",
+            "index": 26,
+            "placeholder": null,
+            "tag": "a",
+            "text": "4. Phase Machine",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-6",
+            "index": 27,
+            "placeholder": null,
+            "tag": "a",
+            "text": "5. Decision Contract",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-7",
+            "index": 28,
+            "placeholder": null,
+            "tag": "a",
+            "text": "6. Context Builder",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-8",
+            "index": 29,
+            "placeholder": null,
+            "tag": "a",
+            "text": "7. Tool Runtime",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-9",
+            "index": 30,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Session, File, and Quota Scope",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-10",
+            "index": 31,
+            "placeholder": null,
+            "tag": "a",
+            "text": "8. Loop Invariants",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-11",
+            "index": 32,
+            "placeholder": null,
+            "tag": "a",
+            "text": "9. Termination and Progress",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-12",
+            "index": 33,
+            "placeholder": null,
+            "tag": "a",
+            "text": "10. Checkpoints and Recovery",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-13",
+            "index": 34,
+            "placeholder": null,
+            "tag": "a",
+            "text": "11. Event Stream",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-14",
+            "index": 35,
+            "placeholder": null,
+            "tag": "a",
+            "text": "12. Implementation Skeleton",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-15",
+            "index": 36,
+            "placeholder": null,
+            "tag": "a",
+            "text": "13. Failure Taxonomy",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-16",
+            "index": 37,
+            "placeholder": null,
+            "tag": "a",
+            "text": "14. Evaluation Surface",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-17",
+            "index": 38,
+            "placeholder": null,
+            "tag": "a",
+            "text": "15. Boundaries",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-18",
+            "index": 39,
+            "placeholder": null,
+            "tag": "a",
+            "text": "16. Core Takeaway",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "#heading-19",
+            "index": 40,
+            "placeholder": null,
+            "tag": "a",
+            "text": "References",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 41,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 42,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 43,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 44,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 45,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 46,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 47,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 48,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 49,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 50,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "https://arxiv.org/abs/2210.03629",
+            "index": 51,
+            "placeholder": null,
+            "tag": "a",
+            "text": "ReAct: Synergizing Reasoning and Acting in Language Models",
+            "type": null
+          }
+        ],
+        "formControls": [
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "describedBy": "_r_6_",
+            "hasLabel": true,
+            "id": "_r_3_",
+            "placeholder": "可选补充：哪里清楚，哪里还缺？",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "name",
+            "describedBy": "_r_6_",
+            "hasLabel": true,
+            "id": "_r_4_",
+            "placeholder": "可选昵称",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "email",
+            "describedBy": "_r_6_",
+            "hasLabel": true,
+            "id": "_r_5_",
+            "placeholder": "可选回复邮箱",
+            "type": "email"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "email",
+            "describedBy": "_r_9_",
+            "hasLabel": true,
+            "id": "_r_7_",
+            "placeholder": "you@example.com",
+            "type": "email"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "describedBy": "_r_9_",
+            "hasLabel": true,
+            "id": "_r_8_",
+            "placeholder": "可选主题：RoPE、Agent、RAG...",
+            "type": null
+          }
+        ],
+        "h1": "Agent Loop: 从 ReAct 模式到可观测运行时",
+        "headingsAboveFold": [
+          {
+            "tag": "H1",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "top": 122
+          },
+          {
+            "tag": "H3",
+            "text": "目录",
+            "top": 0
+          }
+        ],
+        "horizontalOverflow": false,
+        "pathname": "/post/agent-loop-observable-tool-using-agents",
+        "reducedMotionDefault": false,
+        "scrollWidth": 390,
+        "skeletonCount": 0,
+        "title": "Agent Loop: 从 ReAct 模式到可观测运行时 · AI Tech Blog",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/post/agent-loop-observable-tool-using-agents",
+      "routeLabel": "article-agent-loop",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "ready": {
+        "h1": "Agent Loop: 从 ReAct 模式到可观测运行时",
+        "hasMain": false,
+        "pathname": "/post/agent-loop-observable-tool-using-agents",
+        "skeletons": 0,
+        "spinner": 0
+      },
+      "metrics": {
+        "clientWidth": 1280,
+        "clipCandidates": [],
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 0,
+            "placeholder": null,
+            "tag": "a",
+            "text": "返回",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 1,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/login",
+            "index": 2,
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 3,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
+            "index": 4,
+            "placeholder": null,
+            "tag": "a",
+            "text": "学术",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 5,
+            "placeholder": null,
+            "tag": "button",
+            "text": "邮箱",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/categories/ai-applications",
+            "index": 6,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AI Applications",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-systems",
+            "index": 7,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Systems",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/agent-loop",
+            "index": 8,
+            "placeholder": null,
+            "tag": "a",
+            "text": "AgentLoop",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/tool-use",
+            "index": 9,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Tool Use",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/context-engineering",
+            "index": 10,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Context Engineering",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/session-management",
+            "index": 11,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Session Management",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/rate-limiting",
+            "index": 12,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Rate Limiting",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/guardrails",
+            "index": 13,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Guardrails",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/evaluation",
+            "index": 14,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evaluation",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/tags/observability",
+            "index": 15,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Observability",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 16,
+            "placeholder": null,
+            "tag": "button",
+            "text": "Twitter",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 17,
+            "placeholder": null,
+            "tag": "button",
+            "text": "LinkedIn",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 18,
+            "placeholder": null,
+            "tag": "button",
+            "text": "微信",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 19,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制链接",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 20,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 21,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 22,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 23,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 24,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 25,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 26,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 27,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 28,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": "复制代码",
+            "autocomplete": null,
+            "href": null,
+            "index": 29,
+            "placeholder": null,
+            "tag": "button",
+            "text": "复制代码",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "https://arxiv.org/abs/2210.03629",
+            "index": 30,
+            "placeholder": null,
+            "tag": "a",
+            "text": "ReAct: Synergizing Reasoning and Acting in Language Models",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "https://www.anthropic.com/engineering/building-effective-agents",
+            "index": 31,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Building effective agents",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "https://openai.github.io/openai-agents-python/tracing/",
+            "index": 32,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Tracing",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "https://openai.github.io/openai-agents-python/guardrails/",
+            "index": 33,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Guardrails",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "https://docs.langchain.com/oss/python/langgraph",
+            "index": 34,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Overview",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "https://docs.langchain.com/oss/python/langgraph/interrupts",
+            "index": 35,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Interrupts",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-adk",
+            "index": 36,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Manage sessions with Agent Development Kit",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/applications",
+            "index": 37,
+            "placeholder": null,
+            "tag": "a",
+            "text": "继续浏览 AI 应用",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 38,
+            "placeholder": null,
+            "tag": "a",
+            "text": "上一篇 Evidence Packet: Agentic RAG 的上下文编译接口",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/agent-harness-engine-evaluating-tool-using-agents",
+            "index": 39,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/post/rag-evidence-packet-context-compiler",
+            "index": 40,
+            "placeholder": null,
+            "tag": "a",
+            "text": "Evidence Packet: Agentic RAG 的上下文编译接口",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "mailto:zedpl28174@gmail.com?subject=Feedback%3A%20Agent%20Loop%3A%20%E4%BB%8E%20ReAct%20%E6%A8%A1%E5%BC%8F%E5%88%B0%E5%8F%AF%E8%A7%82%E6%B5%8B%E8%BF%90%E8%A1%8C%E6%97%B6",
+            "index": 41,
+            "placeholder": null,
+            "tag": "a",
+            "text": "发邮件",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 42,
+            "placeholder": null,
+            "tag": "button",
+            "text": "有帮助",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 43,
+            "placeholder": null,
+            "tag": "button",
+            "text": "帮助不大",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 44,
+            "placeholder": "可选补充：哪里清楚，哪里还缺？",
+            "tag": "textarea",
+            "text": "可选补充：哪里清楚，哪里还缺？",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "name",
+            "href": null,
+            "index": 45,
+            "placeholder": "可选昵称",
+            "tag": "input",
+            "text": "可选昵称",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "email",
+            "href": null,
+            "index": 46,
+            "placeholder": "可选回复邮箱",
+            "tag": "input",
+            "text": "可选回复邮箱",
+            "type": "email"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 47,
+            "placeholder": null,
+            "tag": "button",
+            "text": "发送反馈",
+            "type": "submit"
+          },
+          {
+            "ariaLabel": "RSS",
+            "autocomplete": null,
+            "href": "/rss.xml",
+            "index": 48,
+            "placeholder": null,
+            "tag": "a",
+            "text": "RSS",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "email",
+            "href": null,
+            "index": 49,
+            "placeholder": "you@example.com",
+            "tag": "input",
+            "text": "you@example.com",
+            "type": "email"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 50,
+            "placeholder": null,
+            "tag": "button",
+            "text": "订阅",
+            "type": "submit"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 51,
+            "placeholder": "可选主题：RoPE、Agent、RAG...",
+            "tag": "input",
+            "text": "可选主题：RoPE、Agent、RAG...",
+            "type": null
+          }
+        ],
+        "formControls": [
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "describedBy": "_r_6_",
+            "hasLabel": true,
+            "id": "_r_3_",
+            "placeholder": "可选补充：哪里清楚，哪里还缺？",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "name",
+            "describedBy": "_r_6_",
+            "hasLabel": true,
+            "id": "_r_4_",
+            "placeholder": "可选昵称",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "email",
+            "describedBy": "_r_6_",
+            "hasLabel": true,
+            "id": "_r_5_",
+            "placeholder": "可选回复邮箱",
+            "type": "email"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": "email",
+            "describedBy": "_r_9_",
+            "hasLabel": true,
+            "id": "_r_7_",
+            "placeholder": "you@example.com",
+            "type": "email"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "describedBy": "_r_9_",
+            "hasLabel": true,
+            "id": "_r_8_",
+            "placeholder": "可选主题：RoPE、Agent、RAG...",
+            "type": null
+          }
+        ],
+        "h1": "Agent Loop: 从 ReAct 模式到可观测运行时",
+        "headingsAboveFold": [
+          {
+            "tag": "H1",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "top": 158
+          },
+          {
+            "tag": "H1",
+            "text": "Agent Loop: 从 ReAct 模式到可观测运行时",
+            "top": 746
+          },
+          {
+            "tag": "H3",
+            "text": "目录",
+            "top": 138
+          }
+        ],
+        "horizontalOverflow": false,
+        "pathname": "/post/agent-loop-observable-tool-using-agents",
+        "reducedMotionDefault": false,
+        "scrollWidth": 1280,
+        "skeletonCount": 0,
+        "title": "Agent Loop: 从 ReAct 模式到可观测运行时 · AI Tech Blog",
+        "viewport": {
+          "height": 800,
+          "width": 1280
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/login",
+      "routeLabel": "login",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "ready": {
+        "h1": "登录后继续阅读或管理文章。",
+        "hasMain": true,
+        "pathname": "/login",
+        "skeletons": 0,
+        "spinner": 0
+      },
+      "metrics": {
+        "clientWidth": 390,
+        "clipCandidates": [],
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 0,
+            "placeholder": null,
+            "tag": "a",
+            "text": "返回首页",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 1,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/login",
+            "index": 2,
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 3,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": "打开导航",
+            "autocomplete": null,
+            "href": null,
+            "index": 4,
+            "placeholder": null,
+            "tag": "button",
+            "text": "打开导航",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 5,
+            "placeholder": null,
+            "tag": "div",
+            "text": "读者 管理员",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 6,
+            "placeholder": null,
+            "tag": "button",
+            "text": "读者",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 7,
+            "placeholder": null,
+            "tag": "button",
+            "text": "管理员",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 8,
+            "placeholder": null,
+            "tag": "div",
+            "text": "读者登录 输入昵称后，后续反馈会关联到当前浏览器会话。 例如：RoPE 读者 继续",
+            "type": null
+          },
+          {
+            "ariaLabel": "例如：RoPE 读者",
+            "autocomplete": "nickname",
+            "href": null,
+            "index": 9,
+            "placeholder": "例如：RoPE 读者",
+            "tag": "input",
+            "text": "例如：RoPE 读者",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 10,
+            "placeholder": null,
+            "tag": "button",
+            "text": "继续",
+            "type": "submit"
+          }
+        ],
+        "formControls": [
+          {
+            "ariaLabel": "例如：RoPE 读者",
+            "autocomplete": "nickname",
+            "describedBy": null,
+            "hasLabel": true,
+            "id": "visitor-nickname",
+            "placeholder": "例如：RoPE 读者",
+            "type": null
+          }
+        ],
+        "h1": "登录后继续阅读或管理文章。",
+        "headingsAboveFold": [
+          {
+            "tag": "H1",
+            "text": "登录后继续阅读或管理文章。",
+            "top": 171
+          },
+          {
+            "tag": "H2",
+            "text": "读者登录",
+            "top": 746
+          }
+        ],
+        "horizontalOverflow": false,
+        "pathname": "/login",
+        "reducedMotionDefault": false,
+        "scrollWidth": 390,
+        "skeletonCount": 0,
+        "title": "登录 · AI Tech Blog",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      "consoleErrors": []
+    },
+    {
+      "route": "/login",
+      "routeLabel": "login",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "ready": {
+        "h1": "登录后继续阅读或管理文章。",
+        "hasMain": true,
+        "pathname": "/login",
+        "skeletons": 0,
+        "spinner": 0
+      },
+      "metrics": {
+        "clientWidth": 1280,
+        "clipCandidates": [],
+        "focusableSample": [
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/",
+            "index": 0,
+            "placeholder": null,
+            "tag": "a",
+            "text": "返回首页",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 1,
+            "placeholder": null,
+            "tag": "button",
+            "text": "EN",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": "/login",
+            "index": 2,
+            "placeholder": null,
+            "tag": "a",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 3,
+            "placeholder": null,
+            "tag": "button",
+            "text": "登录",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 4,
+            "placeholder": null,
+            "tag": "div",
+            "text": "读者 管理员",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 5,
+            "placeholder": null,
+            "tag": "button",
+            "text": "读者",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 6,
+            "placeholder": null,
+            "tag": "button",
+            "text": "管理员",
+            "type": "button"
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 7,
+            "placeholder": null,
+            "tag": "div",
+            "text": "读者登录 输入昵称后，后续反馈会关联到当前浏览器会话。 例如：RoPE 读者 继续",
+            "type": null
+          },
+          {
+            "ariaLabel": "例如：RoPE 读者",
+            "autocomplete": "nickname",
+            "href": null,
+            "index": 8,
+            "placeholder": "例如：RoPE 读者",
+            "tag": "input",
+            "text": "例如：RoPE 读者",
+            "type": null
+          },
+          {
+            "ariaLabel": null,
+            "autocomplete": null,
+            "href": null,
+            "index": 9,
+            "placeholder": null,
+            "tag": "button",
+            "text": "继续",
+            "type": "submit"
+          }
+        ],
+        "formControls": [
+          {
+            "ariaLabel": "例如：RoPE 读者",
+            "autocomplete": "nickname",
+            "describedBy": null,
+            "hasLabel": true,
+            "id": "visitor-nickname",
+            "placeholder": "例如：RoPE 读者",
+            "type": null
+          }
+        ],
+        "h1": "登录后继续阅读或管理文章。",
+        "headingsAboveFold": [
+          {
+            "tag": "H1",
+            "text": "登录后继续阅读或管理文章。",
+            "top": 292
+          },
+          {
+            "tag": "H2",
+            "text": "读者登录",
+            "top": 383
+          }
+        ],
+        "horizontalOverflow": false,
+        "pathname": "/login",
+        "reducedMotionDefault": false,
+        "scrollWidth": 1280,
+        "skeletonCount": 0,
+        "title": "登录 · AI Tech Blog",
+        "viewport": {
+          "height": 800,
+          "width": 1280
+        }
+      },
+      "consoleErrors": []
+    }
+  ],
+  "reducedMotionCssPresent": true,
+  "viewportAllowsZoom": true
+}

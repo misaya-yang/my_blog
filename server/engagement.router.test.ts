@@ -43,6 +43,8 @@ const subscriber = {
 const feedback = {
   id: 11,
   postId: publishedPost.id,
+  postTitle: publishedPost.title,
+  postSlug: publishedPost.slug,
   visitorId: null,
   visitorName: "Anonymous reader",
   type: "useful" as const,
@@ -67,6 +69,12 @@ vi.mock("./db", () => ({
     id,
     status: "reviewed",
     reviewedAt: new Date("2026-05-21T00:00:00.000Z"),
+  })),
+  updatePostFeedbackStatus: vi.fn(async (id: number, status: "new" | "reviewed" | "hidden") => ({
+    ...feedback,
+    id,
+    status,
+    reviewedAt: status === "new" ? null : new Date("2026-05-21T00:00:00.000Z"),
   })),
   listSubscribers: vi.fn(async () => [subscriber]),
 }));
@@ -231,6 +239,60 @@ describe("engagement router", () => {
 
     expect(result).toMatchObject({ success: true, feedback: { id: feedback.id, status: "reviewed" } });
     expect(db.markPostFeedbackReviewed).toHaveBeenCalledWith(feedback.id);
+  });
+
+  it("lets the owner triage feedback status including hidden", async () => {
+    const adminCaller = (await createAdminCaller()) as any;
+
+    const result = await adminCaller.engagement.feedback.updateStatus({
+      id: feedback.id,
+      status: "hidden",
+    });
+
+    expect(result).toMatchObject({ success: true, feedback: { id: feedback.id, status: "hidden" } });
+    expect(db.updatePostFeedbackStatus).toHaveBeenCalledWith(feedback.id, "hidden");
+  });
+
+  it("summarizes private engagement signals without exposing emails", async () => {
+    vi.mocked(db.listPostFeedback).mockResolvedValueOnce([
+      feedback,
+      {
+        ...feedback,
+        id: 12,
+        type: "not_useful",
+        message: "Need implementation examples.",
+        replyEmail: "followup@example.com",
+      },
+    ]);
+    vi.mocked(db.listSubscribers).mockResolvedValueOnce([
+      subscriber,
+      {
+        ...subscriber,
+        id: 2,
+        email: "builder@example.com",
+        preferredLanguage: "en",
+        interests: "agents, retrieval eval",
+      },
+    ]);
+    const adminCaller = (await createAdminCaller()) as any;
+
+    const summary = await adminCaller.engagement.contentRadar.summary();
+
+    expect(summary.feedback.opportunities[0]).toMatchObject({
+      postSlug: publishedPost.slug,
+      total: 2,
+      notUseful: 1,
+      messageCount: 2,
+    });
+    expect(summary.subscriptions).toMatchObject({
+      total: 2,
+      activeCount: 2,
+      languageBreakdown: { zh: 1, en: 1, unknown: 0 },
+      delivery: { connected: false, status: "stored_only", exportAvailable: true },
+    });
+    expect(summary.subscriptions.topInterests.map((item: any) => item.phrase)).toContain("agents");
+    expect(JSON.stringify(summary)).not.toContain("reader@example.com");
+    expect(JSON.stringify(summary)).not.toContain("followup@example.com");
   });
 
   it("rate limits repeated subscription and feedback submissions by source", async () => {

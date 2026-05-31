@@ -235,12 +235,16 @@ export class PostgresConversationStore implements ConversationStore {
     if (!db) return [];
 
     const rows = await db
-      .select()
+      .select({
+        run: aiAgentRuns,
+        question: aiMessages.content,
+      })
       .from(aiAgentRuns)
+      .leftJoin(aiMessages, eq(aiAgentRuns.userMessageId, aiMessages.id))
       .orderBy(desc(aiAgentRuns.createdAt))
       .limit(input.limit);
 
-    return rows.map(toRunRecord);
+    return rows.map((row) => toRunRecord(row.run, row.question));
   }
 
   async finishRun(input: {
@@ -346,15 +350,20 @@ export function createMemoryConversationStore(): ConversationStore & {
       return message;
     },
     async startRun(input) {
-      const run = {
-        id: `run-${runs.length + 1}`,
-        conversationId: input.conversationId ?? null,
-        scopeType: input.scope.type,
-        scopeValue: input.scope.value ?? null,
-        retrievedChunkIds: input.retrievedChunkIds ?? [],
-        createdAt: new Date(),
-        status: input.status ?? "started",
-        errorCode: input.errorCode ?? null,
+    const question = input.userMessageId
+      ? messages.find((message) => message.id === input.userMessageId)?.content ?? null
+      : null;
+    const run = {
+      id: `run-${runs.length + 1}`,
+      conversationId: input.conversationId ?? null,
+      question,
+      scopeType: input.scope.type,
+      scopeValue: input.scope.value ?? null,
+      retrievalStrategy: "supabase_keyword",
+      retrievedChunkIds: input.retrievedChunkIds ?? [],
+      createdAt: new Date(),
+      status: input.status ?? "started",
+      errorCode: input.errorCode ?? null,
       };
       runs.push(run);
       return run;
@@ -367,19 +376,26 @@ export function createMemoryConversationStore(): ConversationStore & {
       if (run) {
         run.status = input.status;
         run.errorCode = input.errorCode ?? null;
+        run.inputTokens = input.inputTokens ?? 0;
+        run.outputTokens = input.outputTokens ?? 0;
+        run.latencyMs = input.latencyMs ?? null;
+        run.retrievedChunkIds = input.retrievedChunkIds ?? [];
+        run.completedAt = new Date();
       }
     },
   };
 }
 
-function toRunRecord(row: typeof aiAgentRuns.$inferSelect): AgentRunRecord {
+function toRunRecord(row: typeof aiAgentRuns.$inferSelect, question?: string | null): AgentRunRecord {
   return {
     id: row.id,
     conversationId: row.conversationId,
     status: row.status,
     model: row.model,
+    question: question ?? null,
     scopeType: row.scopeType,
     scopeValue: row.scopeValue,
+    retrievalStrategy: row.retrievalStrategy,
     retrievedChunkIds: row.retrievedChunkIds,
     inputTokens: row.inputTokens,
     outputTokens: row.outputTokens,

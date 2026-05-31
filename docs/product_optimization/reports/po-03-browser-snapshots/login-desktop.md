@@ -1,0 +1,29 @@
+- region "Notifications alt+T"
+- banner:
+  - link "返回首页":
+    - /url: /
+    - generic: 返回首页
+  - navigation:
+    - button "EN"
+    - link "登录":
+      - /url: /login
+      - button "登录"
+- main:
+  - text: 账号入口
+  - heading "登录后继续阅读或管理文章。" [level=1]
+  - paragraph: 读者可用昵称提交文章反馈；管理员密码用于进入发布和管理工具。
+  - paragraph: 读者模式
+  - paragraph: 使用昵称提交反馈；邮箱可选。
+  - paragraph: 管理员入口
+  - paragraph: 管理文章、分类、反馈和订阅。
+  - tablist:
+    - tab "读者" [selected]:
+      - text: 读者
+    - tab "管理员":
+      - text: 管理员
+  - tabpanel "读者":
+    - heading "读者登录" [level=2]
+    - paragraph: 输入昵称后，后续反馈会关联到当前浏览器会话。
+    - generic: 例如：RoPE 读者
+    - textbox "例如：RoPE 读者"
+    - button "继续"

@@ -70,7 +70,14 @@ Seed content and rebuild the blog agent's public knowledge chunks:
 pnpm content:publish
 ```
 
-Important: `pnpm db:seed` updates `posts`, `categories`, and `tags`; it does not update `ai_knowledge_chunks`. Any new public article, title/excerpt/content rewrite, tag/category move, or visibility/status change must be followed by `pnpm ai:reindex` so the right-bottom blog agent can retrieve and explain the latest public article set.
+`pnpm content:publish` is the preferred content release command. It snapshots
+the current public article dates, runs `pnpm db:seed`, rebuilds Agent knowledge
+with `pnpm ai:reindex`, and then runs the publish freshness gate. The gate
+checks public article metadata, RSS/sitemap/archive coverage, hidden/draft
+exclusion, Agent knowledge coverage, and whether unchanged public articles had
+their publish/update dates silently drift.
+
+Important: `pnpm db:seed` updates `posts`, `categories`, and `tags`; it does not update `ai_knowledge_chunks`. Any new public article, title/excerpt/content rewrite, tag/category move, or visibility/status change must be followed by `pnpm ai:reindex` so the right-bottom blog agent can retrieve and explain the latest public article set. Use `pnpm content:publish` when in doubt because it performs both operations and writes `docs/product_optimization/reports/po-08-publish-freshness-latest.json`.
 
 For production, prefer `db:migrate` over `db:push` so schema changes are recorded in migration files.
 
@@ -162,9 +169,9 @@ Deployment order:
 2. Run `pnpm check`.
 3. Run `pnpm test`.
 4. Run `pnpm build`.
-5. Run `pnpm audit:baseline:quick`.
-6. Run `pnpm db:migrate`.
-7. Run `pnpm content:publish` when seed content or public article visibility changed. This runs `pnpm db:seed` and then `pnpm ai:reindex`.
+5. Run `pnpm content:publish` when seed content or public article visibility changed.
+6. Run `AUDIT_BASE_URL=http://localhost:3000 pnpm audit:baseline:quick` while the local server is running.
+7. Run `pnpm db:migrate` when schema changed.
 8. Deploy:
 
 ```bash
@@ -220,8 +227,9 @@ Before publishing a substantial content update:
 - important articles have excerpt, category, tags, and cover image where appropriate.
 - version history exists before risky rewrites, and restore is tested on preview.
 - feedback and subscriber data remain owner-only.
-- `pnpm ai:reindex` has been run after content changes, and the output shows newly created `ai_knowledge_chunks` for public articles.
+- `pnpm content:publish` has passed; if running lower-level commands manually, `pnpm ai:reindex` has been run after content changes and the output shows newly created `ai_knowledge_chunks` for public articles.
 - `/manage/agent` retrieval/debug checks can find the new article by title, slug, and major topic terms before the deployment is considered complete.
+- `docs/product_optimization/reports/po-08-publish-freshness-latest.json` has no blockers.
 
 ## Post-Deploy Checks
 

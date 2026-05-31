@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { Suspense, lazy, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useLocation } from "wouter";
 import {
   AlertCircle,
@@ -16,7 +16,6 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
-import { Streamdown } from "streamdown";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -25,15 +24,23 @@ import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
 import {
   buildRouteContext,
+  getCompanionPromptKeys,
+  getCompanionWelcomeKeys,
   inferClientScope,
   type AgentScope,
+  type AgentRouteContext,
 } from "./routeContext";
+
+const AgentMarkdown = lazy(() =>
+  import("./AgentMarkdown").then(module => ({ default: module.AgentMarkdown }))
+);
 
 type ChatMessage = {
   id: string;
   role: "user" | "assistant";
   content: string;
   sourceCards?: SourceCard[];
+  relatedQuestions?: string[];
 };
 
 type SourceCard = {
@@ -136,9 +143,12 @@ export function BlogAgentRoot() {
 
   if (hiddenOnRoute) return null;
 
-  const suggestedPrompts =
-    bootstrap.data?.suggestedPrompts ??
-    fallbackPrompts(routeContext.routeType, t);
+  const suggestedPrompts = buildCompanionPrompts(
+    routeContext,
+    t,
+    bootstrap.data?.suggestedPrompts
+  );
+  const welcomeCopy = getCompanionWelcome(routeContext, t);
   const currentScope =
     bootstrap.data?.currentScope ?? inferClientScope(routeContext);
   const lowQuota = quota ? quota.remaining <= 1 : false;
@@ -196,6 +206,7 @@ export function BlogAgentRoot() {
           role: "assistant",
           content: response.answer.answerMarkdown,
           sourceCards: response.sourceCards,
+          relatedQuestions: response.relatedQuestions,
         },
       ]);
     } catch {
@@ -304,6 +315,8 @@ export function BlogAgentRoot() {
             }
             activeConversationId={conversationId}
             suggestedPrompts={suggestedPrompts}
+            welcomeTitle={welcomeCopy.title}
+            welcomeBody={welcomeCopy.body}
             sending={sendMessage.isPending}
             onClose={() => setOpen(false)}
             onDraftChange={setDraft}
@@ -387,7 +400,7 @@ export function AgentMobileSheet({
       className={cn(
         "fixed z-[59]",
         isMobile
-          ? "inset-x-3 bottom-20 max-h-[calc(100dvh-6rem)]"
+          ? "inset-x-3 bottom-20 h-[min(720px,calc(100dvh-6rem))]"
           : "bottom-24 right-6 h-[min(640px,calc(100vh-8rem))] w-[min(480px,calc(100vw-2rem))]"
       )}
     >
@@ -413,6 +426,8 @@ export function AgentPanel({
   historyLoading,
   activeConversationId,
   suggestedPrompts,
+  welcomeTitle,
+  welcomeBody,
   sending,
   onClose,
   onDraftChange,
@@ -447,6 +462,8 @@ export function AgentPanel({
   historyLoading: boolean;
   activeConversationId?: string;
   suggestedPrompts: string[];
+  welcomeTitle: string;
+  welcomeBody: string;
   sending: boolean;
   onClose: () => void;
   onDraftChange: (value: string) => void;
@@ -517,6 +534,9 @@ export function AgentPanel({
             {t("agent.history.button")}
           </button>
         </div>
+        {quota && shouldShowQuotaCallout(quota) && (
+          <AgentQuotaCallout quota={quota} />
+        )}
       </div>
 
       {historyOpen && (
@@ -547,10 +567,10 @@ export function AgentPanel({
                 <BookOpen className="h-5 w-5" />
               </div>
               <h3 className="text-lg font-semibold text-white">
-                {t("agent.welcome.title")}
+                {welcomeTitle}
               </h3>
               <p className="mt-2 text-sm leading-6 text-slate-400">
-                {t("agent.welcome.body")}
+                {welcomeBody}
               </p>
             </div>
             <div className="grid gap-2">
@@ -594,7 +614,9 @@ export function AgentPanel({
                 >
                   {message.role === "assistant" ? (
                     <div className="prose prose-sm prose-invert max-w-none prose-p:my-2 prose-li:my-1">
-                      <Streamdown>{message.content}</Streamdown>
+                      <Suspense fallback={<p className="whitespace-pre-wrap">{message.content}</p>}>
+                        <AgentMarkdown>{message.content}</AgentMarkdown>
+                      </Suspense>
                     </div>
                   ) : (
                     <p className="whitespace-pre-wrap">{message.content}</p>
@@ -602,6 +624,15 @@ export function AgentPanel({
                   {message.sourceCards && message.sourceCards.length > 0 && (
                     <AgentSourceCards sources={message.sourceCards} />
                   )}
+                  {message.role === "assistant" &&
+                    message.relatedQuestions &&
+                    message.relatedQuestions.length > 0 && (
+                      <AgentRelatedQuestions
+                        questions={message.relatedQuestions}
+                        disabled={sending}
+                        onPrompt={onPrompt}
+                      />
+                    )}
                 </div>
               </article>
             ))}
@@ -714,7 +745,7 @@ function AgentContextDock({
           <span className="truncate">{t("agent.context.title")}</span>
           {count > 0 && (
             <span className="rounded-full border border-sky-300/20 bg-sky-400/10 px-1.5 text-[0.68rem] text-sky-100">
-              {count}
+              {t("agent.context.count", { count })}
             </span>
           )}
         </button>
@@ -728,6 +759,9 @@ function AgentContextDock({
 
       {open && (
         <div className="mt-2 rounded-lg border border-sky-300/15 bg-slate-900/65 p-2">
+          <p className="mb-2 text-xs leading-5 text-slate-400">
+            {t("agent.context.supported")}
+          </p>
           <Textarea
             value={value}
             onChange={event => onChange(event.target.value)}
@@ -759,6 +793,9 @@ function AgentContextDock({
               )}
             </Button>
           </div>
+          <p className="mt-2 text-[0.7rem] leading-5 text-slate-500">
+            {count > 0 ? t("agent.context.lifecycle") : t("agent.context.limit")}
+          </p>
         </div>
       )}
     </div>
@@ -770,15 +807,13 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
 
   return (
     <div className="mt-3 border-t border-sky-300/10 pt-3">
-      <div className="mb-2 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-sky-200">
+      <div className="mb-2 text-[0.7rem] font-semibold uppercase text-sky-200">
         {t("agent.sources.title")}
       </div>
       <div className="grid gap-2">
         {sources.slice(0, 3).map(source => {
           const title = source.postTitle || t("agent.sources.site");
-          const body = source.heading
-            ? `${source.heading} · ${source.excerpt}`
-            : source.excerpt;
+          const hasBlogLink = source.sourceType !== "user_context" && Boolean(source.postSlug);
           const card = (
             <span className="block rounded-md border border-sky-300/15 bg-slate-950/45 p-2.5 transition hover:border-sky-300/35 hover:bg-sky-400/10">
               <span className="flex items-center justify-between gap-3 text-sm font-semibold text-sky-100">
@@ -794,17 +829,45 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
                   )}
                 </span>
               </span>
-              <span className="mt-1 line-clamp-2 text-xs leading-5 text-slate-400">
-                {body}
+              <span className="mt-1 flex flex-wrap gap-1.5 text-[0.68rem] text-slate-500">
+                {source.postSlug && (
+                  <span>{t("agent.sources.slug")}: {source.postSlug}</span>
+                )}
+                {source.heading && (
+                  <span>{t("agent.sources.section")}: {source.heading}</span>
+                )}
+                {source.categorySlug && (
+                  <span>{t("agent.sources.category")}: {source.categorySlug}</span>
+                )}
               </span>
+              {source.tagSlugs.length > 0 && (
+                <span className="mt-1 flex flex-wrap gap-1">
+                  {source.tagSlugs.slice(0, 4).map(tag => (
+                    <span
+                      key={tag}
+                      className="rounded border border-sky-300/10 bg-white/[0.03] px-1.5 py-0.5 text-[0.65rem] text-slate-400"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </span>
+              )}
+              <span className="mt-1 line-clamp-2 text-xs leading-5 text-slate-400">
+                {source.excerpt}
+              </span>
+              {source.relevanceReason && (
+                <span className="mt-1 block text-[0.68rem] leading-4 text-cyan-200/80">
+                  {t("agent.sources.reason")}: {source.relevanceReason}
+                </span>
+              )}
             </span>
           );
 
-          return source.postSlug ? (
+          return hasBlogLink ? (
             <a
               key={source.sourceId}
               href={`/post/${source.postSlug}`}
-              aria-label={t("agent.sources.open")}
+              aria-label={`${t("agent.sources.open")}: ${title}`}
             >
               {card}
             </a>
@@ -812,6 +875,39 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
             <div key={source.sourceId}>{card}</div>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+function AgentRelatedQuestions({
+  questions,
+  disabled,
+  onPrompt,
+}: {
+  questions: string[];
+  disabled: boolean;
+  onPrompt: (message: string) => void;
+}) {
+  const { t } = useLanguage();
+
+  return (
+    <div className="mt-3 border-t border-sky-300/10 pt-3">
+      <div className="mb-2 text-[0.7rem] font-semibold uppercase text-sky-200">
+        {t("agent.related.title")}
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {questions.slice(0, 3).map(question => (
+          <button
+            key={question}
+            type="button"
+            disabled={disabled}
+            onClick={() => onPrompt(question)}
+            className="rounded-md border border-sky-300/15 bg-sky-400/10 px-2.5 py-1.5 text-left text-xs leading-5 text-sky-100 transition hover:border-sky-300/35 hover:bg-sky-400/15 disabled:opacity-60"
+          >
+            {question}
+          </button>
+        ))}
       </div>
     </div>
   );
@@ -898,18 +994,43 @@ function formatConversationTime(
 function AgentQuotaBadge({
   quota,
 }: {
-  quota: { limit: number; remaining: number };
+  quota: { limit: number; remaining: number; tier?: string };
 }) {
   const { t } = useLanguage();
   const key =
     quota.remaining <= 1 ? "agent.quota.low" : "agent.quota.remaining";
 
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-md border border-slate-500/25 bg-white/[0.03] px-2.5 py-1 text-slate-300">
+    <span
+      className="inline-flex items-center gap-1.5 rounded-md border border-slate-500/25 bg-white/[0.03] px-2.5 py-1 text-slate-300"
+      title={quota.tier ? `${quota.tier} quota` : undefined}
+    >
       <LogIn className="h-3.5 w-3.5 text-slate-400" />
       {t(key, { remaining: quota.remaining, limit: quota.limit })}
     </span>
   );
+}
+
+function AgentQuotaCallout({
+  quota,
+}: {
+  quota: { remaining: number; tier: string };
+}) {
+  const { t } = useLanguage();
+  const message =
+    quota.tier === "admin"
+      ? t("agent.quota.adminDetail")
+      : t("agent.quota.lowDetail");
+
+  return (
+    <div className="mt-2 rounded-md border border-cyan-300/20 bg-cyan-950/20 px-3 py-2 text-xs leading-5 text-cyan-100">
+      {message}
+    </div>
+  );
+}
+
+function shouldShowQuotaCallout(quota: { remaining: number; tier: string }) {
+  return quota.remaining <= 1 || quota.tier === "admin";
 }
 
 function AgentNotice({
@@ -957,15 +1078,33 @@ function getFallbackMimeType(kind: "markdown_file" | "text_file") {
   return kind === "markdown_file" ? "text/markdown" : "text/plain";
 }
 
-function fallbackPrompts(routeType: string, t: (key: string) => string) {
-  if (routeType === "post") {
-    return [
-      t("agent.prompts.postSummary"),
-      t("agent.prompts.postAssumptions"),
-      t("agent.prompts.nextReading"),
-    ];
-  }
+function buildCompanionPrompts(
+  routeContext: AgentRouteContext,
+  t: (key: string, values?: Record<string, string | number>) => string,
+  serverPrompts?: string[]
+) {
+  const prompts = getCompanionPromptKeys(routeContext)
+    .map(key => t(key))
+    .filter(prompt => prompt && !prompt.startsWith("agent.prompts."));
+  if (prompts.length > 0) return prompts;
+  if (serverPrompts && serverPrompts.length > 0) return serverPrompts;
+  return fallbackPrompts(t);
+}
 
+function getCompanionWelcome(
+  routeContext: AgentRouteContext,
+  t: (key: string, values?: Record<string, string | number>) => string
+) {
+  const keys = getCompanionWelcomeKeys(routeContext);
+  return {
+    title: t(keys.titleKey),
+    body: t(keys.bodyKey),
+  };
+}
+
+function fallbackPrompts(
+  t: (key: string, values?: Record<string, string | number>) => string
+) {
   return [
     t("agent.prompts.siteThemes"),
     t("agent.prompts.compareTracks"),

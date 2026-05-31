@@ -31,6 +31,93 @@ export function inferClientScope(routeContext: AgentRouteContext): AgentScope {
   return { type: "site" };
 }
 
+export function getCompanionPromptKeys(routeContext: AgentRouteContext) {
+  if (routeContext.routeType === "post") {
+    return [
+      "agent.prompts.postAbstraction",
+      "agent.prompts.postImplementation",
+      "agent.prompts.postChecklist",
+      "agent.prompts.postCompare",
+    ];
+  }
+
+  if (routeContext.routeType === "track" && routeContext.trackSlug === "ai-applications") {
+    return [
+      "agent.prompts.applicationsFirst",
+      "agent.prompts.applicationsPath",
+      "agent.prompts.applicationsCompare",
+      "agent.prompts.applicationsMap",
+    ];
+  }
+
+  if (routeContext.routeType === "track" && routeContext.trackSlug === "ai-algorithms") {
+    return [
+      "agent.prompts.algorithmsFirst",
+      "agent.prompts.algorithmsMap",
+      "agent.prompts.algorithmsCompare",
+      "agent.prompts.algorithmsPrereq",
+    ];
+  }
+
+  if (routeContext.routeType === "search") {
+    return [
+      "agent.prompts.searchSynthesize",
+      "agent.prompts.searchNarrow",
+      "agent.prompts.readingPath",
+    ];
+  }
+
+  if (routeContext.routeType === "archive") {
+    return [
+      "agent.prompts.archiveRecent",
+      "agent.prompts.archiveSeries",
+      "agent.prompts.readingPath",
+    ];
+  }
+
+  if (routeContext.routeType === "category" || routeContext.routeType === "tag") {
+    return [
+      "agent.prompts.topicMap",
+      "agent.prompts.topicCompare",
+      "agent.prompts.nextReading",
+    ];
+  }
+
+  return [
+    "agent.prompts.siteThemes",
+    "agent.prompts.compareTracks",
+    "agent.prompts.readingPath",
+  ];
+}
+
+export function getCompanionWelcomeKeys(routeContext: AgentRouteContext) {
+  if (routeContext.routeType === "post") {
+    return {
+      titleKey: "agent.welcome.postTitle",
+      bodyKey: "agent.welcome.postBody",
+    };
+  }
+
+  if (routeContext.routeType === "track") {
+    return {
+      titleKey: "agent.welcome.trackTitle",
+      bodyKey: "agent.welcome.trackBody",
+    };
+  }
+
+  if (routeContext.routeType === "search" || routeContext.routeType === "archive") {
+    return {
+      titleKey: "agent.welcome.discoveryTitle",
+      bodyKey: "agent.welcome.discoveryBody",
+    };
+  }
+
+  return {
+    titleKey: "agent.welcome.title",
+    bodyKey: "agent.welcome.body",
+  };
+}
+
 function matchPath(path: string, pattern: RegExp) {
   const value = pattern.exec(path)?.[1];
   return value ? decodeURIComponent(value) : undefined;

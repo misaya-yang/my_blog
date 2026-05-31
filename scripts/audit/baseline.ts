@@ -156,6 +156,27 @@ export const routeInventory: RouteAuditTarget[] = [
     requiresSeededDatabase: false,
   },
   {
+    path: "/archive",
+    audience: "public",
+    expectedStatus: 200,
+    expectedContent: "public archive route",
+    requiresSeededDatabase: true,
+  },
+  {
+    path: "/categories/ai-applications",
+    audience: "public",
+    expectedStatus: 200,
+    expectedContent: "public AI Applications category route",
+    requiresSeededDatabase: true,
+  },
+  {
+    path: "/tags/agent-systems",
+    audience: "public",
+    expectedStatus: 200,
+    expectedContent: "public Agent Systems tag route",
+    requiresSeededDatabase: true,
+  },
+  {
     path: "/404",
     audience: "utility",
     expectedStatus: 200,

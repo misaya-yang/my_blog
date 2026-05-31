@@ -1,0 +1,402 @@
+[
+  {
+    "viewport": "390x844",
+    "route": "/",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/390x844-home.png",
+    "articleLikeNodes": 7,
+    "clientHeight": 844,
+    "clientWidth": 384,
+    "elementsOverflowRight": 1,
+    "glassPanels": 14,
+    "h1": "AI 算法与应用系统",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 3363,
+    "scrollWidth": 384,
+    "title": "AI 算法与应用系统 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": false,
+      "loginRequired": true,
+      "subscription": true
+    }
+  },
+  {
+    "viewport": "390x844",
+    "route": "/algorithms",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/390x844-algorithms.png",
+    "articleLikeNodes": 2,
+    "clientHeight": 844,
+    "clientWidth": 384,
+    "elementsOverflowRight": 1,
+    "glassPanels": 6,
+    "h1": "AI 算法研究",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 2057,
+    "scrollWidth": 384,
+    "title": "AI 算法研究 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": false,
+      "loginRequired": true,
+      "subscription": false
+    }
+  },
+  {
+    "viewport": "390x844",
+    "route": "/applications",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/390x844-applications.png",
+    "articleLikeNodes": 2,
+    "clientHeight": 844,
+    "clientWidth": 384,
+    "elementsOverflowRight": 1,
+    "glassPanels": 6,
+    "h1": "AI 应用工程",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 2229,
+    "scrollWidth": 384,
+    "title": "AI 应用工程 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": false,
+      "loginRequired": true,
+      "subscription": false
+    }
+  },
+  {
+    "viewport": "390x844",
+    "route": "/post/agent-loop-observable-tool-using-agents",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/390x844-post-agent-loop.png",
+    "articleLikeNodes": 0,
+    "clientHeight": 844,
+    "clientWidth": 390,
+    "elementsOverflowRight": 1,
+    "glassPanels": 0,
+    "h1": "",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 844,
+    "scrollWidth": 390,
+    "title": "文章未找到 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": false,
+      "loginRequired": false,
+      "subscription": false
+    }
+  },
+  {
+    "viewport": "390x844",
+    "route": "/manage/agent",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/390x844-manage-agent.png",
+    "articleLikeNodes": 0,
+    "clientHeight": 844,
+    "clientWidth": 390,
+    "elementsOverflowRight": 1,
+    "glassPanels": 1,
+    "h1": "Agent 运维",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 844,
+    "scrollWidth": 390,
+    "title": "Agent 运维 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": false,
+      "loginRequired": true,
+      "subscription": false
+    }
+  },
+  {
+    "viewport": "768x1024",
+    "route": "/",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/768x1024-home.png",
+    "articleLikeNodes": 7,
+    "clientHeight": 1024,
+    "clientWidth": 762,
+    "elementsOverflowRight": 1,
+    "glassPanels": 14,
+    "h1": "AI 算法与应用系统",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 2840,
+    "scrollWidth": 762,
+    "title": "AI 算法与应用系统 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": true,
+      "loginRequired": true,
+      "subscription": true
+    }
+  },
+  {
+    "viewport": "768x1024",
+    "route": "/algorithms",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/768x1024-algorithms.png",
+    "articleLikeNodes": 2,
+    "clientHeight": 1024,
+    "clientWidth": 762,
+    "elementsOverflowRight": 1,
+    "glassPanels": 6,
+    "h1": "AI 算法研究",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 1812,
+    "scrollWidth": 762,
+    "title": "AI 算法研究 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": true,
+      "loginRequired": true,
+      "subscription": false
+    }
+  },
+  {
+    "viewport": "768x1024",
+    "route": "/applications",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/768x1024-applications.png",
+    "articleLikeNodes": 2,
+    "clientHeight": 1024,
+    "clientWidth": 762,
+    "elementsOverflowRight": 1,
+    "glassPanels": 6,
+    "h1": "AI 应用工程",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 1984,
+    "scrollWidth": 762,
+    "title": "AI 应用工程 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": true,
+      "loginRequired": true,
+      "subscription": false
+    }
+  },
+  {
+    "viewport": "768x1024",
+    "route": "/post/agent-loop-observable-tool-using-agents",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/768x1024-post-agent-loop.png",
+    "articleLikeNodes": 0,
+    "clientHeight": 1024,
+    "clientWidth": 768,
+    "elementsOverflowRight": 1,
+    "glassPanels": 0,
+    "h1": "",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 1024,
+    "scrollWidth": 768,
+    "title": "文章未找到 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": true,
+      "loginRequired": false,
+      "subscription": false
+    }
+  },
+  {
+    "viewport": "768x1024",
+    "route": "/manage/agent",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/768x1024-manage-agent.png",
+    "articleLikeNodes": 0,
+    "clientHeight": 1024,
+    "clientWidth": 768,
+    "elementsOverflowRight": 1,
+    "glassPanels": 1,
+    "h1": "Agent 运维",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 1024,
+    "scrollWidth": 768,
+    "title": "Agent 运维 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": false,
+      "loginRequired": true,
+      "subscription": false
+    }
+  },
+  {
+    "viewport": "1280x800",
+    "route": "/",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/1280x800-home.png",
+    "articleLikeNodes": 7,
+    "clientHeight": 800,
+    "clientWidth": 1274,
+    "elementsOverflowRight": 1,
+    "glassPanels": 14,
+    "h1": "AI 算法与应用系统",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 1987,
+    "scrollWidth": 1274,
+    "title": "AI 算法与应用系统 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": true,
+      "loginRequired": true,
+      "subscription": true
+    }
+  },
+  {
+    "viewport": "1280x800",
+    "route": "/algorithms",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/1280x800-algorithms.png",
+    "articleLikeNodes": 2,
+    "clientHeight": 800,
+    "clientWidth": 1274,
+    "elementsOverflowRight": 1,
+    "glassPanels": 6,
+    "h1": "AI 算法研究",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 1160,
+    "scrollWidth": 1274,
+    "title": "AI 算法研究 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": true,
+      "loginRequired": true,
+      "subscription": false
+    }
+  },
+  {
+    "viewport": "1280x800",
+    "route": "/applications",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/1280x800-applications.png",
+    "articleLikeNodes": 2,
+    "clientHeight": 800,
+    "clientWidth": 1274,
+    "elementsOverflowRight": 1,
+    "glassPanels": 6,
+    "h1": "AI 应用工程",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 1223,
+    "scrollWidth": 1274,
+    "title": "AI 应用工程 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": true,
+      "loginRequired": true,
+      "subscription": false
+    }
+  },
+  {
+    "viewport": "1280x800",
+    "route": "/post/agent-loop-observable-tool-using-agents",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/1280x800-post-agent-loop.png",
+    "articleLikeNodes": 0,
+    "clientHeight": 800,
+    "clientWidth": 1280,
+    "elementsOverflowRight": 1,
+    "glassPanels": 0,
+    "h1": "",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 800,
+    "scrollWidth": 1280,
+    "title": "文章未找到 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": true,
+      "loginRequired": false,
+      "subscription": false
+    }
+  },
+  {
+    "viewport": "1280x800",
+    "route": "/manage/agent",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/1280x800-manage-agent.png",
+    "articleLikeNodes": 0,
+    "clientHeight": 800,
+    "clientWidth": 1280,
+    "elementsOverflowRight": 1,
+    "glassPanels": 1,
+    "h1": "Agent 运维",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 800,
+    "scrollWidth": 1280,
+    "title": "Agent 运维 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": false,
+      "loginRequired": true,
+      "subscription": false
+    }
+  },
+  {
+    "viewport": "1440x900",
+    "route": "/",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/1440x900-home.png",
+    "articleLikeNodes": 7,
+    "clientHeight": 900,
+    "clientWidth": 1434,
+    "elementsOverflowRight": 1,
+    "glassPanels": 14,
+    "h1": "AI 算法与应用系统",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 1987,
+    "scrollWidth": 1434,
+    "title": "AI 算法与应用系统 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": true,
+      "loginRequired": true,
+      "subscription": true
+    }
+  },
+  {
+    "viewport": "1440x900",
+    "route": "/algorithms",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/1440x900-algorithms.png",
+    "articleLikeNodes": 2,
+    "clientHeight": 900,
+    "clientWidth": 1434,
+    "elementsOverflowRight": 1,
+    "glassPanels": 6,
+    "h1": "AI 算法研究",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 1160,
+    "scrollWidth": 1434,
+    "title": "AI 算法研究 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": true,
+      "loginRequired": true,
+      "subscription": false
+    }
+  },
+  {
+    "viewport": "1440x900",
+    "route": "/applications",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/1440x900-applications.png",
+    "articleLikeNodes": 2,
+    "clientHeight": 900,
+    "clientWidth": 1434,
+    "elementsOverflowRight": 1,
+    "glassPanels": 6,
+    "h1": "AI 应用工程",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 1223,
+    "scrollWidth": 1434,
+    "title": "AI 应用工程 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": true,
+      "loginRequired": true,
+      "subscription": false
+    }
+  },
+  {
+    "viewport": "1440x900",
+    "route": "/post/agent-loop-observable-tool-using-agents",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/1440x900-post-agent-loop.png",
+    "articleLikeNodes": 0,
+    "clientHeight": 900,
+    "clientWidth": 1440,
+    "elementsOverflowRight": 1,
+    "glassPanels": 0,
+    "h1": "",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 900,
+    "scrollWidth": 1440,
+    "title": "文章未找到 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": true,
+      "loginRequired": false,
+      "subscription": false
+    }
+  },
+  {
+    "viewport": "1440x900",
+    "route": "/manage/agent",
+    "file": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-00-screenshots/1440x900-manage-agent.png",
+    "articleLikeNodes": 0,
+    "clientHeight": 900,
+    "clientWidth": 1440,
+    "elementsOverflowRight": 1,
+    "glassPanels": 1,
+    "h1": "Agent 运维",
+    "hasHorizontalOverflow": false,
+    "scrollHeight": 900,
+    "scrollWidth": 1440,
+    "title": "Agent 运维 · AI Tech Blog",
+    "visibleSignals": {
+      "agentLauncher": false,
+      "loginRequired": true,
+      "subscription": false
+    }
+  }
+]

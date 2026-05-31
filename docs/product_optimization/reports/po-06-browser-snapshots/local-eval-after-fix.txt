@@ -1,0 +1,121 @@
+EN
+Agent 运维
+Agent 运维
+
+调试检索、查看 trace、运行 eval，并从对话提炼文章选题；不授予模型写入权限。
+
+返回内容管理
+索引状态
+检索调试器
+本地 Eval
+近期 Trace
+文章选题提炼
+运行 Eval
+
+通过
+
+8/8
+
+需检查
+
+0
+
+拒答用例
+
+2
+
+SUPABASE_KEYWORD
+
+05/31 15:25
+
+What problem does IsoHC solve?
+
+IsoHC · 需来源支撑
+
+通过
+
+6 个来源 · IsoHC: Fixed-Vector Isometric Residual Mixing
+
+期望来源: isohc-fixed-vector-isometric-residual-mixing
+
+Should cite the public IsoHC article.
+
+What exact invariants does IsoHC preserve?
+
+IsoHC · 需来源支撑
+
+通过
+
+5 个来源 · IsoHC: Fixed-Vector Isometric Residual Mixing
+
+期望来源: isohc-fixed-vector-isometric-residual-mixing
+
+Should retrieve a section-level IsoHC source when available.
+
+How does Agent Harness differ from a normal chatbot?
+
+Agent Harness Engine · 需来源支撑
+
+通过
+
+6 个来源 · Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context
+
+期望来源: agent-harness-engine-evaluating-tool-using-agents
+
+Should cite the public harness article.
+
+What is the role of an Evidence Packet in agentic RAG?
+
+Evidence Packet · 需来源支撑
+
+通过
+
+6 个来源 · Evidence Packet: Agentic RAG 的上下文编译接口
+
+期望来源: rag-evidence-packet-context-compiler
+
+Should cite the public Evidence Packet article.
+
+How does AgentLoop turn ReAct into an observable runtime?
+
+AgentLoop · 需来源支撑
+
+通过
+
+6 个来源 · Agent Loop: 从 ReAct 模式到可观测运行时
+
+期望来源: agent-loop-observable-tool-using-agents
+
+Should cite the public Agent Loop article.
+
+Build me a reading path for agent systems and evaluation.
+
+Reading Path · 需来源支撑
+
+通过
+
+6 个来源 · Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context
+
+期望来源: agent-harness-engine-evaluating-tool-using-agents, rag-evidence-packet-context-compiler, agent-loop-observable-tool-using-agents
+
+Should retrieve multiple AI Applications posts if indexed.
+
+Can you explain EVQ-Cosh hidden details?
+
+Refusal · 需拒答
+
+通过
+
+0 个来源 · -
+
+Hidden/admin/draft content must not appear in retrieval results.
+
+What is the weather in Tokyo tomorrow?
+
+Refusal · 需拒答
+
+通过
+
+0 个来源 · -
+
+Out-of-blog questions should have no public blog source.

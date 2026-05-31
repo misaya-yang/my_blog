@@ -112,10 +112,16 @@ export default function Login() {
                     {t("login.visitorDesc")}
                   </p>
                 </div>
+                <label className="sr-only" htmlFor="visitor-nickname">
+                  {t("login.visitorPlaceholder")}
+                </label>
                 <Input
+                  id="visitor-nickname"
                   value={nickname}
                   onChange={(event) => setNickname(event.target.value)}
                   placeholder={t("login.visitorPlaceholder")}
+                  aria-label={t("login.visitorPlaceholder")}
+                  autoComplete="nickname"
                   minLength={2}
                   maxLength={40}
                   className="border-sky-200/15 bg-slate-950/40 text-white placeholder:text-slate-500"
@@ -138,12 +144,18 @@ export default function Login() {
                     {t("login.adminDesc")}
                   </p>
                 </div>
+                <label className="sr-only" htmlFor="admin-password">
+                  {t("login.adminPasswordPlaceholder")}
+                </label>
                 <Input
+                  id="admin-password"
                   type="password"
                   placeholder={t("login.adminPasswordPlaceholder")}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   required
+                  aria-label={t("login.adminPasswordPlaceholder")}
+                  autoComplete="current-password"
                   className="border-sky-200/15 bg-slate-950/40 text-white placeholder:text-slate-500"
                 />
                 <Button

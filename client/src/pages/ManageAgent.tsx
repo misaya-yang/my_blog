@@ -1,6 +1,19 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, Bot, FileSearch, Lightbulb, Loader2, Play, RefreshCw, Route, ScrollText } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Bot,
+  Database,
+  FileSearch,
+  Lightbulb,
+  Loader2,
+  Play,
+  RefreshCw,
+  Route,
+  ScrollText,
+  ShieldCheck,
+} from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
@@ -21,10 +34,52 @@ type AgentSourceListItem = {
   relevanceReason: string;
 };
 
+type IndexStatus = {
+  chunkCount: number;
+  publicPostCount: number;
+  indexedPublicPostCount: number;
+  hiddenOrDraftExcludedCount: number;
+  lastReindexAt: string | Date | null;
+  latestReindexError: string | null;
+  reindexCommand: string;
+  publishCommand: string;
+  stalePublicPostSlugs: string[];
+  extraIndexedPostSlugs: string[];
+  indexedPostSlugs: string[];
+};
+
+type RetrievalDiagnostics = {
+  status: "ready" | "no_sources";
+  terms: string[];
+  missingTerms: string[];
+  notes: string[];
+  suggestions: string[];
+};
+
+type EvalSummaryData = {
+  total: number;
+  passed: number;
+  failed: number;
+  successCases: number;
+  refusalCases: number;
+  runAt: string | Date;
+  retrievalStrategy: string;
+  modelProvider: string;
+};
+
+type IdeaStatus = "new" | "reviewed" | "planned" | "dismissed";
+
+const IDEA_STATUS_STORAGE_KEY = "ai-tech-blog:agent-radar-idea-statuses";
+
 const defaultEvalQuestions = [
-  "What is a harness engine?",
-  "How should context engines preserve source boundaries?",
-  "What failure modes matter for tool-using agents?",
+  "What problem does IsoHC solve?",
+  "What exact invariants does IsoHC preserve?",
+  "How does Agent Harness differ from a normal chatbot?",
+  "What is the role of an Evidence Packet in agentic RAG?",
+  "How does AgentLoop turn ReAct into an observable runtime?",
+  "Build me a reading path for agent systems and evaluation.",
+  "Can you explain EVQ-Cosh hidden details?",
+  "What is the weather in Tokyo tomorrow?",
 ].join("\n");
 
 export default function ManageAgent() {
@@ -34,6 +89,7 @@ export default function ManageAgent() {
   const [debugQuery, setDebugQuery] = useState("harness engine context boundary");
   const [evalQuestions, setEvalQuestions] = useState(defaultEvalQuestions);
   const [conversationId, setConversationId] = useState("");
+  const [ideaStatuses, setIdeaStatuses] = useState<Record<string, IdeaStatus>>({});
 
   useSeo(
     buildRouteMetadata(siteUrl, {
@@ -45,20 +101,39 @@ export default function ManageAgent() {
   );
 
   const routeContext = useMemo(
-    () => ({ path: "/applications", routeType: "track" as const, trackSlug: "ai-applications" as const }),
+    () => ({ path: "/", routeType: "home" as const }),
     []
   );
 
+  const indexStatus = trpc.agent.adminKnowledgeStatus.useQuery(undefined, { enabled: isAdmin, retry: false });
   const debug = trpc.agent.adminDebugRetrieval.useQuery(
     { query: debugQuery, routeContext },
     { enabled: false, retry: false }
   );
   const evals = trpc.agent.adminRunEvals.useMutation();
   const runs = trpc.agent.adminListRuns.useQuery({ limit: 12 }, { enabled: isAdmin, retry: false });
+  const questionRadar = trpc.agent.adminQuestionRadar.useQuery({ limit: 50 }, { enabled: isAdmin, retry: false });
   const ideas = trpc.agent.adminExtractArticleIdeas.useQuery(
     { conversationId: conversationId || "00000000-0000-4000-8000-000000000000" },
     { enabled: false, retry: false }
   );
+
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(IDEA_STATUS_STORAGE_KEY);
+      if (stored) setIdeaStatuses(JSON.parse(stored));
+    } catch {
+      setIdeaStatuses({});
+    }
+  }, []);
+
+  const updateIdeaStatus = (ideaId: string, status: IdeaStatus) => {
+    setIdeaStatuses((current) => {
+      const next = { ...current, [ideaId]: status };
+      window.localStorage.setItem(IDEA_STATUS_STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  };
 
   if (authLoading) {
     return (
@@ -110,13 +185,22 @@ export default function ManageAgent() {
           </Button>
         </div>
 
-        <Tabs defaultValue="debug" className="space-y-5">
-          <TabsList className="grid w-full grid-cols-4 border border-sky-200/15 bg-slate-950/60 lg:w-[720px]">
+        <Tabs defaultValue="index" className="space-y-5">
+          <TabsList className="grid w-full grid-cols-5 border border-sky-200/15 bg-slate-950/60 lg:w-[860px]">
+            <TabsTrigger value="index"><Database className="mr-2 h-4 w-4" />{t("agentOps.index.title")}</TabsTrigger>
             <TabsTrigger value="debug"><FileSearch className="mr-2 h-4 w-4" />{t("agentOps.debug.title")}</TabsTrigger>
             <TabsTrigger value="evals"><Play className="mr-2 h-4 w-4" />{t("agentOps.evals.title")}</TabsTrigger>
             <TabsTrigger value="traces"><Route className="mr-2 h-4 w-4" />{t("agentOps.traces.title")}</TabsTrigger>
             <TabsTrigger value="ideas"><Lightbulb className="mr-2 h-4 w-4" />{t("agentOps.ideas.title")}</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="index" className="glass-panel p-5">
+            <IndexStatusPanel
+              loading={indexStatus.isLoading}
+              error={indexStatus.isError}
+              status={indexStatus.data}
+            />
+          </TabsContent>
 
           <TabsContent value="debug" className="glass-panel p-5">
             <div className="flex flex-col gap-3 lg:flex-row">
@@ -126,7 +210,7 @@ export default function ManageAgent() {
                 placeholder={t("agentOps.debug.query")}
                 className="border-sky-200/15 bg-slate-950/50 text-white"
               />
-            <Button onClick={() => debug.refetch()} disabled={!debugQuery.trim() || debug.isFetching}>
+              <Button onClick={() => debug.refetch()} disabled={!debugQuery.trim() || debug.isFetching}>
                 {debug.isFetching ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
@@ -136,6 +220,7 @@ export default function ManageAgent() {
               </Button>
             </div>
             <SourceList sources={debug.data?.sources ?? []} empty={t("agentOps.debug.empty")} />
+            {debug.data?.diagnostics && <DiagnosticsPanel diagnostics={debug.data.diagnostics} />}
           </TabsContent>
 
           <TabsContent value="evals" className="glass-panel p-5">
@@ -158,16 +243,39 @@ export default function ManageAgent() {
               {evals.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
               {t("agentOps.evals.run")}
             </Button>
+            {evals.data?.summary && <EvalSummary summary={evals.data.summary} />}
             <div className="mt-5 grid gap-2">
               {evalItems.map((item) => (
                 <div key={item.question} className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="font-medium text-white">{item.question}</p>
+                    <div>
+                      <p className="font-medium text-white">{item.question}</p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {item.category} · {getExpectedLabel(item.expectedBehavior, t)}
+                      </p>
+                    </div>
                     <Badge variant="outline" className={getEvalBadgeClass(item.passed)}>
                       {getEvalStatusLabel(item.passed, t)}
                     </Badge>
                   </div>
                   <p className="mt-1 text-xs text-slate-500">{t("agentOps.sourceCount", { count: item.sourceCount })} · {item.topSourceTitle || "-"}</p>
+                  {item.expectedSourceSlugs.length > 0 && (
+                    <p className="mt-1 text-xs text-slate-500">
+                      {t("agentOps.evals.expectedSources")}: {item.expectedSourceSlugs.join(", ")}
+                    </p>
+                  )}
+                  {item.missingSourceSlugs.length > 0 && (
+                    <p className="mt-1 text-xs text-amber-200">
+                      {t("agentOps.evals.missingSources")}: {item.missingSourceSlugs.join(", ")}
+                    </p>
+                  )}
+                  {item.notes.length > 0 && (
+                    <ul className="mt-2 space-y-1 text-xs leading-5 text-slate-400">
+                      {item.notes.slice(0, 3).map((note) => (
+                        <li key={note}>{note}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               ))}
             </div>
@@ -188,6 +296,14 @@ export default function ManageAgent() {
                   <div className="min-w-0">
                     <p className="truncate font-mono text-xs text-sky-100">{run.id}</p>
                     <p className="mt-1 text-xs text-slate-500">{formatScope(run.scopeType, run.scopeValue)}</p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {run.retrievalStrategy || "supabase_keyword"}
+                    </p>
+                    {(run.retrievedChunkIds?.length ?? 0) > 0 && (
+                      <p className="mt-1 line-clamp-1 text-xs text-slate-500">
+                        {t("agentOps.traces.sources")}: {run.retrievedChunkIds?.join(", ")}
+                      </p>
+                    )}
                   </div>
                   <Metric label={t("agentOps.status")} value={run.status ?? "-"} />
                   <Metric label={t("agentOps.latency")} value={formatLatency(run.latencyMs)} />
@@ -198,7 +314,15 @@ export default function ManageAgent() {
           </TabsContent>
 
           <TabsContent value="ideas" className="glass-panel p-5">
-            <div className="flex flex-col gap-3 lg:flex-row">
+            <QuestionRadarPanel
+              loading={questionRadar.isLoading}
+              error={questionRadar.isError}
+              radar={questionRadar.data}
+              ideaStatuses={ideaStatuses}
+              onIdeaStatus={updateIdeaStatus}
+              onRefresh={() => questionRadar.refetch()}
+            />
+            <div className="mt-6 flex flex-col gap-3 border-t border-sky-200/10 pt-5 lg:flex-row">
               <Input
                 value={conversationId}
                 onChange={(event) => setConversationId(event.target.value)}
@@ -236,6 +360,278 @@ export default function ManageAgent() {
           </TabsContent>
         </Tabs>
       </main>
+    </div>
+  );
+}
+
+function IndexStatusPanel({
+  loading,
+  error,
+  status,
+}: {
+  loading: boolean;
+  error: boolean;
+  status?: IndexStatus;
+}) {
+  const { t } = useLanguage();
+
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 text-sm text-slate-400">
+        <Loader2 className="h-4 w-4 animate-spin text-sky-300" />
+        {t("agentOps.index.loading")}
+      </div>
+    );
+  }
+
+  if (error || !status) {
+    return (
+      <div className="rounded-lg border border-amber-300/20 bg-amber-950/20 p-4 text-sm leading-6 text-amber-100">
+        <AlertTriangle className="mb-2 h-4 w-4" />
+        {t("agentOps.index.error")}
+      </div>
+    );
+  }
+
+  const isFresh = status.stalePublicPostSlugs.length === 0 && status.extraIndexedPostSlugs.length === 0;
+
+  return (
+    <div className="space-y-5">
+      <div className="grid gap-3 md:grid-cols-4">
+        <MetricCard label={t("agentOps.index.chunks")} value={String(status.chunkCount)} />
+        <MetricCard label={t("agentOps.index.publicPosts")} value={String(status.publicPostCount)} />
+        <MetricCard label={t("agentOps.index.coverage")} value={`${status.indexedPublicPostCount}/${status.publicPostCount}`} />
+        <MetricCard label={t("agentOps.index.excluded")} value={String(status.hiddenOrDraftExcludedCount)} />
+      </div>
+      <div className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            {isFresh ? (
+              <ShieldCheck className="h-4 w-4 text-cyan-200" />
+            ) : (
+              <AlertTriangle className="h-4 w-4 text-amber-200" />
+            )}
+            <h2 className="font-semibold text-white">
+              {isFresh ? t("agentOps.index.fresh") : t("agentOps.index.needsReindex")}
+            </h2>
+          </div>
+          <span className="text-xs text-slate-500">
+            {t("agentOps.index.lastReindex")}: {formatDateTime(status.lastReindexAt)}
+          </span>
+        </div>
+        <p className="mt-3 text-sm leading-6 text-slate-400">
+          {t("agentOps.index.cliOnly")} <code className="rounded bg-slate-900 px-1.5 py-0.5 text-sky-100">{status.reindexCommand}</code>
+          {" / "}
+          <code className="rounded bg-slate-900 px-1.5 py-0.5 text-sky-100">{status.publishCommand}</code>
+        </p>
+        {(status.stalePublicPostSlugs.length > 0 || status.extraIndexedPostSlugs.length > 0 || status.latestReindexError) && (
+          <div className="mt-3 space-y-2 text-xs leading-5 text-slate-400">
+            {status.stalePublicPostSlugs.length > 0 && (
+              <p>{t("agentOps.index.stale")}: {status.stalePublicPostSlugs.join(", ")}</p>
+            )}
+            {status.extraIndexedPostSlugs.length > 0 && (
+              <p>{t("agentOps.index.extra")}: {status.extraIndexedPostSlugs.join(", ")}</p>
+            )}
+            {status.latestReindexError && (
+              <p className="text-amber-200">{t("agentOps.index.latestError")}: {status.latestReindexError}</p>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function QuestionRadarPanel({
+  loading,
+  error,
+  radar,
+  ideaStatuses,
+  onIdeaStatus,
+  onRefresh,
+}: {
+  loading: boolean;
+  error: boolean;
+  radar?: any;
+  ideaStatuses: Record<string, IdeaStatus>;
+  onIdeaStatus: (ideaId: string, status: IdeaStatus) => void;
+  onRefresh: () => void;
+}) {
+  const { t } = useLanguage();
+  const questions = radar?.frequentQuestions ?? [];
+  const ideas = radar?.suggestedIdeas ?? [];
+  const noSourceRuns = radar?.noSourceRuns ?? [];
+  const failedRuns = radar?.failedRuns ?? [];
+
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 text-sm text-slate-400">
+        <Loader2 className="h-4 w-4 animate-spin text-sky-300" />
+        {t("agentOps.radar.loading")}
+      </div>
+    );
+  }
+
+  if (error || !radar) {
+    return (
+      <div className="rounded-lg border border-amber-300/20 bg-amber-950/20 p-4 text-sm leading-6 text-amber-100">
+        <AlertTriangle className="mb-2 h-4 w-4" />
+        {t("agentOps.radar.error")}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-white">{t("agentOps.radar.title")}</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+            {t("agentOps.radar.description")}
+          </p>
+        </div>
+        <Button variant="outline" size="sm" onClick={onRefresh}>
+          <RefreshCw className="mr-2 h-4 w-4" />
+          {t("agentOps.traces.refresh")}
+        </Button>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-4">
+        <MetricCard label={t("agentOps.radar.totalRuns")} value={String(radar.summary.totalRuns)} />
+        <MetricCard label={t("agentOps.radar.uniqueQuestions")} value={String(radar.summary.uniqueQuestions)} />
+        <MetricCard label={t("agentOps.radar.noSourceRuns")} value={String(radar.summary.noSourceRuns)} />
+        <MetricCard label={t("agentOps.radar.failedRuns")} value={String(radar.summary.failedRuns)} />
+      </div>
+
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(300px,0.8fr)]">
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-white">{t("agentOps.radar.questions")}</h3>
+          {questions.length === 0 ? (
+            <p className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-4 text-sm text-slate-500">
+              {t("agentOps.radar.empty")}
+            </p>
+          ) : (
+            questions.map((item: any) => (
+              <article key={item.question} className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0">
+                    <p className="font-medium leading-6 text-white">{item.question}</p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {formatScope(item.scopeType, item.scopeValue)} · {t("agentOps.radar.supportCount", { count: item.count })}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {item.signalTypes.map((signal: string) => (
+                      <Badge key={signal} variant="outline" className="border-cyan-200/20 text-cyan-100">
+                        {getRadarSignalLabel(signal, t)}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-white">{t("agentOps.radar.ideas")}</h3>
+          {ideas.length === 0 ? (
+            <p className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-4 text-sm text-slate-500">
+              {t("agentOps.radar.noIdeas")}
+            </p>
+          ) : (
+            ideas.map((idea: any) => {
+              const status = ideaStatuses[idea.ideaId] ?? idea.status ?? "new";
+              return (
+                <article key={idea.ideaId} className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4">
+                  <div className="mb-2 flex items-start gap-2">
+                    <Lightbulb className="mt-1 h-4 w-4 shrink-0 text-sky-300" />
+                    <div className="min-w-0">
+                      <h4 className="font-semibold leading-6 text-white">{idea.proposedTitle}</h4>
+                      <p className="mt-1 text-xs leading-5 text-slate-500">{idea.rationale}</p>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {(["new", "reviewed", "planned", "dismissed"] as IdeaStatus[]).map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        aria-pressed={status === option}
+                        onClick={() => onIdeaStatus(idea.ideaId, option)}
+                        className={`h-8 rounded-md border px-2.5 text-xs font-medium transition ${getIdeaStatusClass(status === option)}`}
+                      >
+                        {getIdeaStatusLabel(option, t)}
+                      </button>
+                    ))}
+                  </div>
+                </article>
+              );
+            })
+          )}
+        </div>
+      </div>
+
+      {(noSourceRuns.length > 0 || failedRuns.length > 0) && (
+        <div className="rounded-lg border border-amber-300/20 bg-amber-950/15 p-4">
+          <h3 className="text-sm font-semibold text-amber-100">{t("agentOps.radar.failureSignals")}</h3>
+          <div className="mt-3 grid gap-2 md:grid-cols-2">
+            {[...noSourceRuns, ...failedRuns].slice(0, 6).map((run: any) => (
+              <p key={run.runId} className="rounded-md bg-slate-950/45 p-2 text-xs leading-5 text-slate-400">
+                {run.question || run.runId} · {formatScope(run.scopeType, run.scopeValue)}
+              </p>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DiagnosticsPanel({ diagnostics }: { diagnostics: RetrievalDiagnostics }) {
+  const { t } = useLanguage();
+  const tone = diagnostics.status === "ready" ? "border-cyan-300/20 bg-cyan-950/15" : "border-amber-300/20 bg-amber-950/15";
+
+  return (
+    <div className={`mt-4 rounded-lg border p-4 ${tone}`}>
+      <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-white">
+        {diagnostics.status === "ready" ? <ShieldCheck className="h-4 w-4 text-cyan-200" /> : <AlertTriangle className="h-4 w-4 text-amber-200" />}
+        {t("agentOps.debug.diagnostics")}
+      </div>
+      <p className="text-xs leading-5 text-slate-400">
+        {t("agentOps.debug.terms")}: {diagnostics.terms.join(", ") || "-"}
+      </p>
+      {diagnostics.missingTerms.length > 0 && (
+        <p className="mt-1 text-xs leading-5 text-amber-200">
+          {t("agentOps.debug.missingTerms")}: {diagnostics.missingTerms.join(", ")}
+        </p>
+      )}
+      <ul className="mt-3 space-y-1 text-xs leading-5 text-slate-400">
+        {[...diagnostics.notes, ...diagnostics.suggestions].map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function EvalSummary({ summary }: { summary: EvalSummaryData }) {
+  const { t } = useLanguage();
+
+  return (
+    <div className="mt-4 grid gap-3 md:grid-cols-4">
+      <MetricCard label={t("agentOps.evals.passed")} value={`${summary.passed}/${summary.total}`} />
+      <MetricCard label={t("agentOps.evals.failed")} value={String(summary.failed)} />
+      <MetricCard label={t("agentOps.evals.refusals")} value={String(summary.refusalCases)} />
+      <MetricCard label={summary.retrievalStrategy} value={formatDateTime(summary.runAt)} />
+    </div>
+  );
+}
+
+function MetricCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-3">
+      <p className="text-[0.68rem] uppercase tracking-[0.16em] text-slate-500">{label}</p>
+      <p className="mt-1 text-lg font-semibold text-white">{value}</p>
     </div>
   );
 }
@@ -284,6 +680,29 @@ function getEvalStatusLabel(passed: boolean, t: (key: string) => string) {
   return passed ? t("agentOps.evals.passed") : t("agentOps.evals.failed");
 }
 
+function getExpectedLabel(expected: "sources" | "refusal", t: (key: string) => string) {
+  return expected === "refusal" ? t("agentOps.evals.expectedRefusal") : t("agentOps.evals.expectedSourceAnswer");
+}
+
+function getRadarSignalLabel(signal: string, t: (key: string) => string) {
+  if (signal === "no_source") return t("agentOps.radar.signalNoSource");
+  if (signal === "failed") return t("agentOps.radar.signalFailed");
+  return t("agentOps.radar.signalFrequent");
+}
+
+function getIdeaStatusLabel(status: IdeaStatus, t: (key: string) => string) {
+  if (status === "reviewed") return t("agentOps.radar.statusReviewed");
+  if (status === "planned") return t("agentOps.radar.statusPlanned");
+  if (status === "dismissed") return t("agentOps.radar.statusDismissed");
+  return t("agentOps.radar.statusNew");
+}
+
+function getIdeaStatusClass(active: boolean) {
+  return active
+    ? "border-sky-300/50 bg-sky-400/15 text-sky-100"
+    : "border-sky-200/10 bg-slate-950/35 text-slate-400 hover:border-sky-300/35 hover:text-white";
+}
+
 function formatScope(scopeType?: string | null, scopeValue?: string | null) {
   const type = scopeType || "-";
   return scopeValue ? `${type}:${scopeValue}` : type;
@@ -291,6 +710,18 @@ function formatScope(scopeType?: string | null, scopeValue?: string | null) {
 
 function formatLatency(latencyMs?: number | null) {
   return typeof latencyMs === "number" ? `${latencyMs}ms` : "-";
+}
+
+function formatDateTime(value?: Date | string | null) {
+  if (!value) return "-";
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+  return new Intl.DateTimeFormat(undefined, {
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
 }
 
 function getSourceHref(postSlug: string) {

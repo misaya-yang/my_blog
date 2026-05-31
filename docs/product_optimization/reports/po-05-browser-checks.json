@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-05-31T07:08:13.808Z",
+  "browser": "Codex in-app Browser",
+  "article": {
+    "url": "http://127.0.0.1:3000/post/agent-loop-observable-tool-using-agents",
+    "welcome": true,
+    "promptClicked": true,
+    "quotaBlockedState": true,
+    "articleSpecificPrompt": true
+  },
+  "applications": {
+    "url": "http://127.0.0.1:3000/applications",
+    "welcome": true,
+    "trackSpecificPrompt": true,
+    "differsFromArticlePrompt": true,
+    "contextAttachLifecycleVerifiedViaHistory": true,
+    "quotaLowState": true
+  },
+  "history": {
+    "panelOpened": true,
+    "conversationVisible": true
+  },
+  "mobile": {
+    "activePlaceholder": "询问文章、标签或阅读路径...",
+    "activeTag": "TEXTAREA",
+    "documentNoHorizontalScroll": true,
+    "input": {
+      "bottom": 742,
+      "top": 702
+    },
+    "inputVisible": true,
+    "panel": {
+      "bottom": 764,
+      "height": 720,
+      "top": 44
+    },
+    "panelWithinViewport": true,
+    "sheet": {
+      "bottom": 764,
+      "height": 720,
+      "top": 44
+    },
+    "viewport": {
+      "height": 844,
+      "width": 390
+    }
+  },
+  "sourceBoundary": {
+    "clientCardsOnlyLinkWhenPostSlug": true,
+    "publicSourceBoundaryCoveredBy": [
+      "server/ai/knowledge.test.ts",
+      "server/ai/harness.test.ts"
+    ]
+  },
+  "screenshots": {
+    "article": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-05-screenshots/article-companion.png",
+    "applications": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-05-screenshots/applications-companion.png",
+    "mobile": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-05-screenshots/mobile-companion.png"
+  },
+  "consoleErrors": []
+}

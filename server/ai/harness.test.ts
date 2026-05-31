@@ -106,6 +106,18 @@ function visitorContextWithId(visitorId: string): AgentContext {
   };
 }
 
+function adminContext(): AgentContext {
+  return {
+    req: { headers: { "x-forwarded-for": "203.0.113.88", "user-agent": "vitest" } },
+    session: {
+      isAuthenticated: true,
+      isAdmin: true,
+      role: "admin",
+      displayName: "Misaya Yang",
+    },
+  };
+}
+
 function createHarness(overrides: Partial<Parameters<typeof createAgentService>[0]> = {}) {
   const conversationStore = createMemoryConversationStore();
   const contextSourceStore = createMemoryContextSourceStore();
@@ -141,6 +153,19 @@ function createHarness(overrides: Partial<Parameters<typeof createAgentService>[
     quotaStore: createMemoryQuotaStore(),
     conversationStore,
     contextSourceStore,
+    getKnowledgeStatus: vi.fn(async () => ({
+      chunkCount: 3,
+      publicPostCount: 2,
+      indexedPublicPostCount: 2,
+      hiddenOrDraftExcludedCount: 1,
+      lastReindexAt: new Date("2026-05-30T08:00:00.000Z"),
+      latestReindexError: null,
+      reindexCommand: "pnpm ai:reindex",
+      publishCommand: "pnpm content:publish",
+      stalePublicPostSlugs: [],
+      extraIndexedPostSlugs: [],
+      indexedPostSlugs: ["agent-harness", "df-rope"],
+    })),
     retrieve,
     model,
     now: () => new Date("2026-05-30T08:00:00.000Z"),
@@ -382,15 +407,7 @@ describe("AI agent harness", () => {
 
   it("lets only admins inspect retrieval without model calls", async () => {
     const { service, retrieve, model } = createHarness();
-    const adminCtx: AgentContext = {
-      req: { headers: { "x-forwarded-for": "203.0.113.88", "user-agent": "vitest" } },
-      session: {
-        isAuthenticated: true,
-        isAdmin: true,
-        role: "admin",
-        displayName: "Misaya Yang",
-      },
-    };
+    const adminCtx = adminContext();
 
     await expect(
       service.adminDebugRetrieval(visitorContext(), {
@@ -405,23 +422,35 @@ describe("AI agent harness", () => {
     });
 
     expect(result.sources[0]).toMatchObject({ sourceId: source.sourceId });
+    expect(result.diagnostics).toMatchObject({
+      status: "ready",
+      terms: ["harness", "engine"],
+    });
     expect(retrieve).toHaveBeenCalledWith(
       expect.objectContaining({ query: "harness engine", scope: { type: "track", value: "ai-applications" } })
     );
     expect(model.generate).not.toHaveBeenCalled();
   });
 
+  it("returns actionable diagnostics when retrieval has no public sources", async () => {
+    const { service } = createHarness({ retrieve: vi.fn(async () => []) });
+
+    const result = await service.adminDebugRetrieval(adminContext(), {
+      query: "EVQ hidden details",
+      routeContext,
+    });
+
+    expect(result.sources).toEqual([]);
+    expect(result.diagnostics).toMatchObject({
+      status: "no_sources",
+      missingTerms: ["evq", "hidden", "details"],
+    });
+    expect(result.diagnostics.suggestions.join(" ")).toContain("pnpm ai:reindex");
+  });
+
   it("runs retrieval-only evals for admins", async () => {
     const { service, model } = createHarness();
-    const adminCtx: AgentContext = {
-      req: { headers: { "x-forwarded-for": "203.0.113.88", "user-agent": "vitest" } },
-      session: {
-        isAuthenticated: true,
-        isAdmin: true,
-        role: "admin",
-        displayName: "Misaya Yang",
-      },
-    };
+    const adminCtx = adminContext();
 
     const result = await service.adminRunEvals(adminCtx, {
       questions: ["Explain harness engines", "Compare context engines"],
@@ -430,21 +459,67 @@ describe("AI agent harness", () => {
 
     expect(result.items).toHaveLength(2);
     expect(result.items[0]).toMatchObject({ passed: true, sourceCount: 1 });
+    expect(result.summary).toMatchObject({ total: 2, passed: 2, failed: 0 });
     expect(model.generate).not.toHaveBeenCalled();
+  });
+
+  it("runs the default golden eval set with success and refusal cases", async () => {
+    const retrieve = vi.fn(async ({ query }: { query: string }) => {
+      if (query.includes("EVQ") || query.includes("weather")) return [];
+      if (query.includes("IsoHC")) return [isohcSource];
+      return [source];
+    });
+    const { service } = createHarness({ retrieve });
+
+    const result = await service.adminRunEvals(adminContext(), {
+      routeContext: { path: "/", routeType: "home" },
+    });
+
+    expect(result.summary.total).toBeGreaterThanOrEqual(8);
+    expect(result.summary.refusalCases).toBeGreaterThanOrEqual(2);
+    expect(result.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          category: "Refusal",
+          expectedBehavior: "refusal",
+          passed: true,
+          sourceCount: 0,
+        }),
+      ])
+    );
+  });
+
+  it("exposes admin knowledge status without running reindex", async () => {
+    const getKnowledgeStatus = vi.fn(async () => ({
+      chunkCount: 9,
+      publicPostCount: 3,
+      indexedPublicPostCount: 3,
+      hiddenOrDraftExcludedCount: 2,
+      lastReindexAt: new Date("2026-05-30T08:00:00.000Z"),
+      latestReindexError: null,
+      reindexCommand: "pnpm ai:reindex",
+      publishCommand: "pnpm content:publish",
+      stalePublicPostSlugs: [],
+      extraIndexedPostSlugs: [],
+      indexedPostSlugs: ["agent-harness", "rag-evidence-packet", "agent-loop"],
+    }));
+    const { service } = createHarness({ getKnowledgeStatus });
+
+    await expect(service.adminKnowledgeStatus(visitorContext())).rejects.toThrow("Admin authentication required");
+    const status = await service.adminKnowledgeStatus(adminContext());
+
+    expect(status).toMatchObject({
+      chunkCount: 9,
+      indexedPublicPostCount: 3,
+      reindexCommand: "pnpm ai:reindex",
+    });
+    expect(getKnowledgeStatus).toHaveBeenCalledTimes(1);
   });
 
   it("extracts article ideas from a conversation without publishing anything", async () => {
     const { service } = createHarness();
     const owner = visitorContextWithId("visitor-ideas");
-    const adminCtx: AgentContext = {
-      req: { headers: { "x-forwarded-for": "203.0.113.88", "user-agent": "vitest" } },
-      session: {
-        isAuthenticated: true,
-        isAdmin: true,
-        role: "admin",
-        displayName: "Misaya Yang",
-      },
-    };
+    const adminCtx = adminContext();
     const created = await service.sendMessage(owner, {
       message: "Can you explain failure modes in agent harness engines?",
       routeContext,
@@ -459,6 +534,54 @@ describe("AI agent harness", () => {
     expect(ideas.ideas[0]).toMatchObject({
       sourceConversationId: created.conversationId,
       proposedTitle: expect.stringContaining("failure modes"),
+    });
+  });
+
+  it("summarizes agent questions into an owner-only content radar", async () => {
+    const { service, conversationStore } = createHarness();
+    conversationStore.runs.push(
+      {
+        id: "run-radar-1",
+        conversationId: "conv-radar-1",
+        question: "Why did the harness fail without sources?",
+        status: "completed",
+        scopeType: "track",
+        scopeValue: "ai-applications",
+        retrievedChunkIds: [],
+        createdAt: new Date("2026-05-30T08:00:00.000Z"),
+      },
+      {
+        id: "run-radar-2",
+        conversationId: "conv-radar-2",
+        question: "Why did the harness fail without sources?",
+        status: "failed",
+        errorCode: "agent_generation_failed",
+        scopeType: "track",
+        scopeValue: "ai-applications",
+        retrievedChunkIds: ["agent-harness:1"],
+        createdAt: new Date("2026-05-30T09:00:00.000Z"),
+      }
+    );
+
+    await expect(service.adminQuestionRadar(visitorContext(), { limit: 20 })).rejects.toThrow(
+      "Admin authentication required"
+    );
+    const radar = await service.adminQuestionRadar(adminContext(), { limit: 20 });
+
+    expect(radar.summary).toMatchObject({
+      totalRuns: 2,
+      failedRuns: 1,
+      noSourceRuns: 1,
+      uniqueQuestions: 1,
+    });
+    expect(radar.frequentQuestions[0]).toMatchObject({
+      question: "Why did the harness fail without sources?",
+      count: 2,
+      signalTypes: expect.arrayContaining(["frequent", "no_source", "failed"]),
+    });
+    expect(radar.suggestedIdeas[0]).toMatchObject({
+      status: "new",
+      supportCount: 2,
     });
   });
 

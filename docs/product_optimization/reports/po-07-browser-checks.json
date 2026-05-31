@@ -1,0 +1,85 @@
+{
+  "phase": "PO-07",
+  "browser": "Codex in-app Browser only",
+  "generatedAt": "2026-05-31T07:47:31.028Z",
+  "checks": [
+    {
+      "name": "article feedback submit",
+      "status": "pass",
+      "artifacts": {
+        "text": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-07-browser-snapshots/article-feedback-submit.txt",
+        "screenshot": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-07-screenshots/article-feedback-submit.png"
+      },
+      "evidence": "谢谢"
+    },
+    {
+      "name": "owner feedback review",
+      "status": "pass",
+      "artifacts": {
+        "text": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-07-browser-snapshots/owner-feedback-review.txt",
+        "screenshot": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-07-screenshots/owner-feedback-review.png"
+      },
+      "evidence": {
+        "hasContentRadar": true,
+        "hasOpportunities": true,
+        "feedbackHidden": true,
+        "feedbackReviewedBeforeHidden": true
+      }
+    },
+    {
+      "name": "subscriber export/status",
+      "status": "pass",
+      "artifacts": {
+        "text": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-07-browser-snapshots/subscriber-export-status.txt",
+        "screenshot": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-07-screenshots/subscriber-export-status.png"
+      },
+      "evidence": {
+        "exportButtons": [
+          {
+            "disabled": true,
+            "text": "导出"
+          }
+        ],
+        "storedOnlyCopy": true,
+        "noSubscribers": true
+      }
+    },
+    {
+      "name": "ManageAgent content radar state",
+      "status": "pass",
+      "artifacts": {
+        "text": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-07-browser-snapshots/manage-agent-content-radar.txt",
+        "screenshot": "/Users/yang/projects/ai-tech-blog/docs/product_optimization/reports/po-07-screenshots/manage-agent-content-radar.png"
+      },
+      "evidence": {
+        "tabCount": 1,
+        "clickedPlan": true,
+        "hasQuestionRadar": true,
+        "hasSuggestedIdeas": false,
+        "statusButtons": [
+          {
+            "disabled": false,
+            "rect": {
+              "h": 32,
+              "w": 58,
+              "x": 108,
+              "y": 1242.28125
+            },
+            "text": "已查看"
+          },
+          {
+            "disabled": false,
+            "rect": {
+              "h": 32,
+              "w": 58,
+              "x": 174,
+              "y": 1242.28125
+            },
+            "text": "计划中"
+          }
+        ],
+        "sample": "EN\nAgent 运维\nAgent 运维\n\n调试检索、查看 trace、运行 eval，并从对话提炼文章选题；不授予模型写入权限。\n\n返回内容管理\n索引状态\n检索调试器\n本地 Eval\n近期 Trace\n内容雷达\nAgent 问题雷达\n\n把高频、无来源和失败的 Agent 问题聚合成仅作者可见的写作候选。\n\n刷新 Trace\n\n运行数\n\n9\n\n不同问题\n\n7\n\n无来源\n\n0\n\n失败\n\n1\n\n问题信号\n\nWhat does the Agent Harness Engine article explain?\n\ntrack:ai-applications · 3 个信号\n\n失败\n高频\n候选文章选题\nWhat does the Agent Harness Engine article explain\n\nBased on 3 Agent signals (failed, frequent).\n\n新建\n已查看\n计划中\n已忽略\n失败与无来源信号\n\nWhat does the Agent Harness Engine article explain? · track:ai-applications\n\n"
+      }
+    }
+  ]
+}

@@ -1,5 +1,14 @@
 export type TrackKind = "algorithms" | "applications";
 
+export type TrackSeriesConfig = {
+  slug: string;
+  titleKey: string;
+  promiseKey: string;
+  postSlugs: string[];
+  expectedNextKeys: string[];
+  conceptKeys: string[];
+};
+
 export type TrackConfig = {
   kind: TrackKind;
   categorySlug: "ai-algorithms" | "ai-applications";
@@ -12,6 +21,7 @@ export type TrackConfig = {
   topicTitleKey: string;
   topics: Array<{ labelKey: string; metaKey: string }>;
   focusKeys: string[];
+  series: TrackSeriesConfig[];
 };
 
 export const trackConfigs: Record<TrackKind, TrackConfig> = {
@@ -39,6 +49,38 @@ export const trackConfigs: Record<TrackKind, TrackConfig> = {
       "home.focusTag5",
       "home.focusTag8",
     ],
+    series: [
+      {
+        slug: "residual-stability",
+        titleKey: "series.residualStability.title",
+        promiseKey: "series.residualStability.promise",
+        postSlugs: ["isohc-fixed-vector-isometric-residual-mixing"],
+        expectedNextKeys: [
+          "series.residualStability.next1",
+          "series.residualStability.next2",
+        ],
+        conceptKeys: [
+          "track.topic.residualMixing",
+          "track.topic.stability",
+          "track.topic.architecture",
+        ],
+      },
+      {
+        slug: "long-context-position-encoding",
+        titleKey: "series.longContext.title",
+        promiseKey: "series.longContext.promise",
+        postSlugs: [],
+        expectedNextKeys: [
+          "series.longContext.next1",
+          "series.longContext.next2",
+        ],
+        conceptKeys: [
+          "track.topic.positionEncoding",
+          "track.topic.rope",
+          "track.topic.longContext",
+        ],
+      },
+    ],
   },
   applications: {
     kind: "applications",
@@ -65,6 +107,42 @@ export const trackConfigs: Record<TrackKind, TrackConfig> = {
       "track.applications.focus4",
       "track.applications.focus5",
       "track.applications.focus6",
+    ],
+    series: [
+      {
+        slug: "agent-runtime-systems",
+        titleKey: "series.agentRuntime.title",
+        promiseKey: "series.agentRuntime.promise",
+        postSlugs: [
+          "agent-harness-engine-evaluating-tool-using-agents",
+          "rag-evidence-packet-context-compiler",
+          "agent-loop-observable-tool-using-agents",
+        ],
+        expectedNextKeys: [
+          "series.agentRuntime.next1",
+          "series.agentRuntime.next2",
+        ],
+        conceptKeys: [
+          "track.topic.agentSystems",
+          "track.topic.harnessEngine",
+          "track.topic.observability",
+        ],
+      },
+      {
+        slug: "agentic-rag-infrastructure",
+        titleKey: "series.agenticRag.title",
+        promiseKey: "series.agenticRag.promise",
+        postSlugs: ["rag-evidence-packet-context-compiler"],
+        expectedNextKeys: [
+          "series.agenticRag.next1",
+          "series.agenticRag.next2",
+        ],
+        conceptKeys: [
+          "track.topic.ragRetrieval",
+          "track.topic.contextEngineering",
+          "track.topic.evaluation",
+        ],
+      },
     ],
   },
 };

@@ -66,6 +66,49 @@ type SearchOptions = {
 
 const DEFAULT_LOCALE = "en";
 const MAX_CHUNK_CHARS = 1800;
+const QUERY_STOPWORDS = new Set([
+  "a",
+  "an",
+  "and",
+  "are",
+  "as",
+  "at",
+  "be",
+  "by",
+  "can",
+  "could",
+  "detail",
+  "details",
+  "does",
+  "explain",
+  "for",
+  "from",
+  "has",
+  "have",
+  "hidden",
+  "how",
+  "in",
+  "into",
+  "is",
+  "it",
+  "me",
+  "of",
+  "on",
+  "or",
+  "please",
+  "should",
+  "that",
+  "the",
+  "this",
+  "to",
+  "tomorrow",
+  "what",
+  "when",
+  "where",
+  "why",
+  "with",
+  "you",
+]);
 
 export function isPublicKnowledgePost(post: KnowledgePostInput) {
   return post.status === "published" && post.visibility === "public";
@@ -97,7 +140,7 @@ export function searchPublicKnowledgeChunks(
   query: string,
   options: SearchOptions = {}
 ): KnowledgeSearchResult[] {
-  const terms = tokenize(query);
+  const terms = expandQueryTerms(tokenize(query));
   if (terms.length === 0) return [];
 
   const scope = options.scope;
@@ -318,8 +361,8 @@ function scoreChunk(chunk: KnowledgeChunkDraft, terms: string[], scope: SearchOp
     if (body.includes(term)) score += 4;
   }
 
-  if (chunk.chunkType === "post_metadata_chunk") score += 2;
-  if (chunk.chunkType === "site_overview_chunk") score += 1;
+  if (score > 0 && chunk.chunkType === "post_metadata_chunk") score += 2;
+  if (score > 0 && chunk.chunkType === "site_overview_chunk") score += 1;
   if (scope?.type === "post" && chunk.postSlug === scope.value) score += 30;
 
   return score;
@@ -393,7 +436,23 @@ function tokenize(input: string) {
       .split(/[^a-z0-9\u4e00-\u9fff-]+/i)
       .map((term) => term.trim())
       .filter((term) => term.length >= 2)
+      .filter((term) => !QUERY_STOPWORDS.has(term))
   );
+}
+
+function expandQueryTerms(terms: string[]) {
+  const aliases: Record<string, string[]> = {
+    agent: ["harness", "tool", "trace", "evaluator", "context", "loop"],
+    agents: ["harness", "tool", "trace", "evaluator", "context", "loop"],
+    agentloop: ["agent", "loop", "runtime", "trace"],
+    react: ["agent", "loop", "tool", "observation"],
+    rag: ["evidence", "packet", "retrieval", "context"],
+    retrieval: ["evidence", "source", "context"],
+    long: ["context", "rope", "position", "sequence"],
+    isohc: ["residual", "stability", "orthogonal"],
+    rope: ["position", "frequency", "long", "context"],
+  };
+  return unique(terms.flatMap((term) => [term, ...(aliases[term] ?? [])]));
 }
 
 function unique(values: string[]) {

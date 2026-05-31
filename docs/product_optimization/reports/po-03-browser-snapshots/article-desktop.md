@@ -1,0 +1,627 @@
+- region "Notifications alt+T"
+- banner:
+  - link "返回":
+    - /url: /
+    - generic: 返回
+  - navigation:
+    - button "EN"
+    - link "登录":
+      - /url: /login
+      - button "登录"
+- article:
+  - 'heading "Agent Loop: 从 ReAct 模式到可观测运行时" [level=1]'
+  - generic: Misaya Yang
+  - link "学术":
+    - /url: https://scholar.google.com/citations?user=6X9HlDAAAAAJ
+    - text: 学术
+  - button "邮箱":
+    - text: 邮箱
+  - text: 2026年5月31日
+  - text: 18 次阅读
+  - text: 7 分钟阅读
+  - link "AI Applications":
+    - /url: /categories/ai-applications
+    - text: AI Applications
+  - link "Agent Systems":
+    - /url: /tags/agent-systems
+    - text: Agent Systems
+  - link "AgentLoop":
+    - /url: /tags/agent-loop
+    - text: AgentLoop
+  - link "Tool Use":
+    - /url: /tags/tool-use
+    - text: Tool Use
+  - link "Context Engineering":
+    - /url: /tags/context-engineering
+    - text: Context Engineering
+  - link "Session Management":
+    - /url: /tags/session-management
+    - text: Session Management
+  - link "Rate Limiting":
+    - /url: /tags/rate-limiting
+    - text: Rate Limiting
+  - link "Guardrails":
+    - /url: /tags/guardrails
+    - text: Guardrails
+  - link "Evaluation":
+    - /url: /tags/evaluation
+    - text: Evaluation
+  - link "Observability":
+    - /url: /tags/observability
+    - text: Observability
+  - button "Twitter":
+    - text: Twitter
+  - button "LinkedIn":
+    - text: LinkedIn
+  - button "微信":
+    - text: 微信
+  - button "复制链接":
+    - text: 复制链接
+  - 'heading "Agent Loop: 从 ReAct 模式到可观测运行时" [level=1]'
+  - paragraph: Agent loop 常被写成一个朴素循环：模型读取上下文，决定是否调用工具，工具返回 observation，再把 observation 放回上下文。这个结构可以复现 ReAct 的核心思想：reasoning 和 acting 交替发生，模型通过外部环境修正自己的下一步行动。
+  - paragraph:
+    - text: 但生产系统里的 AgentLoop 不是
+    - code: while true
+    - text: 调模型。真正困难的问题是：状态由谁保存，工具调用如何治理，什么时候停止，失败如何恢复，预算如何消耗，人工确认在哪里插入，trace 如何复盘。
+  - paragraph: 本文讨论一个更窄的抽象：
+  - blockquote:
+    - paragraph: AgentLoop 是围绕随机模型决策构建的确定性运行时。
+  - paragraph: 它把模型从全能控制器降级为 policy component，把状态、上下文、工具、预算、检查点和观测交给运行时管理。
+  - code: State -> Context -> Model Decision -> Action -> Observation -> Reducer -> Checkpoint -> State
+  - button "复制代码":
+  - paragraph: 这个方向的目标不是让 Agent 更“自主”，而是让多步行动变得可观测、可恢复、可评测。
+  - heading "Design Boundary" [level=2]
+  - paragraph: 这里的 Agent Loop 指运行时抽象，而不是某个已经完整商品化的产品声明。讨论重点放在架构边界、状态转移、工具治理、会话恢复和评测面上，不依赖私有实验数据或未公开指标。
+  - paragraph: 在博客 Agent、文档助手、工具型 Assistant 等场景里，这个抽象可以逐步落地：先保存会话和 trace，再引入受控工具，最后扩展到文件、权限、限流和人工确认。复杂度应随着真实任务需求增加，而不是一开始就堆叠多 Agent 或重型编排。
+  - heading "1. From Pattern to Runtime" [level=2]
+  - paragraph: ReAct 的贡献是把语言推理和环境行动放进同一条轨迹中。模型不再只是生成答案，而是可以先思考、再行动、再根据 observation 更新计划。这个范式适合工具使用、网页操作、检索问答和交互式任务。
+  - paragraph: ReAct 解决的是行为模式问题，但 AgentLoop 还要解决运行时问题：
+  - list:
+    - listitem: 当前任务状态是否独立于 prompt 保存？
+    - listitem: 每一步模型输入由谁构建？
+    - listitem: 工具参数如何验证？
+    - listitem: 副作用 action 如何审批和去重？
+    - listitem: 工具失败后如何重试、降级或终止？
+    - listitem: 模型重复无效 action 时如何检测 no-progress？
+    - listitem: crash 后能否从上一个安全状态恢复？
+  - paragraph: 因此，AgentLoop 的边界不是“模型自己决定下一步”，而是“运行时管理状态转移，模型在受控上下文中提出下一步决策”。
+  - heading "2. State Transition View" [level=2]
+  - paragraph: 一个清晰的 AgentLoop 应该围绕单一状态对象运行。模型输出可以影响状态，但不能隐式拥有状态。
+  - code: "type AgentState = { runId: string sessionId: string goal: string phase: AgentPhase plan: PlanStep[] messages: Message[] workingMemory: WorkingMemory evidence?: EvidencePacket observations: Observation[] pendingActions: AgentAction[] approvals: ApprovalRequest[] budgets: { maxSteps: number maxTokens: number maxToolCalls: number maxWallClockMs: number } counters: { steps: number tokens: number toolCalls: number retries: number } trace: AgentEvent[] status: \"running\" | \"waiting\" | \"completed\" | \"failed\" | \"cancelled\" }"
+  - button "复制代码":
+  - paragraph: 形式上，AgentLoop 可以写成一个状态转移系统：
+  - math:
+    - generic: a
+    - generic: t
+    - generic: =
+    - generic: π
+    - generic: θ
+    - generic: (
+    - generic: C
+    - generic: (
+    - generic: S
+    - generic: t
+    - generic: )
+    - generic: )
+  - text: a
+  - generic: t
+  - text: =
+  - text: π
+  - generic: θ
+  - text: (C(
+  - text: S
+  - generic: t
+  - text: ))
+  - math:
+    - generic: o
+    - generic: t
+    - generic: =
+    - generic: E
+    - generic: (
+    - generic: a
+    - generic: t
+    - generic: )
+  - text: o
+  - generic: t
+  - text: =
+  - text: E(
+  - text: a
+  - generic: t
+  - text: )
+  - math:
+    - generic: S
+    - generic: t
+    - generic: +
+    - generic: "1"
+    - generic: =
+    - generic: R
+    - generic: (
+    - generic: S
+    - generic: t
+    - generic: ","
+    - generic: a
+    - generic: t
+    - generic: ","
+    - generic: o
+    - generic: t
+    - generic: )
+  - text: S
+  - generic: t+1
+  - text: =
+  - text: R(
+  - text: S
+  - generic: t
+  - text: ","
+  - text: a
+  - generic: t
+  - text: ","
+  - text: o
+  - generic: t
+  - text: )
+  - paragraph:
+    - text: 其中
+    - math:
+      - generic: S
+      - generic: t
+    - text: S
+    - generic: t
+    - text: 是状态，
+    - math:
+      - generic: C
+    - generic: C
+    - text: 是 context builder，
+    - math:
+      - generic: π
+      - generic: θ
+    - text: π
+    - generic: θ
+    - text: 是模型 policy，
+    - math:
+      - generic: E
+    - generic: E
+    - text: 是 action executor，
+    - math:
+      - generic: R
+    - generic: R
+    - text: 是 reducer。AgentLoop 的工程重点在
+    - math:
+      - generic: C
+    - generic: C
+    - text: 、
+    - math:
+      - generic: E
+    - generic: E
+    - text: 和
+    - math:
+      - generic: R
+    - generic: R
+    - text: ：模型产生候选决策，运行时决定它如何进入系统。
+  - heading "3. Runtime Stack" [level=2]
+  - paragraph: 把 AgentLoop 写成运行时后，技术栈可以拆成几层。
+  - table:
+    - rowgroup:
+      - row "Layer Responsibility Typical Primitive":
+        - columnheader "Layer"
+        - columnheader "Responsibility"
+        - columnheader "Typical Primitive"
+    - rowgroup:
+      - row "Input Protocol 接收用户目标和运行配置 task spec, session id, tenant context":
+        - cell "Input Protocol"
+        - cell "接收用户目标和运行配置"
+        - cell "task spec, session id, tenant context"
+      - row "State Store 保存 loop 的事实来源 AgentState, checkpoint, reducer":
+        - cell "State Store"
+        - cell "保存 loop 的事实来源"
+        - cell "AgentState, checkpoint, reducer"
+      - row "Context Builder 把状态投影成模型输入 memory, evidence, plan, tool schema, budget summary":
+        - cell "Context Builder"
+        - cell "把状态投影成模型输入"
+        - cell "memory, evidence, plan, tool schema, budget summary"
+      - row "Model Policy 在受控上下文中生成下一步 structured decision, tool call, final answer":
+        - cell "Model Policy"
+        - cell "在受控上下文中生成下一步"
+        - cell "structured decision, tool call, final answer"
+      - row "Tool Runtime 执行外部 action 并归一化 observation schema validation, permission, timeout, retry":
+        - cell "Tool Runtime"
+        - cell "执行外部 action 并归一化 observation"
+        - cell "schema validation, permission, timeout, retry"
+      - row "Guardrail Gate 拦截高风险或不合规 action confirmation, policy check, human approval":
+        - cell "Guardrail Gate"
+        - cell "拦截高风险或不合规 action"
+        - cell "confirmation, policy check, human approval"
+      - row "Event Stream 暴露运行过程 phase events, tool events, stop reason":
+        - cell "Event Stream"
+        - cell "暴露运行过程"
+        - cell "phase events, tool events, stop reason"
+      - row "Evaluator 基于 trace 判断质量 path quality, recovery, cost discipline":
+        - cell "Evaluator"
+        - cell "基于 trace 判断质量"
+        - cell "path quality, recovery, cost discipline"
+  - paragraph: 这张表也说明了一个关键点：AgentLoop 不是 prompt 技巧，而是 AI application runtime。模型只是其中一层。
+  - heading "4. Phase Machine" [level=2]
+  - paragraph: 生产 AgentLoop 需要相位，而不是一团循环逻辑。
+  - code: INIT -> LOAD_STATE -> ANALYZE_TASK -> BUILD_CONTEXT -> MODEL_STEP -> ROUTE_DECISION -> EXECUTE_ACTION -> MERGE_OBSERVATION -> CHECK_TERMINATION -> CHECKPOINT -> BUILD_CONTEXT ... -> FINALIZE
+  - button "复制代码":
+  - paragraph: 每个 phase 应该满足三个条件：
+  - list:
+    - text: 输入只来自
+    - code: AgentState
+    - text: 和明确依赖。
+    - listitem: 输出是 state patch 或结构化 event。
+    - listitem: 失败语义可以归类为 recoverable、waiting、blocked 或 fatal。
+  - paragraph: OpenAI Agents SDK 的 tracing 设计把 LLM generation、tool call、handoff、guardrail 和 custom event 纳入一次 run 的 trace。LangGraph 从 state graph 和 persistence 角度强调 checkpoint、interrupt 和 durable execution。两者指向同一个工程原则：多步 Agent 不能只留下最终回答，必须留下可回放的运行轨迹。
+  - heading "5. Decision Contract" [level=2]
+  - paragraph: AgentLoop 不应该解析模型自由文本来决定下一步。模型输出应该落到一个受约束的 decision contract。
+  - code: "type AgentDecision = | { type: \"final\" answer: string citations?: Citation[] } | { type: \"tool_call\" tool: string arguments: Record<string, unknown> reason?: string } | { type: \"plan_update\" steps: PlanStep[] } | { type: \"ask_human\" question: string approvalFor?: AgentAction }"
+  - button "复制代码":
+  - paragraph: 这个 contract 让运行时可以做四类检查：
+  - list:
+    - listitem: 工具是否存在。
+    - listitem: 参数是否符合 schema。
+    - listitem: 用户是否具备权限。
+    - listitem: action 是否需要 guardrail 或 human approval。
+  - paragraph: Anthropic 在 agent 实践中强调工具接口要清晰、文档化、适合模型使用。Decision Contract 是同一个原则在 loop 层的延伸：模型不是随意发言，而是在明确的 agent-computer interface 中行动。
+  - heading "6. Context Builder" [level=2]
+  - paragraph: AgentLoop 每一轮都要重新构建上下文。上下文不是聊天历史追加，而是状态到模型输入的投影。
+  - code: Context = System Policy + Goal + Current Plan + Relevant Memory + Evidence Packet + Recent Observations + Tool Schemas + Budget Summary
+  - button "复制代码":
+  - paragraph: Context Builder 的职责是选择，不是堆叠。它决定哪些 observation 原文保留，哪些工具结果压缩，哪些 evidence 进入当前轮，哪些 memory 只留在 state。
+  - paragraph: 可以把上下文选择写成预算优化：
+  - math:
+    - generic: C
+    - generic: \*
+    - generic: =
+    - generic: arg
+    - generic: ⁡
+    - generic: max
+    - generic: ⁡
+    - generic: C
+    - generic: U
+    - generic: (
+    - generic: C
+    - generic: ","
+    - generic: S
+    - generic: t
+    - generic: )
+    - generic: s
+    - generic: .
+    - generic: t
+    - generic: .
+    - generic: t
+    - generic: o
+    - generic: k
+    - generic: e
+    - generic: "n"
+    - generic: s
+    - generic: (
+    - generic: C
+    - generic: )
+    - generic: ≤
+    - generic: B
+    - generic: t
+  - text: C
+  - generic: \*
+  - text: =
+  - generic: arg
+  - generic: C
+  - generic: max
+  - text: U(C,
+  - text: S
+  - generic: t
+  - text: )
+  - generic: s.t.
+  - generic: tokens
+  - text: (C) ≤
+  - text: B
+  - generic: t
+  - paragraph:
+    - math:
+      - generic: U
+      - generic: (
+      - generic: C
+      - generic: ","
+      - generic: S
+      - generic: t
+      - generic: )
+    - text: U(C,
+    - text: S
+    - generic: t
+    - text: )
+    - text: 代表上下文对当前状态的效用，
+    - math:
+      - generic: B
+      - generic: t
+    - text: B
+    - generic: t
+    - text: 是本轮 token budget。Evidence、memory、tool result、plan 和 system constraints 都在争夺这个预算。
+  - paragraph: 这也是 AgentLoop 与 Evidence Packet 的连接点：Evidence Packet 负责把知识变成可评估证据，Context Builder 再把证据编译进当前模型窗口。
+  - heading "7. Tool Runtime" [level=2]
+  - paragraph: 工具执行不能直接由模型输出驱动。中间必须有 Tool Runtime。
+  - code: Decision -> schema validation -> permission check -> risk classification -> confirmation gate -> timeout / retry policy -> execution -> observation normalization -> reducer
+  - button "复制代码":
+  - paragraph: 一个可治理的 tool interface 至少应包含：
+  - list:
+    - listitem: parameter schema
+    - listitem: risk level
+    - listitem: required permissions
+    - listitem: session and quota scope
+    - listitem: timeout and retry policy
+    - listitem: confirmation requirement
+    - listitem: result serializer
+    - listitem: relevance hints
+  - paragraph: 如果 action 有副作用，模型只能提出 intent，运行时必须控制 execution。比如删除数据、发送邮件、写入数据库、发起支付，都应该通过 confirmation gate、idempotency key 和 audit log。
+  - heading "Session, File, and Quota Scope" [level=3]
+  - paragraph: Agent Loop 还需要把每一步 action 绑定到明确的用户、会话和额度范围。匿名用户、登录用户和作者账号不应共享同一组能力边界：可用消息数、可检索内容、可上传文件大小、可调用工具、可继续的历史会话都应由运行时检查，而不是交给 prompt 约束。
+  - paragraph: 文件也应被看成带作用域的 evidence source。用户上传的临时文件默认只属于当前会话；只有经过作者确认和显式发布流程，才应进入公共知识库或长期可检索索引。这条边界可以避免把私人附件误编译进后续读者的上下文。
+  - heading "8. Loop Invariants" [level=2]
+  - paragraph: AgentLoop 需要一些运行时不变量，否则多步行为会逐渐变成不可解释的 transcript。
+  - table:
+    - rowgroup:
+      - row "Invariant Meaning":
+        - columnheader "Invariant"
+        - columnheader "Meaning"
+    - rowgroup:
+      - row "State-owned truth 事实来源在 AgentState，不在模型上下文里":
+        - cell "State-owned truth"
+        - cell "事实来源在 AgentState，不在模型上下文里":
+          - text: 事实来源在
+          - code: AgentState
+          - text: ，不在模型上下文里
+      - row "Reducer-only mutation 状态只能通过 reducer/event patch 修改":
+        - cell "Reducer-only mutation"
+        - cell "状态只能通过 reducer/event patch 修改"
+      - row "Append-only trace 运行轨迹只追加，不覆盖历史":
+        - cell "Append-only trace"
+        - cell "运行轨迹只追加，不覆盖历史"
+      - row "Budget monotonicity step、token、tool counters 单调递增":
+        - cell "Budget monotonicity"
+        - cell "step、token、tool counters 单调递增"
+      - row "Action idempotency 副作用 action 必须有 call id 或 dedupe key":
+        - cell "Action idempotency"
+        - cell "副作用 action 必须有 call id 或 dedupe key"
+      - row "Tool result normalization 工具结果先变成 observation，再进入上下文":
+        - cell "Tool result normalization"
+        - cell "工具结果先变成 observation，再进入上下文"
+      - row "Explicit termination 停止原因必须结构化记录":
+        - cell "Explicit termination"
+        - cell "停止原因必须结构化记录"
+  - paragraph: 这些不变量让 AgentLoop 更像系统运行时，而不是一次聊天记录。它们也让 evaluation 和 debugging 有稳定对象。
+  - heading "9. Termination and Progress" [level=2]
+  - paragraph: AgentLoop 最大的风险之一是无限循环。停止条件不能只靠模型自己说“完成了”。
+  - code:
+    - text: function shouldStop(
+    - generic: "state: AgentState"
+    - text: "): StopReason | null { if (state.status === \"completed\") return \"final_answer\" if (state.counters.steps >= state.budgets.maxSteps) return \"step_budget\" if (state.counters.tokens >= state.budgets.maxTokens) return \"token_budget\" if (state.counters.toolCalls >= state.budgets.maxToolCalls) return \"tool_budget\" if (detectRepeatedToolFailure(state)) return \"repeated_tool_failure\" if (detectRepeatedAction(state)) return \"repeated_action\" if (detectNoProgress(state)) return \"no_progress\" if (requiresHumanInput(state)) return \"waiting_for_human\" return null }"
+  - button "复制代码":
+  - paragraph:
+    - code: no_progress
+    - text: 是生产 AgentLoop 的关键指标。很多失败不会表现为异常，而是表现为重复搜索同一个 query、重复调用同一个工具、不断重写相同计划，或在证据已经足够时继续收集材料。
+  - paragraph: 一个实用的 progress detector 可以观察三类信号：
+  - list:
+    - listitem: action 是否在重复。
+    - listitem: observation 是否带来新信息。
+    - listitem: plan 是否更接近 terminal condition。
+  - heading "10. Checkpoints and Recovery" [level=2]
+  - paragraph: 多步 Agent 必须考虑恢复。长任务中断后从头执行会浪费成本，更危险的是重复执行副作用工具。
+  - paragraph: 建议 checkpoint 的边界包括：
+  - list:
+    - listitem: model decision 之后
+    - listitem: tool execution 之前
+    - listitem: tool observation 合并之后
+    - listitem: human approval interrupt 之前
+    - listitem: final answer 写入之前
+  - paragraph: LangGraph 的 persistence 和 interrupt/resume 机制说明了这类设计的重要性：长运行 Agent 需要保存 state snapshot，才能支持 human-in-the-loop、fault tolerance 和 time travel debugging。
+  - paragraph: 恢复友好的 AgentLoop 要求 phase 尽量幂等。尤其是 interrupt 之前的代码，resume 后可能重新执行，因此不可重复副作用必须放在明确的 action boundary 后面。
+  - heading "11. Event Stream" [level=2]
+  - paragraph: AgentLoop 应该把运行过程作为 event stream 输出，而不是只返回最终答案。
+  - code: "type AgentEvent = | { type: \"phase_started\"; phase: AgentPhase } | { type: \"context_built\"; tokens: number; included: string[] } | { type: \"model_decision\"; decisionType: string } | { type: \"tool_started\"; tool: string; callId: string } | { type: \"tool_finished\"; tool: string; callId: string; status: string } | { type: \"checkpoint_saved\"; checkpointId: string } | { type: \"stop\"; reason: StopReason }"
+  - button "复制代码":
+  - paragraph: Event stream 同时服务三类消费者：
+  - list:
+    - listitem: 前端展示 Agent 正在做什么。
+    - listitem: 运行时监控 latency、token、tool error 和 stop reason。
+    - listitem: evaluator 判断路径是否合理。
+  - paragraph: 这也是 AgentLoop 和普通 request-response API 的分水岭。Agent 的价值来自多步行动，而多步行动必须可见。
+  - heading "12. Implementation Skeleton" [level=2]
+  - paragraph: 一个最小可用的 AgentLoop 可以保持下面的骨架：
+  - code:
+    - text: async function runAgentLoop(
+    - generic: "initialState: AgentState"
+    - text: "): Promise<AgentState> { let state = await loadOrCreateState(initialState) while (true) { const context = await buildContext(state) state = reduce(state, event(\"context_built\", { context })) const decision = await callModel(context) validateDecision(decision, state) state = reduce(state, event(\"model_decision\", { decision })) if (decision.type === \"final\") { state = reduce(state, event(\"final_answer\", { answer: decision.answer })) await checkpoint(state) return finalize(state) } if (decision.type === \"ask_human\") { state = reduce(state, event(\"waiting_for_human\", { decision })) await checkpoint(state) return state } const action = await authorizeAction(decision, state) await checkpointBeforeAction(state, action) const observation = await executeAction(action) state = reduce(state, event(\"observation\", { observation })) const stop = shouldStop(state) await checkpoint(state) if (stop) { state = reduce(state, event(\"stop\", { reason: stop })) return finalize(state) } } }"
+  - button "复制代码":
+  - paragraph: 骨架的重点是三条约束：模型不直接改状态，工具不直接进入 prompt，所有变化都通过事件和 reducer 合并。
+  - heading "13. Failure Taxonomy" [level=2]
+  - paragraph: AgentLoop 的失败最好提前命名，否则所有问题都会被归因成“模型不稳定”。
+  - table:
+    - rowgroup:
+      - row "Failure Symptom Runtime Response":
+        - columnheader "Failure"
+        - columnheader "Symptom"
+        - columnheader "Runtime Response"
+    - rowgroup:
+      - row "Invalid decision 模型输出不可解析或不符合 contract ask model to repair, fallback, terminate":
+        - cell "Invalid decision"
+        - cell "模型输出不可解析或不符合 contract"
+        - cell "ask model to repair, fallback, terminate"
+      - row "Tool schema error 参数缺失、类型错误、非法枚举 structured error, retry with correction":
+        - cell "Tool schema error"
+        - cell "参数缺失、类型错误、非法枚举"
+        - cell "structured error, retry with correction"
+      - row "Permission denied 工具存在但用户无权执行 stop or ask human":
+        - cell "Permission denied"
+        - cell "工具存在但用户无权执行"
+        - cell "stop or ask human"
+      - row "Repeated action 重复同一无效工具调用 no-progress stop":
+        - cell "Repeated action"
+        - cell "重复同一无效工具调用"
+        - cell "no-progress stop"
+      - row "Context overflow observation 或 evidence 超预算 compress, drop, summarize":
+        - cell "Context overflow"
+        - cell "observation 或 evidence 超预算"
+        - cell "compress, drop, summarize"
+      - row "Side-effect ambiguity 不确定 action 是否已经执行 dedupe by call id, require audit check":
+        - cell "Side-effect ambiguity"
+        - cell "不确定 action 是否已经执行"
+        - cell "dedupe by call id, require audit check"
+      - row "Stale state resume 后状态与外部系统不一致 refresh observation, reconcile":
+        - cell "Stale state"
+        - cell "resume 后状态与外部系统不一致"
+        - cell "refresh observation, reconcile"
+  - paragraph: 这个 taxonomy 会直接影响 eval 和 observability。一个好的 AgentLoop 不只是减少失败，而是让失败可分类、可复现、可修复。
+  - heading "14. Evaluation Surface" [level=2]
+  - paragraph: AgentLoop 的评测不应该只看最终答案。至少要拆出六类指标：
+  - list:
+    - strong: "Completion:"
+    - text: 是否在预算内到达有效终态。
+    - strong: "Path quality:"
+    - text: 是否选择合理工具和合理顺序。
+    - strong: "State integrity:"
+    - text: 状态是否正确更新，没有丢 observation 或重复副作用。
+    - strong: "Recovery:"
+    - text: 中断、失败和重试后是否能继续。
+    - strong: "Cost discipline:"
+    - text: token、tool calls、latency 和 retries 是否受控。
+    - strong: "Stop quality:"
+    - text: 终止原因是否正确，是否过早停止或无限拖延。
+  - paragraph: 这与 Harness Engine 的方向相连：AgentLoop 产生 trace，Harness 用 trace 做可重复评测。没有 loop-level trace，Agent 评测只能停留在答案打分。
+  - heading "15. Boundaries" [level=2]
+  - paragraph: AgentLoop 不是越复杂越好。
+  - list:
+    - listitem: 简单 FAQ 或固定流程任务不一定需要 AgentLoop，普通 workflow 可能更稳定。
+    - listitem: 多 Agent 不是默认选择。先把单 Agent loop 的 state、tool、trace 和 termination 做清楚。
+    - listitem: 长计划不等于高质量计划。计划必须能被 observation 校正。
+    - listitem: checkpoint 不能替代幂等设计。副作用工具仍然需要 call id、dedupe 和 confirmation。
+    - listitem: trace 不能替代评测集。trace 让问题可见，但不会自动判断质量。
+  - paragraph: Anthropic 对 agent 的建议很克制：优先选择最简单可行的方案，只在任务确实需要灵活决策和多步行动时增加复杂度。AgentLoop 也应该遵守这个原则。
+  - heading "16. Core Takeaway" [level=2]
+  - paragraph: AgentLoop 的核心不是“让模型循环思考”，而是为模型行动提供受控运行时：
+  - code: AgentLoop = state machine + context builder + decision contract + tool runtime + budget policy + checkpoint + trace
+  - button "复制代码":
+  - paragraph: 这个抽象把模型从全能控制器降级为决策组件，把系统可靠性交还给工程结构。模型决定下一步，运行时管理状态、预算、权限、恢复和终止。
+  - paragraph: 如果 Evidence Packet 解决的是“知识如何进入 Agent”，AgentLoop 解决的就是“Agent 如何在多步行动中保持可控”。两者组合起来，构成通用 AI Assistant 的基础运行层。
+  - heading "References" [level=2]
+  - list:
+    - text: Yao et al.,
+    - 'link "ReAct: Synergizing Reasoning and Acting in Language Models"':
+      - /url: https://arxiv.org/abs/2210.03629
+    - text: Anthropic,
+    - link "Building effective agents":
+      - /url: https://www.anthropic.com/engineering/building-effective-agents
+    - text: OpenAI Agents SDK,
+    - link "Tracing":
+      - /url: https://openai.github.io/openai-agents-python/tracing/
+    - text: OpenAI Agents SDK,
+    - link "Guardrails":
+      - /url: https://openai.github.io/openai-agents-python/guardrails/
+    - text: LangGraph,
+    - link "Overview":
+      - /url: https://docs.langchain.com/oss/python/langgraph
+    - text: LangGraph,
+    - link "Interrupts":
+      - /url: https://docs.langchain.com/oss/python/langgraph/interrupts
+    - text: Google Cloud,
+    - link "Manage sessions with Agent Development Kit":
+      - /url: https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-adk
+  - heading "继续阅读" [level=2]
+  - link "继续浏览 AI 应用":
+    - /url: /applications
+    - text: 继续浏览 AI 应用
+  - 'link "上一篇 Evidence Packet: Agentic RAG 的上下文编译接口"':
+    - /url: /post/rag-evidence-packet-context-compiler
+    - text: 上一篇
+    - 'heading "Evidence Packet: Agentic RAG 的上下文编译接口" [level=3]'
+  - heading "相关文章" [level=3]
+  - 'link "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"':
+    - /url: /post/agent-harness-engine-evaluating-tool-using-agents
+    - generic: "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context"
+  - 'link "Evidence Packet: Agentic RAG 的上下文编译接口"':
+    - /url: /post/rag-evidence-packet-context-compiler
+    - generic: "Evidence Packet: Agentic RAG 的上下文编译接口"
+  - region "这篇文章有帮助吗？":
+    - heading "这篇文章有帮助吗？" [level=2]
+    - paragraph: 提交一条私密反馈，说明哪里有帮助或哪里还需要补充。
+    - paragraph: 你可以匿名提交。
+    - link "发邮件":
+      - /url: mailto:zedpl28174@gmail.com?subject=Feedback%3A%20Agent%20Loop%3A%20%E4%BB%8E%20ReAct%20%E6%A8%A1%E5%BC%8F%E5%88%B0%E5%8F%AF%E8%A7%82%E6%B5%8B%E8%BF%90%E8%A1%8C%E6%97%B6
+      - text: 发邮件
+    - button "有帮助":
+      - text: 有帮助
+    - button "帮助不大":
+      - text: 帮助不大
+    - generic: 可选补充：哪里清楚，哪里还缺？
+    - textbox "可选补充：哪里清楚，哪里还缺？"
+    - generic: 可选昵称
+    - textbox "可选昵称"
+    - generic: 可选回复邮箱
+    - textbox "可选回复邮箱"
+    - paragraph: 回复邮箱完全可选，仅在需要跟进时使用。
+    - button "发送反馈" [disabled]
+  - region "订阅更新":
+    - heading "接收后续笔记" [level=2]
+    - paragraph: 留下邮箱接收不定期文章更新；如果你更喜欢阅读器，也可以直接使用 RSS。
+    - link "RSS":
+      - /url: /rss.xml
+      - generic: RSS
+    - generic: you@example.com
+    - textbox "you@example.com"
+    - button "订阅"
+    - generic: 可选主题：RoPE、Agent、RAG...
+    - textbox "可选主题：RoPE、Agent、RAG..."
+    - group "接收语言":
+      - generic: 接收语言
+      - button "中文" [pressed]
+      - button "EN"
+    - generic: 仅保存邮箱和可选主题偏好。
+  - heading "Misaya Yang" [level=3]
+  - paragraph: 关注深度学习、Transformer、大语言模型与位置编码机制。
+  - link "Google Scholar":
+    - /url: https://scholar.google.com/citations?user=6X9HlDAAAAAJ
+    - button "Google Scholar":
+      - text: Google Scholar
+  - button "联系":
+    - text: 联系
+- complementary:
+  - heading "目录" [level=3]
+  - navigation:
+    - 'link "Agent Loop: 从 ReAct 模式到可观测运行时"':
+      - /url: "#heading-0"
+    - link "Design Boundary":
+      - /url: "#heading-1"
+    - link "1. From Pattern to Runtime":
+      - /url: "#heading-2"
+    - link "2. State Transition View":
+      - /url: "#heading-3"
+    - link "3. Runtime Stack":
+      - /url: "#heading-4"
+    - link "4. Phase Machine":
+      - /url: "#heading-5"
+    - link "5. Decision Contract":
+      - /url: "#heading-6"
+    - link "6. Context Builder":
+      - /url: "#heading-7"
+    - link "7. Tool Runtime":
+      - /url: "#heading-8"
+    - link "Session, File, and Quota Scope":
+      - /url: "#heading-9"
+    - link "8. Loop Invariants":
+      - /url: "#heading-10"
+    - link "9. Termination and Progress":
+      - /url: "#heading-11"
+    - link "10. Checkpoints and Recovery":
+      - /url: "#heading-12"
+    - link "11. Event Stream":
+      - /url: "#heading-13"
+    - link "12. Implementation Skeleton":
+      - /url: "#heading-14"
+    - link "13. Failure Taxonomy":
+      - /url: "#heading-15"
+    - link "14. Evaluation Surface":
+      - /url: "#heading-16"
+    - link "15. Boundaries":
+      - /url: "#heading-17"
+    - link "16. Core Takeaway":
+      - /url: "#heading-18"
+    - link "References":
+      - /url: "#heading-19"
+- button "AI 助手":
+  - generic: AI 助手

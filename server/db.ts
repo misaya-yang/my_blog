@@ -493,14 +493,18 @@ export async function listPostFeedback(params: {
 }
 
 export async function markPostFeedbackReviewed(id: number) {
+  return updatePostFeedbackStatus(id, "reviewed");
+}
+
+export async function updatePostFeedbackStatus(id: number, status: "new" | "reviewed" | "hidden") {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
   const result = await db
     .update(postFeedback)
     .set({
-      status: "reviewed",
-      reviewedAt: new Date(),
+      status,
+      reviewedAt: status === "new" ? null : new Date(),
     })
     .where(eq(postFeedback.id, id))
     .returning();
@@ -687,16 +691,14 @@ async function attachPostTaxonomy(postRows: Post[]): Promise<DiscoveryPost[]> {
     )
   );
 
-  const [categoryRows, tagRows] = await Promise.all([
-    categoryIds.length
-      ? db.select().from(categories).where(inArray(categories.id, categoryIds))
-      : Promise.resolve([]),
-    db
-      .select({ postId: postTags.postId, tag: tags })
-      .from(postTags)
-      .innerJoin(tags, eq(postTags.tagId, tags.id))
-      .where(inArray(postTags.postId, postIds)),
-  ]);
+  const categoryRows = categoryIds.length
+    ? await db.select().from(categories).where(inArray(categories.id, categoryIds))
+    : [];
+  const tagRows = await db
+    .select({ postId: postTags.postId, tag: tags })
+    .from(postTags)
+    .innerJoin(tags, eq(postTags.tagId, tags.id))
+    .where(inArray(postTags.postId, postIds));
 
   const categoriesById = new Map(categoryRows.map((category) => [category.id, category]));
   const tagsByPostId = new Map<number, Tag[]>();

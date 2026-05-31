@@ -19,6 +19,9 @@ export type ArticleCardPost = {
   publishedAt?: string | Date | null;
   readingMinutes?: number | null;
   viewCount?: number | null;
+  seriesSlug?: string | null;
+  seriesTitle?: string | null;
+  seriesOrder?: number | null;
   category?: {
     name?: string | null;
     slug?: string | null;
@@ -129,6 +132,12 @@ export function ArticleCard({
             </Link>
           ) : (
             <span className="article-tag">{topicLabel(post, t, track)}</span>
+          )}
+          {post.seriesTitle && (
+            <span className="article-tag">
+              {post.seriesTitle}
+              {post.seriesOrder ? ` #${post.seriesOrder}` : ""}
+            </span>
           )}
           {visibleTags.map(tag => (
             <Link

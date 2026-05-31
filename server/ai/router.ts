@@ -85,6 +85,10 @@ export const agentRouter = router({
       return defaultAgentService.adminRunEvals(await buildAgentContext(ctx.req), input);
     }),
 
+  adminKnowledgeStatus: publicProcedure.query(async ({ ctx }) => {
+    return defaultAgentService.adminKnowledgeStatus(await buildAgentContext(ctx.req));
+  }),
+
   adminExtractArticleIdeas: publicProcedure
     .input(
       z.object({
@@ -93,6 +97,16 @@ export const agentRouter = router({
     )
     .query(async ({ ctx, input }) => {
       return defaultAgentService.adminExtractArticleIdeas(await buildAgentContext(ctx.req), input);
+    }),
+
+  adminQuestionRadar: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().int().min(1).max(100).optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return defaultAgentService.adminQuestionRadar(await buildAgentContext(ctx.req), input);
     }),
 
   adminListRuns: publicProcedure

@@ -53,6 +53,13 @@ const agentMocks = vi.hoisted(() => ({
         content: "Explain harness engines",
       },
     ],
+    diagnostics: {
+      status: "ready",
+      terms: ["harness", "engine"],
+      missingTerms: [],
+      notes: ["Retrieved 1 public source."],
+      suggestions: ["Inspect source slugs and headings before changing retrieval."],
+    },
   })),
   addContext: vi.fn(async () => ({
     status: "completed",
@@ -93,15 +100,43 @@ const agentMocks = vi.hoisted(() => ({
     ],
   })),
   adminRunEvals: vi.fn(async () => ({
+    summary: {
+      total: 1,
+      passed: 1,
+      failed: 0,
+      successCases: 1,
+      refusalCases: 0,
+      runAt: new Date("2026-05-31T00:00:00.000Z"),
+      retrievalStrategy: "supabase_keyword",
+      modelProvider: "retrieval-only",
+    },
     items: [
       {
         question: "What is a harness engine?",
+        expectedBehavior: "sources",
+        category: "Agent Harness Engine",
         passed: true,
         sourceCount: 1,
         topSourceTitle: "Agent Harness Engine",
         sourceIds: ["post:agent-harness:1"],
+        expectedSourceSlugs: ["agent-harness"],
+        missingSourceSlugs: [],
+        notes: ["Should cite the public harness article."],
       },
     ],
+  })),
+  adminKnowledgeStatus: vi.fn(async () => ({
+    chunkCount: 12,
+    publicPostCount: 3,
+    indexedPublicPostCount: 3,
+    hiddenOrDraftExcludedCount: 1,
+    lastReindexAt: new Date("2026-05-31T00:00:00.000Z"),
+    latestReindexError: null,
+    reindexCommand: "pnpm ai:reindex",
+    publishCommand: "pnpm content:publish",
+    stalePublicPostSlugs: [],
+    extraIndexedPostSlugs: [],
+    indexedPostSlugs: ["agent-harness"],
   })),
   adminExtractArticleIdeas: vi.fn(async () => ({
     ideas: [
@@ -110,6 +145,47 @@ const agentMocks = vi.hoisted(() => ({
         proposedTitle: "failure modes in agent harness engines",
         rationale: "Reader-facing technical question.",
         seedQuestions: ["Can you explain failure modes in agent harness engines?"],
+      },
+    ],
+  })),
+  adminQuestionRadar: vi.fn(async () => ({
+    summary: {
+      totalRuns: 3,
+      failedRuns: 1,
+      noSourceRuns: 1,
+      uniqueQuestions: 2,
+    },
+    frequentQuestions: [
+      {
+        question: "Where does the harness fail?",
+        count: 2,
+        scopeType: "track",
+        scopeValue: "ai-applications",
+        lastAskedAt: new Date("2026-05-31T00:00:00.000Z"),
+        runIds: ["run-1", "run-2"],
+        signalTypes: ["frequent", "failed"],
+      },
+    ],
+    noSourceRuns: [],
+    failedRuns: [
+      {
+        runId: "run-2",
+        question: "Where does the harness fail?",
+        errorCode: "agent_generation_failed",
+        scopeType: "track",
+        scopeValue: "ai-applications",
+        createdAt: new Date("2026-05-31T00:00:00.000Z"),
+      },
+    ],
+    scopeBreakdown: [{ scopeType: "track", scopeValue: "ai-applications", count: 3 }],
+    suggestedIdeas: [
+      {
+        ideaId: "agent-where-does-the-harness-fail",
+        proposedTitle: "Where does the harness fail",
+        rationale: "Based on repeated Agent signals.",
+        supportCount: 2,
+        sourceRunIds: ["run-1", "run-2"],
+        status: "new",
       },
     ],
   })),
@@ -132,7 +208,9 @@ vi.mock("./ai/harness.js", () => ({
     addContext: agentMocks.addContext,
     adminDebugRetrieval: agentMocks.adminDebugRetrieval,
     adminRunEvals: agentMocks.adminRunEvals,
+    adminKnowledgeStatus: agentMocks.adminKnowledgeStatus,
     adminExtractArticleIdeas: agentMocks.adminExtractArticleIdeas,
+    adminQuestionRadar: agentMocks.adminQuestionRadar,
     sendMessage: agentMocks.sendMessage,
   },
   buildAgentContext: agentMocks.buildAgentContext,
@@ -215,12 +293,18 @@ describe("agent router", () => {
       questions: ["What is a harness engine?"],
       routeContext: { path: "/applications", routeType: "track", trackSlug: "ai-applications" },
     });
+    const status = await caller.agent.adminKnowledgeStatus();
     const ideas = await caller.agent.adminExtractArticleIdeas({
       conversationId: "11111111-1111-4111-8111-111111111111",
     });
+    const radar = await caller.agent.adminQuestionRadar({ limit: 20 });
 
     expect(debug.sourceIds).toEqual(["post:agent-harness:1"]);
+    expect(status.chunkCount).toBe(12);
     expect(evals.items[0].passed).toBe(true);
+    expect(evals.summary.passed).toBe(1);
     expect(ideas.ideas[0].proposedTitle).toContain("failure modes");
+    expect(radar.summary.failedRuns).toBe(1);
+    expect(radar.suggestedIdeas[0].status).toBe("new");
   });
 });
