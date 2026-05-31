@@ -49,6 +49,7 @@ describe("BlogAgent route context", () => {
     const algorithmsContext = buildRouteContext("/algorithms", "en");
 
     expect(getCompanionPromptKeys(postContext)).toContain("agent.prompts.postAbstraction");
+    expect(getCompanionPromptKeys(postContext)).toContain("agent.prompts.nextReading");
     expect(getCompanionPromptKeys(applicationsContext)).toContain("agent.prompts.applicationsPath");
     expect(getCompanionPromptKeys(algorithmsContext)).toContain("agent.prompts.algorithmsMap");
     expect(getCompanionPromptKeys(postContext)).not.toEqual(

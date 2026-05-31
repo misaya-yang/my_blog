@@ -4,8 +4,8 @@ import type { AgentIdentity, RequestLike } from "./types.js";
 
 const DEFAULT_SALT = "local-ai-agent-identity-salt";
 const DEFAULT_MESSAGE_QUOTA = {
-  anonymous: 2,
-  visitor: 6,
+  anonymous: 10,
+  visitor: 30,
   admin: 200,
 } as const;
 const MESSAGE_QUOTA_ENV = {

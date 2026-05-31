@@ -1,4 +1,12 @@
-import { Suspense, lazy, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import {
+  Suspense,
+  lazy,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 import { useLocation } from "wouter";
 import {
   AlertCircle,
@@ -41,6 +49,31 @@ type ChatMessage = {
   content: string;
   sourceCards?: SourceCard[];
   relatedQuestions?: string[];
+  reasoningMarkdown?: string;
+  traceEntries?: AgentTraceEntry[];
+  streaming?: boolean;
+};
+
+type AgentTraceEntry = {
+  stage: AgentTraceStage;
+  elapsedMs: number;
+  sourceCount?: number;
+  currentPageContextInjected?: boolean;
+};
+
+type AgentTraceStage =
+  | "understanding"
+  | "retrieval"
+  | "sources"
+  | "reasoning"
+  | "answer"
+  | "saving";
+
+type QuotaInfo = {
+  limit: number;
+  used: number;
+  remaining: number;
+  tier: string;
 };
 
 type SourceCard = {
@@ -85,12 +118,8 @@ export function BlogAgentRoot() {
   const [contextOpen, setContextOpen] = useState(false);
   const [attachedContextCount, setAttachedContextCount] = useState(0);
   const [historyOpen, setHistoryOpen] = useState(false);
-  const [quota, setQuota] = useState<{
-    limit: number;
-    used: number;
-    remaining: number;
-    tier: string;
-  } | null>(null);
+  const [streaming, setStreaming] = useState(false);
+  const [quota, setQuota] = useState<QuotaInfo | null>(null);
   const messageEndRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const utils = trpc.useUtils();
@@ -139,7 +168,7 @@ export function BlogAgentRoot() {
 
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ block: "end" });
-  }, [messages, sendMessage.isPending, notice]);
+  }, [messages, sendMessage.isPending, streaming, notice]);
 
   if (hiddenOnRoute) return null;
 
@@ -155,66 +184,136 @@ export function BlogAgentRoot() {
 
   async function handleSubmit(message: string) {
     const trimmed = message.trim();
-    if (!trimmed || sendMessage.isPending) return;
+    if (!trimmed || sendMessage.isPending || streaming) return;
 
+    const timestamp = Date.now();
     const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
+      id: `user-${timestamp}`,
       role: "user",
       content: trimmed,
     };
+    const assistantMessageId = `assistant-${timestamp}`;
+    const assistantDraft: ChatMessage = {
+      id: assistantMessageId,
+      role: "assistant",
+      content: "",
+      reasoningMarkdown: "",
+      traceEntries: [],
+      streaming: true,
+    };
     setNotice(null);
     setDraft("");
-    setMessages(current => [...current, userMessage]);
+    setStreaming(true);
+    setMessages(current => [...current, userMessage, assistantDraft]);
 
     try {
-      const response = await sendMessage.mutateAsync({
+      await streamAgentMessage({
         conversationId,
         message: trimmed,
         routeContext,
-      });
-      setQuota(response.quota);
-
-      if (response.status === "blocked") {
-        setMessages(current =>
-          current.filter(item => item.id !== userMessage.id)
-        );
-        setDraft(trimmed);
-        setNotice(getQuotaBlockedNotice(response.quota.tier, t));
-        return;
-      }
-
-      setConversationId(response.conversationId);
-      void utils.agent.listConversations.invalidate();
-      if (response.status === "failed") {
-        setDraft(trimmed);
-        setNotice(t("agent.error.send"));
-        setMessages(current => [
-          ...current,
-          {
-            id: response.messageId,
-            role: "assistant",
-            content: t("agent.error.send"),
-          },
-        ]);
-        return;
-      }
-
-      setMessages(current => [
-        ...current,
-        {
-          id: response.messageId,
-          role: "assistant",
-          content: response.answer.answerMarkdown,
-          sourceCards: response.sourceCards,
-          relatedQuestions: response.relatedQuestions,
+        onStatus: event => {
+          setMessages(current =>
+            current.map(item =>
+              item.id === assistantMessageId
+                ? {
+                    ...item,
+                    traceEntries: upsertTraceEntry(item.traceEntries, {
+                      stage: event.stage,
+                      elapsedMs: event.elapsedMs,
+                      sourceCount: event.sourceCount,
+                      currentPageContextInjected:
+                        event.currentPageContextInjected,
+                    }),
+                  }
+                : item
+            )
+          );
         },
-      ]);
+        onReasoningDelta: delta => {
+          setMessages(current =>
+            current.map(item =>
+              item.id === assistantMessageId
+                ? {
+                    ...item,
+                    reasoningMarkdown: `${item.reasoningMarkdown ?? ""}${delta}`,
+                  }
+                : item
+            )
+          );
+        },
+        onAnswerDelta: delta => {
+          setMessages(current =>
+            current.map(item =>
+              item.id === assistantMessageId
+                ? { ...item, content: `${item.content}${delta}` }
+                : item
+            )
+          );
+        },
+        onFinal: event => {
+          const response = event.output;
+          setQuota(response.quota);
+
+          if (response.status === "blocked") {
+            setMessages(current =>
+              current.filter(
+                item =>
+                  item.id !== userMessage.id && item.id !== assistantMessageId
+              )
+            );
+            setDraft(trimmed);
+            setNotice(getQuotaBlockedNotice(response.quota.tier, t));
+            return;
+          }
+
+          if (response.status === "failed") {
+            setDraft(trimmed);
+            setNotice(t("agent.error.send"));
+            setMessages(current =>
+              current.map(item =>
+                item.id === assistantMessageId
+                  ? {
+                      ...item,
+                      id: response.messageId,
+                      content: t("agent.error.send"),
+                      streaming: false,
+                    }
+                  : item
+              )
+            );
+            return;
+          }
+
+          setConversationId(response.conversationId);
+          void utils.agent.listConversations.invalidate();
+          setMessages(current =>
+            current.map(item =>
+              item.id === assistantMessageId
+                ? {
+                    ...item,
+                    id: response.messageId,
+                    content: response.answer.answerMarkdown,
+                    sourceCards: response.sourceCards,
+                    relatedQuestions: response.relatedQuestions,
+                    reasoningMarkdown:
+                      event.reasoningMarkdown ?? item.reasoningMarkdown,
+                    streaming: false,
+                  }
+                : item
+            )
+          );
+        },
+      });
     } catch {
       setMessages(current =>
-        current.filter(item => item.id !== userMessage.id)
+        current.filter(
+          item => item.id !== userMessage.id && item.id !== assistantMessageId
+        )
       );
       setDraft(trimmed);
       setNotice(t("agent.error.send"));
+    } finally {
+      setStreaming(false);
     }
   }
 
@@ -317,7 +416,7 @@ export function BlogAgentRoot() {
             suggestedPrompts={suggestedPrompts}
             welcomeTitle={welcomeCopy.title}
             welcomeBody={welcomeCopy.body}
-            sending={sendMessage.isPending}
+            sending={sendMessage.isPending || streaming}
             onClose={() => setOpen(false)}
             onDraftChange={setDraft}
             onContextDraftChange={setContextDraft}
@@ -478,6 +577,9 @@ export function AgentPanel({
   messageEndRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const { t } = useLanguage();
+  const hasStreamingAssistant = messages.some(
+    message => message.role === "assistant" && message.streaming
+  );
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -518,6 +620,12 @@ export function AgentPanel({
               {scopeLabel(currentScope, t)}
             </span>
             {quota && <AgentQuotaBadge quota={quota} />}
+            {currentScope.type === "post" && (
+              <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-300/20 bg-emerald-400/10 px-2.5 py-1 text-emerald-100">
+                <Check className="h-3.5 w-3.5" />
+                {t("agent.scope.postContextReady")}
+              </span>
+            )}
           </div>
           <button
             type="button"
@@ -614,8 +722,21 @@ export function AgentPanel({
                 >
                   {message.role === "assistant" ? (
                     <div className="prose prose-sm prose-invert max-w-none prose-p:my-2 prose-li:my-1">
-                      <Suspense fallback={<p className="whitespace-pre-wrap">{message.content}</p>}>
-                        <AgentMarkdown>{message.content}</AgentMarkdown>
+                      <AgentReasoningTrace message={message} />
+                      <Suspense
+                        fallback={
+                          <p className="whitespace-pre-wrap">
+                            {message.content}
+                          </p>
+                        }
+                      >
+                        {message.content ? (
+                          <AgentMarkdown>{message.content}</AgentMarkdown>
+                        ) : (
+                          <p className="text-slate-500">
+                            {t("agent.trace.waiting")}
+                          </p>
+                        )}
                       </Suspense>
                     </div>
                   ) : (
@@ -636,7 +757,7 @@ export function AgentPanel({
                 </div>
               </article>
             ))}
-            {sending && (
+            {sending && !hasStreamingAssistant && (
               <div className="flex items-center gap-3 text-sm text-slate-400">
                 <span className="grid h-8 w-8 place-items-center rounded-full bg-sky-400/10 text-sky-200">
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -684,7 +805,11 @@ export function AgentPanel({
             value={draft}
             onChange={event => onDraftChange(event.target.value)}
             onKeyDown={event => {
-              if (event.key === "Enter" && !event.shiftKey) {
+              if (
+                event.key === "Enter" &&
+                !event.shiftKey &&
+                !event.nativeEvent.isComposing
+              ) {
                 event.preventDefault();
                 onSubmit(draft);
               }
@@ -794,7 +919,9 @@ function AgentContextDock({
             </Button>
           </div>
           <p className="mt-2 text-[0.7rem] leading-5 text-slate-500">
-            {count > 0 ? t("agent.context.lifecycle") : t("agent.context.limit")}
+            {count > 0
+              ? t("agent.context.lifecycle")
+              : t("agent.context.limit")}
           </p>
         </div>
       )}
@@ -813,7 +940,10 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
       <div className="grid gap-2">
         {sources.slice(0, 3).map(source => {
           const title = source.postTitle || t("agent.sources.site");
-          const hasBlogLink = source.sourceType !== "user_context" && Boolean(source.postSlug);
+          const hasBlogLink =
+            source.sourceType !== "user_context" && Boolean(source.postSlug);
+          const currentPageSource = isCurrentPageSource(source);
+          const relevanceReason = getDisplayRelevanceReason(source, t);
           const card = (
             <span className="block rounded-md border border-sky-300/15 bg-slate-950/45 p-2.5 transition hover:border-sky-300/35 hover:bg-sky-400/10">
               <span className="flex items-center justify-between gap-3 text-sm font-semibold text-sky-100">
@@ -824,6 +954,11 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
                       ? t("agent.sources.context")
                       : t("agent.sources.blog")}
                   </span>
+                  {currentPageSource && (
+                    <span className="rounded border border-emerald-300/20 bg-emerald-400/10 px-1.5 py-0.5 text-[0.65rem] font-medium text-emerald-100">
+                      {t("agent.sources.currentPage")}
+                    </span>
+                  )}
                   {source.postSlug && (
                     <ExternalLink className="h-3.5 w-3.5 shrink-0" />
                   )}
@@ -831,13 +966,19 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
               </span>
               <span className="mt-1 flex flex-wrap gap-1.5 text-[0.68rem] text-slate-500">
                 {source.postSlug && (
-                  <span>{t("agent.sources.slug")}: {source.postSlug}</span>
+                  <span>
+                    {t("agent.sources.slug")}: {source.postSlug}
+                  </span>
                 )}
                 {source.heading && (
-                  <span>{t("agent.sources.section")}: {source.heading}</span>
+                  <span>
+                    {t("agent.sources.section")}: {source.heading}
+                  </span>
                 )}
                 {source.categorySlug && (
-                  <span>{t("agent.sources.category")}: {source.categorySlug}</span>
+                  <span>
+                    {t("agent.sources.category")}: {source.categorySlug}
+                  </span>
                 )}
               </span>
               {source.tagSlugs.length > 0 && (
@@ -855,9 +996,9 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
               <span className="mt-1 line-clamp-2 text-xs leading-5 text-slate-400">
                 {source.excerpt}
               </span>
-              {source.relevanceReason && (
+              {relevanceReason && (
                 <span className="mt-1 block text-[0.68rem] leading-4 text-cyan-200/80">
-                  {t("agent.sources.reason")}: {source.relevanceReason}
+                  {t("agent.sources.reason")}: {relevanceReason}
                 </span>
               )}
             </span>
@@ -878,6 +1019,102 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
       </div>
     </div>
   );
+}
+
+function AgentReasoningTrace({ message }: { message: ChatMessage }) {
+  const { t } = useLanguage();
+  if (message.role !== "assistant") return null;
+
+  const traceEntries = message.traceEntries ?? [];
+  const reasoningMarkdown = message.reasoningMarkdown?.trim();
+  const hasTrace =
+    message.streaming || traceEntries.length > 0 || Boolean(reasoningMarkdown);
+  if (!hasTrace) return null;
+
+  const elapsedMs = Math.max(
+    0,
+    ...traceEntries.map(entry => entry.elapsedMs)
+  );
+  const summaryKey = message.streaming
+    ? "agent.trace.thinking"
+    : "agent.trace.done";
+
+  return (
+    <details
+      open={message.streaming}
+      className="not-prose mb-3 rounded-md border border-sky-300/15 bg-slate-950/45"
+    >
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-xs font-medium text-slate-300">
+        <span>
+          {t(summaryKey)}
+          {elapsedMs > 0 && (
+            <span className="ml-1 text-slate-500">
+              {t("agent.trace.elapsed", {
+                seconds: formatElapsedSeconds(elapsedMs),
+              })}
+            </span>
+          )}
+        </span>
+        {message.streaming && (
+          <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-sky-300" />
+        )}
+      </summary>
+      <div className="border-t border-sky-300/10 px-3 py-2">
+        {traceEntries.length > 0 && (
+          <ol className="grid gap-1.5 text-xs leading-5 text-slate-400">
+            {traceEntries.map(entry => (
+              <li
+                key={entry.stage}
+                className="flex items-center justify-between gap-3"
+              >
+                <span>{traceStageLabel(entry, t)}</span>
+                <span className="shrink-0 text-slate-600">
+                  {formatElapsedSeconds(entry.elapsedMs)}s
+                </span>
+              </li>
+            ))}
+          </ol>
+        )}
+
+        {reasoningMarkdown && (
+          <div className="mt-2 rounded-md border border-slate-700/60 bg-black/20 px-3 py-2">
+            <div className="mb-1 text-[0.68rem] font-semibold uppercase text-sky-200">
+              {t("agent.trace.reasoning")}
+            </div>
+            <div className="prose prose-xs prose-invert max-h-44 max-w-none overflow-y-auto text-xs leading-5 prose-p:my-1.5 prose-li:my-1">
+              <Suspense
+                fallback={
+                  <p className="whitespace-pre-wrap">{reasoningMarkdown}</p>
+                }
+              >
+                <AgentMarkdown>{reasoningMarkdown}</AgentMarkdown>
+              </Suspense>
+            </div>
+          </div>
+        )}
+      </div>
+    </details>
+  );
+}
+
+function traceStageLabel(
+  entry: AgentTraceEntry,
+  t: (key: string, params?: Record<string, string | number>) => string
+) {
+  if (entry.stage === "sources") {
+    return t("agent.trace.stage.sources", {
+      count: entry.sourceCount ?? 0,
+      current:
+        entry.currentPageContextInjected === true
+          ? t("agent.trace.currentPage")
+          : "",
+    });
+  }
+  return t(`agent.trace.stage.${entry.stage}`);
+}
+
+function formatElapsedSeconds(elapsedMs: number) {
+  return (elapsedMs / 1000).toFixed(elapsedMs < 10_000 ? 1 : 0);
 }
 
 function AgentRelatedQuestions({
@@ -911,6 +1148,23 @@ function AgentRelatedQuestions({
       </div>
     </div>
   );
+}
+
+function isCurrentPageSource(source: SourceCard) {
+  return source.relevanceReason
+    .toLowerCase()
+    .startsWith("current public article context");
+}
+
+function getDisplayRelevanceReason(
+  source: SourceCard,
+  t: (key: string, params?: Record<string, string | number>) => string
+) {
+  if (!isCurrentPageSource(source)) return source.relevanceReason;
+  const stripped = source.relevanceReason
+    .replace(/^Current public article context\.?\s*/i, "")
+    .trim();
+  return stripped || t("agent.sources.currentPage");
 }
 
 function AgentHistoryPanel({
@@ -1112,6 +1366,140 @@ function fallbackPrompts(
   ];
 }
 
+type AgentStreamCallbacks = {
+  conversationId?: string;
+  message: string;
+  routeContext: AgentRouteContext;
+  onStatus: (event: AgentStreamStatusEvent) => void;
+  onReasoningDelta: (delta: string) => void;
+  onAnswerDelta: (delta: string) => void;
+  onFinal: (event: AgentStreamFinalEvent) => void;
+};
+
+type AgentStreamStatusEvent = AgentTraceEntry & {
+  type: "status";
+};
+
+type AgentStreamFinalEvent = {
+  type: "final";
+  output: AgentSendMessageResponse;
+  elapsedMs: number;
+  reasoningMarkdown?: string;
+};
+
+type AgentSendMessageResponse =
+  | {
+      status: "blocked";
+      reason: "quota";
+      quota: QuotaInfo;
+    }
+  | {
+      status: "completed";
+      conversationId: string;
+      messageId: string;
+      answer: {
+        answerMarkdown: string;
+      };
+      sourceCards: SourceCard[];
+      relatedQuestions: string[];
+      quota: QuotaInfo;
+      runStatus: "completed";
+    }
+  | {
+      status: "failed";
+      conversationId: string;
+      messageId: string;
+      quota: QuotaInfo;
+      runStatus: "failed";
+      errorCode: string;
+    };
+
+async function streamAgentMessage({
+  conversationId,
+  message,
+  routeContext,
+  onStatus,
+  onReasoningDelta,
+  onAnswerDelta,
+  onFinal,
+}: AgentStreamCallbacks) {
+  const response = await fetch("/api/agent/stream", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "content-type": "application/json",
+      accept: "text/event-stream",
+    },
+    body: JSON.stringify({
+      conversationId,
+      message,
+      routeContext,
+    }),
+  });
+
+  if (!response.ok || !response.body) {
+    throw new Error(`Agent stream failed: ${response.status}`);
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const frames = buffer.split(/\n\n/);
+    buffer = frames.pop() ?? "";
+
+    for (const frame of frames) {
+      const event = parseSseFrame(frame);
+      if (!event) continue;
+      if (event.type === "status") onStatus(event);
+      if (event.type === "reasoning_delta") onReasoningDelta(event.delta);
+      if (event.type === "answer_delta") onAnswerDelta(event.delta);
+      if (event.type === "final") onFinal(event);
+      if (event.type === "error") {
+        throw new Error(event.message);
+      }
+    }
+  }
+}
+
+function parseSseFrame(frame: string):
+  | AgentStreamStatusEvent
+  | AgentStreamFinalEvent
+  | { type: "reasoning_delta"; delta: string }
+  | { type: "answer_delta"; delta: string }
+  | { type: "error"; message: string }
+  | null {
+  const data = frame
+    .split(/\n/)
+    .map(line => line.trim())
+    .filter(line => line.startsWith("data:"))
+    .map(line => line.replace(/^data:\s*/, ""))
+    .join("\n");
+  if (!data) return null;
+
+  try {
+    return JSON.parse(data);
+  } catch {
+    return null;
+  }
+}
+
+function upsertTraceEntry(
+  entries: AgentTraceEntry[] | undefined,
+  next: AgentTraceEntry
+) {
+  const current = entries ?? [];
+  const index = current.findIndex(entry => entry.stage === next.stage);
+  if (index === -1) return [...current, next];
+  return current.map((entry, entryIndex) =>
+    entryIndex === index ? { ...entry, ...next } : entry
+  );
+}
+
 function toChatMessage(message: {
   id: string;
   role: "user" | "assistant" | "system";
@@ -1123,7 +1511,17 @@ function toChatMessage(message: {
     role: message.role === "assistant" ? "assistant" : "user",
     content: message.content,
     sourceCards: extractSourceCards(message.sourceJson),
+    reasoningMarkdown: extractReasoningMarkdown(message.sourceJson),
   };
+}
+
+function extractReasoningMarkdown(
+  sourceJson: Record<string, unknown> | null | undefined
+) {
+  const reasoning = sourceJson?.reasoningMarkdown;
+  return typeof reasoning === "string" && reasoning.trim()
+    ? reasoning
+    : undefined;
 }
 
 function extractSourceCards(

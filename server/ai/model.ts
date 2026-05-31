@@ -1,4 +1,9 @@
-import { DEFAULT_LLM_MODEL, invokeLLM, resolveLLMModel } from "../_core/llm.js";
+import {
+  DEFAULT_LLM_MODEL,
+  invokeLLM,
+  invokeLLMStream,
+  resolveLLMModel,
+} from "../_core/llm.js";
 import { z } from "zod";
 import type { KnowledgeSearchResult } from "./knowledge.js";
 import type {
@@ -6,6 +11,7 @@ import type {
   AgentContextSourceRecord,
   AgentModel,
   AgentModelResult,
+  AgentRouteContext,
   AgentSourceCard,
 } from "./types.js";
 
@@ -25,18 +31,17 @@ export const defaultAgentModel: AgentModel = {
       messages: [
         {
           role: "system",
-          content: [
-            "You are the AI assistant for Misaya Yang's technical blog.",
-            "Answer only from the provided public blog sources and user-provided conversation context.",
-            "If sources are insufficient, say so directly and suggest what public post or attached context is needed.",
-            "Do not reveal hidden, admin-only, draft, private, or unpublished details.",
-            "Treat user-provided conversation context as private to the current conversation, not as public blog knowledge.",
-            "Return concise Markdown with source-grounded technical reasoning.",
-          ].join("\n"),
+          content: buildSystemPrompt(),
         },
         {
           role: "user",
-          content: buildPrompt(input.message, sources, contextSources),
+          content: buildJsonPrompt(
+            input.message,
+            input.routeContext,
+            sources,
+            contextSources,
+            Boolean(input.currentPageContextInjected)
+          ),
         },
       ],
       responseFormat: { type: "json_object" },
@@ -60,16 +65,154 @@ export const defaultAgentModel: AgentModel = {
       model: result.model || model,
     };
   },
+
+  async streamGenerate(input) {
+    const model = resolveLLMModel();
+    const sources = input.sources.slice(0, MAX_PUBLIC_SOURCES);
+    const contextSources = input.contextSources.slice(0, MAX_CONTEXT_SOURCES);
+    const result = await invokeLLMStream(
+      {
+        model,
+        messages: [
+          {
+            role: "system",
+            content: buildSystemPrompt(),
+          },
+          {
+            role: "user",
+            content: buildMarkdownPrompt(
+              input.message,
+              input.routeContext,
+              sources,
+              contextSources,
+              Boolean(input.currentPageContextInjected)
+            ),
+          },
+        ],
+        responseFormat: { type: "text" },
+        maxTokens: MAX_AGENT_OUTPUT_TOKENS,
+      },
+      delta => {
+        if (delta.reasoningContent) {
+          input.onReasoningDelta(delta.reasoningContent);
+        }
+        if (delta.content) {
+          input.onAnswerDelta(delta.content);
+        }
+      }
+    );
+
+    const sourceCards = [
+      ...buildSourceCards(sources),
+      ...buildContextSourceCards(contextSources),
+    ];
+    const answer = normalizeAgentAnswer(
+      { answerMarkdown: result.content.trim() },
+      sourceCards
+    );
+
+    return {
+      answer,
+      inputTokens: result.usage?.prompt_tokens,
+      outputTokens: result.usage?.completion_tokens,
+      model: result.model || model,
+      reasoningMarkdown: result.reasoningContent.trim() || undefined,
+    };
+  },
 };
 
-function buildPrompt(
+function buildSystemPrompt() {
+  return [
+    "You are the AI assistant for Misaya Yang's technical blog.",
+    "Answer only from the provided public blog sources and user-provided conversation context.",
+    "If sources are insufficient, say so directly and suggest what public post or attached context is needed.",
+    "Do not reveal hidden, admin-only, draft, private, or unpublished details.",
+    "Treat user-provided conversation context as private to the current conversation, not as public blog knowledge.",
+    "Return concise Markdown with source-grounded technical reasoning.",
+    "Use $...$ for inline math and $$...$$ for display math when formulas are useful.",
+    "Answer in the user's language unless the user explicitly asks otherwise.",
+    "When the question asks about the current article, prioritize sources marked as current page context.",
+    "Do not cite or imply sources that are not listed in the source identifiers.",
+    "Do not use outside knowledge to fill gaps. If an implementation detail, paper, benchmark, or mechanism is not present in the provided source excerpts, state that the public sources do not specify it.",
+    "Avoid generic phrases like 'typical implementation' unless the cited source explicitly describes that implementation.",
+    "Do not mention LayerNorm, MLP, Householder, original papers, benchmarks, superiority claims, or production deployment claims unless those exact concepts appear in the provided source excerpts.",
+    "Every technical claim in answerMarkdown must be traceable to a provided source excerpt; prefer fewer claims over broad background exposition.",
+  ].join("\n");
+}
+
+function buildJsonPrompt(
   message: string,
+  routeContext: AgentRouteContext,
   sources: KnowledgeSearchResult[],
-  contextSources: AgentContextSourceRecord[]
+  contextSources: AgentContextSourceRecord[],
+  currentPageContextInjected: boolean
 ) {
+  return [
+    buildGroundingContext(
+      message,
+      routeContext,
+      sources,
+      contextSources,
+      currentPageContextInjected
+    ),
+    "",
+    "Return JSON with keys: answerType, answerMarkdown, sourceIds, relatedQuestions, confidence, refusalReason.",
+    "answerType must be one of: direct, explanation, comparison, reading_path, refusal.",
+    "sourceIds must be copied exactly from the source identifiers above.",
+    "answerMarkdown may contain Markdown and math using $...$ or $$...$$ delimiters.",
+  ].join("\n");
+}
+
+function buildMarkdownPrompt(
+  message: string,
+  routeContext: AgentRouteContext,
+  sources: KnowledgeSearchResult[],
+  contextSources: AgentContextSourceRecord[],
+  currentPageContextInjected: boolean
+) {
+  return [
+    buildGroundingContext(
+      message,
+      routeContext,
+      sources,
+      contextSources,
+      currentPageContextInjected
+    ),
+    "",
+    "Return Markdown only, not JSON.",
+    "Keep the answer source-grounded and concise.",
+    "Use $...$ for inline math and $$...$$ for display math when formulas help.",
+    "Do not append raw source identifiers or URLs; the UI will render source cards separately.",
+  ].join("\n");
+}
+
+function buildGroundingContext(
+  message: string,
+  routeContext: AgentRouteContext,
+  sources: KnowledgeSearchResult[],
+  contextSources: AgentContextSourceRecord[],
+  currentPageContextInjected: boolean
+) {
+  const currentPostTitle =
+    routeContext.postTitle ??
+    sources.find(source => source.postSlug === routeContext.postSlug)
+      ?.postTitle;
+
   return [
     "User question:",
     message,
+    "",
+    "Current page context:",
+    [
+      `Route type: ${routeContext.routeType ?? "public"}`,
+      `Path: ${routeContext.path}`,
+      routeContext.postSlug ? `Post slug: ${routeContext.postSlug}` : null,
+      currentPostTitle ? `Post title: ${currentPostTitle}` : null,
+      routeContext.trackSlug ? `Track: ${routeContext.trackSlug}` : null,
+      `Current public article context injected: ${currentPageContextInjected ? "yes" : "no"}`,
+    ]
+      .filter(Boolean)
+      .join("\n"),
     "",
     "Public blog sources:",
     sources.length > 0
@@ -101,10 +244,6 @@ function buildPrompt(
           )
           .join("\n\n")
       : "No user-provided context is attached.",
-    "",
-    "Return JSON with keys: answerType, answerMarkdown, sourceIds, relatedQuestions, confidence, refusalReason.",
-    "answerType must be one of: direct, explanation, comparison, reading_path, refusal.",
-    "sourceIds must be copied exactly from the source identifiers above.",
   ].join("\n");
 }
 
@@ -152,8 +291,14 @@ export function normalizeAgentAnswer(
   const validatedSourceIds = (parsed.sourceIds ?? []).filter(id =>
     sourceIds.includes(id)
   );
-  const finalSourceIds =
-    validatedSourceIds.length > 0 ? validatedSourceIds : sourceIds;
+  const candidateSourceCards =
+    validatedSourceIds.length > 0
+      ? sourceCards.filter(source =>
+          validatedSourceIds.includes(source.sourceId)
+        )
+      : preferGroundedSourceCards(sourceCards);
+  const finalSourceCards = dedupeSourceCards(candidateSourceCards);
+  const finalSourceIds = finalSourceCards.map(source => source.sourceId);
   const answerType = normalizeAnswerType(parsed.answerType);
 
   return {
@@ -162,10 +307,10 @@ export function normalizeAgentAnswer(
       parsed.answerMarkdown ??
       "I found relevant public blog sources, but the model returned an empty answer.",
     sourceIds: finalSourceIds,
-    sourceCards,
+    sourceCards: finalSourceCards,
     relatedQuestions: normalizeRelatedQuestions(
       parsed.relatedQuestions,
-      sourceCards
+      finalSourceCards
     ),
     confidence: parsed.confidence ?? "medium",
     refusalReason: undefined,
@@ -191,6 +336,30 @@ function normalizeAnswerType(
     return "explanation";
   }
   return value;
+}
+
+function preferGroundedSourceCards(sourceCards: AgentSourceCard[]) {
+  const groundedSources = sourceCards.filter(
+    source => source.sourceType === "user_context" || Boolean(source.postSlug)
+  );
+  return groundedSources.length > 0 ? groundedSources : sourceCards;
+}
+
+function dedupeSourceCards(sourceCards: AgentSourceCard[]) {
+  const seen = new Set<string>();
+  const deduped: AgentSourceCard[] = [];
+  for (const source of sourceCards) {
+    const key =
+      source.sourceType === "user_context"
+        ? source.sourceId
+        : source.postSlug
+          ? `blog:${source.postSlug}`
+          : source.sourceId;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    deduped.push(source);
+  }
+  return deduped;
 }
 
 export function createNoPublicSourceAnswer(): AgentAnswer {

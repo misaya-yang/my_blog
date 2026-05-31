@@ -40,6 +40,7 @@ const seriesSeeds = [
       "agent-harness-engine-evaluating-tool-using-agents",
       "rag-evidence-packet-context-compiler",
       "agent-loop-observable-tool-using-agents",
+      "goal-harness-agent-phase-protocol",
     ],
     expectedNext: [
       "Tool ABI: typed capabilities for agent runtimes",
@@ -195,6 +196,29 @@ const posts = [
       { name: "Guardrails", slug: "guardrails" },
       { name: "Evaluation", slug: "evaluation" },
       { name: "Observability", slug: "observability" },
+    ],
+  },
+  {
+    title: "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
+    slug: "goal-harness-agent-phase-protocol",
+    contentPath: "./goal_harness_agent_phase_protocol.md",
+    categorySlug: "ai-applications",
+    status: "published",
+    visibility: "public",
+    publishedAt: "2026-05-31T00:40:00.000Z",
+    featuredRank: 0,
+    pinnedTrack: "applications",
+    excerpt:
+      "把 PRD、Figma、代码库事实和测试要求编译成 Goal Harness，让 Codex 与 Claude Code 在长任务中逐 phase 执行、回归、留证据并安全交接。",
+    tags: [
+      { name: "Agent Systems", slug: "agent-systems" },
+      { name: "Goal Harness", slug: "goal-harness" },
+      { name: "Codex", slug: "codex" },
+      { name: "Claude Code", slug: "claude-code" },
+      { name: "Context Engineering", slug: "context-engineering" },
+      { name: "Evaluation", slug: "evaluation" },
+      { name: "Observability", slug: "observability" },
+      { name: "Tool Use", slug: "tool-use" },
     ],
   },
 ];

@@ -38,6 +38,7 @@ export function getCompanionPromptKeys(routeContext: AgentRouteContext) {
       "agent.prompts.postImplementation",
       "agent.prompts.postChecklist",
       "agent.prompts.postCompare",
+      "agent.prompts.nextReading",
     ];
   }
 

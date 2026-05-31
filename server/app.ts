@@ -5,6 +5,7 @@ import { appRouter } from "./routers.js";
 import { createContext } from "./_core/context.js";
 import { registerSeoRoutes } from "./seo.js";
 import { registerClientRenderRoutes } from "./client-render.js";
+import { registerAgentStreamRoute } from "./ai/streamRoute.js";
 
 type CreateAppOptions = {
   clientFallback?: boolean;
@@ -18,6 +19,7 @@ export function createApp(options: CreateAppOptions = {}) {
 
   registerOAuthRoutes(app);
   registerSeoRoutes(app);
+  registerAgentStreamRoute(app);
 
   app.use(
     "/api/trpc",

@@ -7,7 +7,7 @@ import {
 } from "./contextSources.js";
 import { AGENT_GOLDEN_QUESTIONS, getGoldenQuestionsForInput } from "./evals.js";
 import { getKnowledgeIndexStatus, searchPublicKnowledgeChunkSources } from "./knowledgeDb.js";
-import type { KnowledgeSearchResult } from "./knowledge.js";
+import { analyzeKnowledgeQuery, type KnowledgeSearchResult } from "./knowledge.js";
 import { PostgresConversationStore, type ConversationStore } from "./conversations.js";
 import { getFileUploadQuotaLimit, getQuotaLimit, resolveAgentIdentity } from "./identity.js";
 import { buildSourceCards, createNoPublicSourceAnswer, defaultAgentModel } from "./model.js";
@@ -30,6 +30,7 @@ import type {
   AgentScope,
   AgentSendMessageInput,
   AgentSendMessageOutput,
+  AgentStreamEvent,
 } from "./types.js";
 
 export type AgentServiceDeps = {
@@ -41,6 +42,7 @@ export type AgentServiceDeps = {
     query: string;
     scope: AgentScope;
     limit: number;
+    routeContext?: AgentBootstrapInput["routeContext"];
   }) => Promise<KnowledgeSearchResult[]>;
   getKnowledgeStatus: () => Promise<AgentKnowledgeIndexStatusOutput>;
   now?: () => Date;
@@ -70,6 +72,11 @@ export type AgentService = {
   ): Promise<AgentQuestionRadarOutput>;
   adminListRuns(ctx: AgentContext, input: { limit?: number }): Promise<AgentRunRecord[]>;
   sendMessage(ctx: AgentContext, input: AgentSendMessageInput): Promise<AgentSendMessageOutput>;
+  streamMessage(
+    ctx: AgentContext,
+    input: AgentSendMessageInput,
+    emit: (event: AgentStreamEvent) => void
+  ): Promise<AgentSendMessageOutput>;
 };
 
 export function createAgentService(deps: AgentServiceDeps): AgentService {
@@ -178,6 +185,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         query: input.query,
         scope,
         limit: Math.min(Math.max(input.limit ?? 8, 1), 12),
+        routeContext: input.routeContext,
       });
       const sourceCards = buildSourceCards(sources);
       return {
@@ -196,11 +204,21 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
       const items = [];
       for (const golden of questions) {
         const itemScope = golden.scope ?? scope;
-        const sources = await deps.retrieve({ query: golden.question, scope: itemScope, limit: 6 });
+        const sources = await deps.retrieve({
+          query: golden.question,
+          scope: itemScope,
+          limit: 6,
+          routeContext: input.routeContext,
+        });
         const sourceSlugs = new Set(
           sources.map((source) => source.postSlug).filter((slug): slug is string => Boolean(slug))
         );
         const missingSourceSlugs = golden.expectedSourceSlugs.filter((slug) => !sourceSlugs.has(slug));
+        const failureReason = buildEvalFailureReason(
+          golden.expectedBehavior,
+          sources.length,
+          missingSourceSlugs
+        );
         const passed =
           golden.expectedBehavior === "refusal"
             ? sources.length === 0
@@ -215,6 +233,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           sourceIds: sources.map((source) => source.sourceId),
           expectedSourceSlugs: golden.expectedSourceSlugs,
           missingSourceSlugs,
+          failureReason: passed ? undefined : failureReason,
           notes: [
             ...golden.notes,
             ...(passed ? [] : buildEvalFailureNotes(golden.expectedBehavior, sources.length, missingSourceSlugs)),
@@ -316,6 +335,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           query: input.message,
           scope,
           limit: input.answerMode === "deep" ? 8 : 5,
+          routeContext: input.routeContext,
         });
         const contextSources = await deps.contextSourceStore.listSources({
           conversationId: conversation.id,
@@ -364,6 +384,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           routeContext: input.routeContext,
           sources,
           contextSources,
+          currentPageContextInjected: hasCurrentPageContext(sources),
         });
         const answer = modelResult.answer;
         const assistantMessage = await deps.conversationStore.addMessage({
@@ -427,6 +448,223 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           runStatus: "failed",
           errorCode,
         };
+      }
+    },
+
+    async streamMessage(ctx, input, emit) {
+      const startedAt = now();
+      const elapsedMs = () => now().getTime() - startedAt.getTime();
+      const identity = resolveAgentIdentity(ctx.session, ctx.req);
+      const limit = getQuotaLimit(identity.type);
+      const quota = await deps.quotaStore.reserveDailyMessage(identity, limit, now());
+
+      if (!quota.allowed) {
+        const output: AgentSendMessageOutput = {
+          status: "blocked",
+          reason: "quota",
+          quota,
+        };
+        emit({ type: "final", output, elapsedMs: elapsedMs() });
+        return output;
+      }
+
+      emit({ type: "status", stage: "understanding", elapsedMs: elapsedMs() });
+
+      const scope = input.scope ?? inferScope(input.routeContext);
+      const conversation = await deps.conversationStore.createOrLoadConversation({
+        conversationId: input.conversationId,
+        identity,
+        scope,
+        title: buildConversationTitle(input.message),
+      });
+      const userMessage = await deps.conversationStore.addMessage({
+        conversationId: conversation.id,
+        role: "user",
+        status: "completed",
+        content: input.message,
+      });
+      const run = await deps.conversationStore.startRun({
+        conversationId: conversation.id,
+        userMessageId: userMessage.id,
+        identity,
+        scope,
+      });
+
+      try {
+        emit({ type: "status", stage: "retrieval", elapsedMs: elapsedMs() });
+        const sources = await deps.retrieve({
+          query: input.message,
+          scope,
+          limit: input.answerMode === "deep" ? 8 : 5,
+          routeContext: input.routeContext,
+        });
+        const contextSources = await deps.contextSourceStore.listSources({
+          conversationId: conversation.id,
+          identity,
+          now: now(),
+        });
+        const currentPageContextInjected = hasCurrentPageContext(sources);
+        emit({
+          type: "status",
+          stage: "sources",
+          elapsedMs: elapsedMs(),
+          sourceCount: sources.length + contextSources.length,
+          currentPageContextInjected,
+        });
+
+        if (sources.length === 0 && contextSources.length === 0) {
+          const answer = createNoPublicSourceAnswer();
+          const assistantMessage = await deps.conversationStore.addMessage({
+            conversationId: conversation.id,
+            role: "assistant",
+            status: "completed",
+            content: answer.answerMarkdown,
+            sourceJson: { sourceCards: [] },
+            usageJson: {
+              inputTokens: 0,
+              outputTokens: 0,
+              model: null,
+            },
+          });
+
+          await deps.conversationStore.finishRun({
+            runId: run.id,
+            assistantMessageId: assistantMessage.id,
+            status: "completed",
+            inputTokens: 0,
+            outputTokens: 0,
+            latencyMs: elapsedMs(),
+            retrievedChunkIds: [],
+          });
+
+          const output: AgentSendMessageOutput = {
+            status: "completed",
+            conversationId: conversation.id,
+            messageId: assistantMessage.id,
+            answer,
+            sourceCards: [],
+            relatedQuestions: answer.relatedQuestions,
+            quota,
+            runStatus: "completed",
+          };
+          emit({ type: "answer_delta", delta: answer.answerMarkdown, elapsedMs: elapsedMs() });
+          emit({ type: "final", output, elapsedMs: elapsedMs() });
+          return output;
+        }
+
+        emit({ type: "status", stage: "reasoning", elapsedMs: elapsedMs() });
+        let answerStarted = false;
+        const modelResult = deps.model.streamGenerate
+          ? await deps.model.streamGenerate({
+              message: input.message,
+              scope,
+              routeContext: input.routeContext,
+              sources,
+              contextSources,
+              currentPageContextInjected,
+              onAnswerDelta: delta => {
+                if (!answerStarted) {
+                  answerStarted = true;
+                  emit({ type: "status", stage: "answer", elapsedMs: elapsedMs() });
+                }
+                emit({ type: "answer_delta", delta, elapsedMs: elapsedMs() });
+              },
+              onReasoningDelta: delta =>
+                emit({ type: "reasoning_delta", delta, elapsedMs: elapsedMs() }),
+            })
+          : await deps.model.generate({
+              message: input.message,
+              scope,
+              routeContext: input.routeContext,
+              sources,
+              contextSources,
+              currentPageContextInjected,
+            });
+        if (!deps.model.streamGenerate) {
+          emit({ type: "status", stage: "answer", elapsedMs: elapsedMs() });
+          emit({
+            type: "answer_delta",
+            delta: modelResult.answer.answerMarkdown,
+            elapsedMs: elapsedMs(),
+          });
+        }
+
+        emit({ type: "status", stage: "saving", elapsedMs: elapsedMs() });
+        const answer = modelResult.answer;
+        const assistantMessage = await deps.conversationStore.addMessage({
+          conversationId: conversation.id,
+          role: "assistant",
+          status: "completed",
+          content: answer.answerMarkdown,
+          sourceJson: {
+            sourceCards: answer.sourceCards,
+            reasoningMarkdown: modelResult.reasoningMarkdown ?? null,
+          },
+          usageJson: {
+            inputTokens: modelResult.inputTokens ?? 0,
+            outputTokens: modelResult.outputTokens ?? 0,
+            model: modelResult.model ?? null,
+          },
+        });
+
+        await deps.conversationStore.finishRun({
+          runId: run.id,
+          assistantMessageId: assistantMessage.id,
+          status: "completed",
+          inputTokens: modelResult.inputTokens,
+          outputTokens: modelResult.outputTokens,
+          latencyMs: elapsedMs(),
+          retrievedChunkIds: [
+            ...sources.map((source) => source.sourceId),
+            ...contextSources.map((source) => source.sourceId),
+          ],
+        });
+
+        const output: AgentSendMessageOutput = {
+          status: "completed",
+          conversationId: conversation.id,
+          messageId: assistantMessage.id,
+          answer,
+          sourceCards: answer.sourceCards,
+          relatedQuestions: answer.relatedQuestions,
+          quota,
+          runStatus: "completed",
+        };
+        emit({
+          type: "final",
+          output,
+          elapsedMs: elapsedMs(),
+          reasoningMarkdown: modelResult.reasoningMarkdown,
+        });
+        return output;
+      } catch (error) {
+        const errorCode = normalizeErrorCode(error);
+        const failedMessage = await deps.conversationStore.addMessage({
+          conversationId: conversation.id,
+          role: "assistant",
+          status: "failed",
+          content: "The assistant could not complete this answer right now.",
+          errorCode,
+        });
+        await deps.conversationStore.finishRun({
+          runId: run.id,
+          assistantMessageId: failedMessage.id,
+          status: "failed",
+          latencyMs: elapsedMs(),
+          errorCode,
+        });
+
+        const output: AgentSendMessageOutput = {
+          status: "failed",
+          conversationId: conversation.id,
+          messageId: failedMessage.id,
+          quota,
+          runStatus: "failed",
+          errorCode,
+        };
+        emit({ type: "error", message: errorCode, elapsedMs: elapsedMs() });
+        emit({ type: "final", output, elapsedMs: elapsedMs() });
+        return output;
       }
     },
   };
@@ -524,7 +762,8 @@ function defaultEvalQuestions(scope: AgentScope) {
 }
 
 function buildRetrievalDiagnostics(query: string, sources: KnowledgeSearchResult[]) {
-  const terms = tokenizeForDiagnostics(query);
+  const analysis = analyzeKnowledgeQuery(query);
+  const terms = analysis.terms;
   const haystack = sources
     .map((source) =>
       [
@@ -544,7 +783,11 @@ function buildRetrievalDiagnostics(query: string, sources: KnowledgeSearchResult
   return {
     status: hasSources ? ("ready" as const) : ("no_sources" as const),
     terms,
+    expandedTerms: analysis.expandedTerms,
+    aliasExpansions: analysis.aliasExpansions,
     missingTerms,
+    currentPageContextInjected: hasCurrentPageContext(sources),
+    failureReason: hasSources ? undefined : ("retrieval_failure" as const),
     notes: hasSources
       ? [`Retrieved ${sources.length} public source${sources.length === 1 ? "" : "s"}.`]
       : ["No published/public knowledge chunk matched this query under the current scope."],
@@ -559,6 +802,23 @@ function buildRetrievalDiagnostics(query: string, sources: KnowledgeSearchResult
           "Try the public article title, slug, or primary tag as a debug query.",
         ],
   };
+}
+
+function hasCurrentPageContext(sources: KnowledgeSearchResult[]) {
+  return sources.some((source) =>
+    source.relevanceReason.toLowerCase().startsWith("current public article context")
+  );
+}
+
+function buildEvalFailureReason(
+  expectedBehavior: "sources" | "refusal",
+  sourceCount: number,
+  missingSourceSlugs: string[]
+) {
+  if (expectedBehavior === "refusal" && sourceCount > 0) return "refusal_boundary" as const;
+  if (sourceCount === 0) return "retrieval_failure" as const;
+  if (missingSourceSlugs.length > 0) return "wrong_source" as const;
+  return "wrong_source" as const;
 }
 
 function buildEvalFailureNotes(
@@ -576,18 +836,6 @@ function buildEvalFailureNotes(
     return [`Missing expected source slug(s): ${missingSourceSlugs.join(", ")}.`];
   }
   return ["Eval needs manual review."];
-}
-
-function tokenizeForDiagnostics(input: string) {
-  return Array.from(
-    new Set(
-      input
-        .toLowerCase()
-        .split(/[^a-z0-9\u4e00-\u9fff-]+/i)
-        .map((term) => term.trim())
-        .filter((term) => term.length >= 2)
-    )
-  );
 }
 
 function buildArticleIdeaTitle(seed: string) {

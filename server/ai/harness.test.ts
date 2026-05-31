@@ -26,14 +26,16 @@ const source: KnowledgeSearchResult = {
   chunkIndex: 1,
   heading: "Evaluation Protocol",
   sectionPath: "Evaluation Protocol",
-  content: "Harness engines evaluate tool-using agents under controlled context.",
+  content:
+    "Harness engines evaluate tool-using agents under controlled context.",
   summary: null,
   keywords: ["harness", "agent"],
   contentHash: "hash",
   tokenEstimate: 24,
   sourceId: "post:agent-harness:1",
   score: 10,
-  excerpt: "Harness engines evaluate tool-using agents under controlled context.",
+  excerpt:
+    "Harness engines evaluate tool-using agents under controlled context.",
   relevanceReason: "Matches harness and agent terms.",
 };
 
@@ -45,9 +47,11 @@ const isohcSource: KnowledgeSearchResult = {
   categorySlug: "ai-algorithms",
   tagSlugs: ["isohc", "residual-stability"],
   heading: "Residual Stability",
-  content: "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold.",
+  content:
+    "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold.",
   sourceId: "post:isohc-fixed-vector-isometric-residual-mixing:1",
-  excerpt: "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold.",
+  excerpt:
+    "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold.",
   relevanceReason: "Matches IsoHC residual stability terms.",
 };
 
@@ -108,7 +112,9 @@ function visitorContextWithId(visitorId: string): AgentContext {
 
 function adminContext(): AgentContext {
   return {
-    req: { headers: { "x-forwarded-for": "203.0.113.88", "user-agent": "vitest" } },
+    req: {
+      headers: { "x-forwarded-for": "203.0.113.88", "user-agent": "vitest" },
+    },
     session: {
       isAuthenticated: true,
       isAdmin: true,
@@ -118,7 +124,9 @@ function adminContext(): AgentContext {
   };
 }
 
-function createHarness(overrides: Partial<Parameters<typeof createAgentService>[0]> = {}) {
+function createHarness(
+  overrides: Partial<Parameters<typeof createAgentService>[0]> = {}
+) {
   const conversationStore = createMemoryConversationStore();
   const contextSourceStore = createMemoryContextSourceStore();
   const retrieve = vi.fn(async () => [source]);
@@ -129,7 +137,8 @@ function createHarness(overrides: Partial<Parameters<typeof createAgentService>[
       model: "test-model",
       answer: {
         answerType: "explanation",
-        answerMarkdown: "Harness engines isolate context, tools, and evaluators.",
+        answerMarkdown:
+          "Harness engines isolate context, tools, and evaluators.",
         sourceIds: [source.sourceId],
         sourceCards: [
           {
@@ -179,34 +188,29 @@ describe("AI agent harness", () => {
   it("returns bootstrap quota and contextual prompts without reserving quota", async () => {
     const { service } = createHarness();
 
-    const bootstrap = await service.bootstrap(anonymousContext(), { routeContext });
+    const bootstrap = await service.bootstrap(anonymousContext(), {
+      routeContext,
+    });
 
     expect(bootstrap.sessionTier).toBe("anonymous");
-    expect(bootstrap.quota).toMatchObject({ limit: 2, used: 0, remaining: 2 });
-    expect(bootstrap.currentScope).toEqual({ type: "track", value: "ai-applications" });
+    expect(bootstrap.quota).toMatchObject({
+      limit: 10,
+      used: 0,
+      remaining: 10,
+    });
+    expect(bootstrap.currentScope).toEqual({
+      type: "track",
+      value: "ai-applications",
+    });
     expect(bootstrap.suggestedPrompts.length).toBeGreaterThan(0);
   });
 
-  it("blocks anonymous readers on the third message before retrieval or model work", async () => {
+  it("blocks anonymous readers after ten messages before retrieval or model work", async () => {
     const { service, retrieve, model } = createHarness();
     const ctx = anonymousContext();
 
-    await service.sendMessage(ctx, { message: "Explain harness engines", routeContext });
-    await service.sendMessage(ctx, { message: "Explain context engines", routeContext });
-    const third = await service.sendMessage(ctx, { message: "Explain tool use", routeContext });
-
-    expect(third.status).toBe("blocked");
-    expect(third.quota).toMatchObject({ allowed: false, used: 2, remaining: 0 });
-    expect(retrieve).toHaveBeenCalledTimes(2);
-    expect(model.generate).toHaveBeenCalledTimes(2);
-  });
-
-  it("blocks visitor readers on the seventh message", async () => {
-    const { service, retrieve, model } = createHarness();
-    const ctx = visitorContext();
-
     const attempts = [];
-    for (let index = 0; index < 7; index += 1) {
+    for (let index = 0; index < 11; index += 1) {
       attempts.push(
         await service.sendMessage(ctx, {
           message: `Question ${index + 1}`,
@@ -215,10 +219,39 @@ describe("AI agent harness", () => {
       );
     }
 
-    expect(attempts.slice(0, 6).every((result) => result.status === "completed")).toBe(true);
-    expect(attempts[6].status).toBe("blocked");
-    expect(retrieve).toHaveBeenCalledTimes(6);
-    expect(model.generate).toHaveBeenCalledTimes(6);
+    expect(
+      attempts.slice(0, 10).every(result => result.status === "completed")
+    ).toBe(true);
+    expect(attempts[10].status).toBe("blocked");
+    expect(attempts[10].quota).toMatchObject({
+      allowed: false,
+      used: 10,
+      remaining: 0,
+    });
+    expect(retrieve).toHaveBeenCalledTimes(10);
+    expect(model.generate).toHaveBeenCalledTimes(10);
+  });
+
+  it("blocks visitor readers after thirty messages", async () => {
+    const { service, retrieve, model } = createHarness();
+    const ctx = visitorContext();
+
+    const attempts = [];
+    for (let index = 0; index < 31; index += 1) {
+      attempts.push(
+        await service.sendMessage(ctx, {
+          message: `Question ${index + 1}`,
+          routeContext,
+        })
+      );
+    }
+
+    expect(
+      attempts.slice(0, 30).every(result => result.status === "completed")
+    ).toBe(true);
+    expect(attempts[30].status).toBe("blocked");
+    expect(retrieve).toHaveBeenCalledTimes(30);
+    expect(model.generate).toHaveBeenCalledTimes(30);
   });
 
   it("persists the user message and failed run when the model fails", async () => {
@@ -227,7 +260,9 @@ describe("AI agent harness", () => {
         throw new Error("model unavailable");
       }),
     };
-    const { service, conversationStore } = createHarness({ model: failingModel });
+    const { service, conversationStore } = createHarness({
+      model: failingModel,
+    });
 
     const result = await service.sendMessage(anonymousContext(), {
       message: "Explain controlled context",
@@ -241,7 +276,11 @@ describe("AI agent harness", () => {
     });
     expect(conversationStore.messages).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ role: "user", status: "completed", content: "Explain controlled context" }),
+        expect.objectContaining({
+          role: "user",
+          status: "completed",
+          content: "Explain controlled context",
+        }),
         expect.objectContaining({ role: "assistant", status: "failed" }),
       ])
     );
@@ -273,7 +312,8 @@ describe("AI agent harness", () => {
       generate: vi.fn(async ({ sources }) => ({
         answer: {
           answerType: "explanation",
-          answerMarkdown: "IsoHC constrains residual mixing while preserving invariants.",
+          answerMarkdown:
+            "IsoHC constrains residual mixing while preserving invariants.",
           sourceIds: [sources[0].sourceId],
           sourceCards: [
             {
@@ -313,6 +353,68 @@ describe("AI agent harness", () => {
       categorySlug: "ai-algorithms",
     });
     expect(result.answer.sourceIds).toContain(isohcSource.sourceId);
+  });
+
+  it("marks vague post-scoped questions as using current page context", async () => {
+    const model: AgentModel = {
+      generate: vi.fn(async ({ sources }) => ({
+        answer: {
+          answerType: "explanation",
+          answerMarkdown:
+            "This article explains IsoHC as a residual stability mechanism.",
+          sourceIds: [sources[0].sourceId],
+          sourceCards: [
+            {
+              sourceId: sources[0].sourceId,
+              postTitle: sources[0].postTitle ?? "",
+              postSlug: sources[0].postSlug ?? "",
+              categorySlug: sources[0].categorySlug ?? undefined,
+              tagSlugs: sources[0].tagSlugs,
+              heading: sources[0].heading ?? undefined,
+              excerpt: sources[0].excerpt,
+              relevanceReason: sources[0].relevanceReason,
+            },
+          ],
+          relatedQuestions: ["What invariant does IsoHC preserve?"],
+          confidence: "high",
+        },
+      })),
+    };
+    const currentPageSource = {
+      ...isohcSource,
+      relevanceReason:
+        "Current public article context. Metadata and opening section are included.",
+    };
+    const { service } = createHarness({
+      retrieve: vi.fn(async () => [currentPageSource]),
+      model,
+    });
+
+    const result = await service.sendMessage(anonymousContext(), {
+      message: "这篇文章核心是什么？",
+      routeContext: {
+        path: "/post/isohc-fixed-vector-isometric-residual-mixing",
+        routeType: "post",
+        postSlug: "isohc-fixed-vector-isometric-residual-mixing",
+      },
+    });
+
+    expect(model.generate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        currentPageContextInjected: true,
+        routeContext: expect.objectContaining({
+          postSlug: "isohc-fixed-vector-isometric-residual-mixing",
+        }),
+      })
+    );
+    expect(result.status).toBe("completed");
+    if (result.status !== "completed") return;
+    expect(result.sourceCards[0]).toMatchObject({
+      postSlug: "isohc-fixed-vector-isometric-residual-mixing",
+      relevanceReason: expect.stringContaining(
+        "Current public article context"
+      ),
+    });
   });
 
   it("refuses hidden or unavailable EVQ content when no public source is retrieved", async () => {
@@ -365,8 +467,13 @@ describe("AI agent harness", () => {
       ])
     );
 
-    const detail = await service.getConversation(ctx, { conversationId: first.conversationId });
-    expect(detail.messages.map((message) => message.role)).toEqual(["user", "assistant"]);
+    const detail = await service.getConversation(ctx, {
+      conversationId: first.conversationId,
+    });
+    expect(detail.messages.map(message => message.role)).toEqual([
+      "user",
+      "assistant",
+    ]);
 
     const continued = await service.sendMessage(ctx, {
       conversationId: first.conversationId,
@@ -380,7 +487,7 @@ describe("AI agent harness", () => {
     const continuedDetail = await service.getConversation(ctx, {
       conversationId: first.conversationId,
     });
-    expect(continuedDetail.messages.map((message) => message.role)).toEqual([
+    expect(continuedDetail.messages.map(message => message.role)).toEqual([
       "user",
       "assistant",
       "user",
@@ -425,9 +532,14 @@ describe("AI agent harness", () => {
     expect(result.diagnostics).toMatchObject({
       status: "ready",
       terms: ["harness", "engine"],
+      expandedTerms: expect.arrayContaining(["harness", "engine"]),
+      currentPageContextInjected: false,
     });
     expect(retrieve).toHaveBeenCalledWith(
-      expect.objectContaining({ query: "harness engine", scope: { type: "track", value: "ai-applications" } })
+      expect.objectContaining({
+        query: "harness engine",
+        scope: { type: "track", value: "ai-applications" },
+      })
     );
     expect(model.generate).not.toHaveBeenCalled();
   });
@@ -443,9 +555,12 @@ describe("AI agent harness", () => {
     expect(result.sources).toEqual([]);
     expect(result.diagnostics).toMatchObject({
       status: "no_sources",
-      missingTerms: ["evq", "hidden", "details"],
+      missingTerms: ["evq"],
+      failureReason: "retrieval_failure",
     });
-    expect(result.diagnostics.suggestions.join(" ")).toContain("pnpm ai:reindex");
+    expect(result.diagnostics.suggestions.join(" ")).toContain(
+      "pnpm ai:reindex"
+    );
   });
 
   it("runs retrieval-only evals for admins", async () => {
@@ -505,7 +620,9 @@ describe("AI agent harness", () => {
     }));
     const { service } = createHarness({ getKnowledgeStatus });
 
-    await expect(service.adminKnowledgeStatus(visitorContext())).rejects.toThrow("Admin authentication required");
+    await expect(
+      service.adminKnowledgeStatus(visitorContext())
+    ).rejects.toThrow("Admin authentication required");
     const status = await service.adminKnowledgeStatus(adminContext());
 
     expect(status).toMatchObject({
@@ -563,10 +680,12 @@ describe("AI agent harness", () => {
       }
     );
 
-    await expect(service.adminQuestionRadar(visitorContext(), { limit: 20 })).rejects.toThrow(
-      "Admin authentication required"
-    );
-    const radar = await service.adminQuestionRadar(adminContext(), { limit: 20 });
+    await expect(
+      service.adminQuestionRadar(visitorContext(), { limit: 20 })
+    ).rejects.toThrow("Admin authentication required");
+    const radar = await service.adminQuestionRadar(adminContext(), {
+      limit: 20,
+    });
 
     expect(radar.summary).toMatchObject({
       totalRuns: 2,
@@ -590,7 +709,8 @@ describe("AI agent harness", () => {
       generate: vi.fn(async ({ contextSources }) => ({
         answer: {
           answerType: "explanation",
-          answerMarkdown: "The uploaded note says the harness should keep tool traces deterministic.",
+          answerMarkdown:
+            "The uploaded note says the harness should keep tool traces deterministic.",
           sourceIds: [contextSources[0].sourceId],
           sourceCards: [
             {
@@ -603,7 +723,9 @@ describe("AI agent harness", () => {
               relevanceReason: "Matches the pasted conversation context.",
             },
           ],
-          relatedQuestions: ["How should I turn this note into a blog section?"],
+          relatedQuestions: [
+            "How should I turn this note into a blog section?",
+          ],
           confidence: "high",
         },
       })),
@@ -660,7 +782,8 @@ describe("AI agent harness", () => {
       content: "A short note about context engines.",
     });
     const second = await service.addContext(ctx, {
-      conversationId: first.status === "completed" ? first.conversationId : undefined,
+      conversationId:
+        first.status === "completed" ? first.conversationId : undefined,
       routeContext,
       kind: "text_file",
       filename: "more-notes.txt",
@@ -668,7 +791,8 @@ describe("AI agent harness", () => {
       content: "Another note about context engines.",
     });
     const message = await service.sendMessage(ctx, {
-      conversationId: first.status === "completed" ? first.conversationId : undefined,
+      conversationId:
+        first.status === "completed" ? first.conversationId : undefined,
       message: "Explain context engines",
       routeContext,
     });

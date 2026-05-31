@@ -155,7 +155,14 @@ export type AgentRetrievalDebugOutput = {
   diagnostics: {
     status: "ready" | "no_sources";
     terms: string[];
+    expandedTerms: string[];
+    aliasExpansions: Array<{
+      term: string;
+      expansions: string[];
+    }>;
     missingTerms: string[];
+    currentPageContextInjected: boolean;
+    failureReason?: "retrieval_failure" | "wrong_source" | "refusal_boundary";
     notes: string[];
     suggestions: string[];
   };
@@ -182,6 +189,7 @@ export type AgentEvalRunOutput = {
     sourceIds: string[];
     expectedSourceSlugs: string[];
     missingSourceSlugs: string[];
+    failureReason?: "retrieval_failure" | "wrong_source" | "refusal_boundary";
     notes: string[];
   }>;
 };
@@ -311,6 +319,36 @@ export type AgentSendMessageOutput =
       errorCode: string;
     };
 
+export type AgentStreamEvent =
+  | {
+      type: "status";
+      stage: "understanding" | "retrieval" | "sources" | "reasoning" | "answer" | "saving";
+      elapsedMs: number;
+      sourceCount?: number;
+      currentPageContextInjected?: boolean;
+    }
+  | {
+      type: "reasoning_delta";
+      delta: string;
+      elapsedMs: number;
+    }
+  | {
+      type: "answer_delta";
+      delta: string;
+      elapsedMs: number;
+    }
+  | {
+      type: "final";
+      output: AgentSendMessageOutput;
+      elapsedMs: number;
+      reasoningMarkdown?: string;
+    }
+  | {
+      type: "error";
+      message: string;
+      elapsedMs: number;
+    };
+
 export type RequestLike = {
   headers?: Record<string, string | string[] | undefined>;
   socket?: {
@@ -328,6 +366,7 @@ export type AgentModelResult = {
   inputTokens?: number;
   outputTokens?: number;
   model?: string;
+  reasoningMarkdown?: string;
 };
 
 export type AgentModel = {
@@ -337,5 +376,16 @@ export type AgentModel = {
     routeContext: AgentRouteContext;
     sources: KnowledgeSearchResult[];
     contextSources: AgentContextSourceRecord[];
+    currentPageContextInjected?: boolean;
+  }): Promise<AgentModelResult>;
+  streamGenerate?(input: {
+    message: string;
+    scope: AgentScope;
+    routeContext: AgentRouteContext;
+    sources: KnowledgeSearchResult[];
+    contextSources: AgentContextSourceRecord[];
+    currentPageContextInjected?: boolean;
+    onAnswerDelta: (delta: string) => void;
+    onReasoningDelta: (delta: string) => void;
   }): Promise<AgentModelResult>;
 };

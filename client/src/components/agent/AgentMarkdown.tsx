@@ -1,5 +1,8 @@
 import ReactMarkdown from "react-markdown";
+import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import "katex/dist/katex.min.css";
 
 type AgentMarkdownProps = {
   children: string;
@@ -8,7 +11,8 @@ type AgentMarkdownProps = {
 export function AgentMarkdown({ children }: AgentMarkdownProps) {
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={[remarkGfm, remarkMath]}
+      rehypePlugins={[rehypeKatex]}
       components={{
         a: ({ node: _node, href, children: linkChildren, ...props }) => (
           <a
@@ -37,7 +41,13 @@ export function AgentMarkdown({ children }: AgentMarkdownProps) {
         },
       }}
     >
-      {children}
+      {normalizeMathDelimiters(children)}
     </ReactMarkdown>
   );
+}
+
+function normalizeMathDelimiters(markdown: string) {
+  return markdown
+    .replace(/\\\[((?:.|\n)*?)\\\]/g, (_, formula: string) => `$$${formula}$$`)
+    .replace(/\\\(((?:.|\n)*?)\\\)/g, (_, formula: string) => `$${formula}$`);
 }

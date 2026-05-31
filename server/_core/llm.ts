@@ -105,6 +105,20 @@ export type InvokeResult = {
   };
 };
 
+export type StreamDelta = {
+  content?: string;
+  reasoningContent?: string;
+};
+
+export type InvokeStreamResult = {
+  id: string;
+  created: number;
+  model: string;
+  content: string;
+  reasoningContent: string;
+  usage?: InvokeResult["usage"];
+};
+
 export type JsonSchema = {
   name: string;
   schema: Record<string, unknown>;
@@ -289,9 +303,7 @@ const normalizeResponseFormat = ({
   };
 };
 
-export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
-  const apiKey = getApiKey();
-
+function buildPayload(params: InvokeParams, stream = false) {
   const {
     model,
     messages,
@@ -343,6 +355,15 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.response_format = normalizedResponseFormat;
   }
 
+  if (stream) payload.stream = true;
+
+  return { payload, resolvedModel };
+}
+
+export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
+  const apiKey = getApiKey();
+  const { payload } = buildPayload(params);
+
   const response = await fetch(resolveApiUrl(), {
     method: "POST",
     headers: {
@@ -360,4 +381,139 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   }
 
   return (await response.json()) as InvokeResult;
+}
+
+export async function invokeLLMStream(
+  params: InvokeParams,
+  onDelta: (delta: StreamDelta) => void
+): Promise<InvokeStreamResult> {
+  const apiKey = getApiKey();
+  const { payload, resolvedModel } = buildPayload(params, true);
+
+  const response = await fetch(resolveApiUrl(), {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(
+      `LLM stream failed: ${response.status} ${response.statusText} – ${errorText}`
+    );
+  }
+
+  if (!response.body) {
+    throw new Error("LLM stream failed: response body is not readable");
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let id = "";
+  let created = 0;
+  let model = resolvedModel;
+  let content = "";
+  let reasoningContent = "";
+  let usage: InvokeResult["usage"] | undefined;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const frames = buffer.split(/\n\n/);
+    buffer = frames.pop() ?? "";
+
+    for (const frame of frames) {
+      const dataLines = frame
+        .split(/\n/)
+        .map(line => line.trim())
+        .filter(line => line.startsWith("data:"))
+        .map(line => line.replace(/^data:\s*/, ""));
+      if (dataLines.length === 0) continue;
+
+      const payloadText = dataLines.join("\n");
+      if (payloadText === "[DONE]") continue;
+
+      const parsed = safeParseStreamChunk(payloadText);
+      if (!parsed) continue;
+
+      id = parsed.id ?? id;
+      created = typeof parsed.created === "number" ? parsed.created : created;
+      model = typeof parsed.model === "string" ? parsed.model : model;
+      usage = normalizeUsage(parsed.usage) ?? usage;
+
+      const delta = parsed.choices?.[0]?.delta;
+      const nextContent =
+        typeof delta?.content === "string" ? delta.content : "";
+      const nextReasoning =
+        typeof delta?.reasoning_content === "string"
+          ? delta.reasoning_content
+          : "";
+
+      if (nextReasoning) {
+        reasoningContent += nextReasoning;
+        onDelta({ reasoningContent: nextReasoning });
+      }
+      if (nextContent) {
+        content += nextContent;
+        onDelta({ content: nextContent });
+      }
+    }
+  }
+
+  return {
+    id,
+    created,
+    model,
+    content,
+    reasoningContent,
+    usage,
+  };
+}
+
+type StreamChunk = {
+  id?: string;
+  created?: number;
+  model?: string;
+  usage?: unknown;
+  choices?: Array<{
+    delta?: {
+      content?: string | null;
+      reasoning_content?: string | null;
+    };
+  }>;
+};
+
+function safeParseStreamChunk(payloadText: string): StreamChunk | null {
+  try {
+    return JSON.parse(payloadText) as StreamChunk;
+  } catch {
+    return null;
+  }
+}
+
+function normalizeUsage(usage: unknown): InvokeResult["usage"] | undefined {
+  if (!usage || typeof usage !== "object") return undefined;
+  const value = usage as {
+    prompt_tokens?: unknown;
+    completion_tokens?: unknown;
+    total_tokens?: unknown;
+  };
+  if (
+    typeof value.prompt_tokens !== "number" ||
+    typeof value.completion_tokens !== "number" ||
+    typeof value.total_tokens !== "number"
+  ) {
+    return undefined;
+  }
+  return {
+    prompt_tokens: value.prompt_tokens,
+    completion_tokens: value.completion_tokens,
+    total_tokens: value.total_tokens,
+  };
 }

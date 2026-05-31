@@ -4,12 +4,14 @@ import type { AgentSourceCard } from "./types";
 
 const harnessSource: AgentSourceCard = {
   sourceId: "agent-harness-engine:3",
-  postTitle: "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+  postTitle:
+    "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
   postSlug: "agent-harness-engine-evaluating-tool-using-agents",
   categorySlug: "ai-applications",
   tagSlugs: ["harness-engine", "agent-systems"],
   heading: "Harness Architecture",
-  excerpt: "A minimal harness engine can be modeled as a loop around a typed task contract.",
+  excerpt:
+    "A minimal harness engine can be modeled as a loop around a typed task contract.",
   relevanceReason: "Matched harness architecture terms.",
 };
 
@@ -29,7 +31,9 @@ describe("agent answer quality normalization", () => {
     expect(answer.answerType).toBe("explanation");
     expect(answer.sourceIds).toEqual([harnessSource.sourceId]);
     expect(answer.sourceCards).toEqual([harnessSource]);
-    expect(answer.relatedQuestions).toEqual(["How does the context builder work?"]);
+    expect(answer.relatedQuestions).toEqual([
+      "How does the context builder work?",
+    ]);
   });
 
   it("falls back to all retrieved source ids when the model omits valid ids", () => {
@@ -43,6 +47,54 @@ describe("agent answer quality normalization", () => {
 
     expect(answer.sourceIds).toEqual([harnessSource.sourceId]);
     expect(answer.relatedQuestions.length).toBeGreaterThan(0);
+  });
+
+  it("shows only the source cards selected by valid model source ids", () => {
+    const relatedSource: AgentSourceCard = {
+      ...harnessSource,
+      sourceId: "agent-loop:1",
+      postTitle: "Agent Loop: Observable Tool-Using Agents",
+      postSlug: "agent-loop-observable-tool-using-agents",
+    };
+
+    const answer = normalizeAgentAnswer(
+      {
+        answerMarkdown: "AgentLoop is the relevant article for this question.",
+        sourceIds: [relatedSource.sourceId],
+      },
+      [harnessSource, relatedSource]
+    );
+
+    expect(answer.sourceIds).toEqual([relatedSource.sourceId]);
+    expect(answer.sourceCards).toEqual([relatedSource]);
+  });
+
+  it("falls back to deduped article cards instead of site overview noise", () => {
+    const secondHarnessChunk: AgentSourceCard = {
+      ...harnessSource,
+      sourceId: "agent-harness-engine:7",
+      heading: "Failure Modes",
+    };
+    const siteOverview: AgentSourceCard = {
+      sourceId: "site_overview_chunk:0",
+      postTitle: "Public blog overview",
+      postSlug: "",
+      tagSlugs: ["agent-systems"],
+      heading: "Public blog map",
+      excerpt: "Public posts include Agent Harness and Agent Loop.",
+      relevanceReason: "Matched public blog context.",
+    };
+
+    const answer = normalizeAgentAnswer(
+      {
+        answerMarkdown: "The harness article is the relevant source.",
+        sourceIds: [],
+      },
+      [harnessSource, secondHarnessChunk, siteOverview]
+    );
+
+    expect(answer.sourceIds).toEqual([harnessSource.sourceId]);
+    expect(answer.sourceCards).toEqual([harnessSource]);
   });
 
   it("returns a public-source refusal without exposing unavailable material", () => {

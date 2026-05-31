@@ -51,7 +51,11 @@ type IndexStatus = {
 type RetrievalDiagnostics = {
   status: "ready" | "no_sources";
   terms: string[];
+  expandedTerms?: string[];
+  aliasExpansions?: Array<{ term: string; expansions: string[] }>;
   missingTerms: string[];
+  currentPageContextInjected?: boolean;
+  failureReason?: "retrieval_failure" | "wrong_source" | "refusal_boundary";
   notes: string[];
   suggestions: string[];
 };
@@ -74,9 +78,13 @@ const IDEA_STATUS_STORAGE_KEY = "ai-tech-blog:agent-radar-idea-statuses";
 const defaultEvalQuestions = [
   "What problem does IsoHC solve?",
   "What exact invariants does IsoHC preserve?",
+  "帮我详细讲讲iso",
+  "残差稳定性那篇讲了什么",
+  "ISO 8601 是什么？",
   "How does Agent Harness differ from a normal chatbot?",
   "What is the role of an Evidence Packet in agentic RAG?",
   "How does AgentLoop turn ReAct into an observable runtime?",
+  "帮我找 AgentLoop 那篇",
   "Build me a reading path for agent systems and evaluation.",
   "Can you explain EVQ-Cosh hidden details?",
   "What is the weather in Tokyo tomorrow?",
@@ -86,10 +94,14 @@ export default function ManageAgent() {
   const { isAdmin, loading: authLoading } = useAuth();
   const { t } = useLanguage();
   const siteUrl = getClientSiteUrl();
-  const [debugQuery, setDebugQuery] = useState("harness engine context boundary");
+  const [debugQuery, setDebugQuery] = useState(
+    "harness engine context boundary"
+  );
   const [evalQuestions, setEvalQuestions] = useState(defaultEvalQuestions);
   const [conversationId, setConversationId] = useState("");
-  const [ideaStatuses, setIdeaStatuses] = useState<Record<string, IdeaStatus>>({});
+  const [ideaStatuses, setIdeaStatuses] = useState<Record<string, IdeaStatus>>(
+    {}
+  );
 
   useSeo(
     buildRouteMetadata(siteUrl, {
@@ -105,16 +117,27 @@ export default function ManageAgent() {
     []
   );
 
-  const indexStatus = trpc.agent.adminKnowledgeStatus.useQuery(undefined, { enabled: isAdmin, retry: false });
+  const indexStatus = trpc.agent.adminKnowledgeStatus.useQuery(undefined, {
+    enabled: isAdmin,
+    retry: false,
+  });
   const debug = trpc.agent.adminDebugRetrieval.useQuery(
     { query: debugQuery, routeContext },
     { enabled: false, retry: false }
   );
   const evals = trpc.agent.adminRunEvals.useMutation();
-  const runs = trpc.agent.adminListRuns.useQuery({ limit: 12 }, { enabled: isAdmin, retry: false });
-  const questionRadar = trpc.agent.adminQuestionRadar.useQuery({ limit: 50 }, { enabled: isAdmin, retry: false });
+  const runs = trpc.agent.adminListRuns.useQuery(
+    { limit: 12 },
+    { enabled: isAdmin, retry: false }
+  );
+  const questionRadar = trpc.agent.adminQuestionRadar.useQuery(
+    { limit: 50 },
+    { enabled: isAdmin, retry: false }
+  );
   const ideas = trpc.agent.adminExtractArticleIdeas.useQuery(
-    { conversationId: conversationId || "00000000-0000-4000-8000-000000000000" },
+    {
+      conversationId: conversationId || "00000000-0000-4000-8000-000000000000",
+    },
     { enabled: false, retry: false }
   );
 
@@ -128,9 +151,12 @@ export default function ManageAgent() {
   }, []);
 
   const updateIdeaStatus = (ideaId: string, status: IdeaStatus) => {
-    setIdeaStatuses((current) => {
+    setIdeaStatuses(current => {
       const next = { ...current, [ideaId]: status };
-      window.localStorage.setItem(IDEA_STATUS_STORAGE_KEY, JSON.stringify(next));
+      window.localStorage.setItem(
+        IDEA_STATUS_STORAGE_KEY,
+        JSON.stringify(next)
+      );
       return next;
     });
   };
@@ -150,9 +176,16 @@ export default function ManageAgent() {
         <SpaceBackdrop subtle />
         <div className="glass-panel relative z-10 max-w-md p-8 text-center">
           <Bot className="mx-auto mb-4 h-8 w-8 text-sky-300" />
-          <h1 className="text-2xl font-semibold text-white">{t("agentOps.title")}</h1>
-          <p className="mt-3 text-sm leading-6 text-slate-400">{t("agentOps.loginRequired")}</p>
-          <Button asChild className="mt-5 bg-blue-500 text-white hover:bg-blue-400">
+          <h1 className="text-2xl font-semibold text-white">
+            {t("agentOps.title")}
+          </h1>
+          <p className="mt-3 text-sm leading-6 text-slate-400">
+            {t("agentOps.loginRequired")}
+          </p>
+          <Button
+            asChild
+            className="mt-5 bg-blue-500 text-white hover:bg-blue-400"
+          >
             <Link href="/login">{t("manage.loginBtn")}</Link>
           </Button>
         </div>
@@ -165,7 +198,12 @@ export default function ManageAgent() {
   return (
     <div className="space-page">
       <SpaceBackdrop subtle />
-      <SiteHeader active="write" backHref="/manage" backLabel={t("agentOps.back")} compact />
+      <SiteHeader
+        active="write"
+        backHref="/manage"
+        backLabel={t("agentOps.back")}
+        compact
+      />
 
       <main className="container relative z-10 px-4 py-8 sm:px-6">
         <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -174,10 +212,18 @@ export default function ManageAgent() {
               <Bot className="h-4 w-4" />
               {t("agentOps.title")}
             </div>
-            <h1 className="font-serif text-4xl font-semibold text-white">{t("agentOps.title")}</h1>
-            <p className="mt-3 text-sm leading-6 text-slate-400">{t("agentOps.subtitle")}</p>
+            <h1 className="font-serif text-4xl font-semibold text-white">
+              {t("agentOps.title")}
+            </h1>
+            <p className="mt-3 text-sm leading-6 text-slate-400">
+              {t("agentOps.subtitle")}
+            </p>
           </div>
-          <Button asChild variant="outline" className="border-sky-200/20 bg-slate-950/50 text-sky-100">
+          <Button
+            asChild
+            variant="outline"
+            className="border-sky-200/20 bg-slate-950/50 text-sky-100"
+          >
             <Link href="/manage">
               <ArrowLeft className="mr-2 h-4 w-4" />
               {t("agentOps.back")}
@@ -187,11 +233,26 @@ export default function ManageAgent() {
 
         <Tabs defaultValue="index" className="space-y-5">
           <TabsList className="grid w-full grid-cols-5 border border-sky-200/15 bg-slate-950/60 lg:w-[860px]">
-            <TabsTrigger value="index"><Database className="mr-2 h-4 w-4" />{t("agentOps.index.title")}</TabsTrigger>
-            <TabsTrigger value="debug"><FileSearch className="mr-2 h-4 w-4" />{t("agentOps.debug.title")}</TabsTrigger>
-            <TabsTrigger value="evals"><Play className="mr-2 h-4 w-4" />{t("agentOps.evals.title")}</TabsTrigger>
-            <TabsTrigger value="traces"><Route className="mr-2 h-4 w-4" />{t("agentOps.traces.title")}</TabsTrigger>
-            <TabsTrigger value="ideas"><Lightbulb className="mr-2 h-4 w-4" />{t("agentOps.ideas.title")}</TabsTrigger>
+            <TabsTrigger value="index">
+              <Database className="mr-2 h-4 w-4" />
+              {t("agentOps.index.title")}
+            </TabsTrigger>
+            <TabsTrigger value="debug">
+              <FileSearch className="mr-2 h-4 w-4" />
+              {t("agentOps.debug.title")}
+            </TabsTrigger>
+            <TabsTrigger value="evals">
+              <Play className="mr-2 h-4 w-4" />
+              {t("agentOps.evals.title")}
+            </TabsTrigger>
+            <TabsTrigger value="traces">
+              <Route className="mr-2 h-4 w-4" />
+              {t("agentOps.traces.title")}
+            </TabsTrigger>
+            <TabsTrigger value="ideas">
+              <Lightbulb className="mr-2 h-4 w-4" />
+              {t("agentOps.ideas.title")}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="index" className="glass-panel p-5">
@@ -206,11 +267,14 @@ export default function ManageAgent() {
             <div className="flex flex-col gap-3 lg:flex-row">
               <Input
                 value={debugQuery}
-                onChange={(event) => setDebugQuery(event.target.value)}
+                onChange={event => setDebugQuery(event.target.value)}
                 placeholder={t("agentOps.debug.query")}
                 className="border-sky-200/15 bg-slate-950/50 text-white"
               />
-              <Button onClick={() => debug.refetch()} disabled={!debugQuery.trim() || debug.isFetching}>
+              <Button
+                onClick={() => debug.refetch()}
+                disabled={!debugQuery.trim() || debug.isFetching}
+              >
                 {debug.isFetching ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
@@ -219,14 +283,19 @@ export default function ManageAgent() {
                 {t("agentOps.debug.run")}
               </Button>
             </div>
-            <SourceList sources={debug.data?.sources ?? []} empty={t("agentOps.debug.empty")} />
-            {debug.data?.diagnostics && <DiagnosticsPanel diagnostics={debug.data.diagnostics} />}
+            <SourceList
+              sources={debug.data?.sources ?? []}
+              empty={t("agentOps.debug.empty")}
+            />
+            {debug.data?.diagnostics && (
+              <DiagnosticsPanel diagnostics={debug.data.diagnostics} />
+            )}
           </TabsContent>
 
           <TabsContent value="evals" className="glass-panel p-5">
             <Textarea
               value={evalQuestions}
-              onChange={(event) => setEvalQuestions(event.target.value)}
+              onChange={event => setEvalQuestions(event.target.value)}
               placeholder={t("agentOps.evals.questions")}
               className="min-h-32 border-sky-200/15 bg-slate-950/50 text-white"
             />
@@ -240,38 +309,56 @@ export default function ManageAgent() {
               }
               disabled={evals.isPending}
             >
-              {evals.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
+              {evals.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Play className="mr-2 h-4 w-4" />
+              )}
               {t("agentOps.evals.run")}
             </Button>
-            {evals.data?.summary && <EvalSummary summary={evals.data.summary} />}
+            {evals.data?.summary && (
+              <EvalSummary summary={evals.data.summary} />
+            )}
             <div className="mt-5 grid gap-2">
-              {evalItems.map((item) => (
-                <div key={item.question} className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-3">
+              {evalItems.map(item => (
+                <div
+                  key={item.question}
+                  className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-3"
+                >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
                       <p className="font-medium text-white">{item.question}</p>
                       <p className="mt-1 text-xs text-slate-500">
-                        {item.category} · {getExpectedLabel(item.expectedBehavior, t)}
+                        {item.category} ·{" "}
+                        {getExpectedLabel(item.expectedBehavior, t)}
                       </p>
                     </div>
-                    <Badge variant="outline" className={getEvalBadgeClass(item.passed)}>
+                    <Badge
+                      variant="outline"
+                      className={getEvalBadgeClass(item.passed)}
+                    >
                       {getEvalStatusLabel(item.passed, t)}
                     </Badge>
                   </div>
-                  <p className="mt-1 text-xs text-slate-500">{t("agentOps.sourceCount", { count: item.sourceCount })} · {item.topSourceTitle || "-"}</p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {t("agentOps.sourceCount", { count: item.sourceCount })} ·{" "}
+                    {item.topSourceTitle || "-"}
+                  </p>
                   {item.expectedSourceSlugs.length > 0 && (
                     <p className="mt-1 text-xs text-slate-500">
-                      {t("agentOps.evals.expectedSources")}: {item.expectedSourceSlugs.join(", ")}
+                      {t("agentOps.evals.expectedSources")}:{" "}
+                      {item.expectedSourceSlugs.join(", ")}
                     </p>
                   )}
                   {item.missingSourceSlugs.length > 0 && (
                     <p className="mt-1 text-xs text-amber-200">
-                      {t("agentOps.evals.missingSources")}: {item.missingSourceSlugs.join(", ")}
+                      {t("agentOps.evals.missingSources")}:{" "}
+                      {item.missingSourceSlugs.join(", ")}
                     </p>
                   )}
                   {item.notes.length > 0 && (
                     <ul className="mt-2 space-y-1 text-xs leading-5 text-slate-400">
-                      {item.notes.slice(0, 3).map((note) => (
+                      {item.notes.slice(0, 3).map(note => (
                         <li key={note}>{note}</li>
                       ))}
                     </ul>
@@ -283,31 +370,58 @@ export default function ManageAgent() {
 
           <TabsContent value="traces" className="glass-panel p-5">
             <div className="mb-4 flex items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold text-white">{t("agentOps.traces.title")}</h2>
-              <Button variant="outline" size="sm" onClick={() => runs.refetch()}>
+              <h2 className="text-lg font-semibold text-white">
+                {t("agentOps.traces.title")}
+              </h2>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => runs.refetch()}
+              >
                 <RefreshCw className="mr-2 h-4 w-4" />
                 {t("agentOps.traces.refresh")}
               </Button>
             </div>
             <div className="grid gap-2">
-              {(runs.data ?? []).length === 0 && <p className="text-sm text-slate-500">{t("agentOps.traces.empty")}</p>}
-              {(runs.data ?? []).map((run) => (
-                <div key={run.id} className="grid gap-2 rounded-lg border border-sky-200/15 bg-slate-950/45 p-3 text-sm md:grid-cols-[1.4fr_.6fr_.6fr_.6fr]">
+              {(runs.data ?? []).length === 0 && (
+                <p className="text-sm text-slate-500">
+                  {t("agentOps.traces.empty")}
+                </p>
+              )}
+              {(runs.data ?? []).map(run => (
+                <div
+                  key={run.id}
+                  className="grid gap-2 rounded-lg border border-sky-200/15 bg-slate-950/45 p-3 text-sm md:grid-cols-[1.4fr_.6fr_.6fr_.6fr]"
+                >
                   <div className="min-w-0">
-                    <p className="truncate font-mono text-xs text-sky-100">{run.id}</p>
-                    <p className="mt-1 text-xs text-slate-500">{formatScope(run.scopeType, run.scopeValue)}</p>
+                    <p className="truncate font-mono text-xs text-sky-100">
+                      {run.id}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {formatScope(run.scopeType, run.scopeValue)}
+                    </p>
                     <p className="mt-1 text-xs text-slate-500">
                       {run.retrievalStrategy || "supabase_keyword"}
                     </p>
                     {(run.retrievedChunkIds?.length ?? 0) > 0 && (
                       <p className="mt-1 line-clamp-1 text-xs text-slate-500">
-                        {t("agentOps.traces.sources")}: {run.retrievedChunkIds?.join(", ")}
+                        {t("agentOps.traces.sources")}:{" "}
+                        {run.retrievedChunkIds?.join(", ")}
                       </p>
                     )}
                   </div>
-                  <Metric label={t("agentOps.status")} value={run.status ?? "-"} />
-                  <Metric label={t("agentOps.latency")} value={formatLatency(run.latencyMs)} />
-                  <Metric label={t("agentOps.tokens")} value={`${run.inputTokens ?? 0}/${run.outputTokens ?? 0}`} />
+                  <Metric
+                    label={t("agentOps.status")}
+                    value={run.status ?? "-"}
+                  />
+                  <Metric
+                    label={t("agentOps.latency")}
+                    value={formatLatency(run.latencyMs)}
+                  />
+                  <Metric
+                    label={t("agentOps.tokens")}
+                    value={`${run.inputTokens ?? 0}/${run.outputTokens ?? 0}`}
+                  />
                 </div>
               ))}
             </div>
@@ -325,11 +439,14 @@ export default function ManageAgent() {
             <div className="mt-6 flex flex-col gap-3 border-t border-sky-200/10 pt-5 lg:flex-row">
               <Input
                 value={conversationId}
-                onChange={(event) => setConversationId(event.target.value)}
+                onChange={event => setConversationId(event.target.value)}
                 placeholder={t("agentOps.ideas.conversation")}
                 className="border-sky-200/15 bg-slate-950/50 font-mono text-white"
               />
-              <Button onClick={() => ideas.refetch()} disabled={!conversationId.trim() || ideas.isFetching}>
+              <Button
+                onClick={() => ideas.refetch()}
+                disabled={!conversationId.trim() || ideas.isFetching}
+              >
                 {ideas.isFetching ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
@@ -339,17 +456,32 @@ export default function ManageAgent() {
               </Button>
             </div>
             <div className="mt-5 grid gap-3">
-              {(ideas.data?.ideas ?? []).length === 0 && <p className="text-sm text-slate-500">{t("agentOps.ideas.empty")}</p>}
-              {(ideas.data?.ideas ?? []).map((idea) => (
-                <div key={idea.proposedTitle} className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4">
+              {(ideas.data?.ideas ?? []).length === 0 && (
+                <p className="text-sm text-slate-500">
+                  {t("agentOps.ideas.empty")}
+                </p>
+              )}
+              {(ideas.data?.ideas ?? []).map(idea => (
+                <div
+                  key={idea.proposedTitle}
+                  className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4"
+                >
                   <div className="mb-2 flex items-center gap-2 text-sky-200">
                     <ScrollText className="h-4 w-4" />
-                    <h3 className="font-semibold text-white">{idea.proposedTitle}</h3>
+                    <h3 className="font-semibold text-white">
+                      {idea.proposedTitle}
+                    </h3>
                   </div>
-                  <p className="text-sm leading-6 text-slate-400">{idea.rationale}</p>
+                  <p className="text-sm leading-6 text-slate-400">
+                    {idea.rationale}
+                  </p>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {idea.seedQuestions.map((question) => (
-                      <Badge key={question} variant="outline" className="border-sky-200/20 text-slate-300">
+                    {idea.seedQuestions.map(question => (
+                      <Badge
+                        key={question}
+                        variant="outline"
+                        className="border-sky-200/20 text-slate-300"
+                      >
                         {question}
                       </Badge>
                     ))}
@@ -393,15 +525,29 @@ function IndexStatusPanel({
     );
   }
 
-  const isFresh = status.stalePublicPostSlugs.length === 0 && status.extraIndexedPostSlugs.length === 0;
+  const isFresh =
+    status.stalePublicPostSlugs.length === 0 &&
+    status.extraIndexedPostSlugs.length === 0;
 
   return (
     <div className="space-y-5">
       <div className="grid gap-3 md:grid-cols-4">
-        <MetricCard label={t("agentOps.index.chunks")} value={String(status.chunkCount)} />
-        <MetricCard label={t("agentOps.index.publicPosts")} value={String(status.publicPostCount)} />
-        <MetricCard label={t("agentOps.index.coverage")} value={`${status.indexedPublicPostCount}/${status.publicPostCount}`} />
-        <MetricCard label={t("agentOps.index.excluded")} value={String(status.hiddenOrDraftExcludedCount)} />
+        <MetricCard
+          label={t("agentOps.index.chunks")}
+          value={String(status.chunkCount)}
+        />
+        <MetricCard
+          label={t("agentOps.index.publicPosts")}
+          value={String(status.publicPostCount)}
+        />
+        <MetricCard
+          label={t("agentOps.index.coverage")}
+          value={`${status.indexedPublicPostCount}/${status.publicPostCount}`}
+        />
+        <MetricCard
+          label={t("agentOps.index.excluded")}
+          value={String(status.hiddenOrDraftExcludedCount)}
+        />
       </div>
       <div className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -412,28 +558,46 @@ function IndexStatusPanel({
               <AlertTriangle className="h-4 w-4 text-amber-200" />
             )}
             <h2 className="font-semibold text-white">
-              {isFresh ? t("agentOps.index.fresh") : t("agentOps.index.needsReindex")}
+              {isFresh
+                ? t("agentOps.index.fresh")
+                : t("agentOps.index.needsReindex")}
             </h2>
           </div>
           <span className="text-xs text-slate-500">
-            {t("agentOps.index.lastReindex")}: {formatDateTime(status.lastReindexAt)}
+            {t("agentOps.index.lastReindex")}:{" "}
+            {formatDateTime(status.lastReindexAt)}
           </span>
         </div>
         <p className="mt-3 text-sm leading-6 text-slate-400">
-          {t("agentOps.index.cliOnly")} <code className="rounded bg-slate-900 px-1.5 py-0.5 text-sky-100">{status.reindexCommand}</code>
+          {t("agentOps.index.cliOnly")}{" "}
+          <code className="rounded bg-slate-900 px-1.5 py-0.5 text-sky-100">
+            {status.reindexCommand}
+          </code>
           {" / "}
-          <code className="rounded bg-slate-900 px-1.5 py-0.5 text-sky-100">{status.publishCommand}</code>
+          <code className="rounded bg-slate-900 px-1.5 py-0.5 text-sky-100">
+            {status.publishCommand}
+          </code>
         </p>
-        {(status.stalePublicPostSlugs.length > 0 || status.extraIndexedPostSlugs.length > 0 || status.latestReindexError) && (
+        {(status.stalePublicPostSlugs.length > 0 ||
+          status.extraIndexedPostSlugs.length > 0 ||
+          status.latestReindexError) && (
           <div className="mt-3 space-y-2 text-xs leading-5 text-slate-400">
             {status.stalePublicPostSlugs.length > 0 && (
-              <p>{t("agentOps.index.stale")}: {status.stalePublicPostSlugs.join(", ")}</p>
+              <p>
+                {t("agentOps.index.stale")}:{" "}
+                {status.stalePublicPostSlugs.join(", ")}
+              </p>
             )}
             {status.extraIndexedPostSlugs.length > 0 && (
-              <p>{t("agentOps.index.extra")}: {status.extraIndexedPostSlugs.join(", ")}</p>
+              <p>
+                {t("agentOps.index.extra")}:{" "}
+                {status.extraIndexedPostSlugs.join(", ")}
+              </p>
             )}
             {status.latestReindexError && (
-              <p className="text-amber-200">{t("agentOps.index.latestError")}: {status.latestReindexError}</p>
+              <p className="text-amber-200">
+                {t("agentOps.index.latestError")}: {status.latestReindexError}
+              </p>
             )}
           </div>
         )}
@@ -485,7 +649,9 @@ function QuestionRadarPanel({
     <div className="space-y-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-white">{t("agentOps.radar.title")}</h2>
+          <h2 className="text-lg font-semibold text-white">
+            {t("agentOps.radar.title")}
+          </h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
             {t("agentOps.radar.description")}
           </p>
@@ -497,32 +663,56 @@ function QuestionRadarPanel({
       </div>
 
       <div className="grid gap-3 md:grid-cols-4">
-        <MetricCard label={t("agentOps.radar.totalRuns")} value={String(radar.summary.totalRuns)} />
-        <MetricCard label={t("agentOps.radar.uniqueQuestions")} value={String(radar.summary.uniqueQuestions)} />
-        <MetricCard label={t("agentOps.radar.noSourceRuns")} value={String(radar.summary.noSourceRuns)} />
-        <MetricCard label={t("agentOps.radar.failedRuns")} value={String(radar.summary.failedRuns)} />
+        <MetricCard
+          label={t("agentOps.radar.totalRuns")}
+          value={String(radar.summary.totalRuns)}
+        />
+        <MetricCard
+          label={t("agentOps.radar.uniqueQuestions")}
+          value={String(radar.summary.uniqueQuestions)}
+        />
+        <MetricCard
+          label={t("agentOps.radar.noSourceRuns")}
+          value={String(radar.summary.noSourceRuns)}
+        />
+        <MetricCard
+          label={t("agentOps.radar.failedRuns")}
+          value={String(radar.summary.failedRuns)}
+        />
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(300px,0.8fr)]">
         <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-white">{t("agentOps.radar.questions")}</h3>
+          <h3 className="text-sm font-semibold text-white">
+            {t("agentOps.radar.questions")}
+          </h3>
           {questions.length === 0 ? (
             <p className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-4 text-sm text-slate-500">
               {t("agentOps.radar.empty")}
             </p>
           ) : (
             questions.map((item: any) => (
-              <article key={item.question} className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4">
+              <article
+                key={item.question}
+                className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4"
+              >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">
-                    <p className="font-medium leading-6 text-white">{item.question}</p>
+                    <p className="font-medium leading-6 text-white">
+                      {item.question}
+                    </p>
                     <p className="mt-1 text-xs text-slate-500">
-                      {formatScope(item.scopeType, item.scopeValue)} · {t("agentOps.radar.supportCount", { count: item.count })}
+                      {formatScope(item.scopeType, item.scopeValue)} ·{" "}
+                      {t("agentOps.radar.supportCount", { count: item.count })}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {item.signalTypes.map((signal: string) => (
-                      <Badge key={signal} variant="outline" className="border-cyan-200/20 text-cyan-100">
+                      <Badge
+                        key={signal}
+                        variant="outline"
+                        className="border-cyan-200/20 text-cyan-100"
+                      >
                         {getRadarSignalLabel(signal, t)}
                       </Badge>
                     ))}
@@ -534,7 +724,9 @@ function QuestionRadarPanel({
         </div>
 
         <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-white">{t("agentOps.radar.ideas")}</h3>
+          <h3 className="text-sm font-semibold text-white">
+            {t("agentOps.radar.ideas")}
+          </h3>
           {ideas.length === 0 ? (
             <p className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-4 text-sm text-slate-500">
               {t("agentOps.radar.noIdeas")}
@@ -543,16 +735,30 @@ function QuestionRadarPanel({
             ideas.map((idea: any) => {
               const status = ideaStatuses[idea.ideaId] ?? idea.status ?? "new";
               return (
-                <article key={idea.ideaId} className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4">
+                <article
+                  key={idea.ideaId}
+                  className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4"
+                >
                   <div className="mb-2 flex items-start gap-2">
                     <Lightbulb className="mt-1 h-4 w-4 shrink-0 text-sky-300" />
                     <div className="min-w-0">
-                      <h4 className="font-semibold leading-6 text-white">{idea.proposedTitle}</h4>
-                      <p className="mt-1 text-xs leading-5 text-slate-500">{idea.rationale}</p>
+                      <h4 className="font-semibold leading-6 text-white">
+                        {idea.proposedTitle}
+                      </h4>
+                      <p className="mt-1 text-xs leading-5 text-slate-500">
+                        {idea.rationale}
+                      </p>
                     </div>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {(["new", "reviewed", "planned", "dismissed"] as IdeaStatus[]).map((option) => (
+                    {(
+                      [
+                        "new",
+                        "reviewed",
+                        "planned",
+                        "dismissed",
+                      ] as IdeaStatus[]
+                    ).map(option => (
                       <button
                         key={option}
                         type="button"
@@ -573,11 +779,17 @@ function QuestionRadarPanel({
 
       {(noSourceRuns.length > 0 || failedRuns.length > 0) && (
         <div className="rounded-lg border border-amber-300/20 bg-amber-950/15 p-4">
-          <h3 className="text-sm font-semibold text-amber-100">{t("agentOps.radar.failureSignals")}</h3>
+          <h3 className="text-sm font-semibold text-amber-100">
+            {t("agentOps.radar.failureSignals")}
+          </h3>
           <div className="mt-3 grid gap-2 md:grid-cols-2">
             {[...noSourceRuns, ...failedRuns].slice(0, 6).map((run: any) => (
-              <p key={run.runId} className="rounded-md bg-slate-950/45 p-2 text-xs leading-5 text-slate-400">
-                {run.question || run.runId} · {formatScope(run.scopeType, run.scopeValue)}
+              <p
+                key={run.runId}
+                className="rounded-md bg-slate-950/45 p-2 text-xs leading-5 text-slate-400"
+              >
+                {run.question || run.runId} ·{" "}
+                {formatScope(run.scopeType, run.scopeValue)}
               </p>
             ))}
           </div>
@@ -587,26 +799,55 @@ function QuestionRadarPanel({
   );
 }
 
-function DiagnosticsPanel({ diagnostics }: { diagnostics: RetrievalDiagnostics }) {
+function DiagnosticsPanel({
+  diagnostics,
+}: {
+  diagnostics: RetrievalDiagnostics;
+}) {
   const { t } = useLanguage();
-  const tone = diagnostics.status === "ready" ? "border-cyan-300/20 bg-cyan-950/15" : "border-amber-300/20 bg-amber-950/15";
+  const tone =
+    diagnostics.status === "ready"
+      ? "border-cyan-300/20 bg-cyan-950/15"
+      : "border-amber-300/20 bg-amber-950/15";
 
   return (
     <div className={`mt-4 rounded-lg border p-4 ${tone}`}>
       <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-white">
-        {diagnostics.status === "ready" ? <ShieldCheck className="h-4 w-4 text-cyan-200" /> : <AlertTriangle className="h-4 w-4 text-amber-200" />}
+        {diagnostics.status === "ready" ? (
+          <ShieldCheck className="h-4 w-4 text-cyan-200" />
+        ) : (
+          <AlertTriangle className="h-4 w-4 text-amber-200" />
+        )}
         {t("agentOps.debug.diagnostics")}
       </div>
       <p className="text-xs leading-5 text-slate-400">
         {t("agentOps.debug.terms")}: {diagnostics.terms.join(", ") || "-"}
       </p>
+      {diagnostics.expandedTerms &&
+        diagnostics.expandedTerms.length > diagnostics.terms.length && (
+          <p className="mt-1 text-xs leading-5 text-slate-400">
+            {t("agentOps.debug.expandedTerms")}:{" "}
+            {diagnostics.expandedTerms.join(", ")}
+          </p>
+        )}
+      {diagnostics.currentPageContextInjected && (
+        <p className="mt-1 text-xs leading-5 text-cyan-200">
+          {t("agentOps.debug.currentPageContext")}
+        </p>
+      )}
+      {diagnostics.failureReason && (
+        <p className="mt-1 text-xs leading-5 text-amber-200">
+          {t("agentOps.debug.failureReason")}: {diagnostics.failureReason}
+        </p>
+      )}
       {diagnostics.missingTerms.length > 0 && (
         <p className="mt-1 text-xs leading-5 text-amber-200">
-          {t("agentOps.debug.missingTerms")}: {diagnostics.missingTerms.join(", ")}
+          {t("agentOps.debug.missingTerms")}:{" "}
+          {diagnostics.missingTerms.join(", ")}
         </p>
       )}
       <ul className="mt-3 space-y-1 text-xs leading-5 text-slate-400">
-        {[...diagnostics.notes, ...diagnostics.suggestions].map((item) => (
+        {[...diagnostics.notes, ...diagnostics.suggestions].map(item => (
           <li key={item}>{item}</li>
         ))}
       </ul>
@@ -619,10 +860,22 @@ function EvalSummary({ summary }: { summary: EvalSummaryData }) {
 
   return (
     <div className="mt-4 grid gap-3 md:grid-cols-4">
-      <MetricCard label={t("agentOps.evals.passed")} value={`${summary.passed}/${summary.total}`} />
-      <MetricCard label={t("agentOps.evals.failed")} value={String(summary.failed)} />
-      <MetricCard label={t("agentOps.evals.refusals")} value={String(summary.refusalCases)} />
-      <MetricCard label={summary.retrievalStrategy} value={formatDateTime(summary.runAt)} />
+      <MetricCard
+        label={t("agentOps.evals.passed")}
+        value={`${summary.passed}/${summary.total}`}
+      />
+      <MetricCard
+        label={t("agentOps.evals.failed")}
+        value={String(summary.failed)}
+      />
+      <MetricCard
+        label={t("agentOps.evals.refusals")}
+        value={String(summary.refusalCases)}
+      />
+      <MetricCard
+        label={summary.retrievalStrategy}
+        value={formatDateTime(summary.runAt)}
+      />
     </div>
   );
 }
@@ -630,26 +883,47 @@ function EvalSummary({ summary }: { summary: EvalSummaryData }) {
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-3">
-      <p className="text-[0.68rem] uppercase tracking-[0.16em] text-slate-500">{label}</p>
+      <p className="text-[0.68rem] uppercase tracking-[0.16em] text-slate-500">
+        {label}
+      </p>
       <p className="mt-1 text-lg font-semibold text-white">{value}</p>
     </div>
   );
 }
 
-function SourceList({ sources, empty }: { sources: AgentSourceListItem[]; empty: string }) {
+function SourceList({
+  sources,
+  empty,
+}: {
+  sources: AgentSourceListItem[];
+  empty: string;
+}) {
   const { t } = useLanguage();
-  if (sources.length === 0) return <p className="mt-5 text-sm text-slate-500">{empty}</p>;
+  if (sources.length === 0)
+    return <p className="mt-5 text-sm text-slate-500">{empty}</p>;
 
   return (
     <div className="mt-5 grid gap-3 md:grid-cols-2">
-      {sources.map((source) => (
-        <a key={source.sourceId} href={getSourceHref(source.postSlug)} className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4 transition hover:border-sky-300/40 hover:bg-sky-400/10">
+      {sources.map(source => (
+        <a
+          key={source.sourceId}
+          href={getSourceHref(source.postSlug)}
+          className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4 transition hover:border-sky-300/40 hover:bg-sky-400/10"
+        >
           <div className="mb-2 flex items-center justify-between gap-3">
-            <h3 className="line-clamp-1 font-semibold text-white">{source.postTitle}</h3>
-            <Badge variant="outline" className="border-sky-200/20 text-sky-200">{t("agentOps.sources")}</Badge>
+            <h3 className="line-clamp-1 font-semibold text-white">
+              {source.postTitle}
+            </h3>
+            <Badge variant="outline" className="border-sky-200/20 text-sky-200">
+              {t("agentOps.sources")}
+            </Badge>
           </div>
-          <p className="line-clamp-2 text-sm leading-6 text-slate-400">{source.excerpt}</p>
-          <p className="mt-2 text-xs text-slate-500">{source.relevanceReason}</p>
+          <p className="line-clamp-2 text-sm leading-6 text-slate-400">
+            {source.excerpt}
+          </p>
+          <p className="mt-2 text-xs text-slate-500">
+            {source.relevanceReason}
+          </p>
         </a>
       ))}
     </div>
@@ -659,7 +933,9 @@ function SourceList({ sources, empty }: { sources: AgentSourceListItem[]; empty:
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[0.68rem] uppercase tracking-[0.16em] text-slate-500">{label}</p>
+      <p className="text-[0.68rem] uppercase tracking-[0.16em] text-slate-500">
+        {label}
+      </p>
       <p className="mt-1 text-slate-200">{value}</p>
     </div>
   );
@@ -668,20 +944,27 @@ function Metric({ label, value }: { label: string; value: string }) {
 function splitQuestions(value: string) {
   return value
     .split("\n")
-    .map((item) => item.trim())
+    .map(item => item.trim())
     .filter(Boolean);
 }
 
 function getEvalBadgeClass(passed: boolean) {
-  return passed ? "border-cyan-300/30 text-cyan-200" : "border-amber-300/30 text-amber-200";
+  return passed
+    ? "border-cyan-300/30 text-cyan-200"
+    : "border-amber-300/30 text-amber-200";
 }
 
 function getEvalStatusLabel(passed: boolean, t: (key: string) => string) {
   return passed ? t("agentOps.evals.passed") : t("agentOps.evals.failed");
 }
 
-function getExpectedLabel(expected: "sources" | "refusal", t: (key: string) => string) {
-  return expected === "refusal" ? t("agentOps.evals.expectedRefusal") : t("agentOps.evals.expectedSourceAnswer");
+function getExpectedLabel(
+  expected: "sources" | "refusal",
+  t: (key: string) => string
+) {
+  return expected === "refusal"
+    ? t("agentOps.evals.expectedRefusal")
+    : t("agentOps.evals.expectedSourceAnswer");
 }
 
 function getRadarSignalLabel(signal: string, t: (key: string) => string) {

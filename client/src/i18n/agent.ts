@@ -49,6 +49,10 @@ const agent: TranslationDict = {
     en: "Current post",
     zh: "当前文章",
   },
+  "agent.scope.postContextReady": {
+    en: "Current article context connected",
+    zh: "当前文章上下文已接入",
+  },
   "agent.scope.category": {
     en: "Category",
     zh: "分类",
@@ -277,6 +281,10 @@ const agent: TranslationDict = {
     en: "Context",
     zh: "上下文",
   },
+  "agent.sources.currentPage": {
+    en: "Current page",
+    zh: "当前页",
+  },
   "agent.sources.reason": {
     en: "Why this source",
     zh: "引用原因",
@@ -297,6 +305,54 @@ const agent: TranslationDict = {
     en: "Slug",
     zh: "Slug",
   },
+  "agent.trace.thinking": {
+    en: "Thinking",
+    zh: "思考中",
+  },
+  "agent.trace.done": {
+    en: "Thought through",
+    zh: "已思考",
+  },
+  "agent.trace.elapsed": {
+    en: "({seconds}s)",
+    zh: "（用时 {seconds} 秒）",
+  },
+  "agent.trace.waiting": {
+    en: "Preparing the answer...",
+    zh: "正在整理回答...",
+  },
+  "agent.trace.reasoning": {
+    en: "Model reasoning",
+    zh: "模型推理",
+  },
+  "agent.trace.currentPage": {
+    en: "current page",
+    zh: "当前页",
+  },
+  "agent.trace.stage.understanding": {
+    en: "Read the question and route context",
+    zh: "读取问题与页面上下文",
+  },
+  "agent.trace.stage.retrieval": {
+    en: "Search public blog knowledge",
+    zh: "检索公开博客知识",
+  },
+  "agent.trace.stage.sources": {
+    en: "Selected {count} source(s) {current}",
+    zh: "选取 {count} 个来源 {current}",
+  },
+  "agent.trace.stage.reasoning": {
+    en: "Run model reasoning stream",
+    zh: "接收模型推理流",
+  },
+  "agent.trace.stage.answer": {
+    en: "Stream answer",
+    zh: "流式生成回答",
+  },
+  "agent.trace.stage.saving": {
+    en: "Save answer and source cards",
+    zh: "保存回答与来源卡片",
+  },
   "agent.related.title": {
     en: "Related questions",
     zh: "相关问题",
@@ -310,8 +366,8 @@ const agent: TranslationDict = {
     zh: "今日还可问 {remaining} 次",
   },
   "agent.quota.blockedAnonymous": {
-    en: "Anonymous limit reached. Use a visitor identity to continue with 6 questions/day.",
-    zh: "未登录额度已用完。使用游客身份可继续提问，每天 6 次。",
+    en: "Anonymous limit reached. Use a visitor identity to continue with 30 questions/day.",
+    zh: "未登录额度已用完。使用游客身份可继续提问，每天 30 次。",
   },
   "agent.quota.blockedVisitor": {
     en: "Visitor limit reached. Please continue after the daily reset.",

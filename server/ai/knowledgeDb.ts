@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { aiKnowledgeChunks } from "../../drizzle/schema.js";
 import { getDb, getPostsCount, getPublicDiscoveryPosts } from "../db.js";
 import {
@@ -59,10 +59,12 @@ export async function searchPublicKnowledgeChunkSources(params: {
         eq(aiKnowledgeChunks.visibilitySnapshot, "public")
       )
     );
+  const preferredSourceIds = await selectFullTextPreferredSourceIds(params.query);
 
   return searchPublicKnowledgeChunks(rows.map(fromRow), params.query, {
     limit: params.limit,
     scope: params.scope,
+    preferredSourceIds,
   });
 }
 
@@ -156,4 +158,39 @@ function fromRow(row: typeof aiKnowledgeChunks.$inferSelect): KnowledgeChunkDraf
     contentHash: row.contentHash,
     tokenEstimate: row.tokenEstimate,
   };
+}
+
+async function selectFullTextPreferredSourceIds(query: string) {
+  if (!/[a-z0-9]{2,}/i.test(query)) return new Set<string>();
+
+  try {
+    const db = await getDb();
+    if (!db) return new Set<string>();
+    const document = sql`to_tsvector('english', coalesce(${aiKnowledgeChunks.content}, '') || ' ' || coalesce(${aiKnowledgeChunks.summary}, '') || ' ' || coalesce(${aiKnowledgeChunks.postTitle}, ''))`;
+    const tsQuery = sql`websearch_to_tsquery('english', ${query})`;
+    const rows = await db
+      .select({
+        chunkType: aiKnowledgeChunks.chunkType,
+        postSlug: aiKnowledgeChunks.postSlug,
+        chunkIndex: aiKnowledgeChunks.chunkIndex,
+      })
+      .from(aiKnowledgeChunks)
+      .where(
+        and(
+          eq(aiKnowledgeChunks.statusSnapshot, "published"),
+          eq(aiKnowledgeChunks.visibilitySnapshot, "public"),
+          sql`${document} @@ ${tsQuery}`
+        )
+      )
+      .orderBy(sql`ts_rank_cd(${document}, ${tsQuery}) desc`)
+      .limit(32);
+
+    return new Set(rows.map((row) =>
+      row.postSlug
+        ? `${row.postSlug}:${row.chunkIndex}`
+        : `${row.chunkType}:${row.chunkIndex}`
+    ));
+  } catch {
+    return new Set<string>();
+  }
 }
