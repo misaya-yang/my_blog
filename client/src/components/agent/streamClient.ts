@@ -93,6 +93,27 @@ export async function streamAgentMessage({
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
+    let streamError: string | null = null;
+    let finalSeen = false;
+    const handleEvent = (
+      event:
+        | AgentStreamStatusEvent
+        | AgentStreamFinalEvent
+        | { type: "reasoning_delta"; delta: string }
+        | { type: "answer_delta"; delta: string }
+        | { type: "error"; message: string }
+    ) => {
+      if (event.type === "status") onStatus(event);
+      if (event.type === "reasoning_delta") onReasoningDelta(event.delta);
+      if (event.type === "answer_delta") onAnswerDelta(event.delta);
+      if (event.type === "final") {
+        finalSeen = true;
+        onFinal(event);
+      }
+      if (event.type === "error") {
+        streamError = event.message;
+      }
+    };
 
     while (true) {
       const { done, value } = await reader.read();
@@ -104,15 +125,14 @@ export async function streamAgentMessage({
       for (const frame of frames) {
         const event = parseSseFrame(frame);
         if (!event) continue;
-        if (event.type === "status") onStatus(event);
-        if (event.type === "reasoning_delta") onReasoningDelta(event.delta);
-        if (event.type === "answer_delta") onAnswerDelta(event.delta);
-        if (event.type === "final") onFinal(event);
-        if (event.type === "error") {
-          throw new Error(event.message);
-        }
+        handleEvent(event);
       }
     }
+
+    const trailingEvent = parseSseFrame(buffer);
+    if (trailingEvent) handleEvent(trailingEvent);
+
+    if (!finalSeen && streamError) throw new Error(streamError);
   } finally {
     window.clearTimeout(timeoutId);
   }

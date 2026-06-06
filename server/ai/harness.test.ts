@@ -290,6 +290,53 @@ describe("AI agent harness", () => {
     });
   });
 
+  it("returns a source-grounded fallback when the model is not configured but public sources exist", async () => {
+    const failingModel: AgentModel = {
+      generate: vi.fn(async () => {
+        throw new Error("BUILT_IN_FORGE_API_KEY is not configured");
+      }),
+    };
+    const { service, conversationStore } = createHarness({
+      retrieve: vi.fn(async () => [isohcSource]),
+      model: failingModel,
+    });
+
+    const result = await service.sendMessage(anonymousContext(), {
+      message: "解释这篇文章里的核心抽象。",
+      routeContext: {
+        path: "/post/isohc-fixed-vector-isometric-residual-mixing",
+        routeType: "post",
+        postSlug: "isohc-fixed-vector-isometric-residual-mixing",
+        postTitle: "IsoHC: Fixed-Vector Isometric Residual Mixing",
+        locale: "zh",
+      },
+    });
+
+    expect(failingModel.generate).toHaveBeenCalledTimes(1);
+    expect(result.status).toBe("completed");
+    if (result.status !== "completed") return;
+    expect(result.answer.answerMarkdown).toContain("模型服务暂时未配置");
+    expect(result.answer.answerMarkdown).toContain("Residual Stability");
+    expect(result.sourceCards[0]).toMatchObject({
+      postSlug: "isohc-fixed-vector-isometric-residual-mixing",
+    });
+    expect(conversationStore.messages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          role: "assistant",
+          status: "completed",
+          sourceJson: expect.objectContaining({
+            fallbackReason: "model_not_configured",
+          }),
+        }),
+      ])
+    );
+    expect(conversationStore.runs[0]).toMatchObject({
+      status: "completed",
+      retrievedChunkIds: [isohcSource.sourceId],
+    });
+  });
+
   it("returns normal answers with source cards for the applications harness article", async () => {
     const { service } = createHarness();
 
@@ -507,6 +554,69 @@ describe("AI agent harness", () => {
     });
   });
 
+  it("streams a source-grounded fallback instead of an error when the model is not configured", async () => {
+    const model: AgentModel = {
+      generate: vi.fn(async () => {
+        throw new Error("streaming path should use streamGenerate");
+      }),
+      streamGenerate: vi.fn(async () => {
+        throw new Error("BUILT_IN_FORGE_API_KEY is not configured");
+      }),
+    };
+    const { service, conversationStore } = createHarness({
+      retrieve: vi.fn(async () => [isohcSource]),
+      model,
+    });
+    const events: AgentStreamEvent[] = [];
+
+    const result = await service.streamMessage(
+      anonymousContext("203.0.113.91"),
+      {
+        message: "解释这篇文章里的核心抽象。",
+        routeContext: {
+          path: "/post/isohc-fixed-vector-isometric-residual-mixing",
+          routeType: "post",
+          postSlug: "isohc-fixed-vector-isometric-residual-mixing",
+          postTitle: "IsoHC: Fixed-Vector Isometric Residual Mixing",
+          locale: "zh",
+        },
+      },
+      event => events.push(event)
+    );
+
+    expect(model.streamGenerate).toHaveBeenCalledTimes(1);
+    expect(result.status).toBe("completed");
+    if (result.status !== "completed") return;
+    expect(result.answer.answerMarkdown).toContain("模型服务暂时未配置");
+    expect(result.sourceCards[0]).toMatchObject({
+      postSlug: "isohc-fixed-vector-isometric-residual-mixing",
+    });
+    expect(events.some(event => event.type === "error")).toBe(false);
+    expect(events).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "answer_delta",
+          delta: expect.stringContaining("模型服务暂时未配置"),
+        }),
+        expect.objectContaining({
+          type: "final",
+          output: expect.objectContaining({
+            status: "completed",
+            sourceCards: result.sourceCards,
+          }),
+        }),
+      ])
+    );
+    expect(
+      conversationStore.messages.find(message => message.role === "assistant")
+    ).toMatchObject({
+      status: "completed",
+      sourceJson: expect.objectContaining({
+        fallbackReason: "model_not_configured",
+      }),
+    });
+  });
+
   it("streams no-source refusals without calling the model", async () => {
     const model: AgentModel = {
       generate: vi.fn(async () => {
@@ -654,7 +764,7 @@ describe("AI agent harness", () => {
   });
 
   it("lets a visitor list, load, and continue a previous conversation", async () => {
-    const { service } = createHarness();
+    const { service, model } = createHarness();
     const ctx = visitorContextWithId("visitor-history-1");
 
     const first = await service.sendMessage(ctx, {
@@ -691,6 +801,20 @@ describe("AI agent harness", () => {
     expect(continued.status).toBe("completed");
     if (continued.status !== "completed") return;
     expect(continued.conversationId).toBe(first.conversationId);
+    expect(model.generate).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        conversationHistory: expect.arrayContaining([
+          expect.objectContaining({
+            role: "user",
+            content: "Explain harness engines",
+          }),
+          expect.objectContaining({
+            role: "assistant",
+            content: expect.stringContaining("Harness engines isolate"),
+          }),
+        ]),
+      })
+    );
 
     const continuedDetail = await service.getConversation(ctx, {
       conversationId: first.conversationId,

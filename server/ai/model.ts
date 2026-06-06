@@ -8,6 +8,7 @@ import { z } from "zod";
 import type { KnowledgeSearchResult } from "./knowledge.js";
 import type {
   AgentAnswer,
+  AgentConversationMemoryTurn,
   AgentContextSourceRecord,
   AgentModel,
   AgentModelResult,
@@ -42,6 +43,7 @@ export const defaultAgentModel: AgentModel = {
             input.routeContext,
             sources,
             contextSources,
+            input.conversationHistory ?? [],
             Boolean(input.currentPageContextInjected)
           ),
         },
@@ -73,6 +75,7 @@ export const defaultAgentModel: AgentModel = {
     const model = resolveLLMModel();
     const sources = input.sources.slice(0, MAX_PUBLIC_SOURCES);
     const contextSources = input.contextSources.slice(0, MAX_CONTEXT_SOURCES);
+    const sourceMarkerFilter = createSourceMarkerStreamFilter();
     const result = await invokeLLMStream(
       {
         model,
@@ -88,6 +91,7 @@ export const defaultAgentModel: AgentModel = {
               input.routeContext,
               sources,
               contextSources,
+              input.conversationHistory ?? [],
               Boolean(input.currentPageContextInjected)
             ),
           },
@@ -101,10 +105,13 @@ export const defaultAgentModel: AgentModel = {
           input.onReasoningDelta(delta.reasoningContent);
         }
         if (delta.content) {
-          input.onAnswerDelta(delta.content);
+          const visibleDelta = sourceMarkerFilter.push(delta.content);
+          if (visibleDelta) input.onAnswerDelta(visibleDelta);
         }
       }
     );
+    const trailingVisibleDelta = sourceMarkerFilter.flush();
+    if (trailingVisibleDelta) input.onAnswerDelta(trailingVisibleDelta);
 
     const sourceCards = [
       ...buildSourceCards(sources),
@@ -132,6 +139,7 @@ function buildSystemPrompt() {
     "If sources are insufficient, say so directly and suggest what public post or attached context is needed.",
     "Do not reveal hidden, admin-only, draft, private, or unpublished details.",
     "Treat user-provided conversation context as private to the current conversation, not as public blog knowledge.",
+    "Use recent conversation memory only to resolve follow-up references; do not treat it as a public source.",
     "Return concise Markdown with source-grounded technical reasoning.",
     "Use $...$ for inline math and $$...$$ for display math when formulas are useful.",
     "Answer in the user's language unless the user explicitly asks otherwise.",
@@ -149,6 +157,7 @@ function buildJsonPrompt(
   routeContext: AgentRouteContext,
   sources: KnowledgeSearchResult[],
   contextSources: AgentContextSourceRecord[],
+  conversationHistory: AgentConversationMemoryTurn[],
   currentPageContextInjected: boolean
 ) {
   return [
@@ -157,6 +166,7 @@ function buildJsonPrompt(
       routeContext,
       sources,
       contextSources,
+      conversationHistory,
       currentPageContextInjected
     ),
     "",
@@ -172,6 +182,7 @@ function buildMarkdownPrompt(
   routeContext: AgentRouteContext,
   sources: KnowledgeSearchResult[],
   contextSources: AgentContextSourceRecord[],
+  conversationHistory: AgentConversationMemoryTurn[],
   currentPageContextInjected: boolean
 ) {
   return [
@@ -180,6 +191,7 @@ function buildMarkdownPrompt(
       routeContext,
       sources,
       contextSources,
+      conversationHistory,
       currentPageContextInjected
     ),
     "",
@@ -197,6 +209,7 @@ function buildGroundingContext(
   routeContext: AgentRouteContext,
   sources: KnowledgeSearchResult[],
   contextSources: AgentContextSourceRecord[],
+  conversationHistory: AgentConversationMemoryTurn[],
   currentPageContextInjected: boolean
 ) {
   const currentPostTitle =
@@ -250,6 +263,18 @@ function buildGroundingContext(
           )
           .join("\n\n")
       : "No user-provided context is attached.",
+    "",
+    "Recent conversation memory:",
+    conversationHistory.length > 0
+      ? conversationHistory
+          .map((turn, index) =>
+            [
+              `[M${index + 1}] ${turn.role}`,
+              truncatePromptText(turn.content, 900),
+            ].join("\n")
+          )
+          .join("\n\n")
+      : "No previous turns are available.",
   ].join("\n");
 }
 
@@ -301,6 +326,68 @@ export function parseMarkdownAnswerWithSourceMarker(
     answerMarkdown: answerMarkdown || markdown.trim(),
     sourceIds,
   };
+}
+
+export function createSourceMarkerStreamFilter() {
+  let pending = "";
+
+  return {
+    push(delta: string) {
+      pending += delta;
+      return drainSourceMarkerBuffer(false);
+    },
+    flush() {
+      return drainSourceMarkerBuffer(true);
+    },
+  };
+
+  function drainSourceMarkerBuffer(flush: boolean) {
+    let visible = "";
+
+    while (pending) {
+      const commentStart = pending.indexOf("<!--");
+      if (commentStart === -1) {
+        if (flush) {
+          visible += pending;
+          pending = "";
+          break;
+        }
+        const safeLength = Math.max(0, pending.length - 4);
+        visible += pending.slice(0, safeLength);
+        pending = pending.slice(safeLength);
+        break;
+      }
+
+      if (commentStart > 0) {
+        visible += pending.slice(0, commentStart);
+        pending = pending.slice(commentStart);
+      }
+
+      const commentEnd = pending.indexOf("-->");
+      if (commentEnd === -1) {
+        if (flush && !isPartialSourceMarkerComment(pending)) {
+          visible += pending;
+          pending = "";
+        }
+        break;
+      }
+
+      const comment = pending.slice(0, commentEnd + 3);
+      pending = pending.slice(commentEnd + 3);
+      if (!isSourceMarkerComment(comment)) visible += comment;
+    }
+
+    return visible;
+  }
+}
+
+function isSourceMarkerComment(comment: string) {
+  SOURCE_MARKER_PATTERN.lastIndex = 0;
+  return SOURCE_MARKER_PATTERN.test(comment);
+}
+
+function isPartialSourceMarkerComment(comment: string) {
+  return /^<!--\s*blog-agent-sources/i.test(comment);
 }
 
 function splitSourceMarkerIds(rawSourceIds: string) {
@@ -387,6 +474,23 @@ function dedupeSourceCards(sourceCards: AgentSourceCard[]) {
   return deduped;
 }
 
+function selectFallbackSourceCards(sourceCards: AgentSourceCard[]) {
+  const groundedCards = dedupeSourceCards(preferGroundedSourceCards(sourceCards));
+  const articleCards = groundedCards.filter(
+    source => !isMetadataOnlySource(source)
+  );
+  return articleCards.length > 0 ? articleCards : groundedCards;
+}
+
+function isMetadataOnlySource(source: AgentSourceCard) {
+  const heading = source.heading?.trim().toLowerCase();
+  return (
+    heading === "metadata" ||
+    source.sourceId.endsWith(":0") ||
+    /^title:\s+/i.test(source.excerpt.trim())
+  );
+}
+
 export function createNoPublicSourceAnswer(): AgentAnswer {
   return {
     answerType: "refusal",
@@ -400,6 +504,89 @@ export function createNoPublicSourceAnswer(): AgentAnswer {
     ],
     confidence: "low",
     refusalReason: "no_public_source",
+  };
+}
+
+export function createSourceGroundedFallbackAnswer(input: {
+  message: string;
+  routeContext: AgentRouteContext;
+  sources: KnowledgeSearchResult[];
+  contextSources: AgentContextSourceRecord[];
+  currentPageContextInjected?: boolean;
+  errorCode?: string;
+}): AgentAnswer {
+  const sourceCards = [
+    ...buildSourceCards(input.sources),
+    ...buildContextSourceCards(input.contextSources),
+  ];
+  if (sourceCards.length === 0) return createNoPublicSourceAnswer();
+
+  const zh = prefersChinese(input.message, input.routeContext.locale);
+  const selectedCards = selectFallbackSourceCards(sourceCards).slice(0, 4);
+  const sourceIds = selectedCards.map(source => source.sourceId);
+  const title =
+    input.routeContext.postTitle ??
+    selectedCards.find(source => source.postTitle)?.postTitle ??
+    (zh ? "当前公开笔记" : "the current public note");
+  const reason =
+    input.errorCode === "model_not_configured"
+      ? zh
+        ? "模型服务暂时未配置"
+        : "The model service is not configured"
+      : zh
+        ? "模型服务暂时不可用"
+        : "The model service is temporarily unavailable";
+  const currentPageNote = input.currentPageContextInjected
+    ? zh
+      ? "当前文章上下文已接入，下面优先使用当前文章片段。"
+      : "Current-article context is connected, so the answer prioritizes current-page excerpts."
+    : zh
+      ? "下面只使用已检索到的公开来源摘录。"
+      : "The answer below uses only retrieved public source excerpts.";
+  const sourceLines = selectedCards.map((source, index) => {
+    const label = source.heading || source.postTitle || `Source ${index + 1}`;
+    const excerpt = normalizeFallbackExcerpt(source.excerpt);
+    return zh
+      ? `- **${label}**：${excerpt}`
+      : `- **${label}**: ${excerpt}`;
+  });
+
+  return {
+    answerType: "explanation",
+    answerMarkdown: zh
+      ? [
+          `${reason}；先给你一版基于检索摘录的回答。${currentPageNote}`,
+          "",
+          `围绕《${title}》，目前可确认的核心信息是：`,
+          "",
+          ...sourceLines,
+          "",
+          "这不是模型完整推理生成的答案；如果要更细的推导、对比或公式解释，需要先补齐线上模型配置。",
+        ].join("\n")
+      : [
+          `${reason}; here is a source-grounded fallback answer from retrieved excerpts. ${currentPageNote}`,
+          "",
+          `For ${title}, the available public excerpts support these points:`,
+          "",
+          ...sourceLines,
+          "",
+          "This is not a full model-generated answer. Deeper synthesis, comparisons, and formula walkthroughs require the production model configuration to be restored.",
+        ].join("\n"),
+    sourceIds,
+    sourceCards: selectedCards,
+    relatedQuestions: zh
+      ? [
+          "这篇文章的核心假设是什么？",
+          "这里有哪些实现边界？",
+          "接下来应该读哪篇相关公开笔记？",
+        ]
+      : [
+          `What is the core assumption in ${title}?`,
+          "What implementation boundaries matter here?",
+          "What related public note should I read next?",
+        ],
+    confidence: "low",
+    refusalReason: undefined,
   };
 }
 
@@ -454,4 +641,22 @@ function normalizeRelatedQuestions(
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
+}
+
+function prefersChinese(message: string, locale?: string) {
+  return locale === "zh" || /[\u3400-\u9fff]/.test(message);
+}
+
+function normalizeFallbackExcerpt(excerpt: string) {
+  const normalized = excerpt.replace(/\s+/g, " ").trim();
+  return normalized.length > 260
+    ? `${normalized.slice(0, 257).trim()}...`
+    : normalized;
+}
+
+function truncatePromptText(value: string, maxLength: number) {
+  const normalized = value.replace(/\s+/g, " ").trim();
+  return normalized.length > maxLength
+    ? `${normalized.slice(0, maxLength - 3).trim()}...`
+    : normalized;
 }

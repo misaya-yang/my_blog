@@ -241,15 +241,16 @@ export function BlogAgentRoot() {
           }
 
           if (response.status === "failed") {
+            const failureNotice = getAgentFailureNotice(response.errorCode, t);
             setDraft(trimmed);
-            setNotice(t("agent.error.send"));
+            setNotice(failureNotice);
             setMessages(current =>
               current.map(item =>
                 item.id === assistantMessageId
                   ? {
                       ...item,
                       id: response.messageId,
-                      content: t("agent.error.send"),
+                      content: failureNotice,
                       streaming: false,
                     }
                   : item
@@ -1304,6 +1305,15 @@ function getQuotaBlockedNotice(tier: string, t: (key: string) => string) {
   return tier === "anonymous"
     ? t("agent.quota.blockedAnonymous")
     : t("agent.quota.blockedVisitor");
+}
+
+function getAgentFailureNotice(
+  errorCode: string,
+  t: (key: string) => string
+) {
+  return errorCode === "model_not_configured"
+    ? t("agent.error.modelNotConfigured")
+    : t("agent.error.send");
 }
 
 function getContextFileKind(

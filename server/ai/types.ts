@@ -395,6 +395,11 @@ export type AgentModelResult = {
   reasoningMarkdown?: string;
 };
 
+export type AgentConversationMemoryTurn = {
+  role: "user" | "assistant";
+  content: string;
+};
+
 export type AgentModel = {
   generate(input: {
     message: string;
@@ -402,6 +407,7 @@ export type AgentModel = {
     routeContext: AgentRouteContext;
     sources: KnowledgeSearchResult[];
     contextSources: AgentContextSourceRecord[];
+    conversationHistory?: AgentConversationMemoryTurn[];
     currentPageContextInjected?: boolean;
     signal?: AbortSignal;
   }): Promise<AgentModelResult>;
@@ -411,6 +417,7 @@ export type AgentModel = {
     routeContext: AgentRouteContext;
     sources: KnowledgeSearchResult[];
     contextSources: AgentContextSourceRecord[];
+    conversationHistory?: AgentConversationMemoryTurn[];
     currentPageContextInjected?: boolean;
     signal?: AbortSignal;
     onAnswerDelta: (delta: string) => void;

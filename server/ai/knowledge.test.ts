@@ -353,6 +353,33 @@ describe("AI public knowledge chunks", () => {
     );
   });
 
+  it("uses body sections instead of metadata for current-page core abstraction questions", () => {
+    const chunks = buildPublicKnowledgeChunks([detailedIsohcPost()]);
+    const analysis = analyzeKnowledgeQuery("解释这篇文章里的核心抽象。");
+    const results = searchPublicKnowledgeChunks(
+      chunks,
+      "解释这篇文章里的核心抽象。",
+      {
+        limit: 6,
+        scope: {
+          type: "post",
+          value: "isohc-fixed-vector-isometric-residual-mixing",
+        },
+      }
+    );
+
+    expect(analysis.terms).toEqual(
+      expect.arrayContaining(["核心抽象", "核心", "抽象"])
+    );
+    expect(results.some(result => result.heading === "Metadata")).toBe(false);
+    expect(results.map(result => result.heading)).toEqual(
+      expect.arrayContaining([
+        "2. From Mean Preservation to Isometry",
+        "4. Fixed-Vector Orthogonal Decomposition",
+      ])
+    );
+  });
+
   it("keeps post pages page-aware without blocking explicit related article search", () => {
     const chunks = buildPublicKnowledgeChunks([isohcPost(), agentLoopPost()]);
     const results = searchPublicKnowledgeChunks(

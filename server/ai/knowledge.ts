@@ -86,9 +86,14 @@ const CURRENT_POST_CONTEXT_LIMIT = 3;
 const DEFAULT_POST_RESULT_LIMIT = 2;
 const CURRENT_POST_RESULT_LIMIT = 5;
 const KNOWN_CJK_QUERY_TERMS = [
+  "核心抽象",
+  "核心主张",
   "长上下文",
   "位置编码",
   "阅读路径",
+  "核心",
+  "抽象",
+  "主张",
   "固定向量",
   "等距",
   "双随机",
@@ -243,6 +248,10 @@ export function searchPublicKnowledgeChunks(
         chunk.visibilitySnapshot === "public"
     )
     .filter(chunk => matchesScope(chunk, scope, restrictToCurrentPost))
+    .filter(
+      chunk =>
+        !restrictToCurrentPost || chunk.chunkType !== "post_metadata_chunk"
+    )
     .map(chunk => {
       const score = scoreChunk(chunk, terms, scope, options.preferredSourceIds);
       const result = {
@@ -567,10 +576,15 @@ function buildCurrentPostContextResults(
     .filter(
       chunk =>
         chunk.statusSnapshot === "published" &&
-        chunk.visibilitySnapshot === "public"
+        chunk.visibilitySnapshot === "public" &&
+        chunk.chunkType !== "post_metadata_chunk"
     )
     .filter(chunk => chunk.postSlug === scope?.value)
-    .sort((a, b) => currentPostContextRank(a) - currentPostContextRank(b))
+    .sort(
+      (a, b) =>
+        currentPostContextRank(a, analysis.expandedTerms) -
+        currentPostContextRank(b, analysis.expandedTerms)
+    )
     .slice(0, CURRENT_POST_CONTEXT_LIMIT)
     .map((chunk, index) => ({
       ...chunk,
@@ -583,9 +597,9 @@ function buildCurrentPostContextResults(
     }));
 }
 
-function currentPostContextRank(chunk: KnowledgeChunkDraft) {
-  if (chunk.chunkType === "post_metadata_chunk") return -1;
-  return chunk.chunkIndex;
+function currentPostContextRank(chunk: KnowledgeChunkDraft, terms: string[]) {
+  const score = scoreChunk(chunk, terms, { type: "post", value: chunk.postSlug ?? "" });
+  return -score * 100 + chunk.chunkIndex;
 }
 
 function shouldInjectCurrentPostContext(
@@ -733,6 +747,27 @@ function expandQueryTerms(
     评测: ["evaluation", "evaluator", "harness", "trace"],
     工具: ["tool", "tools", "tool-use", "harness"],
     上下文: ["context", "context-engineering", "rag"],
+    核心抽象: [
+      "core",
+      "abstraction",
+      "constraint",
+      "invariant",
+      "invariants",
+      "isometry",
+      "orthogonal",
+      "mechanism",
+    ],
+    核心主张: [
+      "core",
+      "claim",
+      "constraint",
+      "invariant",
+      "isometry",
+      "mechanism",
+    ],
+    核心: ["core", "claim", "constraint", "invariant", "mechanism"],
+    抽象: ["abstraction", "constraint", "invariant", "isometry", "mechanism"],
+    主张: ["claim", "takeaway", "constraint", "evidence", "framing"],
     长上下文: ["long", "context", "rope", "position"],
     位置编码: ["position", "encoding", "rope"],
     阅读路径: ["reading", "path", "map", "overview"],

@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  createSourceMarkerStreamFilter,
+  createSourceGroundedFallbackAnswer,
   createNoPublicSourceAnswer,
   normalizeAgentAnswer,
   parseMarkdownAnswerWithSourceMarker,
 } from "./model";
+import type { KnowledgeSearchResult } from "./knowledge";
 import type { AgentSourceCard } from "./types";
 
 const harnessSource: AgentSourceCard = {
@@ -17,6 +20,42 @@ const harnessSource: AgentSourceCard = {
   excerpt:
     "A minimal harness engine can be modeled as a loop around a typed task contract.",
   relevanceReason: "Matched harness architecture terms.",
+};
+
+const isohcKnowledgeSource: KnowledgeSearchResult = {
+  chunkType: "post_chunk",
+  postId: 2,
+  postSlug: "isohc-fixed-vector-isometric-residual-mixing",
+  postTitle: "IsoHC: Fixed-Vector Isometric Residual Mixing",
+  categorySlug: "ai-algorithms",
+  tagSlugs: ["isohc", "residual-stability"],
+  statusSnapshot: "published",
+  visibilitySnapshot: "public",
+  locale: "zh",
+  chunkIndex: 1,
+  heading: "Residual Stability",
+  sectionPath: "Residual Stability",
+  content:
+    "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold.",
+  summary: null,
+  keywords: ["isohc", "residual", "stability"],
+  contentHash: "isohc-hash",
+  tokenEstimate: 24,
+  sourceId: "post:isohc-fixed-vector-isometric-residual-mixing:1",
+  score: 12,
+  excerpt:
+    "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold.",
+  relevanceReason: "Current public article context.",
+};
+
+const isohcMetadataSource: KnowledgeSearchResult = {
+  ...isohcKnowledgeSource,
+  chunkIndex: 0,
+  heading: "Metadata",
+  sectionPath: "Metadata",
+  sourceId: "post:isohc-fixed-vector-isometric-residual-mixing:0",
+  excerpt:
+    "Title: IsoHC: Fixed-Vector Isometric Residual Mixing Slug: isohc-fixed-vector-isometric-residual-mixing",
 };
 
 describe("agent answer quality normalization", () => {
@@ -108,6 +147,21 @@ describe("agent answer quality normalization", () => {
     expect(answer.sourceIds).toEqual([harnessSource.sourceId]);
   });
 
+  it("filters hidden source markers from streamed answer deltas", () => {
+    const filter = createSourceMarkerStreamFilter();
+    const chunks = [
+      "Answer with math $H^\\top H=I$.",
+      "\n\n<!",
+      "-- blog-agent-sources: ",
+      "agent-harness-engine:3",
+      " -->",
+    ];
+    const visible = chunks.map(chunk => filter.push(chunk)).join("") + filter.flush();
+
+    expect(visible).toBe("Answer with math $H^\\top H=I$.\n\n");
+    expect(visible).not.toContain("blog-agent-sources");
+  });
+
   it("falls back to section-level article cards instead of site overview noise", () => {
     const secondHarnessChunk: AgentSourceCard = {
       ...harnessSource,
@@ -146,5 +200,34 @@ describe("agent answer quality normalization", () => {
     expect(answer.refusalReason).toBe("no_public_source");
     expect(answer.sourceCards).toEqual([]);
     expect(answer.answerMarkdown).not.toContain("EVQ");
+  });
+
+  it("builds a source-grounded fallback answer when the production model is not configured", () => {
+    const answer = createSourceGroundedFallbackAnswer({
+      message: "解释这篇文章里的核心抽象。",
+      routeContext: {
+        path: "/post/isohc-fixed-vector-isometric-residual-mixing",
+        routeType: "post",
+        postSlug: "isohc-fixed-vector-isometric-residual-mixing",
+        postTitle: "IsoHC: Fixed-Vector Isometric Residual Mixing",
+        locale: "zh",
+      },
+      sources: [isohcMetadataSource, isohcKnowledgeSource],
+      contextSources: [],
+      currentPageContextInjected: true,
+      errorCode: "model_not_configured",
+    });
+
+    expect(answer.answerType).toBe("explanation");
+    expect(answer.confidence).toBe("low");
+    expect(answer.answerMarkdown).toContain("模型服务暂时未配置");
+    expect(answer.answerMarkdown).toContain("当前文章上下文已接入");
+    expect(answer.answerMarkdown).toContain("Residual Stability");
+    expect(answer.sourceIds).toEqual([isohcKnowledgeSource.sourceId]);
+    expect(answer.sourceIds).not.toContain(isohcMetadataSource.sourceId);
+    expect(answer.sourceCards[0]).toMatchObject({
+      postSlug: "isohc-fixed-vector-isometric-residual-mixing",
+      sourceType: "blog",
+    });
   });
 });

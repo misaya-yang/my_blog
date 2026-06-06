@@ -393,6 +393,10 @@ const agent: TranslationDict = {
     en: "The assistant could not finish this answer. Your draft is preserved.",
     zh: "助手未能完成回答，草稿已保留。",
   },
+  "agent.error.modelNotConfigured": {
+    en: "The model service is not configured in production. Your draft is preserved.",
+    zh: "线上模型服务暂未配置，草稿已保留。",
+  },
   "agent.error.cancelled": {
     en: "Generation stopped. Your draft is preserved.",
     zh: "已停止生成，草稿已保留。",

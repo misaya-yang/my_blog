@@ -250,7 +250,7 @@ const isDeepSeekApi = () =>
 const getApiKey = () => {
   const apiKey = nonBlank(ENV.forgeApiKey);
   if (!apiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
+    throw new Error("BUILT_IN_FORGE_API_KEY is not configured");
   }
   return apiKey;
 };

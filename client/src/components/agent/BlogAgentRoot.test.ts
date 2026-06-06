@@ -143,4 +143,54 @@ describe("BlogAgent route context", () => {
 
     vi.unstubAllGlobals();
   });
+
+  it("waits for the final stream event when an error frame arrives first", async () => {
+    const onFinal = vi.fn();
+    const encoder = new TextEncoder();
+    const body = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          encoder.encode(
+            [
+              'data: {"type":"error","message":"model_not_configured"}',
+              "",
+              'data: {"type":"final","elapsedMs":12,"output":{"status":"failed","conversationId":"conv-1","messageId":"msg-1","quota":{"limit":10,"used":1,"remaining":9,"resetAt":"2026-06-06T16:00:00.000Z","tier":"anonymous","allowed":true},"runStatus":"failed","errorCode":"model_not_configured"}}',
+              "",
+            ].join("\n")
+          )
+        );
+        controller.close();
+      },
+    });
+    vi.stubGlobal("window", {
+      setTimeout,
+      clearTimeout,
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(body, { status: 200 }))
+    );
+
+    await expect(
+      streamAgentMessage({
+        message: "解释这篇文章里的核心抽象。",
+        routeContext: buildRouteContext("/", "zh"),
+        onStatus: vi.fn(),
+        onReasoningDelta: vi.fn(),
+        onAnswerDelta: vi.fn(),
+        onFinal,
+      })
+    ).resolves.toBeUndefined();
+
+    expect(onFinal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        output: expect.objectContaining({
+          status: "failed",
+          errorCode: "model_not_configured",
+        }),
+      })
+    );
+
+    vi.unstubAllGlobals();
+  });
 });

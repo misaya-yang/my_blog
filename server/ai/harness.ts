@@ -26,6 +26,7 @@ import {
 import {
   buildSourceCards,
   createNoPublicSourceAnswer,
+  createSourceGroundedFallbackAnswer,
   defaultAgentModel,
 } from "./model.js";
 import { PostgresQuotaStore, type QuotaStore } from "./quota.js";
@@ -37,8 +38,11 @@ import type {
   AgentBootstrapOutput,
   AgentConversationDetail,
   AgentConversationRecord,
+  AgentConversationMemoryTurn,
   AgentEvalRunOutput,
   AgentContext,
+  AgentContextSourceRecord,
+  AgentIdentity,
   AgentKnowledgeIndexStatusOutput,
   AgentModel,
   AgentQuestionRadarOutput,
@@ -412,19 +416,30 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         identity,
         scope,
       });
+      let sources: KnowledgeSearchResult[] = [];
+      let contextSources: AgentContextSourceRecord[] = [];
+      let conversationHistory: AgentConversationMemoryTurn[] = [];
+      let currentPageContextInjected = false;
 
       try {
-        const sources = await deps.retrieve({
+        sources = await deps.retrieve({
           query: input.message,
           scope,
           limit: input.answerMode === "deep" ? 8 : 5,
           routeContext: input.routeContext,
         });
-        const contextSources = await deps.contextSourceStore.listSources({
+        contextSources = await deps.contextSourceStore.listSources({
           conversationId: conversation.id,
           identity,
           now: now(),
         });
+        conversationHistory = await loadConversationMemory({
+          conversationStore: deps.conversationStore,
+          conversationId: conversation.id,
+          identity,
+          currentUserMessageId: userMessage.id,
+        });
+        currentPageContextInjected = hasCurrentPageContext(sources);
         if (sources.length === 0 && contextSources.length === 0) {
           const answer = createNoPublicSourceAnswer();
           const assistantMessage = await deps.conversationStore.addMessage({
@@ -467,7 +482,8 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           routeContext: input.routeContext,
           sources,
           contextSources,
-          currentPageContextInjected: hasCurrentPageContext(sources),
+          conversationHistory,
+          currentPageContextInjected,
         });
         const answer = modelResult.answer;
         const assistantMessage = await deps.conversationStore.addMessage({
@@ -508,6 +524,56 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         };
       } catch (error) {
         const errorCode = normalizeErrorCode(error);
+        if (shouldReturnSourceFallback(errorCode, sources, contextSources)) {
+          const answer = createSourceGroundedFallbackAnswer({
+            message: input.message,
+            routeContext: input.routeContext,
+            sources,
+            contextSources,
+            currentPageContextInjected,
+            errorCode,
+          });
+          const assistantMessage = await deps.conversationStore.addMessage({
+            conversationId: conversation.id,
+            role: "assistant",
+            status: "completed",
+            content: answer.answerMarkdown,
+            sourceJson: {
+              sourceCards: answer.sourceCards,
+              fallbackReason: errorCode,
+            },
+            usageJson: {
+              inputTokens: 0,
+              outputTokens: 0,
+              model: null,
+            },
+          });
+
+          await deps.conversationStore.finishRun({
+            runId: run.id,
+            assistantMessageId: assistantMessage.id,
+            status: "completed",
+            inputTokens: 0,
+            outputTokens: 0,
+            latencyMs: now().getTime() - startedAt.getTime(),
+            retrievedChunkIds: [
+              ...sources.map(source => source.sourceId),
+              ...contextSources.map(source => source.sourceId),
+            ],
+          });
+
+          return {
+            status: "completed",
+            conversationId: conversation.id,
+            messageId: assistantMessage.id,
+            answer,
+            sourceCards: answer.sourceCards,
+            relatedQuestions: answer.relatedQuestions,
+            quota,
+            runStatus: "completed",
+          };
+        }
+
         const failedMessage = await deps.conversationStore.addMessage({
           conversationId: conversation.id,
           role: "assistant",
@@ -577,21 +643,32 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         identity,
         scope,
       });
+      let sources: KnowledgeSearchResult[] = [];
+      let contextSources: AgentContextSourceRecord[] = [];
+      let conversationHistory: AgentConversationMemoryTurn[] = [];
+      let currentPageContextInjected = false;
+      let answerStarted = false;
 
       try {
         emit({ type: "status", stage: "retrieval", elapsedMs: elapsedMs() });
-        const sources = await deps.retrieve({
+        sources = await deps.retrieve({
           query: input.message,
           scope,
           limit: input.answerMode === "deep" ? 8 : 5,
           routeContext: input.routeContext,
         });
-        const contextSources = await deps.contextSourceStore.listSources({
+        contextSources = await deps.contextSourceStore.listSources({
           conversationId: conversation.id,
           identity,
           now: now(),
         });
-        const currentPageContextInjected = hasCurrentPageContext(sources);
+        conversationHistory = await loadConversationMemory({
+          conversationStore: deps.conversationStore,
+          conversationId: conversation.id,
+          identity,
+          currentUserMessageId: userMessage.id,
+        });
+        currentPageContextInjected = hasCurrentPageContext(sources);
         emit({
           type: "status",
           stage: "sources",
@@ -646,7 +723,6 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
 
         throwIfAborted(options.signal);
         emit({ type: "status", stage: "reasoning", elapsedMs: elapsedMs() });
-        let answerStarted = false;
         const modelResult = deps.model.streamGenerate
           ? await deps.model.streamGenerate({
               message: input.message,
@@ -654,6 +730,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
               routeContext: input.routeContext,
               sources,
               contextSources,
+              conversationHistory,
               currentPageContextInjected,
               signal: options.signal,
               onAnswerDelta: delta => {
@@ -680,6 +757,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
               routeContext: input.routeContext,
               sources,
               contextSources,
+              conversationHistory,
               currentPageContextInjected,
               signal: options.signal,
             });
@@ -743,6 +821,70 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         return output;
       } catch (error) {
         const errorCode = normalizeErrorCode(error);
+        if (
+          !answerStarted &&
+          shouldReturnSourceFallback(errorCode, sources, contextSources)
+        ) {
+          const answer = createSourceGroundedFallbackAnswer({
+            message: input.message,
+            routeContext: input.routeContext,
+            sources,
+            contextSources,
+            currentPageContextInjected,
+            errorCode,
+          });
+
+          emit({ type: "status", stage: "answer", elapsedMs: elapsedMs() });
+          emit({
+            type: "answer_delta",
+            delta: answer.answerMarkdown,
+            elapsedMs: elapsedMs(),
+          });
+          emit({ type: "status", stage: "saving", elapsedMs: elapsedMs() });
+
+          const assistantMessage = await deps.conversationStore.addMessage({
+            conversationId: conversation.id,
+            role: "assistant",
+            status: "completed",
+            content: answer.answerMarkdown,
+            sourceJson: {
+              sourceCards: answer.sourceCards,
+              fallbackReason: errorCode,
+            },
+            usageJson: {
+              inputTokens: 0,
+              outputTokens: 0,
+              model: null,
+            },
+          });
+
+          await deps.conversationStore.finishRun({
+            runId: run.id,
+            assistantMessageId: assistantMessage.id,
+            status: "completed",
+            inputTokens: 0,
+            outputTokens: 0,
+            latencyMs: elapsedMs(),
+            retrievedChunkIds: [
+              ...sources.map(source => source.sourceId),
+              ...contextSources.map(source => source.sourceId),
+            ],
+          });
+
+          const output: AgentSendMessageOutput = {
+            status: "completed",
+            conversationId: conversation.id,
+            messageId: assistantMessage.id,
+            answer,
+            sourceCards: answer.sourceCards,
+            relatedQuestions: answer.relatedQuestions,
+            quota,
+            runStatus: "completed",
+          };
+          emit({ type: "final", output, elapsedMs: elapsedMs() });
+          return output;
+        }
+
         const failedMessage = await deps.conversationStore.addMessage({
           conversationId: conversation.id,
           role: "assistant",
@@ -823,6 +965,38 @@ function buildContextExpiration(
 ) {
   if (identityType === "admin") return null;
   return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+}
+
+async function loadConversationMemory(input: {
+  conversationStore: ConversationStore;
+  conversationId: string;
+  identity: AgentIdentity;
+  currentUserMessageId: string;
+}): Promise<AgentConversationMemoryTurn[]> {
+  const messages = await input.conversationStore.getMessages({
+    conversationId: input.conversationId,
+    identity: input.identity,
+  });
+
+  return messages
+    .filter(
+      message =>
+        message.id !== input.currentUserMessageId &&
+        message.status === "completed" &&
+        (message.role === "user" || message.role === "assistant")
+    )
+    .slice(-6)
+    .map(message => ({
+      role: message.role === "assistant" ? "assistant" : "user",
+      content: truncateConversationMemory(message.content),
+    }));
+}
+
+function truncateConversationMemory(content: string) {
+  const normalized = content.replace(/\s+/g, " ").trim();
+  return normalized.length > 900
+    ? `${normalized.slice(0, 897).trim()}...`
+    : normalized;
 }
 
 function buildSuggestedPrompts(scope: AgentScope) {
@@ -1150,9 +1324,24 @@ function throwIfAborted(signal: AbortSignal | undefined) {
 
 function normalizeErrorCode(error: unknown) {
   if (isAbortLikeError(error)) return "agent_stream_aborted";
-  if (error instanceof Error && error.message.includes("OPENAI_API_KEY"))
+  if (
+    error instanceof Error &&
+    (error.message.includes("BUILT_IN_FORGE_API_KEY") ||
+      error.message.includes("OPENAI_API_KEY"))
+  )
     return "model_not_configured";
   return "agent_generation_failed";
+}
+
+function shouldReturnSourceFallback(
+  errorCode: string,
+  sources: KnowledgeSearchResult[],
+  contextSources: AgentContextSourceRecord[]
+) {
+  return (
+    errorCode === "model_not_configured" &&
+    (sources.length > 0 || contextSources.length > 0)
+  );
 }
 
 function isAbortLikeError(error: unknown) {
