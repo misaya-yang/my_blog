@@ -23,7 +23,9 @@ export type ConversationStore = {
     scope: AgentScope;
     title: string;
   }): Promise<AgentConversationRecord>;
-  listConversations(identity: AgentIdentity): Promise<AgentConversationRecord[]>;
+  listConversations(
+    identity: AgentIdentity
+  ): Promise<AgentConversationRecord[]>;
   getConversation(input: {
     conversationId: string;
     identity: AgentIdentity;
@@ -107,7 +109,9 @@ export class PostgresConversationStore implements ConversationStore {
     return toConversationRecord(created[0]);
   }
 
-  async listConversations(identity: AgentIdentity): Promise<AgentConversationRecord[]> {
+  async listConversations(
+    identity: AgentIdentity
+  ): Promise<AgentConversationRecord[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -244,7 +248,7 @@ export class PostgresConversationStore implements ConversationStore {
       .orderBy(desc(aiAgentRuns.createdAt))
       .limit(input.limit);
 
-    return rows.map((row) => toRunRecord(row.run, row.question));
+    return rows.map(row => toRunRecord(row.run, row.question));
   }
 
   async finishRun(input: {
@@ -278,11 +282,15 @@ export class PostgresConversationStore implements ConversationStore {
 
 export function createMemoryConversationStore(): ConversationStore & {
   messages: AgentMessageRecord[];
-  runs: Array<AgentRunRecord & { status?: AgentRunStatus; errorCode?: string | null }>;
+  runs: Array<
+    AgentRunRecord & { status?: AgentRunStatus; errorCode?: string | null }
+  >;
 } {
   const conversations = new Map<string, AgentConversationRecord>();
   const messages: AgentMessageRecord[] = [];
-  const runs: Array<AgentRunRecord & { status?: AgentRunStatus; errorCode?: string | null }> = [];
+  const runs: Array<
+    AgentRunRecord & { status?: AgentRunStatus; errorCode?: string | null }
+  > = [];
 
   return {
     messages,
@@ -293,7 +301,8 @@ export function createMemoryConversationStore(): ConversationStore & {
         if (
           existing &&
           (input.identity.type === "admin" ||
-            (existing.ownerType === input.identity.type && existing.ownerKey === input.identity.key))
+            (existing.ownerType === input.identity.type &&
+              existing.ownerKey === input.identity.key))
         ) {
           return existing;
         }
@@ -314,9 +323,10 @@ export function createMemoryConversationStore(): ConversationStore & {
     },
     async listConversations(identity) {
       return Array.from(conversations.values()).filter(
-        (conversation) =>
+        conversation =>
           identity.type === "admin" ||
-          (conversation.ownerType === identity.type && conversation.ownerKey === identity.key)
+          (conversation.ownerType === identity.type &&
+            conversation.ownerKey === identity.key)
       );
     },
     async getConversation(input) {
@@ -324,7 +334,8 @@ export function createMemoryConversationStore(): ConversationStore & {
       if (
         existing &&
         (input.identity.type === "admin" ||
-          (existing.ownerType === input.identity.type && existing.ownerKey === input.identity.key))
+          (existing.ownerType === input.identity.type &&
+            existing.ownerKey === input.identity.key))
       ) {
         return existing;
       }
@@ -332,7 +343,9 @@ export function createMemoryConversationStore(): ConversationStore & {
     },
     async getMessages(input) {
       await this.getConversation(input);
-      return messages.filter((message) => message.conversationId === input.conversationId);
+      return messages.filter(
+        message => message.conversationId === input.conversationId
+      );
     },
     async addMessage(input) {
       const message: AgentMessageRecord = {
@@ -350,20 +363,21 @@ export function createMemoryConversationStore(): ConversationStore & {
       return message;
     },
     async startRun(input) {
-    const question = input.userMessageId
-      ? messages.find((message) => message.id === input.userMessageId)?.content ?? null
-      : null;
-    const run = {
-      id: `run-${runs.length + 1}`,
-      conversationId: input.conversationId ?? null,
-      question,
-      scopeType: input.scope.type,
-      scopeValue: input.scope.value ?? null,
-      retrievalStrategy: "supabase_keyword",
-      retrievedChunkIds: input.retrievedChunkIds ?? [],
-      createdAt: new Date(),
-      status: input.status ?? "started",
-      errorCode: input.errorCode ?? null,
+      const question = input.userMessageId
+        ? (messages.find(message => message.id === input.userMessageId)
+            ?.content ?? null)
+        : null;
+      const run = {
+        id: `run-${runs.length + 1}`,
+        conversationId: input.conversationId ?? null,
+        question,
+        scopeType: input.scope.type,
+        scopeValue: input.scope.value ?? null,
+        retrievalStrategy: "supabase_keyword",
+        retrievedChunkIds: input.retrievedChunkIds ?? [],
+        createdAt: new Date(),
+        status: input.status ?? "started",
+        errorCode: input.errorCode ?? null,
       };
       runs.push(run);
       return run;
@@ -372,7 +386,7 @@ export function createMemoryConversationStore(): ConversationStore & {
       return runs.slice(-input.limit).reverse();
     },
     async finishRun(input) {
-      const run = runs.find((item) => item.id === input.runId);
+      const run = runs.find(item => item.id === input.runId);
       if (run) {
         run.status = input.status;
         run.errorCode = input.errorCode ?? null;
@@ -386,7 +400,10 @@ export function createMemoryConversationStore(): ConversationStore & {
   };
 }
 
-function toRunRecord(row: typeof aiAgentRuns.$inferSelect, question?: string | null): AgentRunRecord {
+function toRunRecord(
+  row: typeof aiAgentRuns.$inferSelect,
+  question?: string | null
+): AgentRunRecord {
   return {
     id: row.id,
     conversationId: row.conversationId,
@@ -406,7 +423,9 @@ function toRunRecord(row: typeof aiAgentRuns.$inferSelect, question?: string | n
   };
 }
 
-function toConversationRecord(row: typeof aiConversations.$inferSelect): AgentConversationRecord {
+function toConversationRecord(
+  row: typeof aiConversations.$inferSelect
+): AgentConversationRecord {
   return {
     id: row.id,
     ownerType: row.ownerType,
@@ -419,7 +438,9 @@ function toConversationRecord(row: typeof aiConversations.$inferSelect): AgentCo
   };
 }
 
-function toMessageRecord(row: typeof aiMessages.$inferSelect): AgentMessageRecord {
+function toMessageRecord(
+  row: typeof aiMessages.$inferSelect
+): AgentMessageRecord {
   return {
     id: row.id,
     conversationId: row.conversationId,

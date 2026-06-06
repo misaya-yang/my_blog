@@ -74,6 +74,7 @@ export type InvokeParams = {
   output_schema?: OutputSchema;
   responseFormat?: ResponseFormat;
   response_format?: ResponseFormat;
+  signal?: AbortSignal;
 };
 
 export type ToolCall = {
@@ -371,6 +372,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
       authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify(payload),
+    signal: params.signal,
   });
 
   if (!response.ok) {
@@ -397,6 +399,7 @@ export async function invokeLLMStream(
       authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify(payload),
+    signal: params.signal,
   });
 
   if (!response.ok) {

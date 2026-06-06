@@ -2,20 +2,20 @@ import type { TranslationDict } from "./types";
 
 const agent: TranslationDict = {
   "agent.launcher.label": {
-    en: "Blog Agent",
-    zh: "AI 助手",
+    en: "Reader",
+    zh: "阅读助手",
   },
   "agent.launcher.tooltip": {
-    en: "Ask AI about public posts and reading paths",
-    zh: "基于公开文章、标签与阅读路径提问",
+    en: "Ask about public notes and reading paths",
+    zh: "询问公开笔记与阅读路径",
   },
   "agent.header.title": {
-    en: "Blog Agent",
-    zh: "博客 Agent",
+    en: "Reading Assistant",
+    zh: "阅读助手",
   },
   "agent.header.subtitle": {
-    en: "Grounded in public posts",
-    zh: "基于公开文章回答",
+    en: "Uses public notes only",
+    zh: "只基于公开笔记",
   },
   "agent.header.close": {
     en: "Close assistant",
@@ -42,8 +42,8 @@ const agent: TranslationDict = {
     zh: "无时间",
   },
   "agent.scope.site": {
-    en: "Site-wide",
-    zh: "全站",
+    en: "All notes",
+    zh: "全站笔记",
   },
   "agent.scope.post": {
     en: "Current post",
@@ -66,12 +66,12 @@ const agent: TranslationDict = {
     zh: "技术区",
   },
   "agent.welcome.title": {
-    en: "Ask about the public knowledge map",
-    zh: "询问公开知识地图",
+    en: "Ask from the notebook",
+    zh: "从笔记里提问",
   },
   "agent.welcome.body": {
-    en: "I can summarize articles, compare tracks, and suggest source-grounded reading paths.",
-    zh: "可以解读文章、比较技术区，并给出带来源的阅读路径。",
+    en: "I can summarize public notes, compare reading threads, and point to the sources used.",
+    zh: "可以解读公开笔记、比较阅读线索，并标出使用的来源。",
   },
   "agent.welcome.postTitle": {
     en: "Read this article with a companion",
@@ -98,12 +98,16 @@ const agent: TranslationDict = {
     zh: "基于公开搜索、归档、标签与分类缩小主题，找到下一篇该读的文章。",
   },
   "agent.input.placeholder": {
-    en: "Ask about an article, tag, or reading path...",
-    zh: "询问文章、标签或阅读路径...",
+    en: "Ask about a note, section, or reading path...",
+    zh: "询问笔记、小节或阅读路径...",
   },
   "agent.input.send": {
     en: "Send",
     zh: "发送",
+  },
+  "agent.input.cancel": {
+    en: "Stop generating",
+    zh: "停止生成",
   },
   "agent.input.retry": {
     en: "Retry",
@@ -198,16 +202,16 @@ const agent: TranslationDict = {
     zh: "这个博客的主要技术主题是什么？",
   },
   "agent.prompts.compareTracks": {
-    en: "Compare AI Algorithms and AI Applications.",
-    zh: "比较 AI 算法和 AI 应用两个技术区。",
+    en: "Compare the model-mechanism and applied-system threads.",
+    zh: "比较模型机制和应用系统两条阅读线索。",
   },
   "agent.prompts.readingPath": {
     en: "Suggest a source-grounded reading path.",
     zh: "推荐一条有来源依据的阅读路径。",
   },
   "agent.prompts.applicationsFirst": {
-    en: "Which AI application article should I read first?",
-    zh: "AI 应用方向应该先读哪篇？",
+    en: "Which applied-system note should I read first?",
+    zh: "应用系统方向应该先读哪篇？",
   },
   "agent.prompts.applicationsPath": {
     en: "Build a reading path for agent evaluation.",
@@ -218,16 +222,16 @@ const agent: TranslationDict = {
     zh: "比较 Harness Engine、Evidence Packet 和 Agent Loop。",
   },
   "agent.prompts.applicationsMap": {
-    en: "Explain the AI Applications topic map.",
-    zh: "解释 AI 应用技术地图。",
+    en: "Explain the applied-systems topic map.",
+    zh: "解释应用系统技术地图。",
   },
   "agent.prompts.algorithmsFirst": {
-    en: "Which AI algorithm article should I read first?",
-    zh: "AI 算法方向应该先读哪篇？",
+    en: "Which model-mechanism note should I read first?",
+    zh: "模型机制方向应该先读哪篇？",
   },
   "agent.prompts.algorithmsMap": {
-    en: "Explain the AI Algorithms research map.",
-    zh: "解释 AI 算法研究地图。",
+    en: "Explain the model-mechanisms research map.",
+    zh: "解释模型机制研究地图。",
   },
   "agent.prompts.algorithmsCompare": {
     en: "Compare residual stability and long-context mechanisms.",
@@ -388,6 +392,10 @@ const agent: TranslationDict = {
   "agent.error.send": {
     en: "The assistant could not finish this answer. Your draft is preserved.",
     zh: "助手未能完成回答，草稿已保留。",
+  },
+  "agent.error.cancelled": {
+    en: "Generation stopped. Your draft is preserved.",
+    zh: "已停止生成，草稿已保留。",
   },
   "agent.error.history": {
     en: "This conversation could not be loaded.",

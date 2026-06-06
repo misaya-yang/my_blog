@@ -2,8 +2,8 @@ import type { TranslationDict } from "./types";
 
 const nav: TranslationDict = {
   "nav.home": { en: "Home", zh: "首页" },
-  "nav.algorithms": { en: "AI Algorithms", zh: "AI 算法" },
-  "nav.applications": { en: "AI Applications", zh: "AI 应用" },
+  "nav.algorithms": { en: "Mechanisms", zh: "机制" },
+  "nav.applications": { en: "Systems", zh: "系统" },
   "nav.archive": { en: "Archive", zh: "归档" },
   "nav.search": { en: "Search", zh: "搜索" },
   "nav.about": { en: "About", zh: "关于" },
@@ -27,7 +27,7 @@ const nav: TranslationDict = {
   "nav.switchToEn": { en: "EN", zh: "EN" },
 
   // Brand
-  "nav.brand": { en: "AI Tech Blog", zh: "AI Tech Blog" },
+  "nav.brand": { en: "Misaya Notes", zh: "Misaya Notes" },
 };
 
 export default nav;

@@ -9,13 +9,13 @@ import {
 const baseHtml = `<!doctype html>
 <html lang="zh-CN">
   <head>
-    <title>AI Tech Blog</title>
+    <title>Misaya Notes</title>
     <meta name="description" content="Default description" />
-    <meta property="og:title" content="AI Tech Blog" />
+    <meta property="og:title" content="Misaya Notes" />
     <meta property="og:description" content="Default description" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://example.com/" />
-    <meta name="twitter:title" content="AI Tech Blog" />
+    <meta name="twitter:title" content="Misaya Notes" />
     <meta name="twitter:description" content="Default description" />
   </head>
   <body>

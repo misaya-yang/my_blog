@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { createNoPublicSourceAnswer, normalizeAgentAnswer } from "./model";
+import {
+  createNoPublicSourceAnswer,
+  normalizeAgentAnswer,
+  parseMarkdownAnswerWithSourceMarker,
+} from "./model";
 import type { AgentSourceCard } from "./types";
 
 const harnessSource: AgentSourceCard = {
@@ -69,7 +73,42 @@ describe("agent answer quality normalization", () => {
     expect(answer.sourceCards).toEqual([relatedSource]);
   });
 
-  it("falls back to deduped article cards instead of site overview noise", () => {
+  it("extracts hidden source markers from streamed Markdown and filters source cards to selected ids", () => {
+    const secondHarnessChunk: AgentSourceCard = {
+      ...harnessSource,
+      sourceId: "agent-harness-engine:7",
+      heading: "Failure Modes",
+    };
+    const parsed = parseMarkdownAnswerWithSourceMarker(
+      [
+        "Harness engines keep evaluation grounded in traceable context.",
+        "",
+        "<!-- blog-agent-sources: agent-harness-engine:7, hallucinated-id -->",
+      ].join("\n")
+    );
+    const answer = normalizeAgentAnswer(parsed, [
+      harnessSource,
+      secondHarnessChunk,
+    ]);
+
+    expect(answer.answerMarkdown).toBe(
+      "Harness engines keep evaluation grounded in traceable context."
+    );
+    expect(answer.sourceIds).toEqual([secondHarnessChunk.sourceId]);
+    expect(answer.sourceCards).toEqual([secondHarnessChunk]);
+  });
+
+  it("falls back safely when streamed Markdown omits a source marker", () => {
+    const parsed = parseMarkdownAnswerWithSourceMarker(
+      "Harness engines keep evaluation grounded in traceable context."
+    );
+    const answer = normalizeAgentAnswer(parsed, [harnessSource]);
+
+    expect(parsed.sourceIds).toEqual([]);
+    expect(answer.sourceIds).toEqual([harnessSource.sourceId]);
+  });
+
+  it("falls back to section-level article cards instead of site overview noise", () => {
     const secondHarnessChunk: AgentSourceCard = {
       ...harnessSource,
       sourceId: "agent-harness-engine:7",
@@ -93,8 +132,11 @@ describe("agent answer quality normalization", () => {
       [harnessSource, secondHarnessChunk, siteOverview]
     );
 
-    expect(answer.sourceIds).toEqual([harnessSource.sourceId]);
-    expect(answer.sourceCards).toEqual([harnessSource]);
+    expect(answer.sourceIds).toEqual([
+      harnessSource.sourceId,
+      secondHarnessChunk.sourceId,
+    ]);
+    expect(answer.sourceCards).toEqual([harnessSource, secondHarnessChunk]);
   });
 
   it("returns a public-source refusal without exposing unavailable material", () => {

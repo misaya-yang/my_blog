@@ -1,9 +1,9 @@
 export const siteConfig = {
-  name: "AI Tech Blog",
-  defaultTitle: "AI Tech Blog",
-  titleTemplate: "%s · AI Tech Blog",
+  name: "Misaya Notes",
+  defaultTitle: "Misaya Notes",
+  titleTemplate: "%s · Misaya Notes",
   defaultDescription:
-    "Misaya Yang's research notebook on AI algorithms, long-context mechanisms, agent systems, RAG, and reliable AI application engineering.",
+    "Misaya Yang's working notes on model mechanisms, long-context behavior, retrieval, agent systems, and reliable applied AI engineering.",
   authorName: "Misaya Yang",
   authorEmail: "zedpl28174@gmail.com",
   scholarUrl: "https://scholar.google.com/citations?user=6X9HlDAAAAAJ",
@@ -13,9 +13,9 @@ export const siteConfig = {
   favicon: "/favicon.svg",
   manifest: "/site.webmanifest",
   feedPath: "/rss.xml",
-  feedTitle: "AI Tech Blog",
+  feedTitle: "Misaya Notes",
   feedDescription:
-    "Research notes by Misaya Yang on deep learning systems and AI application engineering.",
+    "Research notes by Misaya Yang on model mechanisms and applied AI systems.",
   publicStaticRoutes: ["/", "/algorithms", "/applications", "/archive", "/about", "/search"],
   disallowedRoutes: ["/write", "/manage", "/api/trpc/posts.create", "/api/trpc/posts.update"],
 } as const;

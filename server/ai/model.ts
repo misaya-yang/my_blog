@@ -18,6 +18,8 @@ import type {
 const MAX_PUBLIC_SOURCES = 6;
 const MAX_CONTEXT_SOURCES = 4;
 const MAX_AGENT_OUTPUT_TOKENS = 1800;
+const SOURCE_MARKER_PATTERN =
+  /<!--\s*blog-agent-sources\s*:\s*([\s\S]*?)\s*-->/gi;
 
 export const BLOG_AGENT_MODEL = DEFAULT_LLM_MODEL;
 
@@ -46,6 +48,7 @@ export const defaultAgentModel: AgentModel = {
       ],
       responseFormat: { type: "json_object" },
       maxTokens: MAX_AGENT_OUTPUT_TOKENS,
+      signal: input.signal,
     });
 
     const content = result.choices[0]?.message.content;
@@ -91,6 +94,7 @@ export const defaultAgentModel: AgentModel = {
         ],
         responseFormat: { type: "text" },
         maxTokens: MAX_AGENT_OUTPUT_TOKENS,
+        signal: input.signal,
       },
       delta => {
         if (delta.reasoningContent) {
@@ -107,7 +111,7 @@ export const defaultAgentModel: AgentModel = {
       ...buildContextSourceCards(contextSources),
     ];
     const answer = normalizeAgentAnswer(
-      { answerMarkdown: result.content.trim() },
+      parseMarkdownAnswerWithSourceMarker(result.content.trim()),
       sourceCards
     );
 
@@ -182,7 +186,9 @@ function buildMarkdownPrompt(
     "Return Markdown only, not JSON.",
     "Keep the answer source-grounded and concise.",
     "Use $...$ for inline math and $$...$$ for display math when formulas help.",
-    "Do not append raw source identifiers or URLs; the UI will render source cards separately.",
+    "At the very end, append exactly one hidden HTML comment source marker: <!-- blog-agent-sources: sourceId1, sourceId2 -->.",
+    "Only include source IDs copied exactly from the listed public blog sources or user-provided context.",
+    "Do not mention raw source identifiers or URLs in visible text; the UI will render source cards separately.",
   ].join("\n");
 }
 
@@ -280,6 +286,30 @@ function parseModelContent(content: string): Partial<AgentAnswer> {
   }
 }
 
+export function parseMarkdownAnswerWithSourceMarker(
+  markdown: string
+): Partial<AgentAnswer> {
+  const sourceIds: string[] = [];
+  const answerMarkdown = markdown
+    .replace(SOURCE_MARKER_PATTERN, (_match, rawSourceIds: string) => {
+      sourceIds.push(...splitSourceMarkerIds(rawSourceIds));
+      return "";
+    })
+    .trim();
+
+  return {
+    answerMarkdown: answerMarkdown || markdown.trim(),
+    sourceIds,
+  };
+}
+
+function splitSourceMarkerIds(rawSourceIds: string) {
+  return rawSourceIds
+    .split(/[,，\s]+/)
+    .map(id => id.trim())
+    .filter(Boolean);
+}
+
 export function normalizeAgentAnswer(
   parsed: Partial<AgentAnswer>,
   sourceCards: AgentSourceCard[]
@@ -349,12 +379,7 @@ function dedupeSourceCards(sourceCards: AgentSourceCard[]) {
   const seen = new Set<string>();
   const deduped: AgentSourceCard[] = [];
   for (const source of sourceCards) {
-    const key =
-      source.sourceType === "user_context"
-        ? source.sourceId
-        : source.postSlug
-          ? `blog:${source.postSlug}`
-          : source.sourceId;
+    const key = source.sourceId;
     if (seen.has(key)) continue;
     seen.add(key);
     deduped.push(source);

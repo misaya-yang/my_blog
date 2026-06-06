@@ -6,11 +6,28 @@ import {
   type ContextSourceStore,
 } from "./contextSources.js";
 import { AGENT_GOLDEN_QUESTIONS, getGoldenQuestionsForInput } from "./evals.js";
-import { getKnowledgeIndexStatus, searchPublicKnowledgeChunkSources } from "./knowledgeDb.js";
-import { analyzeKnowledgeQuery, type KnowledgeSearchResult } from "./knowledge.js";
-import { PostgresConversationStore, type ConversationStore } from "./conversations.js";
-import { getFileUploadQuotaLimit, getQuotaLimit, resolveAgentIdentity } from "./identity.js";
-import { buildSourceCards, createNoPublicSourceAnswer, defaultAgentModel } from "./model.js";
+import {
+  getKnowledgeIndexStatus,
+  searchPublicKnowledgeChunkSources,
+} from "./knowledgeDb.js";
+import {
+  analyzeKnowledgeQuery,
+  type KnowledgeSearchResult,
+} from "./knowledge.js";
+import {
+  PostgresConversationStore,
+  type ConversationStore,
+} from "./conversations.js";
+import {
+  getFileUploadQuotaLimit,
+  getQuotaLimit,
+  resolveAgentIdentity,
+} from "./identity.js";
+import {
+  buildSourceCards,
+  createNoPublicSourceAnswer,
+  defaultAgentModel,
+} from "./model.js";
 import { PostgresQuotaStore, type QuotaStore } from "./quota.js";
 import type {
   AgentAddContextInput,
@@ -49,19 +66,39 @@ export type AgentServiceDeps = {
 };
 
 export type AgentService = {
-  bootstrap(ctx: AgentContext, input: AgentBootstrapInput): Promise<AgentBootstrapOutput>;
+  bootstrap(
+    ctx: AgentContext,
+    input: AgentBootstrapInput
+  ): Promise<AgentBootstrapOutput>;
   listConversations(ctx: AgentContext): Promise<AgentConversationRecord[]>;
-  getConversation(ctx: AgentContext, input: { conversationId: string }): Promise<AgentConversationDetail>;
-  addContext(ctx: AgentContext, input: AgentAddContextInput): Promise<AgentAddContextOutput>;
+  getConversation(
+    ctx: AgentContext,
+    input: { conversationId: string }
+  ): Promise<AgentConversationDetail>;
+  addContext(
+    ctx: AgentContext,
+    input: AgentAddContextInput
+  ): Promise<AgentAddContextOutput>;
   adminDebugRetrieval(
     ctx: AgentContext,
-    input: { query: string; routeContext: AgentBootstrapInput["routeContext"]; scope?: AgentScope; limit?: number }
+    input: {
+      query: string;
+      routeContext: AgentBootstrapInput["routeContext"];
+      scope?: AgentScope;
+      limit?: number;
+    }
   ): Promise<AgentRetrievalDebugOutput>;
   adminRunEvals(
     ctx: AgentContext,
-    input: { questions?: string[]; routeContext: AgentBootstrapInput["routeContext"]; scope?: AgentScope }
+    input: {
+      questions?: string[];
+      routeContext: AgentBootstrapInput["routeContext"];
+      scope?: AgentScope;
+    }
   ): Promise<AgentEvalRunOutput>;
-  adminKnowledgeStatus(ctx: AgentContext): Promise<AgentKnowledgeIndexStatusOutput>;
+  adminKnowledgeStatus(
+    ctx: AgentContext
+  ): Promise<AgentKnowledgeIndexStatusOutput>;
   adminExtractArticleIdeas(
     ctx: AgentContext,
     input: { conversationId: string }
@@ -70,12 +107,19 @@ export type AgentService = {
     ctx: AgentContext,
     input: { limit?: number }
   ): Promise<AgentQuestionRadarOutput>;
-  adminListRuns(ctx: AgentContext, input: { limit?: number }): Promise<AgentRunRecord[]>;
-  sendMessage(ctx: AgentContext, input: AgentSendMessageInput): Promise<AgentSendMessageOutput>;
+  adminListRuns(
+    ctx: AgentContext,
+    input: { limit?: number }
+  ): Promise<AgentRunRecord[]>;
+  sendMessage(
+    ctx: AgentContext,
+    input: AgentSendMessageInput
+  ): Promise<AgentSendMessageOutput>;
   streamMessage(
     ctx: AgentContext,
     input: AgentSendMessageInput,
-    emit: (event: AgentStreamEvent) => void
+    emit: (event: AgentStreamEvent) => void,
+    options?: { signal?: AbortSignal }
   ): Promise<AgentSendMessageOutput>;
 };
 
@@ -86,7 +130,11 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
     async bootstrap(ctx, input) {
       const identity = resolveAgentIdentity(ctx.session, ctx.req);
       const limit = getQuotaLimit(identity.type);
-      const quota = await deps.quotaStore.getDailyMessageQuota(identity, limit, now());
+      const quota = await deps.quotaStore.getDailyMessageQuota(
+        identity,
+        limit,
+        now()
+      );
       const currentScope = input.scope ?? inferScope(input.routeContext);
 
       return {
@@ -142,7 +190,12 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
       }
 
       const limit = getFileUploadQuotaLimit(identity.type);
-      const quota = await deps.quotaStore.reserveDailyAction(identity, "file_upload", limit, now());
+      const quota = await deps.quotaStore.reserveDailyAction(
+        identity,
+        "file_upload",
+        limit,
+        now()
+      );
       if (!quota.allowed) {
         return {
           status: "blocked",
@@ -191,7 +244,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
       return {
         query: input.query,
         scope,
-        sourceIds: sources.map((source) => source.sourceId),
+        sourceIds: sources.map(source => source.sourceId),
         sources: sourceCards,
         diagnostics: buildRetrievalDiagnostics(input.query, sources),
       };
@@ -200,7 +253,9 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
     async adminRunEvals(ctx, input) {
       assertAdminContext(ctx);
       const scope = input.scope ?? inferScope(input.routeContext);
-      const questions = getGoldenQuestionsForInput(input.questions ?? defaultEvalQuestions(scope));
+      const questions = getGoldenQuestionsForInput(
+        input.questions ?? defaultEvalQuestions(scope)
+      );
       const items = [];
       for (const golden of questions) {
         const itemScope = golden.scope ?? scope;
@@ -211,9 +266,13 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           routeContext: input.routeContext,
         });
         const sourceSlugs = new Set(
-          sources.map((source) => source.postSlug).filter((slug): slug is string => Boolean(slug))
+          sources
+            .map(source => source.postSlug)
+            .filter((slug): slug is string => Boolean(slug))
         );
-        const missingSourceSlugs = golden.expectedSourceSlugs.filter((slug) => !sourceSlugs.has(slug));
+        const missingSourceSlugs = golden.expectedSourceSlugs.filter(
+          slug => !sourceSlugs.has(slug)
+        );
         const failureReason = buildEvalFailureReason(
           golden.expectedBehavior,
           sources.length,
@@ -230,24 +289,34 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           passed,
           sourceCount: sources.length,
           topSourceTitle: sources[0]?.postTitle ?? null,
-          sourceIds: sources.map((source) => source.sourceId),
+          sourceIds: sources.map(source => source.sourceId),
           expectedSourceSlugs: golden.expectedSourceSlugs,
           missingSourceSlugs,
           failureReason: passed ? undefined : failureReason,
           notes: [
             ...golden.notes,
-            ...(passed ? [] : buildEvalFailureNotes(golden.expectedBehavior, sources.length, missingSourceSlugs)),
+            ...(passed
+              ? []
+              : buildEvalFailureNotes(
+                  golden.expectedBehavior,
+                  sources.length,
+                  missingSourceSlugs
+                )),
           ],
         });
       }
-      const passed = items.filter((item) => item.passed).length;
+      const passed = items.filter(item => item.passed).length;
       return {
         summary: {
           total: items.length,
           passed,
           failed: items.length - passed,
-          successCases: items.filter((item) => item.expectedBehavior === "sources").length,
-          refusalCases: items.filter((item) => item.expectedBehavior === "refusal").length,
+          successCases: items.filter(
+            item => item.expectedBehavior === "sources"
+          ).length,
+          refusalCases: items.filter(
+            item => item.expectedBehavior === "refusal"
+          ).length,
           runAt: now(),
           retrievalStrategy: "supabase_keyword",
           modelProvider: "retrieval-only",
@@ -263,10 +332,19 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
 
     async adminExtractArticleIdeas(ctx, input) {
       assertAdminContext(ctx);
-      const detail = await this.getConversation(ctx, { conversationId: input.conversationId });
-      const userMessages = detail.messages.filter((message) => message.role === "user");
-      const seedQuestions = userMessages.map((message) => message.content).slice(-4);
-      const primary = seedQuestions[seedQuestions.length - 1] || detail.conversation.title || "Blog agent conversation";
+      const detail = await this.getConversation(ctx, {
+        conversationId: input.conversationId,
+      });
+      const userMessages = detail.messages.filter(
+        message => message.role === "user"
+      );
+      const seedQuestions = userMessages
+        .map(message => message.content)
+        .slice(-4);
+      const primary =
+        seedQuestions[seedQuestions.length - 1] ||
+        detail.conversation.title ||
+        "Blog agent conversation";
 
       return {
         ideas: [
@@ -299,7 +377,11 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
     async sendMessage(ctx, input) {
       const identity = resolveAgentIdentity(ctx.session, ctx.req);
       const limit = getQuotaLimit(identity.type);
-      const quota = await deps.quotaStore.reserveDailyMessage(identity, limit, now());
+      const quota = await deps.quotaStore.reserveDailyMessage(
+        identity,
+        limit,
+        now()
+      );
 
       if (!quota.allowed) {
         return {
@@ -310,12 +392,13 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
       }
 
       const scope = input.scope ?? inferScope(input.routeContext);
-      const conversation = await deps.conversationStore.createOrLoadConversation({
-        conversationId: input.conversationId,
-        identity,
-        scope,
-        title: buildConversationTitle(input.message),
-      });
+      const conversation =
+        await deps.conversationStore.createOrLoadConversation({
+          conversationId: input.conversationId,
+          identity,
+          scope,
+          title: buildConversationTitle(input.message),
+        });
       const userMessage = await deps.conversationStore.addMessage({
         conversationId: conversation.id,
         role: "user",
@@ -408,8 +491,8 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           outputTokens: modelResult.outputTokens,
           latencyMs: now().getTime() - startedAt.getTime(),
           retrievedChunkIds: [
-            ...sources.map((source) => source.sourceId),
-            ...contextSources.map((source) => source.sourceId),
+            ...sources.map(source => source.sourceId),
+            ...contextSources.map(source => source.sourceId),
           ],
         });
 
@@ -451,12 +534,16 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
       }
     },
 
-    async streamMessage(ctx, input, emit) {
+    async streamMessage(ctx, input, emit, options = {}) {
       const startedAt = now();
       const elapsedMs = () => now().getTime() - startedAt.getTime();
       const identity = resolveAgentIdentity(ctx.session, ctx.req);
       const limit = getQuotaLimit(identity.type);
-      const quota = await deps.quotaStore.reserveDailyMessage(identity, limit, now());
+      const quota = await deps.quotaStore.reserveDailyMessage(
+        identity,
+        limit,
+        now()
+      );
 
       if (!quota.allowed) {
         const output: AgentSendMessageOutput = {
@@ -471,12 +558,13 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
       emit({ type: "status", stage: "understanding", elapsedMs: elapsedMs() });
 
       const scope = input.scope ?? inferScope(input.routeContext);
-      const conversation = await deps.conversationStore.createOrLoadConversation({
-        conversationId: input.conversationId,
-        identity,
-        scope,
-        title: buildConversationTitle(input.message),
-      });
+      const conversation =
+        await deps.conversationStore.createOrLoadConversation({
+          conversationId: input.conversationId,
+          identity,
+          scope,
+          title: buildConversationTitle(input.message),
+        });
       const userMessage = await deps.conversationStore.addMessage({
         conversationId: conversation.id,
         role: "user",
@@ -547,11 +635,16 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
             quota,
             runStatus: "completed",
           };
-          emit({ type: "answer_delta", delta: answer.answerMarkdown, elapsedMs: elapsedMs() });
+          emit({
+            type: "answer_delta",
+            delta: answer.answerMarkdown,
+            elapsedMs: elapsedMs(),
+          });
           emit({ type: "final", output, elapsedMs: elapsedMs() });
           return output;
         }
 
+        throwIfAborted(options.signal);
         emit({ type: "status", stage: "reasoning", elapsedMs: elapsedMs() });
         let answerStarted = false;
         const modelResult = deps.model.streamGenerate
@@ -562,15 +655,24 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
               sources,
               contextSources,
               currentPageContextInjected,
+              signal: options.signal,
               onAnswerDelta: delta => {
                 if (!answerStarted) {
                   answerStarted = true;
-                  emit({ type: "status", stage: "answer", elapsedMs: elapsedMs() });
+                  emit({
+                    type: "status",
+                    stage: "answer",
+                    elapsedMs: elapsedMs(),
+                  });
                 }
                 emit({ type: "answer_delta", delta, elapsedMs: elapsedMs() });
               },
               onReasoningDelta: delta =>
-                emit({ type: "reasoning_delta", delta, elapsedMs: elapsedMs() }),
+                emit({
+                  type: "reasoning_delta",
+                  delta,
+                  elapsedMs: elapsedMs(),
+                }),
             })
           : await deps.model.generate({
               message: input.message,
@@ -579,6 +681,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
               sources,
               contextSources,
               currentPageContextInjected,
+              signal: options.signal,
             });
         if (!deps.model.streamGenerate) {
           emit({ type: "status", stage: "answer", elapsedMs: elapsedMs() });
@@ -589,6 +692,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           });
         }
 
+        throwIfAborted(options.signal);
         emit({ type: "status", stage: "saving", elapsedMs: elapsedMs() });
         const answer = modelResult.answer;
         const assistantMessage = await deps.conversationStore.addMessage({
@@ -615,8 +719,8 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           outputTokens: modelResult.outputTokens,
           latencyMs: elapsedMs(),
           retrievedChunkIds: [
-            ...sources.map((source) => source.sourceId),
-            ...contextSources.map((source) => source.sourceId),
+            ...sources.map(source => source.sourceId),
+            ...contextSources.map(source => source.sourceId),
           ],
         });
 
@@ -684,27 +788,39 @@ export const defaultAgentService = createAgentService({
     }),
 });
 
-export async function buildAgentContext(req: AgentContext["req"]): Promise<AgentContext> {
+export async function buildAgentContext(
+  req: AgentContext["req"]
+): Promise<AgentContext> {
   return {
     req,
     session: await resolveBlogSession(req),
   };
 }
 
-export function inferScope(routeContext: AgentBootstrapInput["routeContext"]): AgentScope {
-  if (routeContext.postSlug) return { type: "post", value: routeContext.postSlug };
-  if (routeContext.categorySlug) return { type: "category", value: routeContext.categorySlug };
+export function inferScope(
+  routeContext: AgentBootstrapInput["routeContext"]
+): AgentScope {
+  if (routeContext.postSlug)
+    return { type: "post", value: routeContext.postSlug };
+  if (routeContext.categorySlug)
+    return { type: "category", value: routeContext.categorySlug };
   if (routeContext.tagSlug) return { type: "tag", value: routeContext.tagSlug };
-  if (routeContext.trackSlug) return { type: "track", value: routeContext.trackSlug };
+  if (routeContext.trackSlug)
+    return { type: "track", value: routeContext.trackSlug };
   return { type: "site" };
 }
 
 function buildConversationTitle(message: string) {
   const normalized = message.replace(/\s+/g, " ").trim();
-  return normalized.length > 80 ? `${normalized.slice(0, 77)}...` : normalized || "Blog assistant";
+  return normalized.length > 80
+    ? `${normalized.slice(0, 77)}...`
+    : normalized || "Blog assistant";
 }
 
-function buildContextExpiration(identityType: AgentConversationRecord["ownerType"], now: Date) {
+function buildContextExpiration(
+  identityType: AgentConversationRecord["ownerType"],
+  now: Date
+) {
   if (identityType === "admin") return null;
   return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 }
@@ -745,7 +861,7 @@ function assertAdminContext(ctx: AgentContext) {
 
 function defaultEvalQuestions(scope: AgentScope) {
   if (scope.type === "site") {
-    return AGENT_GOLDEN_QUESTIONS.map((item) => item.question);
+    return AGENT_GOLDEN_QUESTIONS.map(item => item.question);
   }
   if (scope.type === "track" && scope.value === "ai-applications") {
     return [
@@ -761,11 +877,14 @@ function defaultEvalQuestions(scope: AgentScope) {
   ];
 }
 
-function buildRetrievalDiagnostics(query: string, sources: KnowledgeSearchResult[]) {
+function buildRetrievalDiagnostics(
+  query: string,
+  sources: KnowledgeSearchResult[]
+) {
   const analysis = analyzeKnowledgeQuery(query);
   const terms = analysis.terms;
   const haystack = sources
-    .map((source) =>
+    .map(source =>
       [
         source.postTitle,
         source.postSlug,
@@ -774,10 +893,13 @@ function buildRetrievalDiagnostics(query: string, sources: KnowledgeSearchResult
         ...source.tagSlugs,
         source.excerpt,
         source.relevanceReason,
-      ].filter(Boolean).join(" ").toLowerCase()
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
     )
     .join(" ");
-  const missingTerms = terms.filter((term) => !haystack.includes(term));
+  const missingTerms = terms.filter(term => !haystack.includes(term));
   const hasSources = sources.length > 0;
 
   return {
@@ -789,8 +911,12 @@ function buildRetrievalDiagnostics(query: string, sources: KnowledgeSearchResult
     currentPageContextInjected: hasCurrentPageContext(sources),
     failureReason: hasSources ? undefined : ("retrieval_failure" as const),
     notes: hasSources
-      ? [`Retrieved ${sources.length} public source${sources.length === 1 ? "" : "s"}.`]
-      : ["No published/public knowledge chunk matched this query under the current scope."],
+      ? [
+          `Retrieved ${sources.length} public source${sources.length === 1 ? "" : "s"}.`,
+        ]
+      : [
+          "No published/public knowledge chunk matched this query under the current scope.",
+        ],
     suggestions: hasSources
       ? [
           "Inspect source slugs and headings before changing retrieval.",
@@ -805,8 +931,10 @@ function buildRetrievalDiagnostics(query: string, sources: KnowledgeSearchResult
 }
 
 function hasCurrentPageContext(sources: KnowledgeSearchResult[]) {
-  return sources.some((source) =>
-    source.relevanceReason.toLowerCase().startsWith("current public article context")
+  return sources.some(source =>
+    source.relevanceReason
+      .toLowerCase()
+      .startsWith("current public article context")
   );
 }
 
@@ -815,7 +943,8 @@ function buildEvalFailureReason(
   sourceCount: number,
   missingSourceSlugs: string[]
 ) {
-  if (expectedBehavior === "refusal" && sourceCount > 0) return "refusal_boundary" as const;
+  if (expectedBehavior === "refusal" && sourceCount > 0)
+    return "refusal_boundary" as const;
   if (sourceCount === 0) return "retrieval_failure" as const;
   if (missingSourceSlugs.length > 0) return "wrong_source" as const;
   return "wrong_source" as const;
@@ -827,20 +956,32 @@ function buildEvalFailureNotes(
   missingSourceSlugs: string[]
 ) {
   if (expectedBehavior === "refusal" && sourceCount > 0) {
-    return ["Expected no public source, but retrieval returned source cards. Review hidden/out-of-scope matching."];
+    return [
+      "Expected no public source, but retrieval returned source cards. Review hidden/out-of-scope matching.",
+    ];
   }
   if (sourceCount === 0) {
-    return ["Expected public sources, but retrieval returned none. Reindex or improve query/tag matching."];
+    return [
+      "Expected public sources, but retrieval returned none. Reindex or improve query/tag matching.",
+    ];
   }
   if (missingSourceSlugs.length > 0) {
-    return [`Missing expected source slug(s): ${missingSourceSlugs.join(", ")}.`];
+    return [
+      `Missing expected source slug(s): ${missingSourceSlugs.join(", ")}.`,
+    ];
   }
   return ["Eval needs manual review."];
 }
 
 function buildArticleIdeaTitle(seed: string) {
-  const normalized = seed.replace(/\s+/g, " ").trim().replace(/[?.!]+$/, "");
-  const withoutLead = normalized.replace(/^(can you|could you|please|explain|what is|what are)\s+/i, "");
+  const normalized = seed
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/[?.!]+$/, "");
+  const withoutLead = normalized.replace(
+    /^(can you|could you|please|explain|what is|what are)\s+/i,
+    ""
+  );
   const title = withoutLead.length > 0 ? withoutLead : normalized;
   return title.length > 90 ? `${title.slice(0, 87)}...` : title;
 }
@@ -858,7 +999,14 @@ function buildQuestionRadar(runs: AgentRunRecord[]): AgentQuestionRadarOutput {
       signalTypes: Set<"frequent" | "no_source" | "failed">;
     }
   >();
-  const scopeCounts = new Map<string, { scopeType: AgentQuestionRadarOutput["scopeBreakdown"][number]["scopeType"]; scopeValue: string | null; count: number }>();
+  const scopeCounts = new Map<
+    string,
+    {
+      scopeType: AgentQuestionRadarOutput["scopeBreakdown"][number]["scopeType"];
+      scopeValue: string | null;
+      count: number;
+    }
+  >();
   const noSourceRuns: AgentQuestionRadarOutput["noSourceRuns"] = [];
   const failedRuns: AgentQuestionRadarOutput["failedRuns"] = [];
 
@@ -866,11 +1014,16 @@ function buildQuestionRadar(runs: AgentRunRecord[]): AgentQuestionRadarOutput {
     const scopeType = run.scopeType ?? "site";
     const scopeValue = run.scopeValue ?? null;
     const scopeKey = `${scopeType}:${scopeValue ?? ""}`;
-    const scopeEntry = scopeCounts.get(scopeKey) ?? { scopeType, scopeValue, count: 0 };
+    const scopeEntry = scopeCounts.get(scopeKey) ?? {
+      scopeType,
+      scopeValue,
+      count: 0,
+    };
     scopeEntry.count += 1;
     scopeCounts.set(scopeKey, scopeEntry);
 
-    const noSource = (run.retrievedChunkIds ?? []).length === 0 && run.status === "completed";
+    const noSource =
+      (run.retrievedChunkIds ?? []).length === 0 && run.status === "completed";
     const failed = run.status === "failed" || Boolean(run.errorCode);
     const question = sanitizeQuestion(run.question);
 
@@ -896,20 +1049,21 @@ function buildQuestionRadar(runs: AgentRunRecord[]): AgentQuestionRadarOutput {
     if (!question) continue;
 
     const key = normalizeQuestionKey(question);
-    const entry =
-      questionGroups.get(key) ??
-      {
-        question,
-        count: 0,
-        scopeType,
-        scopeValue,
-        lastAskedAt: null,
-        runIds: [],
-        signalTypes: new Set<"frequent" | "no_source" | "failed">(),
-      };
+    const entry = questionGroups.get(key) ?? {
+      question,
+      count: 0,
+      scopeType,
+      scopeValue,
+      lastAskedAt: null,
+      runIds: [],
+      signalTypes: new Set<"frequent" | "no_source" | "failed">(),
+    };
     entry.count += 1;
     entry.runIds.push(run.id);
-    if (!entry.lastAskedAt || new Date(run.createdAt ?? 0).getTime() > entry.lastAskedAt.getTime()) {
+    if (
+      !entry.lastAskedAt ||
+      new Date(run.createdAt ?? 0).getTime() > entry.lastAskedAt.getTime()
+    ) {
       entry.lastAskedAt = run.createdAt ?? null;
     }
     if (noSource) entry.signalTypes.add("no_source");
@@ -922,15 +1076,16 @@ function buildQuestionRadar(runs: AgentRunRecord[]): AgentQuestionRadarOutput {
   }
 
   const frequentQuestions = Array.from(questionGroups.values())
-    .filter((entry) => entry.count > 1 || entry.signalTypes.size > 0)
+    .filter(entry => entry.count > 1 || entry.signalTypes.size > 0)
     .sort(
       (a, b) =>
         b.signalTypes.size - a.signalTypes.size ||
         b.count - a.count ||
-        new Date(b.lastAskedAt ?? 0).getTime() - new Date(a.lastAskedAt ?? 0).getTime()
+        new Date(b.lastAskedAt ?? 0).getTime() -
+          new Date(a.lastAskedAt ?? 0).getTime()
     )
     .slice(0, 12)
-    .map((entry) => ({
+    .map(entry => ({
       question: entry.question,
       count: entry.count,
       scopeType: entry.scopeType,
@@ -950,8 +1105,10 @@ function buildQuestionRadar(runs: AgentRunRecord[]): AgentQuestionRadarOutput {
     frequentQuestions,
     noSourceRuns: noSourceRuns.slice(0, 12),
     failedRuns: failedRuns.slice(0, 12),
-    scopeBreakdown: Array.from(scopeCounts.values()).sort((a, b) => b.count - a.count).slice(0, 8),
-    suggestedIdeas: frequentQuestions.slice(0, 6).map((item) => ({
+    scopeBreakdown: Array.from(scopeCounts.values())
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8),
+    suggestedIdeas: frequentQuestions.slice(0, 6).map(item => ({
       ideaId: buildIdeaId(item.question),
       proposedTitle: buildArticleIdeaTitle(item.question),
       rationale: `Based on ${item.count} Agent signal${item.count === 1 ? "" : "s"} (${item.signalTypes.join(", ") || "question"}).`,
@@ -965,18 +1122,42 @@ function buildQuestionRadar(runs: AgentRunRecord[]): AgentQuestionRadarOutput {
 function sanitizeQuestion(question: string | null | undefined) {
   const normalized = (question ?? "").replace(/\s+/g, " ").trim();
   if (!normalized) return null;
-  return normalized.length > 180 ? `${normalized.slice(0, 177)}...` : normalized;
+  return normalized.length > 180
+    ? `${normalized.slice(0, 177)}...`
+    : normalized;
 }
 
 function normalizeQuestionKey(question: string) {
-  return question.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff\s-]/gi, "").replace(/\s+/g, " ").trim();
+  return question
+    .toLowerCase()
+    .replace(/[^a-z0-9\u4e00-\u9fff\s-]/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function buildIdeaId(question: string) {
   return `agent-${normalizeQuestionKey(question).replace(/\s+/g, "-").slice(0, 80) || "idea"}`;
 }
 
+function throwIfAborted(signal: AbortSignal | undefined) {
+  if (!signal?.aborted) return;
+  throw signal.reason instanceof Error
+    ? signal.reason
+    : Object.assign(new Error("Agent stream aborted"), {
+        name: "AbortError",
+      });
+}
+
 function normalizeErrorCode(error: unknown) {
-  if (error instanceof Error && error.message.includes("OPENAI_API_KEY")) return "model_not_configured";
+  if (isAbortLikeError(error)) return "agent_stream_aborted";
+  if (error instanceof Error && error.message.includes("OPENAI_API_KEY"))
+    return "model_not_configured";
   return "agent_generation_failed";
+}
+
+function isAbortLikeError(error: unknown) {
+  if (error instanceof Error) {
+    return error.name === "AbortError" || error.name === "TimeoutError";
+  }
+  return false;
 }

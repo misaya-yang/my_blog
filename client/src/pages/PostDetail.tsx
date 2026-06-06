@@ -1,12 +1,21 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { ArticleFeedback } from "@/components/ArticleFeedback";
-import { ResearchWaveVisual, SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
+import {
+  ResearchWaveVisual,
+  SiteHeader,
+  SpaceBackdrop,
+} from "@/components/ResearchShell";
 import { SubscriptionForm } from "@/components/SubscriptionForm";
+import { openBlogAgentWithPrompt } from "@/components/agent/routeContext";
 import { Button } from "@/components/ui/button";
 import { trackConfigs } from "@/lib/tracks";
 import { trpc } from "@/lib/trpc";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
-import { buildArticleJsonLd, buildArticleMetadata, buildRouteMetadata } from "@shared/metadata";
+import {
+  buildArticleJsonLd,
+  buildArticleMetadata,
+  buildRouteMetadata,
+} from "@shared/metadata";
 import {
   ArrowLeft,
   ArrowRight,
@@ -33,13 +42,20 @@ import { toast } from "sonner";
 const MarkdownRenderer = lazy(() => import("@/components/MarkdownRenderer"));
 
 function postVisualVariant(slug?: string) {
-  if (slug?.includes("agent") || slug?.includes("harness") || slug?.includes("rag")) {
+  if (
+    slug?.includes("agent") ||
+    slug?.includes("harness") ||
+    slug?.includes("rag")
+  ) {
     return "matrix";
   }
   return slug?.includes("isohc") ? "orbit" : "wave";
 }
 
-type Translate = (key: string, vars?: Record<string, string | number>) => string;
+type Translate = (
+  key: string,
+  vars?: Record<string, string | number>
+) => string;
 
 type ArticleTag = {
   slug: string;
@@ -101,10 +117,21 @@ type SeriesContext = {
 const publicArticleTitlesBySlug: Record<string, string> = {
   "agent-harness-engine-evaluating-tool-using-agents":
     "Agent Harness Engine: Evaluating Tool-Using Agents",
-  "rag-evidence-packet-context-compiler": "Evidence Packet: Agentic RAG 的上下文编译接口",
-  "agent-loop-observable-tool-using-agents": "Agent Loop: 从 ReAct 模式到可观测运行时",
-  "isohc-fixed-vector-isometric-residual-mixing": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+  "rag-evidence-packet-context-compiler":
+    "Evidence Packet: Agentic RAG 的上下文编译接口",
+  "agent-loop-observable-tool-using-agents":
+    "Agent Loop: 从 ReAct 模式到可观测运行时",
+  "goal-harness-agent-phase-protocol":
+    "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
+  "isohc-fixed-vector-isometric-residual-mixing":
+    "IsoHC: Fixed-Vector Isometric Residual Mixing",
 };
+
+const articleAgentPromptKeys = [
+  "agent.prompts.postAbstraction",
+  "agent.prompts.postImplementation",
+  "agent.prompts.nextReading",
+];
 
 function buildArticleEntryItems(
   post: ArticlePostModel,
@@ -129,22 +156,46 @@ function buildArticleEntryItems(
 
   return [
     excerpt
-      ? { key: "core", label: t("post.entry.coreClaim"), value: truncateText(excerpt, 280) }
+      ? {
+          key: "core",
+          label: t("post.entry.coreClaim"),
+          value: truncateText(excerpt, 280),
+        }
       : null,
     background
-      ? { key: "background", label: t("post.entry.background"), value: background }
+      ? {
+          key: "background",
+          label: t("post.entry.background"),
+          value: background,
+        }
       : null,
     boundary
-      ? { key: "boundary", label: t("post.entry.problemBoundary"), value: boundary }
+      ? {
+          key: "boundary",
+          label: t("post.entry.problemBoundary"),
+          value: boundary,
+        }
       : null,
     abstraction
-      ? { key: "abstraction", label: t("post.entry.mainAbstraction"), value: abstraction }
+      ? {
+          key: "abstraction",
+          label: t("post.entry.mainAbstraction"),
+          value: abstraction,
+        }
       : null,
     implementation
-      ? { key: "implementation", label: t("post.entry.implementation"), value: implementation }
+      ? {
+          key: "implementation",
+          label: t("post.entry.implementation"),
+          value: implementation,
+        }
       : null,
     limitations
-      ? { key: "limitations", label: t("post.entry.limitations"), value: limitations }
+      ? {
+          key: "limitations",
+          label: t("post.entry.limitations"),
+          value: limitations,
+        }
       : {
           key: "limitations",
           label: t("post.entry.limitations"),
@@ -159,11 +210,11 @@ function buildSeriesContext(
   postContext: PostContextModel | undefined,
   t: Translate
 ): SeriesContext | null {
-  const candidates = Object.values(trackConfigs).flatMap((track) =>
-    track.series.filter((series) => series.postSlugs.includes(post.slug))
+  const candidates = Object.values(trackConfigs).flatMap(track =>
+    track.series.filter(series => series.postSlugs.includes(post.slug))
   );
   const match =
-    candidates.find((series) => series.slug === post.seriesSlug) ?? candidates[0];
+    candidates.find(series => series.slug === post.seriesSlug) ?? candidates[0];
 
   if (!match) return null;
 
@@ -183,8 +234,12 @@ function buildSeriesContext(
       current: currentIndex + 1,
       total: seriesSlugs.length,
     }),
-    previous: seriesSlugs[currentIndex - 1] ? toPostLink(seriesSlugs[currentIndex - 1]) : undefined,
-    next: seriesSlugs[currentIndex + 1] ? toPostLink(seriesSlugs[currentIndex + 1]) : undefined,
+    previous: seriesSlugs[currentIndex - 1]
+      ? toPostLink(seriesSlugs[currentIndex - 1])
+      : undefined,
+    next: seriesSlugs[currentIndex + 1]
+      ? toPostLink(seriesSlugs[currentIndex + 1])
+      : undefined,
     first: seriesSlugs[0] ? toPostLink(seriesSlugs[0]) : undefined,
     isFirst: currentIndex === 0,
   };
@@ -202,13 +257,16 @@ function resolvePostTitle(
     ...(postContext?.related ?? []),
   ].filter(Boolean) as PostLink[];
   return (
-    contextLinks.find((link) => link.slug === slug)?.title ??
+    contextLinks.find(link => link.slug === slug)?.title ??
     publicArticleTitlesBySlug[slug] ??
     slug.replace(/-/g, " ")
   );
 }
 
-function buildMainAbstraction(post: ArticlePostModel, headings: ArticleHeading[]) {
+function buildMainAbstraction(
+  post: ArticlePostModel,
+  headings: ArticleHeading[]
+) {
   const priorityTagSlugs = [
     "agent-loop",
     "harness-engine",
@@ -221,9 +279,9 @@ function buildMainAbstraction(post: ArticlePostModel, headings: ArticleHeading[]
     "position-encoding",
   ];
   const primaryTag = priorityTagSlugs
-    .map((slug) => (post.tags ?? []).find((tag) => tag.slug === slug))
+    .map(slug => (post.tags ?? []).find(tag => tag.slug === slug))
     .find(Boolean);
-  const technicalHeading = headings.find((heading) => {
+  const technicalHeading = headings.find(heading => {
     const normalized = normalizeText(stripHeadingPrefix(heading.text));
     return (
       heading.level <= 2 &&
@@ -251,22 +309,32 @@ function buildRequiredBackground(tags: ArticleTag[]) {
     "ai",
   ]);
   const backgroundTags = tags
-    .filter((tag) => !genericSlugs.has(tag.slug))
+    .filter(tag => !genericSlugs.has(tag.slug))
     .slice(0, 4)
-    .map((tag) => tag.name);
+    .map(tag => tag.name);
 
   return backgroundTags.join(" · ");
 }
 
-function buildImplementationMapping(content: string, headings: ArticleHeading[], t: Translate) {
+function buildImplementationMapping(
+  content: string,
+  headings: ArticleHeading[],
+  t: Translate
+) {
   const signals: string[] = [];
   if (/```/.test(content)) signals.push(t("post.entry.signalCode"));
-  if (/\n\|.+\|\n\|[-:\s|]+\|/.test(content)) signals.push(t("post.entry.signalTable"));
-  if (/\$\$|\\\(|\\\[/.test(content)) signals.push(t("post.entry.signalFormula"));
-  if (headings.some((heading) => /implementation|runtime stack|architecture|stack map/i.test(heading.text))) {
+  if (/\n\|.+\|\n\|[-:\s|]+\|/.test(content))
+    signals.push(t("post.entry.signalTable"));
+  if (/\$\$|\\\(|\\\[/.test(content))
+    signals.push(t("post.entry.signalFormula"));
+  if (
+    headings.some(heading =>
+      /implementation|runtime stack|architecture|stack map/i.test(heading.text)
+    )
+  ) {
     signals.push(t("post.entry.signalArchitecture"));
   }
-  if (headings.some((heading) => /evaluation|evidence/i.test(heading.text))) {
+  if (headings.some(heading => /evaluation|evidence/i.test(heading.text))) {
     signals.push(t("post.entry.signalEvaluation"));
   }
 
@@ -282,7 +350,7 @@ function extractSectionPreview(content: string, targetHeadings: string[]) {
     if (!headingMatch) continue;
 
     const headingText = normalizeText(stripHeadingPrefix(headingMatch[2]));
-    if (!targetSet.some((target) => headingText.includes(target))) continue;
+    if (!targetSet.some(target => headingText.includes(target))) continue;
 
     const bodyLines: string[] = [];
     for (let bodyIndex = index + 1; bodyIndex < lines.length; bodyIndex++) {
@@ -317,7 +385,9 @@ function normalizeText(value: string) {
 }
 
 function truncateText(value: string, maxLength: number) {
-  return value.length > maxLength ? `${value.slice(0, maxLength).trim()}...` : value;
+  return value.length > maxLength
+    ? `${value.slice(0, maxLength).trim()}...`
+    : value;
 }
 
 export default function PostDetail() {
@@ -385,9 +455,7 @@ export default function PostDetail() {
   // Scroll spy for TOC
   useEffect(() => {
     const handleScroll = () => {
-      const headingElements = headings.map((h) =>
-        document.getElementById(h.id)
-      );
+      const headingElements = headings.map(h => document.getElementById(h.id));
       const scrollPosition = window.scrollY + 100;
 
       for (let i = headingElements.length - 1; i >= 0; i--) {
@@ -477,7 +545,9 @@ export default function PostDetail() {
             {t("post.notFound")}
           </h1>
           <Link href="/">
-            <Button variant="outline" className="glass-button">{t("post.backHome")}</Button>
+            <Button variant="outline" className="glass-button">
+              {t("post.backHome")}
+            </Button>
           </Link>
         </div>
       </div>
@@ -487,13 +557,28 @@ export default function PostDetail() {
   const articlePost = post as ArticlePostModel;
   const readingTime = calculateReadingTime(articlePost.content || "");
   const postTags = Array.isArray(articlePost.tags) ? articlePost.tags : [];
+  const visibleHeaderTags = postTags.slice(0, 4);
+  const remainingHeaderTagCount = Math.max(
+    0,
+    postTags.length - visibleHeaderTags.length
+  );
   const postCategory = articlePost.category;
-  const continueTrackHref = postCategory?.slug === "ai-applications" ? "/applications" : "/algorithms";
-  const continueTrackLabel = postCategory?.slug === "ai-applications"
-    ? t("home.applicationsLabel")
-    : t("home.algorithmsLabel");
-  const articleEntryItems = buildArticleEntryItems(articlePost, headings, t);
-  const seriesContext = buildSeriesContext(articlePost, postContext as PostContextModel | undefined, t);
+  const continueTrackHref =
+    postCategory?.slug === "ai-applications" ? "/applications" : "/algorithms";
+  const continueTrackLabel =
+    postCategory?.slug === "ai-applications"
+      ? t("home.applicationsLabel")
+      : t("home.algorithmsLabel");
+  const articleEntryItems = buildArticleEntryItems(
+    articlePost,
+    headings,
+    t
+  ).slice(0, 4);
+  const seriesContext = buildSeriesContext(
+    articlePost,
+    postContext as PostContextModel | undefined,
+    t
+  );
 
   return (
     <div className="space-page text-foreground">
@@ -512,15 +597,15 @@ export default function PostDetail() {
           <article className="glass-panel reading-surface max-w-4xl p-5 sm:p-8 lg:p-10">
             {/* Post Header */}
             <div className="mb-8">
-              <h1 className="article-page-title mb-5">
-                {post.title}
-              </h1>
+              <h1 className="article-page-title mb-5">{post.title}</h1>
 
               {/* Author Info */}
               <div className="mb-5 flex flex-wrap items-center gap-3 border-b border-sky-200/10 pb-5">
                 <div className="flex items-center gap-2 text-sm">
                   <User className="h-4 w-4 text-sky-300" />
-                  <span className="font-medium text-white">{t("post.authorName")}</span>
+                  <span className="font-medium text-white">
+                    {t("post.authorName")}
+                  </span>
                 </div>
                 <div className="h-4 w-px bg-sky-200/20" />
                 <a
@@ -565,7 +650,7 @@ export default function PostDetail() {
                 </span>
               </div>
 
-              {(postCategory || postTags.length > 0) && (
+              {(postCategory || visibleHeaderTags.length > 0) && (
                 <div className="mb-6 flex flex-wrap gap-2">
                   {postCategory && (
                     <Link
@@ -576,28 +661,46 @@ export default function PostDetail() {
                       {postCategory.name}
                     </Link>
                   )}
-                  {postTags.map((tag: any) => (
-                    <Link key={tag.slug} href={`/tags/${tag.slug}`} className="article-tag gap-1.5">
+                  {visibleHeaderTags.map((tag: any) => (
+                    <Link
+                      key={tag.slug}
+                      href={`/tags/${tag.slug}`}
+                      className="article-tag gap-1.5"
+                    >
                       <Tags className="h-3.5 w-3.5" />
                       {tag.name}
                     </Link>
                   ))}
+                  {remainingHeaderTagCount > 0 && (
+                    <span className="article-tag article-tag-muted">
+                      {t("post.moreTags", { count: remainingHeaderTagCount })}
+                    </span>
+                  )}
                 </div>
               )}
 
               {(articleEntryItems.length > 0 || seriesContext) && (
-                <section className="article-entry-layer" aria-labelledby="article-entry-title">
+                <section
+                  className="article-entry-layer"
+                  aria-labelledby="article-entry-title"
+                >
                   <div className="article-entry-heading">
-                    <p className="article-entry-kicker">{t("post.entry.kicker")}</p>
+                    <p className="article-entry-kicker">
+                      {t("post.entry.kicker")}
+                    </p>
                     <h2 id="article-entry-title">{t("post.entry.title")}</h2>
                   </div>
 
                   {articleEntryItems.length > 0 && (
                     <dl className="article-entry-grid">
-                      {articleEntryItems.map((item) => (
+                      {articleEntryItems.map(item => (
                         <div
                           key={item.key}
-                          className={item.muted ? "article-entry-item article-entry-item-muted" : "article-entry-item"}
+                          className={
+                            item.muted
+                              ? "article-entry-item article-entry-item-muted"
+                              : "article-entry-item"
+                          }
                         >
                           <dt>{item.label}</dt>
                           <dd>{item.value}</dd>
@@ -609,32 +712,50 @@ export default function PostDetail() {
                   {seriesContext && (
                     <div className="article-series-inline">
                       <div className="min-w-0">
-                        <span className="article-series-label">{t("post.series.label")}</span>
-                        <p className="article-series-title">{seriesContext.title}</p>
+                        <span className="article-series-label">
+                          {t("post.series.label")}
+                        </span>
+                        <p className="article-series-title">
+                          {seriesContext.title}
+                        </p>
                         <p className="article-series-meta">
                           {seriesContext.positionLabel}
-                          {seriesContext.promise ? ` · ${seriesContext.promise}` : ""}
+                          {seriesContext.promise
+                            ? ` · ${seriesContext.promise}`
+                            : ""}
                         </p>
                       </div>
                       <div className="article-series-actions">
                         {!seriesContext.isFirst && seriesContext.first && (
-                          <Link href={`/post/${seriesContext.first.slug}`} className="article-series-action">
+                          <Link
+                            href={`/post/${seriesContext.first.slug}`}
+                            className="article-series-action"
+                          >
                             {t("post.series.start")}
                           </Link>
                         )}
                         {seriesContext.previous && (
-                          <Link href={`/post/${seriesContext.previous.slug}`} className="article-series-action">
+                          <Link
+                            href={`/post/${seriesContext.previous.slug}`}
+                            className="article-series-action"
+                          >
                             <ArrowLeft className="h-3.5 w-3.5" />
                             {t("post.series.previous")}
                           </Link>
                         )}
                         {seriesContext.next ? (
-                          <Link href={`/post/${seriesContext.next.slug}`} className="article-series-action article-series-action-primary">
+                          <Link
+                            href={`/post/${seriesContext.next.slug}`}
+                            className="article-series-action article-series-action-primary"
+                          >
                             {t("post.series.next")}
                             <ArrowRight className="h-3.5 w-3.5" />
                           </Link>
                         ) : (
-                          <Link href={continueTrackHref} className="article-series-action">
+                          <Link
+                            href={continueTrackHref}
+                            className="article-series-action"
+                          >
                             {t("post.series.track")}
                             <ArrowRight className="h-3.5 w-3.5" />
                           </Link>
@@ -642,11 +763,41 @@ export default function PostDetail() {
                       </div>
                     </div>
                   )}
+
+                  <div
+                    className="article-agent-prompts"
+                    aria-label={t("post.agentCompanion.title")}
+                  >
+                    <div className="article-agent-prompts-heading">
+                      <BookOpen className="h-4 w-4 text-sky-300" />
+                      <span>{t("post.agentCompanion.title")}</span>
+                    </div>
+                    <div className="article-agent-prompt-list">
+                      {articleAgentPromptKeys.map(key => {
+                        const prompt = t(key);
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            className="article-agent-prompt"
+                            onClick={() => openBlogAgentWithPrompt(prompt)}
+                          >
+                            {prompt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </section>
               )}
 
-              <div className="article-secondary-actions" aria-label={t("post.share")}>
-                <span className="article-secondary-label">{t("post.share")}</span>
+              <div
+                className="article-secondary-actions"
+                aria-label={t("post.share")}
+              >
+                <span className="article-secondary-label">
+                  {t("post.share")}
+                </span>
                 <Button
                   variant="outline"
                   size="sm"
@@ -725,12 +876,14 @@ export default function PostDetail() {
                   {t("post.toc")}
                 </summary>
                 <nav className="mt-3 grid gap-2">
-                  {headings.map((heading) => (
+                  {headings.map(heading => (
                     <a
                       key={heading.id}
                       href={`#${heading.id}`}
                       className="text-sm text-slate-400 hover:text-sky-200"
-                      style={{ paddingLeft: `${(heading.level - 1) * 0.75}rem` }}
+                      style={{
+                        paddingLeft: `${(heading.level - 1) * 0.75}rem`,
+                      }}
                     >
                       {heading.text}
                     </a>
@@ -741,7 +894,11 @@ export default function PostDetail() {
 
             {/* Post Content */}
             <div className="article-prose">
-              <Suspense fallback={<div className="h-24 animate-pulse rounded-lg bg-slate-800/40" />}>
+              <Suspense
+                fallback={
+                  <div className="h-24 animate-pulse rounded-lg bg-slate-800/40" />
+                }
+              >
                 <MarkdownRenderer
                   content={post.content}
                   headings={headings}
@@ -756,7 +913,12 @@ export default function PostDetail() {
             <div className="mt-16 border-t border-sky-200/10 pt-8">
               <div className="mb-6 flex items-center justify-between gap-4">
                 <h2 className="section-title">{t("post.discoveryTitle")}</h2>
-                <Button asChild variant="outline" size="sm" className="glass-button">
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="glass-button"
+                >
                   <Link href={continueTrackHref}>
                     {t("post.continueTrack", { track: continueTrackLabel })}
                     <ArrowRight className="h-4 w-4" />
@@ -764,46 +926,49 @@ export default function PostDetail() {
                 </Button>
               </div>
 
-              {seriesContext && (seriesContext.previous || seriesContext.next) && (
-                <div className="article-series-footer mb-6">
-                  <div className="mb-4">
-                    <span className="article-series-label">{t("post.series.continuity")}</span>
-                    <p className="article-series-title">
-                      {seriesContext.title} · {seriesContext.positionLabel}
-                    </p>
+              {seriesContext &&
+                (seriesContext.previous || seriesContext.next) && (
+                  <div className="article-series-footer mb-6">
+                    <div className="mb-4">
+                      <span className="article-series-label">
+                        {t("post.series.continuity")}
+                      </span>
+                      <p className="article-series-title">
+                        {seriesContext.title} · {seriesContext.positionLabel}
+                      </p>
+                    </div>
+                    <div className="grid gap-3 md:grid-cols-2">
+                      {seriesContext.previous && (
+                        <Link
+                          href={`/post/${seriesContext.previous.slug}`}
+                          className="article-series-footer-link"
+                        >
+                          <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
+                            <ArrowLeft className="h-3.5 w-3.5" />
+                            {t("post.series.previous")}
+                          </span>
+                          <span className="line-clamp-2 text-sm font-semibold leading-6 text-white">
+                            {seriesContext.previous.title}
+                          </span>
+                        </Link>
+                      )}
+                      {seriesContext.next && (
+                        <Link
+                          href={`/post/${seriesContext.next.slug}`}
+                          className="article-series-footer-link md:text-right"
+                        >
+                          <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400 md:justify-end">
+                            {t("post.series.next")}
+                            <ArrowRight className="h-3.5 w-3.5" />
+                          </span>
+                          <span className="line-clamp-2 text-sm font-semibold leading-6 text-white">
+                            {seriesContext.next.title}
+                          </span>
+                        </Link>
+                      )}
+                    </div>
                   </div>
-                  <div className="grid gap-3 md:grid-cols-2">
-                    {seriesContext.previous && (
-                      <Link
-                        href={`/post/${seriesContext.previous.slug}`}
-                        className="article-series-footer-link"
-                      >
-                        <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
-                          <ArrowLeft className="h-3.5 w-3.5" />
-                          {t("post.series.previous")}
-                        </span>
-                        <span className="line-clamp-2 text-sm font-semibold leading-6 text-white">
-                          {seriesContext.previous.title}
-                        </span>
-                      </Link>
-                    )}
-                    {seriesContext.next && (
-                      <Link
-                        href={`/post/${seriesContext.next.slug}`}
-                        className="article-series-footer-link md:text-right"
-                      >
-                        <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400 md:justify-end">
-                          {t("post.series.next")}
-                          <ArrowRight className="h-3.5 w-3.5" />
-                        </span>
-                        <span className="line-clamp-2 text-sm font-semibold leading-6 text-white">
-                          {seriesContext.next.title}
-                        </span>
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              )}
+                )}
 
               {(postContext?.previous || postContext?.next) && (
                 <div className="grid gap-3 md:grid-cols-2">
@@ -840,7 +1005,9 @@ export default function PostDetail() {
 
               {postContext?.related?.length ? (
                 <div className="mt-8">
-                  <h3 className="mb-3 text-sm font-semibold text-white">{t("post.related")}</h3>
+                  <h3 className="mb-3 text-sm font-semibold text-white">
+                    {t("post.related")}
+                  </h3>
                   <div className="grid gap-3">
                     {postContext.related.map((related: any) => (
                       <Link
@@ -857,7 +1024,11 @@ export default function PostDetail() {
               ) : null}
 
               <div className="mt-10 grid gap-8 border-t border-sky-200/10 pt-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
-                <ArticleFeedback postId={post.id} postTitle={post.title} embedded />
+                <ArticleFeedback
+                  postId={post.id}
+                  postTitle={post.title}
+                  embedded
+                />
                 <SubscriptionForm surface="article" embedded />
               </div>
             </div>
@@ -865,7 +1036,9 @@ export default function PostDetail() {
             <div className="mt-16 border-t border-sky-200/10 pt-8">
               <div className="flex items-start gap-4">
                 <div className="flex-1">
-                  <h3 className="mb-2 text-lg font-semibold text-white">{t("post.authorName")}</h3>
+                  <h3 className="mb-2 text-lg font-semibold text-white">
+                    {t("post.authorName")}
+                  </h3>
                   <p className="mb-4 text-sm text-slate-400">
                     {t("post.authorBio")}
                   </p>
@@ -875,7 +1048,11 @@ export default function PostDetail() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <Button size="sm" variant="outline" className="glass-button h-8 gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="glass-button h-8 gap-2"
+                      >
                         <GraduationCap className="h-4 w-4" />
                         {t("post.googleScholar")}
                       </Button>
@@ -898,11 +1075,9 @@ export default function PostDetail() {
           {/* Table of Contents */}
           <aside className="hidden lg:block">
             <div className="glass-panel toc-surface sticky top-24 p-5">
-              <h3 className="section-title mb-4">
-                {t("post.toc")}
-              </h3>
+              <h3 className="section-title mb-4">{t("post.toc")}</h3>
               <nav className="space-y-2">
-                {headings.map((heading) => (
+                {headings.map(heading => (
                   <a
                     key={heading.id}
                     href={`#${heading.id}`}
@@ -912,7 +1087,7 @@ export default function PostDetail() {
                         : "text-slate-400 hover:text-white"
                     }`}
                     style={{ paddingLeft: `${(heading.level - 1) * 0.75}rem` }}
-                    onClick={(e) => {
+                    onClick={e => {
                       e.preventDefault();
                       document.getElementById(heading.id)?.scrollIntoView({
                         behavior: "smooth",

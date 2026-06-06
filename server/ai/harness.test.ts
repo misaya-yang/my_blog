@@ -4,7 +4,7 @@ import { createMemoryContextSourceStore } from "./contextSources";
 import { createAgentService } from "./harness";
 import { createMemoryQuotaStore } from "./quota";
 import type { BlogSession } from "../auth";
-import type { AgentContext, AgentModel } from "./types";
+import type { AgentContext, AgentModel, AgentStreamEvent } from "./types";
 import type { KnowledgeSearchResult } from "./knowledge";
 
 const routeContext = {
@@ -414,6 +414,214 @@ describe("AI agent harness", () => {
       relevanceReason: expect.stringContaining(
         "Current public article context"
       ),
+    });
+  });
+
+  it("streams deltas and persists the same public source cards as the final event", async () => {
+    const model: AgentModel = {
+      generate: vi.fn(async () => {
+        throw new Error("streaming path should use streamGenerate");
+      }),
+      streamGenerate: vi.fn(
+        async ({ sources, onReasoningDelta, onAnswerDelta }) => {
+          onReasoningDelta("Inspecting retrieved public context.\n");
+          onAnswerDelta("Harness engines stream grounded answers.");
+
+          return {
+            inputTokens: 42,
+            outputTokens: 24,
+            model: "stream-test-model",
+            reasoningMarkdown: "Inspecting retrieved public context.",
+            answer: {
+              answerType: "explanation",
+              answerMarkdown: "Harness engines stream grounded answers.",
+              sourceIds: [sources[0].sourceId],
+              sourceCards: [
+                {
+                  sourceId: sources[0].sourceId,
+                  postTitle: sources[0].postTitle ?? "",
+                  postSlug: sources[0].postSlug ?? "",
+                  categorySlug: sources[0].categorySlug ?? undefined,
+                  tagSlugs: sources[0].tagSlugs,
+                  heading: sources[0].heading ?? undefined,
+                  excerpt: sources[0].excerpt,
+                  relevanceReason: sources[0].relevanceReason,
+                },
+              ],
+              relatedQuestions: ["How should streamed answers cite sources?"],
+              confidence: "high",
+            },
+          };
+        }
+      ),
+    };
+    const { service, conversationStore } = createHarness({ model });
+    const events: AgentStreamEvent[] = [];
+
+    const result = await service.streamMessage(
+      visitorContextWithId("visitor-stream-1"),
+      {
+        message: "Explain harness engines with sources",
+        routeContext,
+      },
+      event => events.push(event)
+    );
+
+    expect(model.generate).not.toHaveBeenCalled();
+    expect(model.streamGenerate).toHaveBeenCalledTimes(1);
+    expect(result.status).toBe("completed");
+    if (result.status !== "completed") return;
+
+    const finalEvent = events.find(event => event.type === "final");
+    expect(finalEvent).toMatchObject({
+      type: "final",
+      output: {
+        status: "completed",
+        sourceCards: result.sourceCards,
+      },
+      reasoningMarkdown: "Inspecting retrieved public context.",
+    });
+    expect(events).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "reasoning_delta",
+          delta: "Inspecting retrieved public context.\n",
+        }),
+        expect.objectContaining({
+          type: "answer_delta",
+          delta: "Harness engines stream grounded answers.",
+        }),
+      ])
+    );
+
+    const assistantMessage = conversationStore.messages.find(
+      message => message.role === "assistant"
+    );
+    expect(assistantMessage).toMatchObject({
+      status: "completed",
+      content: "Harness engines stream grounded answers.",
+      sourceJson: {
+        sourceCards: result.sourceCards,
+        reasoningMarkdown: "Inspecting retrieved public context.",
+      },
+    });
+  });
+
+  it("streams no-source refusals without calling the model", async () => {
+    const model: AgentModel = {
+      generate: vi.fn(async () => {
+        throw new Error("model should not run without public sources");
+      }),
+      streamGenerate: vi.fn(async () => {
+        throw new Error(
+          "streaming model should not run without public sources"
+        );
+      }),
+    };
+    const { service, conversationStore } = createHarness({
+      retrieve: vi.fn(async () => []),
+      model,
+    });
+    const events: AgentStreamEvent[] = [];
+
+    const result = await service.streamMessage(
+      anonymousContext("203.0.113.90"),
+      {
+        message: "Can you explain EVQ hidden details?",
+        routeContext,
+      },
+      event => events.push(event)
+    );
+
+    expect(model.generate).not.toHaveBeenCalled();
+    expect(model.streamGenerate).not.toHaveBeenCalled();
+    expect(result.status).toBe("completed");
+    if (result.status !== "completed") return;
+    expect(result.answer).toMatchObject({
+      answerType: "refusal",
+      refusalReason: "no_public_source",
+      sourceCards: [],
+    });
+    expect(events).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "answer_delta",
+          delta: result.answer.answerMarkdown,
+        }),
+        expect.objectContaining({
+          type: "final",
+          output: expect.objectContaining({
+            status: "completed",
+            sourceCards: [],
+          }),
+        }),
+      ])
+    );
+    expect(
+      conversationStore.messages.find(message => message.role === "assistant")
+    ).toMatchObject({
+      status: "completed",
+      content: result.answer.answerMarkdown,
+      sourceJson: { sourceCards: [] },
+    });
+  });
+
+  it("marks aborted streaming model work distinctly from generation failures", async () => {
+    const controller = new AbortController();
+    const abortError = Object.assign(new Error("stream aborted"), {
+      name: "AbortError",
+    });
+    const model: AgentModel = {
+      generate: vi.fn(async () => {
+        throw new Error("streaming path should use streamGenerate");
+      }),
+      streamGenerate: vi.fn(async ({ signal }) => {
+        expect(signal).toBe(controller.signal);
+        throw abortError;
+      }),
+    };
+    const { service, conversationStore } = createHarness({ model });
+    const events: AgentStreamEvent[] = [];
+
+    const result = await service.streamMessage(
+      visitorContextWithId("visitor-stream-abort"),
+      {
+        message: "Explain harness engines, then stop",
+        routeContext,
+      },
+      event => events.push(event),
+      { signal: controller.signal }
+    );
+
+    expect(result).toMatchObject({
+      status: "failed",
+      runStatus: "failed",
+      errorCode: "agent_stream_aborted",
+    });
+    expect(events).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "error",
+          message: "agent_stream_aborted",
+        }),
+        expect.objectContaining({
+          type: "final",
+          output: expect.objectContaining({
+            status: "failed",
+            errorCode: "agent_stream_aborted",
+          }),
+        }),
+      ])
+    );
+    expect(
+      conversationStore.messages.find(message => message.role === "assistant")
+    ).toMatchObject({
+      status: "failed",
+      errorCode: "agent_stream_aborted",
+    });
+    expect(conversationStore.runs[0]).toMatchObject({
+      status: "failed",
+      errorCode: "agent_stream_aborted",
     });
   });
 

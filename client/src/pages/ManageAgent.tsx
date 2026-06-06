@@ -134,6 +134,10 @@ export default function ManageAgent() {
     { limit: 50 },
     { enabled: isAdmin, retry: false }
   );
+  const contentRadar = trpc.engagement.contentRadar.summary.useQuery(
+    undefined,
+    { enabled: isAdmin, retry: false }
+  );
   const ideas = trpc.agent.adminExtractArticleIdeas.useQuery(
     {
       conversationId: conversationId || "00000000-0000-4000-8000-000000000000",
@@ -432,6 +436,8 @@ export default function ManageAgent() {
               loading={questionRadar.isLoading}
               error={questionRadar.isError}
               radar={questionRadar.data}
+              searchMisses={contentRadar.data?.searchMisses}
+              searchMissLoading={contentRadar.isLoading}
               ideaStatuses={ideaStatuses}
               onIdeaStatus={updateIdeaStatus}
               onRefresh={() => questionRadar.refetch()}
@@ -610,6 +616,8 @@ function QuestionRadarPanel({
   loading,
   error,
   radar,
+  searchMisses,
+  searchMissLoading,
   ideaStatuses,
   onIdeaStatus,
   onRefresh,
@@ -617,6 +625,18 @@ function QuestionRadarPanel({
   loading: boolean;
   error: boolean;
   radar?: any;
+  searchMisses?: {
+    total: number;
+    uniqueQueries: number;
+    opportunities: Array<{
+      query: string;
+      count: number;
+      firstSeenAt: string | Date;
+      lastSeenAt: string | Date;
+      suggestedPrompt: string;
+    }>;
+  };
+  searchMissLoading?: boolean;
   ideaStatuses: Record<string, IdeaStatus>;
   onIdeaStatus: (ideaId: string, status: IdeaStatus) => void;
   onRefresh: () => void;
@@ -626,6 +646,7 @@ function QuestionRadarPanel({
   const ideas = radar?.suggestedIdeas ?? [];
   const noSourceRuns = radar?.noSourceRuns ?? [];
   const failedRuns = radar?.failedRuns ?? [];
+  const searchMissOpportunities = searchMisses?.opportunities ?? [];
 
   if (loading) {
     return (
@@ -774,6 +795,61 @@ function QuestionRadarPanel({
               );
             })
           )}
+
+          <div className="rounded-lg border border-sky-200/15 bg-slate-950/35 p-4">
+            <div className="mb-3 flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-semibold text-white">
+                  {t("agentOps.radar.searchMisses")}
+                </h3>
+                <p className="mt-1 text-xs leading-5 text-slate-500">
+                  {t("agentOps.radar.searchMissesDescription")}
+                </p>
+              </div>
+              {searchMisses && (
+                <Badge
+                  variant="outline"
+                  className="shrink-0 border-sky-200/20 text-sky-200"
+                >
+                  {t("agentOps.radar.searchMissUnique", {
+                    count: searchMisses.uniqueQueries,
+                  })}
+                </Badge>
+              )}
+            </div>
+            {searchMissLoading ? (
+              <p className="text-sm text-slate-500">
+                {t("agentOps.radar.loading")}
+              </p>
+            ) : searchMissOpportunities.length === 0 ? (
+              <p className="text-sm text-slate-500">
+                {t("agentOps.radar.searchMissEmpty")}
+              </p>
+            ) : (
+              <div className="grid gap-2">
+                {searchMissOpportunities.map(item => (
+                  <article
+                    key={item.query}
+                    className="rounded-md border border-sky-200/10 bg-black/20 p-3"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="font-medium leading-5 text-white">
+                        {item.query}
+                      </p>
+                      <span className="shrink-0 text-xs text-cyan-200">
+                        {t("agentOps.radar.searchMissCount", {
+                          count: item.count,
+                        })}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                      {item.suggestedPrompt}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

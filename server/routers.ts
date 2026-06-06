@@ -1,144 +1,20 @@
+import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { systemRouter } from "./_core/systemRouter.js";
 import { publicProcedure, router } from "./_core/trpc.js";
 import { agentRouter } from "./ai/router.js";
-import { z } from "zod";
+import { authRouter } from "./auth.router.js";
+import { blogAdminProcedure } from "./blogAdminProcedure.js";
 import * as db from "./db.js";
-import { TRPCError } from "@trpc/server";
-import { ENV } from "./_core/env.js";
-import {
-  ADMIN_SESSION_COOKIE,
-  VISITOR_SESSION_COOKIE,
-  buildClearedCookie,
-  buildSessionCookie,
-  createVisitorSession,
-  resolveBlogSession,
-  signAdminSession,
-  verifyAdminSession,
-  verifyVisitorSession,
-} from "./auth.js";
-
-const ADMIN_LOGIN_MAX_FAILURES = 5;
-const ADMIN_LOGIN_WINDOW_MS = 15 * 60 * 1000;
-const adminLoginFailures = new Map<string, { count: number; firstFailedAt: number }>();
-const ENGAGEMENT_MAX_SUBMISSIONS = 4;
-const ENGAGEMENT_WINDOW_MS = 60 * 1000;
-const engagementSubmissions = new Map<string, { count: number; firstSubmittedAt: number }>();
-
-function setHeader(res: unknown, name: string, value: string | string[]) {
-  (res as { setHeader(headerName: string, headerValue: string | string[]): void }).setHeader(
-    name,
-    value
-  );
-}
-
-function getAdminPassword() {
-  const password = process.env.ADMIN_PASSWORD;
-  if (!password && ENV.isProduction) {
-    throw new Error("ADMIN_PASSWORD is required in production");
-  }
-  return password || "admin123";
-}
-
-function getRequestSource(req: { headers?: Record<string, string | string[] | undefined>; socket?: { remoteAddress?: string } }) {
-  const forwardedFor = req.headers?.["x-forwarded-for"];
-  const raw = Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor;
-  return raw?.split(",")[0]?.trim() || req.socket?.remoteAddress || "unknown";
-}
-
-function getHeaderValue(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] : value;
-}
-
-function getRequestHeader(req: unknown, name: string) {
-  const headers = (req as { headers?: Record<string, string | string[] | undefined> }).headers;
-  return getHeaderValue(headers?.[name]);
-}
-
-function assertAdminLoginAllowed(source: string) {
-  const now = Date.now();
-  const entry = adminLoginFailures.get(source);
-  if (!entry) return;
-
-  if (now - entry.firstFailedAt > ADMIN_LOGIN_WINDOW_MS) {
-    adminLoginFailures.delete(source);
-    return;
-  }
-
-  if (entry.count >= ADMIN_LOGIN_MAX_FAILURES) {
-    throw new TRPCError({
-      code: "TOO_MANY_REQUESTS",
-      message: "Too many login attempts. Try again later.",
-    });
-  }
-}
-
-function recordAdminLoginFailure(source: string) {
-  const now = Date.now();
-  const entry = adminLoginFailures.get(source);
-  if (!entry || now - entry.firstFailedAt > ADMIN_LOGIN_WINDOW_MS) {
-    adminLoginFailures.set(source, { count: 1, firstFailedAt: now });
-    return;
-  }
-
-  adminLoginFailures.set(source, {
-    count: entry.count + 1,
-    firstFailedAt: entry.firstFailedAt,
-  });
-}
-
-function clearAdminLoginFailures(source: string) {
-  adminLoginFailures.delete(source);
-}
-
-function assertEngagementAllowed(source: string, bucket: string) {
-  const now = Date.now();
-  const key = `${bucket}:${source}`;
-  const entry = engagementSubmissions.get(key);
-  if (!entry) return;
-
-  if (now - entry.firstSubmittedAt > ENGAGEMENT_WINDOW_MS) {
-    engagementSubmissions.delete(key);
-    return;
-  }
-
-  if (entry.count >= ENGAGEMENT_MAX_SUBMISSIONS) {
-    throw new TRPCError({
-      code: "TOO_MANY_REQUESTS",
-      message: "Too many engagement submissions. Try again later.",
-    });
-  }
-}
-
-function recordEngagementSubmission(source: string, bucket: string) {
-  const now = Date.now();
-  const key = `${bucket}:${source}`;
-  const entry = engagementSubmissions.get(key);
-  if (!entry || now - entry.firstSubmittedAt > ENGAGEMENT_WINDOW_MS) {
-    engagementSubmissions.set(key, { count: 1, firstSubmittedAt: now });
-    return;
-  }
-
-  engagementSubmissions.set(key, {
-    count: entry.count + 1,
-    firstSubmittedAt: entry.firstSubmittedAt,
-  });
-}
-
-export function __resetEngagementRateLimitsForTests() {
-  engagementSubmissions.clear();
-}
-
-// Admin-only procedure
-const adminProcedure = publicProcedure.use(async ({ ctx, next }) => {
-  if (!(await verifyAdminSession(ctx.req))) {
-    throw new TRPCError({ code: "UNAUTHORIZED", message: "Admin authentication required" });
-  }
-  return next({ ctx: { ...ctx, isAdmin: true } });
-});
+import { engagementRouter } from "./engagement.router.js";
+import { recordSearchMiss } from "./searchMisses.js";
+import { verifyAdminSession } from "./auth.js";
 
 const postVisibilityInput = z.enum(["hidden", "admin", "public"]);
-const feedbackStatusInput = z.enum(["new", "reviewed", "hidden"]);
-const pinnedTrackInput = z.enum(["algorithms", "applications"]).nullable().optional();
+const pinnedTrackInput = z
+  .enum(["algorithms", "applications"])
+  .nullable()
+  .optional();
 const curationFieldsInput = {
   seriesSlug: z.string().trim().max(120).nullable().optional(),
   seriesTitle: z.string().trim().max(255).nullable().optional(),
@@ -146,55 +22,16 @@ const curationFieldsInput = {
   featuredRank: z.number().int().positive().nullable().optional(),
   pinnedTrack: pinnedTrackInput,
 };
-const optionalTrimmedText = (maxLength: number) =>
-  z
-    .string()
-    .trim()
-    .max(maxLength)
-    .optional()
-    .transform((value) => (value ? value : null));
-
-const optionalEmailInput = z.preprocess(
-  (value) => (value === "" ? undefined : value),
-  z
-    .string()
-    .trim()
-    .email()
-    .max(320)
-    .optional()
-    .transform((value) => (value ? value.toLowerCase() : null))
-);
-
-const subscriptionInput = z.object({
-  email: z
-    .string()
-    .trim()
-    .email()
-    .max(320)
-    .transform((value) => value.toLowerCase()),
-  preferredLanguage: z.enum(["zh", "en"]).optional(),
-  interests: optionalTrimmedText(240),
-});
-
-const feedbackCreateInput = z.object({
-  postId: z.number().int().positive(),
-  type: z.enum(["useful", "not_useful"]),
-  message: optionalTrimmedText(600),
-  visitorName: optionalTrimmedText(80),
-  replyEmail: optionalEmailInput,
-});
-
-const feedbackUpdateStatusInput = z.object({
-  id: z.number().int().positive(),
-  status: feedbackStatusInput,
-});
 
 const discoveryPaginationInput = z.object({
   limit: z.number().optional(),
   offset: z.number().optional(),
 });
 
-function normalizeDiscoveryPagination(input: { limit?: number; offset?: number }) {
+function normalizeDiscoveryPagination(input: {
+  limit?: number;
+  offset?: number;
+}) {
   return {
     limit: Math.min(Math.max(input.limit ?? 10, 1), 50),
     offset: Math.max(input.offset ?? 0, 0),
@@ -205,198 +42,10 @@ function normalizeDiscoveryQuery(query: string | undefined) {
   return (query ?? "").trim().replace(/\s+/g, " ");
 }
 
-function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
-  const visibleFeedback = feedback.filter((item) => item.status !== "hidden");
-  const articleMap = new Map<
-    string,
-    {
-      postId: number | null;
-      postTitle: string;
-      postSlug: string | null;
-      total: number;
-      useful: number;
-      notUseful: number;
-      newCount: number;
-      messageCount: number;
-      latestAt: Date | string | null;
-      sampleMessages: string[];
-    }
-  >();
-
-  for (const item of visibleFeedback) {
-    const key = item.postSlug || `post:${item.postId}`;
-    const entry =
-      articleMap.get(key) ??
-      {
-        postId: item.postId ?? null,
-        postTitle: item.postTitle || "Unknown article",
-        postSlug: item.postSlug ?? null,
-        total: 0,
-        useful: 0,
-        notUseful: 0,
-        newCount: 0,
-        messageCount: 0,
-        latestAt: null,
-        sampleMessages: [] as string[],
-      };
-
-    entry.total += 1;
-    if (item.type === "useful") entry.useful += 1;
-    if (item.type === "not_useful") entry.notUseful += 1;
-    if (item.status === "new") entry.newCount += 1;
-    if (item.message) {
-      entry.messageCount += 1;
-      if (entry.sampleMessages.length < 3) entry.sampleMessages.push(item.message);
-    }
-    if (!entry.latestAt || new Date(item.createdAt).getTime() > new Date(entry.latestAt).getTime()) {
-      entry.latestAt = item.createdAt ?? null;
-    }
-    articleMap.set(key, entry);
-  }
-
-  const interestCounts = new Map<string, number>();
-  const languageBreakdown = { zh: 0, en: 0, unknown: 0 };
-  let activeCount = 0;
-
-  for (const subscriber of subscribers) {
-    if (subscriber.status === "active") activeCount += 1;
-    if (subscriber.preferredLanguage === "zh") languageBreakdown.zh += 1;
-    else if (subscriber.preferredLanguage === "en") languageBreakdown.en += 1;
-    else languageBreakdown.unknown += 1;
-
-    for (const phrase of splitInterestPhrases(subscriber.interests)) {
-      interestCounts.set(phrase, (interestCounts.get(phrase) ?? 0) + 1);
-    }
-  }
-
-  return {
-    feedback: {
-      total: visibleFeedback.length,
-      newCount: visibleFeedback.filter((item) => item.status === "new").length,
-      reviewedCount: visibleFeedback.filter((item) => item.status === "reviewed").length,
-      hiddenCount: feedback.filter((item) => item.status === "hidden").length,
-      usefulCount: visibleFeedback.filter((item) => item.type === "useful").length,
-      notUsefulCount: visibleFeedback.filter((item) => item.type === "not_useful").length,
-      opportunities: Array.from(articleMap.values())
-        .sort(
-          (a, b) =>
-            b.notUseful - a.notUseful ||
-            b.newCount - a.newCount ||
-            new Date(b.latestAt ?? 0).getTime() - new Date(a.latestAt ?? 0).getTime()
-        )
-        .slice(0, 6),
-    },
-    subscriptions: {
-      total: subscribers.length,
-      activeCount,
-      languageBreakdown,
-      topInterests: Array.from(interestCounts.entries())
-        .map(([phrase, count]) => ({ phrase, count }))
-        .sort((a, b) => b.count - a.count || a.phrase.localeCompare(b.phrase))
-        .slice(0, 8),
-      delivery: {
-        connected: false,
-        status: "stored_only" as const,
-        exportAvailable: subscribers.length > 0,
-      },
-    },
-  };
-}
-
-function splitInterestPhrases(value: string | null | undefined) {
-  return (value ?? "")
-    .split(/[,;，、\n]/)
-    .map((item) => item.trim().toLowerCase())
-    .filter((item) => item.length >= 2)
-    .slice(0, 20);
-}
-
 export const appRouter = router({
   system: systemRouter,
   agent: agentRouter,
-  
-  auth: router({
-    // Check if current session is authenticated as admin
-    isAdmin: publicProcedure.query(async ({ ctx }) => {
-      return await verifyAdminSession(ctx.req);
-    }),
-
-    session: publicProcedure.query(async ({ ctx }) => {
-      return await resolveBlogSession(ctx.req);
-    }),
-
-    visitorLogin: publicProcedure
-      .input(
-        z.object({
-          nickname: z
-            .string()
-            .trim()
-            .min(2, "Nickname must be at least 2 characters")
-            .max(40, "Nickname must be 40 characters or less"),
-        })
-      )
-      .mutation(async ({ input, ctx }) => {
-        const session = await createVisitorSession(input.nickname);
-        setHeader(
-          ctx.res,
-          "Set-Cookie",
-          buildSessionCookie(ctx.req, VISITOR_SESSION_COOKIE, session.token, 365 * 24 * 60 * 60)
-        );
-
-        return {
-          success: true,
-          session: {
-            isAuthenticated: true,
-            isAdmin: false,
-            role: "visitor",
-            displayName: input.nickname,
-            visitorId: session.visitorId,
-          } as const,
-        };
-    }),
-    
-    // Admin login with password
-    adminLogin: publicProcedure
-      .input(z.object({ password: z.string() }))
-      .mutation(async ({ input, ctx }) => {
-        const source = getRequestSource(ctx.req);
-        assertAdminLoginAllowed(source);
-
-        if (input.password !== getAdminPassword()) {
-          recordAdminLoginFailure(source);
-          throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid credentials" });
-        }
-        clearAdminLoginFailures(source);
-        
-        const sessionToken = await signAdminSession(process.env.OWNER_NAME || "Misaya Yang");
-        
-        setHeader(
-          ctx.res,
-          "Set-Cookie",
-          buildSessionCookie(ctx.req, ADMIN_SESSION_COOKIE, sessionToken, 30 * 24 * 60 * 60)
-        );
-        
-        return { success: true };
-      }),
-    
-    // Admin logout
-    adminLogout: publicProcedure.mutation(({ ctx }) => {
-      setHeader(
-        ctx.res,
-        "Set-Cookie",
-        buildClearedCookie(ctx.req, ADMIN_SESSION_COOKIE)
-      );
-      return { success: true };
-    }),
-
-    logout: publicProcedure.mutation(({ ctx }) => {
-      setHeader(ctx.res, "Set-Cookie", [
-        buildClearedCookie(ctx.req, ADMIN_SESSION_COOKIE),
-        buildClearedCookie(ctx.req, VISITOR_SESSION_COOKIE),
-      ]);
-      return { success: true };
-    }),
-  }),
+  auth: authRouter,
 
   discovery: router({
     search: publicProcedure
@@ -406,10 +55,17 @@ export const appRouter = router({
         })
       )
       .query(async ({ input }) => {
-        return await db.searchPublicPosts({
-          query: normalizeDiscoveryQuery(input.query),
+        const query = normalizeDiscoveryQuery(input.query);
+        const result = await db.searchPublicPosts({
+          query,
           ...normalizeDiscoveryPagination(input),
         });
+
+        if (query && result.total === 0) {
+          recordSearchMiss(query);
+        }
+
+        return result;
       }),
 
     tag: publicProcedure
@@ -419,7 +75,10 @@ export const appRouter = router({
         })
       )
       .query(async ({ input }) => {
-        const result = await db.getPublicTagPage(input.slug, normalizeDiscoveryPagination(input));
+        const result = await db.getPublicTagPage(
+          input.slug,
+          normalizeDiscoveryPagination(input)
+        );
         if (!result) {
           throw new TRPCError({ code: "NOT_FOUND", message: "Tag not found" });
         }
@@ -438,7 +97,10 @@ export const appRouter = router({
           normalizeDiscoveryPagination(input)
         );
         if (!result) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Category not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Category not found",
+          });
         }
         return result;
       }),
@@ -458,106 +120,8 @@ export const appRouter = router({
       }),
   }),
 
-  engagement: router({
-    subscribe: publicProcedure.input(subscriptionInput).mutation(async ({ input, ctx }) => {
-      const source = getRequestSource(ctx.req);
-      assertEngagementAllowed(source, "subscription");
+  engagement: engagementRouter,
 
-      const result = await db.upsertSubscriber({
-        email: input.email,
-        preferredLanguage: input.preferredLanguage ?? null,
-        interests: input.interests,
-        source,
-      });
-      recordEngagementSubmission(source, "subscription");
-
-      return {
-        success: true,
-        status: result.created ? "created" : "existing",
-      } as const;
-    }),
-
-    feedback: router({
-      create: publicProcedure.input(feedbackCreateInput).mutation(async ({ input, ctx }) => {
-        const source = getRequestSource(ctx.req);
-        assertEngagementAllowed(source, "feedback");
-
-        const post = await db.getPostById(input.postId);
-        if (!post || post.status !== "published" || post.visibility !== "public") {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
-        }
-
-        const visitor = await verifyVisitorSession(ctx.req);
-        await db.createPostFeedback({
-          postId: input.postId,
-          visitorId: visitor?.visitorId ?? null,
-          visitorName: visitor?.displayName ?? input.visitorName,
-          type: input.type,
-          message: input.message,
-          replyEmail: input.replyEmail,
-          source,
-          userAgent: getRequestHeader(ctx.req, "user-agent") ?? null,
-        });
-        recordEngagementSubmission(source, "feedback");
-
-        return { success: true, status: "new" } as const;
-      }),
-
-      list: adminProcedure
-        .input(
-          z.object({
-            postId: z.number().int().positive().optional(),
-            status: feedbackStatusInput.optional(),
-            limit: z.number().optional(),
-          })
-        )
-        .query(async ({ input }) => {
-          return await db.listPostFeedback({
-            postId: input.postId,
-            status: input.status,
-            limit: input.limit,
-          });
-        }),
-
-      markReviewed: adminProcedure
-        .input(z.object({ id: z.number().int().positive() }))
-        .mutation(async ({ input }) => {
-          const feedback = await db.markPostFeedbackReviewed(input.id);
-          if (!feedback) {
-            throw new TRPCError({ code: "NOT_FOUND", message: "Feedback not found" });
-          }
-          return { success: true, feedback };
-        }),
-
-      updateStatus: adminProcedure
-        .input(feedbackUpdateStatusInput)
-        .mutation(async ({ input }) => {
-          const feedback = await db.updatePostFeedbackStatus(input.id, input.status);
-          if (!feedback) {
-            throw new TRPCError({ code: "NOT_FOUND", message: "Feedback not found" });
-          }
-          return { success: true, feedback };
-        }),
-    }),
-
-    subscribers: router({
-      list: adminProcedure.query(async () => {
-        return await db.listSubscribers();
-      }),
-    }),
-
-    contentRadar: router({
-      summary: adminProcedure.query(async () => {
-        const [feedback, subscribers] = await Promise.all([
-          db.listPostFeedback({ limit: 100 }),
-          db.listSubscribers(),
-        ]);
-        return buildEngagementContentRadar(feedback, subscribers);
-      }),
-    }),
-  }),
-
-  // Blog routers
   posts: router({
     list: publicProcedure
       .input(
@@ -569,7 +133,9 @@ export const appRouter = router({
           search: z.string().optional(),
           limit: z.number().default(10),
           offset: z.number().default(0),
-          orderBy: z.enum(["createdAt", "publishedAt", "viewCount", "featured"]).default("createdAt"),
+          orderBy: z
+            .enum(["createdAt", "publishedAt", "viewCount", "featured"])
+            .default("createdAt"),
           includeUnpublished: z.boolean().optional(),
         })
       )
@@ -577,13 +143,21 @@ export const appRouter = router({
         const isAdmin = await verifyAdminSession(ctx.req);
         const posts = await db.getPosts({
           ...input,
-          status: isAdmin && input.includeUnpublished ? undefined : input.status || "published",
-          visibility: isAdmin && input.includeUnpublished ? input.visibility : "public",
+          status:
+            isAdmin && input.includeUnpublished
+              ? undefined
+              : input.status || "published",
+          visibility:
+            isAdmin && input.includeUnpublished ? input.visibility : "public",
         });
         const total = await db.getPostsCount({
           ...input,
-          status: isAdmin && input.includeUnpublished ? undefined : input.status || "published",
-          visibility: isAdmin && input.includeUnpublished ? input.visibility : "public",
+          status:
+            isAdmin && input.includeUnpublished
+              ? undefined
+              : input.status || "published",
+          visibility:
+            isAdmin && input.includeUnpublished ? input.visibility : "public",
         });
         return { posts, total };
       }),
@@ -596,15 +170,19 @@ export const appRouter = router({
           throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
         }
         const isAdmin = await verifyAdminSession(ctx.req);
-        if ((post.status !== "published" || post.visibility !== "public") && !isAdmin) {
+        if (
+          (post.status !== "published" || post.visibility !== "public") &&
+          !isAdmin
+        ) {
           throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
         }
-        // Increment view count
         if (post.status === "published" && post.visibility === "public") {
           await db.incrementViewCount(post.id);
         }
         const [category, tags] = await Promise.all([
-          post.categoryId ? db.getCategoryById(post.categoryId) : Promise.resolve(null),
+          post.categoryId
+            ? db.getCategoryById(post.categoryId)
+            : Promise.resolve(null),
           db.getPostTags(post.id),
         ]);
         return {
@@ -614,7 +192,7 @@ export const appRouter = router({
         };
       }),
 
-    create: adminProcedure
+    create: blogAdminProcedure
       .input(
         z.object({
           title: z.string(),
@@ -631,17 +209,21 @@ export const appRouter = router({
       )
       .mutation(async ({ input }) => {
         const { tagIds, ...postData } = input;
-        // Use authorId = 1 as default admin user
-        const postId = await db.createPostWithTags({
-          ...postData,
-          authorId: 1,
-          visibility: input.visibility ?? (input.status === "published" ? "public" : "admin"),
-          publishedAt: input.status === "published" ? new Date() : null,
-        }, tagIds);
+        const postId = await db.createPostWithTags(
+          {
+            ...postData,
+            authorId: 1,
+            visibility:
+              input.visibility ??
+              (input.status === "published" ? "public" : "admin"),
+            publishedAt: input.status === "published" ? new Date() : null,
+          },
+          tagIds
+        );
         return await db.getPostById(postId);
       }),
 
-    update: adminProcedure
+    update: blogAdminProcedure
       .input(
         z.object({
           id: z.number(),
@@ -659,26 +241,31 @@ export const appRouter = router({
       )
       .mutation(async ({ input }) => {
         const { id, tagIds, ...updateData } = input;
-        await db.updatePostWithTags(id, {
-          ...updateData,
-          ...(input.status === "published"
-            ? { publishedAt: new Date(), visibility: input.visibility ?? "public" }
-            : {}),
-          ...(input.status === "draft"
-            ? { publishedAt: null, visibility: input.visibility ?? "admin" }
-            : {}),
-        }, tagIds);
+        await db.updatePostWithTags(
+          id,
+          {
+            ...updateData,
+            ...(input.status === "published"
+              ? {
+                  publishedAt: new Date(),
+                  visibility: input.visibility ?? "public",
+                }
+              : {}),
+            ...(input.status === "draft"
+              ? { publishedAt: null, visibility: input.visibility ?? "admin" }
+              : {}),
+          },
+          tagIds
+        );
         return await db.getPostById(id);
       }),
 
-    delete: adminProcedure
-      .input(z.number())
-      .mutation(async ({ input }) => {
-        await db.deletePostCascade(input);
-        return { success: true };
-      }),
+    delete: blogAdminProcedure.input(z.number()).mutation(async ({ input }) => {
+      await db.deletePostCascade(input);
+      return { success: true };
+    }),
 
-    saveVersion: adminProcedure
+    saveVersion: blogAdminProcedure
       .input(
         z.object({
           postId: z.number(),
@@ -686,7 +273,6 @@ export const appRouter = router({
         })
       )
       .mutation(async ({ input }) => {
-        // Get current post title
         const post = await db.getPostById(input.postId);
         if (!post) {
           throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
@@ -698,13 +284,11 @@ export const appRouter = router({
         });
       }),
 
-    getVersions: adminProcedure
-      .input(z.number())
-      .query(async ({ input }) => {
-        return await db.getPostVersions(input);
-      }),
+    getVersions: blogAdminProcedure.input(z.number()).query(async ({ input }) => {
+      return await db.getPostVersions(input);
+    }),
 
-    restoreVersion: adminProcedure
+    restoreVersion: blogAdminProcedure
       .input(
         z.object({
           postId: z.number().int().positive(),
@@ -718,7 +302,10 @@ export const appRouter = router({
           db.getPostVersionById(input.versionId),
         ]);
         if (!post || !version || version.postId !== input.postId) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Version not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Version not found",
+          });
         }
 
         if (input.saveCurrent) {
@@ -742,7 +329,7 @@ export const appRouter = router({
       return await db.getCategories();
     }),
 
-    create: adminProcedure
+    create: blogAdminProcedure
       .input(
         z.object({
           name: z.string(),
@@ -754,7 +341,7 @@ export const appRouter = router({
         return await db.createCategory(input);
       }),
 
-    update: adminProcedure
+    update: blogAdminProcedure
       .input(
         z.object({
           id: z.number(),
@@ -768,22 +355,26 @@ export const appRouter = router({
         if (updateData.slug) {
           const existing = await db.getCategoryBySlug(updateData.slug);
           if (existing && existing.id !== id) {
-            throw new TRPCError({ code: "CONFLICT", message: "Category slug already exists" });
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "Category slug already exists",
+            });
           }
         }
         return await db.updateCategory(id, updateData);
       }),
 
-    delete: adminProcedure
-      .input(z.number())
-      .mutation(async ({ input }) => {
-        const postCount = await db.getPostsCount({ categoryId: input });
-        if (postCount > 0) {
-          throw new TRPCError({ code: "CONFLICT", message: "Category still has posts" });
-        }
-        await db.deleteCategory(input);
-        return { success: true };
-      }),
+    delete: blogAdminProcedure.input(z.number()).mutation(async ({ input }) => {
+      const postCount = await db.getPostsCount({ categoryId: input });
+      if (postCount > 0) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Category still has posts",
+        });
+      }
+      await db.deleteCategory(input);
+      return { success: true };
+    }),
   }),
 
   tags: router({
@@ -791,7 +382,7 @@ export const appRouter = router({
       return await db.getTags();
     }),
 
-    create: adminProcedure
+    create: blogAdminProcedure
       .input(
         z.object({
           name: z.string(),
@@ -802,7 +393,7 @@ export const appRouter = router({
         return await db.createTag(input);
       }),
 
-    update: adminProcedure
+    update: blogAdminProcedure
       .input(
         z.object({
           id: z.number(),
@@ -815,7 +406,10 @@ export const appRouter = router({
         if (updateData.slug) {
           const existing = await db.getTagBySlug(updateData.slug);
           if (existing && existing.id !== id) {
-            throw new TRPCError({ code: "CONFLICT", message: "Tag slug already exists" });
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "Tag slug already exists",
+            });
           }
         }
         const tag = await db.updateTag(id, updateData);
@@ -825,17 +419,20 @@ export const appRouter = router({
         return tag;
       }),
 
-    delete: adminProcedure
-      .input(z.number())
-      .mutation(async ({ input }) => {
-        const usageCount = await db.getTagUsageCount(input);
-        if (usageCount > 0) {
-          throw new TRPCError({ code: "CONFLICT", message: "Tag still has posts" });
-        }
-        await db.deleteTag(input);
-        return { success: true };
-      }),
+    delete: blogAdminProcedure.input(z.number()).mutation(async ({ input }) => {
+      const usageCount = await db.getTagUsageCount(input);
+      if (usageCount > 0) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Tag still has posts",
+        });
+      }
+      await db.deleteTag(input);
+      return { success: true };
+    }),
   }),
 });
+
+export { __resetEngagementRateLimitsForTests } from "./engagement.router.js";
 
 export type AppRouter = typeof appRouter;

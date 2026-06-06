@@ -1,41 +1,44 @@
-import type { Express, Response } from "express";
 import { z } from "zod";
 import { buildAgentContext, defaultAgentService } from "./harness.js";
-import type { AgentSendMessageInput, AgentStreamEvent } from "./types.js";
+import { agentSendMessageInput } from "./inputSchemas.js";
+import type {
+  AgentSendMessageInput,
+  AgentStreamEvent,
+  RequestLike,
+} from "./types.js";
 
-const routeContextSchema = z.object({
-  path: z.string().min(1),
-  routeType: z
-    .enum(["home", "post", "category", "tag", "search", "track", "archive", "public"])
-    .optional(),
-  postSlug: z.string().optional(),
-  postTitle: z.string().optional(),
-  categorySlug: z.string().optional(),
-  tagSlug: z.string().optional(),
-  trackSlug: z.enum(["ai-algorithms", "ai-applications"]).optional(),
-  locale: z.enum(["en", "zh"]).optional(),
-});
+type RouteRegistrar = {
+  post: (path: string, handler: (...args: unknown[]) => void) => void;
+};
 
-const scopeSchema = z.object({
-  type: z.enum(["site", "post", "category", "tag", "track"]),
-  value: z.string().optional(),
-});
+type StreamRequest = RequestLike & {
+  body: unknown;
+};
 
-const streamInputSchema = z.object({
-  conversationId: z.string().uuid().optional(),
-  message: z.string().trim().min(1).max(4000),
-  routeContext: routeContextSchema,
-  scope: scopeSchema.optional(),
-  answerMode: z.enum(["summary", "deep", "compare", "reading_path"]).optional(),
-});
+type StreamResponse = {
+  status: (code: number) => void;
+  setHeader: (name: string, value: string) => void;
+  flushHeaders?: () => void;
+  on: (event: "close", handler: () => void) => void;
+  write: (chunk: string) => void;
+  end: () => void;
+  writableEnded: boolean;
+};
 
-export function registerAgentStreamRoute(app: Express) {
-  app.post("/api/agent/stream", async (req, res) => {
+export function registerAgentStreamRoute(app: RouteRegistrar) {
+  app.post("/api/agent/stream", async (...args: unknown[]) => {
+    const [req, res] = args as [StreamRequest, StreamResponse];
     prepareSseResponse(res);
 
     let closed = false;
+    const streamAbortController = new AbortController();
     res.on("close", () => {
       closed = true;
+      if (!streamAbortController.signal.aborted) {
+        const error = new Error("Agent stream closed by client");
+        error.name = "AbortError";
+        streamAbortController.abort(error);
+      }
     });
 
     const emit = (event: AgentStreamEvent) => {
@@ -45,9 +48,13 @@ export function registerAgentStreamRoute(app: Express) {
     };
 
     try {
-      const input = streamInputSchema.parse(req.body) as AgentSendMessageInput;
+      const input = agentSendMessageInput.parse(
+        req.body
+      ) as AgentSendMessageInput;
       const ctx = await buildAgentContext(req);
-      await defaultAgentService.streamMessage(ctx, input, emit);
+      await defaultAgentService.streamMessage(ctx, input, emit, {
+        signal: streamAbortController.signal,
+      });
     } catch (error) {
       emit({
         type: "error",
@@ -60,7 +67,7 @@ export function registerAgentStreamRoute(app: Express) {
   });
 }
 
-function prepareSseResponse(res: Response) {
+function prepareSseResponse(res: StreamResponse) {
   res.status(200);
   res.setHeader("content-type", "text/event-stream; charset=utf-8");
   res.setHeader("cache-control", "no-cache, no-transform");

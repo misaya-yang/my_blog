@@ -1,18 +1,40 @@
 import dotenv from "dotenv";
 import fs from "node:fs";
 import postgres from "postgres";
+import { contentSeriesCatalog } from "./shared/content-series.ts";
 
 dotenv.config({ quiet: true });
 dotenv.config({ path: ".env.local", override: true, quiet: true });
 
+const seedArgs = new Set(process.argv.slice(2));
+const knownArgs = new Set(["--help", "-h", "--validate-only", "--check"]);
+const unknownArgs = [...seedArgs].filter(arg => !knownArgs.has(arg));
+const validateOnly = seedArgs.has("--validate-only") || seedArgs.has("--check");
+
+if (seedArgs.has("--help") || seedArgs.has("-h")) {
+  console.log(`Usage: pnpm db:seed [--validate-only]
+
+Seeds the owner, categories, tags, and canonical research posts.
+
+Options:
+  --validate-only, --check  Validate seed metadata without connecting to the database.
+  --help, -h                Show this message without writing to the database.`);
+  process.exit(0);
+}
+
+if (unknownArgs.length > 0) {
+  console.error(`Unknown seed option(s): ${unknownArgs.join(", ")}`);
+  process.exit(1);
+}
+
 const DATABASE_URL = process.env.DATABASE_URL;
 
-if (!DATABASE_URL) {
+if (!DATABASE_URL && !validateOnly) {
   console.error("DATABASE_URL not found");
   process.exit(1);
 }
 
-const sql = postgres(DATABASE_URL, { prepare: false });
+const sql = DATABASE_URL ? postgres(DATABASE_URL, { prepare: false }) : null;
 
 const categorySeeds = [
   {
@@ -29,62 +51,7 @@ const categorySeeds = [
   },
 ];
 
-const seriesSeeds = [
-  {
-    slug: "agent-runtime-systems",
-    title: "Agent Runtime Systems",
-    promise:
-      "A practical path from controlled agent evaluation to observable multi-step runtimes.",
-    track: "applications",
-    orderedPostSlugs: [
-      "agent-harness-engine-evaluating-tool-using-agents",
-      "rag-evidence-packet-context-compiler",
-      "agent-loop-observable-tool-using-agents",
-      "goal-harness-agent-phase-protocol",
-    ],
-    expectedNext: [
-      "Tool ABI: typed capabilities for agent runtimes",
-      "Context Budget: deciding what enters a model window",
-    ],
-  },
-  {
-    slug: "agentic-rag-infrastructure",
-    title: "Agentic RAG Infrastructure",
-    promise:
-      "A focused series on turning retrieval output into governed, citable agent context.",
-    track: "applications",
-    orderedPostSlugs: ["rag-evidence-packet-context-compiler"],
-    expectedNext: [
-      "Hybrid retrieval as evidence construction",
-      "Retrieval evals for citation-grade answers",
-    ],
-  },
-  {
-    slug: "long-context-position-encoding",
-    title: "Long Context and Position Encoding",
-    promise:
-      "Mechanistic notes on RoPE, spectral allocation, and long-context behavior.",
-    track: "algorithms",
-    orderedPostSlugs: [],
-    privatePostSlugs: ["evq-cosh-frequency-allocation"],
-    expectedNext: [
-      "RoPE spectral budget note, pending publication",
-      "Long-context extrapolation failure modes",
-    ],
-  },
-  {
-    slug: "residual-stability",
-    title: "Residual Stability",
-    promise:
-      "Residual stream mixing, invariants, and stability constraints for deep architectures.",
-    track: "algorithms",
-    orderedPostSlugs: ["isohc-fixed-vector-isometric-residual-mixing"],
-    expectedNext: [
-      "Residual mixing diagnostics",
-      "Orthogonal constraints in deep sequence models",
-    ],
-  },
-];
+const seriesSeeds = contentSeriesCatalog;
 
 const posts = [
   {
@@ -279,6 +246,9 @@ function validateContentSeeds() {
     if (!postSeed.tags?.length) {
       throw new Error(`Missing tags for ${postSeed.slug}`);
     }
+    if (!fs.existsSync(postSeed.contentPath)) {
+      throw new Error(`Missing content file for ${postSeed.slug}: ${postSeed.contentPath}`);
+    }
 
     if (postSeed.status === "published" && postSeed.visibility === "public") {
       const publishedAt = getCanonicalPublishedAt(postSeed);
@@ -313,6 +283,7 @@ function validateContentSeeds() {
 }
 
 async function upsertTags(tags) {
+  if (!sql) throw new Error("Database connection not available");
   const tagIds = [];
 
   for (const tag of tags) {
@@ -333,6 +304,11 @@ async function seed() {
 
   try {
     validateContentSeeds();
+    if (validateOnly) {
+      console.log("Seed content validation passed.");
+      return;
+    }
+    if (!sql) throw new Error("Database connection not available");
 
     const ownerOpenId = process.env.OWNER_OPEN_ID;
     if (!ownerOpenId) {
@@ -503,7 +479,7 @@ async function seed() {
     console.error("Seed failed:", error);
     process.exit(1);
   } finally {
-    await sql.end();
+    await sql?.end();
   }
 }
 

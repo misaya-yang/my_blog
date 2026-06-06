@@ -83,6 +83,26 @@ function agentLoopPost(
   });
 }
 
+function detailedIsohcPost(): KnowledgePostInput {
+  return isohcPost({
+    content: [
+      "IsoHC constrains residual stream mixing to preserve mean and energy.",
+      "",
+      "## 2. From Mean Preservation to Isometry",
+      "Doubly stochastic matrices preserve the global stream mean, but mean preservation alone does not guarantee that the mean-zero residual component keeps its energy. IsoHC strengthens the constraint by requiring residual transport to be both mean-preserving and orthogonal.",
+      "",
+      "## 4. Fixed-Vector Orthogonal Decomposition",
+      "The constraint separates the fixed mean direction from its orthogonal complement. Define e0 as the all-ones vector divided by sqrt(n). The implementation keeps e0 fixed and applies an orthogonal transform on the mean-zero complement.",
+      "",
+      "## 7. Implementation Mapping",
+      "The repository separates fixed-vector orthogonal projection utilities, residual stream mixing layers, Transformer integration, language-model mixing ablations, and GNN variants.",
+      "",
+      "## 10. Evidence Framing",
+      "The public conclusion should be framed carefully: IsoHC is a stability mechanism, not a standalone claim of universal task superiority. Broader downstream claims require larger standardized evaluation.",
+    ].join("\n"),
+  });
+}
+
 function post(overrides: Partial<KnowledgePostInput>): KnowledgePostInput {
   return {
     id: overrides.id ?? 1,
@@ -372,6 +392,105 @@ describe("AI public knowledge chunks", () => {
         result.relevanceReason.startsWith("Current public article context")
       ).length
     ).toBeGreaterThan(0);
+    expect(
+      results.every(
+        result =>
+          result.postSlug === "isohc-fixed-vector-isometric-residual-mixing"
+      )
+    ).toBe(true);
+  });
+
+  it("retrieves current-page fixed-vector sections from Chinese reader phrasing", () => {
+    const chunks = buildPublicKnowledgeChunks([detailedIsohcPost()]);
+    const analysis =
+      analyzeKnowledgeQuery("这页里面的固定向量到底起什么作用？");
+    const results = searchPublicKnowledgeChunks(
+      chunks,
+      "这页里面的固定向量到底起什么作用？",
+      {
+        limit: 6,
+        scope: {
+          type: "post",
+          value: "isohc-fixed-vector-isometric-residual-mixing",
+        },
+      }
+    );
+
+    expect(analysis.terms).toContain("固定向量");
+    expect(analysis.expandedTerms).toEqual(
+      expect.arrayContaining(["fixed-vector", "mean", "complement"])
+    );
+    expect(results.map(result => result.heading)).toContain(
+      "4. Fixed-Vector Orthogonal Decomposition"
+    );
+  });
+
+  it("retrieves the isometry versus doubly stochastic comparison from Chinese phrasing", () => {
+    const chunks = buildPublicKnowledgeChunks([detailedIsohcPost()]);
+    const results = searchPublicKnowledgeChunks(
+      chunks,
+      "文中说的等距约束和双随机约束有什么区别？",
+      {
+        limit: 6,
+        scope: {
+          type: "post",
+          value: "isohc-fixed-vector-isometric-residual-mixing",
+        },
+      }
+    );
+
+    expect(results[0]?.heading).toBe("2. From Mean Preservation to Isometry");
+    expect(results[0]?.excerpt).toContain("Doubly stochastic");
+  });
+
+  it("retrieves later implementation and evidence framing sections from page-aware structural questions", () => {
+    const chunks = buildPublicKnowledgeChunks([detailedIsohcPost()]);
+    const results = searchPublicKnowledgeChunks(
+      chunks,
+      "这篇文章后半部分有没有讲实现或者失败边界？",
+      {
+        limit: 8,
+        scope: {
+          type: "post",
+          value: "isohc-fixed-vector-isometric-residual-mixing",
+        },
+      }
+    );
+
+    expect(results.map(result => result.heading)).toEqual(
+      expect.arrayContaining([
+        "7. Implementation Mapping",
+        "10. Evidence Framing",
+      ])
+    );
+  });
+
+  it("keeps current-article deictic questions from drifting into unrelated implementation posts", () => {
+    const chunks = buildPublicKnowledgeChunks([
+      detailedIsohcPost(),
+      post({
+        id: 30,
+        title: "Evidence Packet: Agentic RAG 的上下文编译接口",
+        slug: "rag-evidence-packet-context-compiler",
+        content:
+          "## 7. Reference Architecture Mapping\nEvidence Packet maps retrieval, reranking, and context assembly into an implementation boundary.",
+        category: applications,
+        tags: [harnessTag],
+      }),
+    ]);
+    const results = searchPublicKnowledgeChunks(
+      chunks,
+      "这篇文章后半部分有没有讲实现或者失败边界？",
+      {
+        limit: 8,
+        scope: {
+          type: "post",
+          value: "isohc-fixed-vector-isometric-residual-mixing",
+        },
+      }
+    );
+
+    expect(results.length).toBeGreaterThan(0);
     expect(
       results.every(
         result =>

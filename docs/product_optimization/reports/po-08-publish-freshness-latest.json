@@ -1,12 +1,31 @@
 {
-  "generatedAt": "2026-05-31T08:43:15.658Z",
+  "generatedAt": "2026-06-05T17:03:44.106Z",
   "git": {
-    "branch": "main",
-    "commit": "636c543",
+    "branch": "codex/blog-agent-retrieval-rescue",
+    "commit": "0abaa19",
     "dirty": true
   },
   "baseUrl": "http://localhost:3000/",
   "publicInventory": [
+    {
+      "slug": "goal-harness-agent-phase-protocol",
+      "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
+      "categorySlug": "ai-applications",
+      "tagSlugs": [
+        "agent-systems",
+        "claude-code",
+        "codex",
+        "context-engineering",
+        "evaluation",
+        "goal-harness",
+        "observability",
+        "tool-use"
+      ],
+      "publishedAt": "2026-05-31T00:40:00.000Z",
+      "updatedAt": "2026-06-05T16:27:09.961Z",
+      "seriesSlug": "agent-runtime-systems",
+      "seriesOrder": 4
+    },
     {
       "slug": "agent-loop-observable-tool-using-agents",
       "title": "Agent Loop: 从 ReAct 模式到可观测运行时",
@@ -23,7 +42,7 @@
         "tool-use"
       ],
       "publishedAt": "2026-05-31T00:30:00.000Z",
-      "updatedAt": "2026-05-31T08:18:36.199Z",
+      "updatedAt": "2026-06-05T16:01:30.007Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 3
     },
@@ -43,7 +62,7 @@
         "rag"
       ],
       "publishedAt": "2026-05-31T00:20:00.000Z",
-      "updatedAt": "2026-05-31T08:07:00.906Z",
+      "updatedAt": "2026-05-31T08:54:29.299Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 2
     },
@@ -62,7 +81,7 @@
         "tool-use"
       ],
       "publishedAt": "2026-05-31T00:10:00.000Z",
-      "updatedAt": "2026-05-31T08:06:48.744Z",
+      "updatedAt": "2026-05-31T09:07:10.274Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 1
     },
@@ -79,7 +98,7 @@
         "transformer"
       ],
       "publishedAt": "2026-05-31T00:00:00.000Z",
-      "updatedAt": "2026-05-31T08:06:38.178Z",
+      "updatedAt": "2026-06-05T16:50:01.602Z",
       "seriesSlug": "residual-stability",
       "seriesOrder": 1
     }
@@ -99,6 +118,7 @@
       "publicSlugs": [
         "agent-harness-engine-evaluating-tool-using-agents",
         "agent-loop-observable-tool-using-agents",
+        "goal-harness-agent-phase-protocol",
         "isohc-fixed-vector-isometric-residual-mixing",
         "rag-evidence-packet-context-compiler"
       ],
@@ -110,6 +130,7 @@
       "publicSlugs": [
         "agent-harness-engine-evaluating-tool-using-agents",
         "agent-loop-observable-tool-using-agents",
+        "goal-harness-agent-phase-protocol",
         "isohc-fixed-vector-isometric-residual-mixing",
         "rag-evidence-packet-context-compiler"
       ],
@@ -121,34 +142,50 @@
       "publicSlugs": [
         "agent-harness-engine-evaluating-tool-using-agents",
         "agent-loop-observable-tool-using-agents",
+        "goal-harness-agent-phase-protocol",
         "isohc-fixed-vector-isometric-residual-mixing",
         "rag-evidence-packet-context-compiler"
       ],
       "missingPublicSlugs": []
     }
   },
+  "trackCoverage": {
+    "ok": true,
+    "publicTrackSlugs": {
+      "algorithms": [
+        "isohc-fixed-vector-isometric-residual-mixing"
+      ],
+      "applications": [
+        "agent-harness-engine-evaluating-tool-using-agents",
+        "agent-loop-observable-tool-using-agents",
+        "goal-harness-agent-phase-protocol",
+        "rag-evidence-packet-context-compiler"
+      ]
+    },
+    "missingPublicSlugs": [],
+    "mismatchedPrimarySeriesSlugs": [],
+    "configuredUnknownSlugs": [],
+    "configuredNonPublicSlugs": []
+  },
   "agentKnowledge": {
     "ok": true,
-    "chunkCount": 57,
-    "publicPostCount": 4,
-    "indexedPublicPostCount": 4,
+    "chunkCount": 70,
+    "publicPostCount": 5,
+    "indexedPublicPostCount": 5,
     "hiddenOrDraftExcludedCount": 1,
     "stalePublicPostSlugs": [],
     "extraIndexedPostSlugs": [],
     "indexedPostSlugs": [
       "agent-harness-engine-evaluating-tool-using-agents",
       "agent-loop-observable-tool-using-agents",
+      "goal-harness-agent-phase-protocol",
       "isohc-fixed-vector-isometric-residual-mixing",
       "rag-evidence-packet-context-compiler"
     ],
     "nonPublicIndexedSlugs": [],
-    "lastReindexAt": "2026-05-31T08:42:59.432Z"
+    "lastReindexAt": "2026-06-05T15:13:08.613Z"
   },
-  "dateDrift": {
-    "comparedPublicPosts": 4,
-    "publishedAtChanged": [],
-    "updatedAtChangedWithoutMaterialChange": []
-  },
+  "dateDrift": null,
   "routeChecks": [
     {
       "path": "(all)",

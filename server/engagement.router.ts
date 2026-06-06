@@ -1,0 +1,331 @@
+import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+import { publicProcedure, router } from "./_core/trpc.js";
+import { verifyVisitorSession } from "./auth.js";
+import { blogAdminProcedure } from "./blogAdminProcedure.js";
+import * as db from "./db.js";
+import { getRequestHeader, getRequestSource } from "./httpRequest.js";
+import {
+  assertWindowRateLimit,
+  recordWindowRateLimitHit,
+} from "./rateLimit.js";
+import {
+  listSearchMissOpportunities,
+  resetSearchMissesForTests,
+} from "./searchMisses.js";
+
+const ENGAGEMENT_MAX_SUBMISSIONS = 4;
+const ENGAGEMENT_WINDOW_MS = 60 * 1000;
+const engagementSubmissions = new Map<
+  string,
+  { count: number; firstSeenAt: number }
+>();
+
+const feedbackStatusInput = z.enum(["new", "reviewed", "hidden"]);
+
+const optionalTrimmedText = (maxLength: number) =>
+  z
+    .string()
+    .trim()
+    .max(maxLength)
+    .optional()
+    .transform(value => (value ? value : null));
+
+const optionalEmailInput = z.preprocess(
+  value => (value === "" ? undefined : value),
+  z
+    .string()
+    .trim()
+    .email()
+    .max(320)
+    .optional()
+    .transform(value => (value ? value.toLowerCase() : null))
+);
+
+const subscriptionInput = z.object({
+  email: z
+    .string()
+    .trim()
+    .email()
+    .max(320)
+    .transform(value => value.toLowerCase()),
+  preferredLanguage: z.enum(["zh", "en"]).optional(),
+  interests: optionalTrimmedText(240),
+});
+
+const feedbackCreateInput = z.object({
+  postId: z.number().int().positive(),
+  type: z.enum(["useful", "not_useful"]),
+  message: optionalTrimmedText(600),
+  visitorName: optionalTrimmedText(80),
+  replyEmail: optionalEmailInput,
+});
+
+const feedbackUpdateStatusInput = z.object({
+  id: z.number().int().positive(),
+  status: feedbackStatusInput,
+});
+
+function engagementRateLimitKey(source: string, bucket: string) {
+  return `${bucket}:${source}`;
+}
+
+function assertEngagementAllowed(source: string, bucket: string) {
+  assertWindowRateLimit({
+    store: engagementSubmissions,
+    key: engagementRateLimitKey(source, bucket),
+    maxAttempts: ENGAGEMENT_MAX_SUBMISSIONS,
+    windowMs: ENGAGEMENT_WINDOW_MS,
+    message: "Too many engagement submissions. Try again later.",
+  });
+}
+
+function recordEngagementSubmission(source: string, bucket: string) {
+  recordWindowRateLimitHit({
+    store: engagementSubmissions,
+    key: engagementRateLimitKey(source, bucket),
+    windowMs: ENGAGEMENT_WINDOW_MS,
+  });
+}
+
+export function __resetEngagementRateLimitsForTests() {
+  engagementSubmissions.clear();
+  resetSearchMissesForTests();
+}
+
+export const engagementRouter = router({
+  subscribe: publicProcedure
+    .input(subscriptionInput)
+    .mutation(async ({ input, ctx }) => {
+      const source = getRequestSource(ctx.req);
+      assertEngagementAllowed(source, "subscription");
+
+      const result = await db.upsertSubscriber({
+        email: input.email,
+        preferredLanguage: input.preferredLanguage ?? null,
+        interests: input.interests,
+        source,
+      });
+      recordEngagementSubmission(source, "subscription");
+
+      return {
+        success: true,
+        status: result.created ? "created" : "existing",
+      } as const;
+    }),
+
+  feedback: router({
+    create: publicProcedure
+      .input(feedbackCreateInput)
+      .mutation(async ({ input, ctx }) => {
+        const source = getRequestSource(ctx.req);
+        assertEngagementAllowed(source, "feedback");
+
+        const post = await db.getPostById(input.postId);
+        if (
+          !post ||
+          post.status !== "published" ||
+          post.visibility !== "public"
+        ) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Post not found",
+          });
+        }
+
+        const visitor = await verifyVisitorSession(ctx.req);
+        await db.createPostFeedback({
+          postId: input.postId,
+          visitorId: visitor?.visitorId ?? null,
+          visitorName: visitor?.displayName ?? input.visitorName,
+          type: input.type,
+          message: input.message,
+          replyEmail: input.replyEmail,
+          source,
+          userAgent: getRequestHeader(ctx.req, "user-agent") ?? null,
+        });
+        recordEngagementSubmission(source, "feedback");
+
+        return { success: true, status: "new" } as const;
+      }),
+
+    list: blogAdminProcedure
+      .input(
+        z.object({
+          postId: z.number().int().positive().optional(),
+          status: feedbackStatusInput.optional(),
+          limit: z.number().optional(),
+        })
+      )
+      .query(async ({ input }) => {
+        return await db.listPostFeedback({
+          postId: input.postId,
+          status: input.status,
+          limit: input.limit,
+        });
+      }),
+
+    markReviewed: blogAdminProcedure
+      .input(z.object({ id: z.number().int().positive() }))
+      .mutation(async ({ input }) => {
+        const feedback = await db.markPostFeedbackReviewed(input.id);
+        if (!feedback) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Feedback not found",
+          });
+        }
+        return { success: true, feedback };
+      }),
+
+    updateStatus: blogAdminProcedure
+      .input(feedbackUpdateStatusInput)
+      .mutation(async ({ input }) => {
+        const feedback = await db.updatePostFeedbackStatus(
+          input.id,
+          input.status
+        );
+        if (!feedback) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Feedback not found",
+          });
+        }
+        return { success: true, feedback };
+      }),
+  }),
+
+  subscribers: router({
+    list: blogAdminProcedure.query(async () => {
+      return await db.listSubscribers();
+    }),
+  }),
+
+  contentRadar: router({
+    summary: blogAdminProcedure.query(async () => {
+      const [feedback, subscribers] = await Promise.all([
+        db.listPostFeedback({ limit: 100 }),
+        db.listSubscribers(),
+      ]);
+      return buildEngagementContentRadar(feedback, subscribers);
+    }),
+  }),
+});
+
+function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
+  const visibleFeedback = feedback.filter(item => item.status !== "hidden");
+  const searchMissOpportunities = listSearchMissOpportunities();
+  const articleMap = new Map<
+    string,
+    {
+      postId: number | null;
+      postTitle: string;
+      postSlug: string | null;
+      total: number;
+      useful: number;
+      notUseful: number;
+      newCount: number;
+      messageCount: number;
+      latestAt: Date | string | null;
+      sampleMessages: string[];
+    }
+  >();
+
+  for (const item of visibleFeedback) {
+    const key = item.postSlug || `post:${item.postId}`;
+    const entry = articleMap.get(key) ?? {
+      postId: item.postId ?? null,
+      postTitle: item.postTitle || "Unknown article",
+      postSlug: item.postSlug ?? null,
+      total: 0,
+      useful: 0,
+      notUseful: 0,
+      newCount: 0,
+      messageCount: 0,
+      latestAt: null,
+      sampleMessages: [] as string[],
+    };
+
+    entry.total += 1;
+    if (item.type === "useful") entry.useful += 1;
+    if (item.type === "not_useful") entry.notUseful += 1;
+    if (item.status === "new") entry.newCount += 1;
+    if (item.message) {
+      entry.messageCount += 1;
+      if (entry.sampleMessages.length < 3)
+        entry.sampleMessages.push(item.message);
+    }
+    if (
+      !entry.latestAt ||
+      new Date(item.createdAt).getTime() > new Date(entry.latestAt).getTime()
+    ) {
+      entry.latestAt = item.createdAt ?? null;
+    }
+    articleMap.set(key, entry);
+  }
+
+  const interestCounts = new Map<string, number>();
+  const languageBreakdown = { zh: 0, en: 0, unknown: 0 };
+  let activeCount = 0;
+
+  for (const subscriber of subscribers) {
+    if (subscriber.status === "active") activeCount += 1;
+    if (subscriber.preferredLanguage === "zh") languageBreakdown.zh += 1;
+    else if (subscriber.preferredLanguage === "en") languageBreakdown.en += 1;
+    else languageBreakdown.unknown += 1;
+
+    for (const phrase of splitInterestPhrases(subscriber.interests)) {
+      interestCounts.set(phrase, (interestCounts.get(phrase) ?? 0) + 1);
+    }
+  }
+
+  return {
+    feedback: {
+      total: visibleFeedback.length,
+      newCount: visibleFeedback.filter(item => item.status === "new").length,
+      reviewedCount: visibleFeedback.filter(item => item.status === "reviewed")
+        .length,
+      hiddenCount: feedback.filter(item => item.status === "hidden").length,
+      usefulCount: visibleFeedback.filter(item => item.type === "useful")
+        .length,
+      notUsefulCount: visibleFeedback.filter(item => item.type === "not_useful")
+        .length,
+      opportunities: Array.from(articleMap.values())
+        .sort(
+          (a, b) =>
+            b.notUseful - a.notUseful ||
+            b.newCount - a.newCount ||
+            new Date(b.latestAt ?? 0).getTime() -
+              new Date(a.latestAt ?? 0).getTime()
+        )
+        .slice(0, 6),
+    },
+    subscriptions: {
+      total: subscribers.length,
+      activeCount,
+      languageBreakdown,
+      topInterests: Array.from(interestCounts.entries())
+        .map(([phrase, count]) => ({ phrase, count }))
+        .sort((a, b) => b.count - a.count || a.phrase.localeCompare(b.phrase))
+        .slice(0, 8),
+      delivery: {
+        connected: false,
+        status: "stored_only" as const,
+        exportAvailable: subscribers.length > 0,
+      },
+    },
+    searchMisses: {
+      total: searchMissOpportunities.reduce((sum, item) => sum + item.count, 0),
+      uniqueQueries: searchMissOpportunities.length,
+      opportunities: searchMissOpportunities.slice(0, 8),
+    },
+  };
+}
+
+function splitInterestPhrases(value: string | null | undefined) {
+  return (value ?? "")
+    .split(/[,;，、\n]/)
+    .map(item => item.trim().toLowerCase())
+    .filter(item => item.length >= 2)
+    .slice(0, 20);
+}

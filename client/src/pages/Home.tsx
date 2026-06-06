@@ -32,7 +32,6 @@ import {
   Map,
   Search,
   Settings2,
-  Sparkles,
   Tags,
   UserRound,
 } from "lucide-react";
@@ -110,6 +109,7 @@ export default function Home() {
   const hasMeaningfulStats = Boolean(
     publishedPosts.length > 0 || (categories?.length || 0) > 0 || totalViews > 0
   );
+  const recommendedStartPost = publishedPosts[0];
 
   useSeo(
     buildRouteMetadata(siteUrl, {
@@ -147,93 +147,72 @@ export default function Home() {
       <SiteHeader active="home" />
 
       <main className="relative z-10">
-        <section className="container grid gap-10 px-4 pb-12 pt-14 sm:px-6 md:pt-20 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px]">
-          <div className="min-w-0">
-            <div className="signal-chip mb-9">
-              <Sparkles className="h-4 w-4 text-sky-300" />
+        <section className="container px-4 pb-8 pt-10 sm:px-6 md:pb-10 md:pt-16">
+          <div className="home-editorial-hero">
+            <div className="home-kicker mb-7">
               <span>{t("home.chip1")}</span>
-              <span className="text-slate-500">·</span>
+              <span aria-hidden="true">/</span>
               <span>{t("home.chip2")}</span>
-              <span className="text-slate-500">·</span>
+              <span aria-hidden="true">/</span>
               <span>{t("home.chip3")}</span>
             </div>
 
-            <h1 className="display-title max-w-5xl text-4xl leading-[1.06] text-white md:text-6xl xl:text-7xl">
+            <h1 className="home-title max-w-4xl text-white">
               {t("home.title")}
             </h1>
-            <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
+            <p className="home-subtitle mt-6 max-w-2xl text-slate-300">
               {t("home.subtitle")}
             </p>
 
-            <div className="mt-9 flex flex-wrap items-center gap-3">
-              <div className="glass-panel author-pill flex items-center gap-3 px-3 py-2">
-                <span className="grid h-11 w-11 place-items-center overflow-hidden rounded-full bg-gradient-to-br from-sky-300 to-blue-700 text-sm font-semibold text-white">
-                  MY
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-white">
-                    {t("home.authorName")}
-                  </p>
-                  <p className="text-xs text-slate-400">
-                    {t("home.authorRole")}
-                  </p>
-                </div>
-              </div>
-              <a
-                href="https://scholar.google.com/citations?user=6X9HlDAAAAAJ"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="glass-panel hero-icon-button"
-                aria-label={t("home.googleScholar")}
-                title={t("home.googleScholar")}
+            {recommendedStartPost && (
+              <Link
+                href={`/post/${recommendedStartPost.slug}`}
+                className="home-start-card mt-7"
               >
-                <GraduationCap className="h-5 w-5 text-sky-200" />
-              </a>
-              <button
-                type="button"
-                onClick={copyEmail}
-                className="glass-panel hero-icon-button"
-                aria-label={t("nav.email")}
-                title="zedpl28174@gmail.com"
-              >
-                <Mail className="h-5 w-5 text-sky-200" />
-              </button>
-            </div>
+                <span className="series-card-track">{t("home.startHere")}</span>
+                <strong>{recommendedStartPost.title}</strong>
+                <span>{recommendedStartPost.excerpt}</span>
+                <ArrowRight className="h-4 w-4 text-slate-400" />
+              </Link>
+            )}
 
-            <div className="mt-10 grid max-w-5xl gap-5 md:grid-cols-2">
+            <div className="home-track-grid mt-8 grid gap-3 md:grid-cols-2">
               {portalTracks.map(track => {
                 const config = trackConfigs[track];
                 const publicCount = countTrackPosts(publishedPosts, track);
                 const pathCount = publicSeriesByTrack[track].length;
+                const number = track === "algorithms" ? "01" : "02";
                 return (
                   <Link key={track} href={config.href}>
-                    <article className="glass-panel track-portal-card group min-h-[12rem] p-5 transition hover:-translate-y-0.5 hover:border-sky-300/60 sm:p-6">
+                    <article className="track-portal-card home-track-card group">
                       <div className="mb-4 flex items-center justify-between gap-4">
-                        <div className="signal-chip">
-                          <Sparkles className="h-4 w-4" />
+                        <div className="home-track-number">
+                          {number}
+                        </div>
+                        <div className="home-track-label">
                           {t(
                             track === "algorithms"
                               ? "home.algorithmsLabel"
                               : "home.applicationsLabel"
                           )}
                         </div>
-                        <ArrowRight className="h-5 w-5 text-sky-300 transition-transform group-hover:translate-x-1" />
+                        <ArrowRight className="h-5 w-5 text-slate-400 transition-transform group-hover:translate-x-1" />
                       </div>
-                      <h2 className="display-title text-2xl leading-tight text-white">
+                      <h2 className="home-track-title">
                         {t(config.titleKey)}
                       </h2>
-                      <p className="track-portal-copy mt-4 text-sm leading-7 text-slate-300">
+                      <p className="track-portal-copy mt-3 text-sm leading-7 text-slate-400">
                         {t(config.overviewKey)}
                       </p>
-                      <div className="track-portal-cta flex flex-wrap items-center gap-2 text-xs font-semibold text-sky-200">
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200/15 px-2.5 py-1">
+                      <div className="track-portal-cta flex flex-wrap items-center gap-2 text-xs font-medium text-slate-400">
+                        <span className="inline-flex items-center gap-1.5">
                           <GitBranch className="h-3.5 w-3.5" />
                           {t("home.pathCount", { count: pathCount })}
                         </span>
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200/15 px-2.5 py-1">
+                        <span className="inline-flex items-center gap-1.5">
                           {t("home.publicNotes", { count: publicCount })}
                         </span>
-                        <span className="ml-auto inline-flex items-center gap-1.5">
+                        <span className="ml-auto inline-flex items-center gap-1.5 text-slate-300">
                           {t("home.readMore")}
                           <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                         </span>
@@ -243,19 +222,23 @@ export default function Home() {
                 );
               })}
             </div>
+          </div>
+        </section>
 
+        <section className="container grid gap-6 px-4 pb-14 sm:px-6 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px]">
+          <div className="min-w-0">
             {activeSeries.length > 0 && (
-              <section className="research-map-strip mt-8 max-w-5xl">
+              <section className="research-map-strip max-w-5xl">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-2 text-white">
-                    <Map className="h-5 w-5 text-sky-300" />
+                    <Map className="h-5 w-5 text-slate-400" />
                     <h2 className="text-base font-semibold">
                       {t("home.activeSeries")}
                     </h2>
                   </div>
                   <Link
                     href="#research-index"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-200 hover:text-white"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white"
                   >
                     {t("home.researchIndexKicker")}
                     <ArrowRight className="h-3.5 w-3.5" />
@@ -290,7 +273,7 @@ export default function Home() {
 
             <form
               onSubmit={submitSearch}
-              className="glass-panel mt-9 flex max-w-3xl items-center gap-4 px-5 py-4"
+              className="glass-panel mt-6 flex max-w-3xl items-center gap-4 px-5 py-4"
             >
               <Search className="h-6 w-6 shrink-0 text-slate-400" />
               <label className="sr-only" htmlFor="home-search-query">
@@ -308,7 +291,7 @@ export default function Home() {
               <Button
                 type="submit"
                 size="sm"
-                className="hidden bg-sky-400 text-slate-950 hover:bg-sky-300 sm:inline-flex"
+                className="hidden border border-slate-600 bg-slate-100 text-slate-950 hover:bg-white sm:inline-flex"
               >
                 {t("discovery.searchButton")}
               </Button>
@@ -355,7 +338,7 @@ export default function Home() {
           <aside className="grid gap-5 self-start lg:pt-1">
             <section className="glass-panel home-sidebar-panel p-5 sm:p-6">
               <div className="mb-4 flex items-center gap-2 text-white">
-                <UserRound className="h-5 w-5 text-sky-300" />
+                <UserRound className="h-5 w-5 text-slate-400" />
                 <h2 className="text-lg font-semibold">
                   {t("home.aboutTitle")}
                 </h2>
@@ -365,7 +348,7 @@ export default function Home() {
               </p>
 
               <div className="mt-7 flex items-center gap-2 text-white">
-                <Sparkles className="h-5 w-5 text-cyan-300" />
+                <GitBranch className="h-5 w-5 text-slate-400" />
                 <h3 className="text-sm font-semibold">
                   {t("home.researchDirection")}
                 </h3>
@@ -382,7 +365,7 @@ export default function Home() {
               </div>
 
               <div className="mt-7 flex items-center gap-2 text-white">
-                <BookOpen className="h-5 w-5 text-blue-300" />
+                <BookOpen className="h-5 w-5 text-slate-400" />
                 <h3 className="text-sm font-semibold">
                   {t("home.recentFocus")}
                 </h3>
@@ -395,7 +378,7 @@ export default function Home() {
 
             <section className="glass-panel p-5">
               <div className="mb-4 flex items-center gap-2 text-white">
-                <Tags className="h-5 w-5 text-blue-300" />
+                <Tags className="h-5 w-5 text-slate-400" />
                 <h2 className="text-base font-semibold">{t("home.hotTags")}</h2>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -404,7 +387,7 @@ export default function Home() {
                     <Link
                       key={tag.id ?? tag.name}
                       href={`/tags/${tag.slug}`}
-                      className="rounded-lg border border-slate-600/50 bg-slate-900/55 px-3 py-1.5 text-xs text-slate-300 hover:border-sky-300/45 hover:text-white"
+                      className="rounded-lg border border-slate-600/50 bg-slate-900/55 px-3 py-1.5 text-xs text-slate-300 hover:border-slate-500 hover:text-white"
                     >
                       {tag.name}
                     </Link>
@@ -475,15 +458,15 @@ export default function Home() {
             <div className="research-index-list">
               <Link href="/algorithms" className="research-index-row">
                 <span>{t("home.algorithmsLabel")}</span>
-                <span className="text-sky-300">{t("home.indexModels")}</span>
+                <span className="text-slate-400">{t("home.indexModels")}</span>
               </Link>
               <Link href="/applications" className="research-index-row">
                 <span>{t("home.applicationsLabel")}</span>
-                <span className="text-sky-300">{t("home.indexSystems")}</span>
+                <span className="text-slate-400">{t("home.indexSystems")}</span>
               </Link>
               <Link href="/tags/harness-engine" className="research-index-row">
                 <span>{t("home.indexAgentHarness")}</span>
-                <span className="text-sky-300">
+                <span className="text-slate-400">
                   {t("home.indexEvaluation")}
                 </span>
               </Link>

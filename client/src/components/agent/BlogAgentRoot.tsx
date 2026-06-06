@@ -6,11 +6,12 @@ import {
   useRef,
   useState,
   type FormEvent,
+  type ReactNode,
+  type RefObject,
 } from "react";
 import { useLocation } from "wouter";
 import {
   AlertCircle,
-  Bot,
   BookOpen,
   Check,
   ExternalLink,
@@ -21,7 +22,6 @@ import {
   MessageCircle,
   Paperclip,
   Send,
-  Sparkles,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,70 +32,27 @@ import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
 import {
   buildRouteContext,
+  BLOG_AGENT_OPEN_EVENT,
   getCompanionPromptKeys,
   getCompanionWelcomeKeys,
   inferClientScope,
+  type BlogAgentOpenDetail,
   type AgentScope,
   type AgentRouteContext,
 } from "./routeContext";
+import { toChatMessage, upsertTraceEntry } from "./messageState";
+import { isAbortError, streamAgentMessage } from "./streamClient";
+import type {
+  AgentTraceEntry,
+  ChatMessage,
+  ConversationItem,
+  QuotaInfo,
+  SourceCard,
+} from "./types";
 
 const AgentMarkdown = lazy(() =>
   import("./AgentMarkdown").then(module => ({ default: module.AgentMarkdown }))
 );
-
-type ChatMessage = {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  sourceCards?: SourceCard[];
-  relatedQuestions?: string[];
-  reasoningMarkdown?: string;
-  traceEntries?: AgentTraceEntry[];
-  streaming?: boolean;
-};
-
-type AgentTraceEntry = {
-  stage: AgentTraceStage;
-  elapsedMs: number;
-  sourceCount?: number;
-  currentPageContextInjected?: boolean;
-};
-
-type AgentTraceStage =
-  | "understanding"
-  | "retrieval"
-  | "sources"
-  | "reasoning"
-  | "answer"
-  | "saving";
-
-type QuotaInfo = {
-  limit: number;
-  used: number;
-  remaining: number;
-  tier: string;
-};
-
-type SourceCard = {
-  sourceId: string;
-  sourceType?: "blog" | "user_context";
-  postTitle: string;
-  postSlug: string;
-  categorySlug?: string;
-  tagSlugs: string[];
-  heading?: string;
-  excerpt: string;
-  relevanceReason: string;
-};
-
-type ConversationItem = {
-  id: string;
-  title: string | null;
-  scopeType: string;
-  scopeValue: string | null;
-  updatedAt?: Date | string;
-  lastMessageAt?: Date | string | null;
-};
 
 export function BlogAgentRoot() {
   const [location] = useLocation();
@@ -122,6 +79,7 @@ export function BlogAgentRoot() {
   const [quota, setQuota] = useState<QuotaInfo | null>(null);
   const messageEndRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const streamAbortRef = useRef<AbortController | null>(null);
   const utils = trpc.useUtils();
 
   const bootstrap = trpc.agent.bootstrap.useQuery(
@@ -170,6 +128,19 @@ export function BlogAgentRoot() {
     messageEndRef.current?.scrollIntoView({ block: "end" });
   }, [messages, sendMessage.isPending, streaming, notice]);
 
+  useEffect(() => {
+    function handleExternalOpen(event: Event) {
+      const detail = (event as CustomEvent<BlogAgentOpenDetail>).detail;
+      setOpen(true);
+      setNotice(null);
+      if (detail?.prompt) setDraft(detail.prompt);
+    }
+
+    window.addEventListener(BLOG_AGENT_OPEN_EVENT, handleExternalOpen);
+    return () =>
+      window.removeEventListener(BLOG_AGENT_OPEN_EVENT, handleExternalOpen);
+  }, []);
+
   if (hiddenOnRoute) return null;
 
   const suggestedPrompts = buildCompanionPrompts(
@@ -205,12 +176,15 @@ export function BlogAgentRoot() {
     setDraft("");
     setStreaming(true);
     setMessages(current => [...current, userMessage, assistantDraft]);
+    const controller = new AbortController();
+    streamAbortRef.current = controller;
 
     try {
       await streamAgentMessage({
         conversationId,
         message: trimmed,
         routeContext,
+        signal: controller.signal,
         onStatus: event => {
           setMessages(current =>
             current.map(item =>
@@ -304,17 +278,26 @@ export function BlogAgentRoot() {
           );
         },
       });
-    } catch {
+    } catch (error) {
       setMessages(current =>
         current.filter(
           item => item.id !== userMessage.id && item.id !== assistantMessageId
         )
       );
       setDraft(trimmed);
-      setNotice(t("agent.error.send"));
+      setNotice(
+        isAbortError(error) ? t("agent.error.cancelled") : t("agent.error.send")
+      );
     } finally {
+      if (streamAbortRef.current === controller) {
+        streamAbortRef.current = null;
+      }
       setStreaming(false);
     }
+  }
+
+  function handleCancelStreaming() {
+    streamAbortRef.current?.abort();
   }
 
   async function handleAttachContext(input: {
@@ -432,6 +415,7 @@ export function BlogAgentRoot() {
             onLoadConversation={handleLoadConversation}
             onPrompt={handleSubmit}
             onSubmit={handleSubmit}
+            onCancel={handleCancelStreaming}
             messageEndRef={messageEndRef}
           />
           <input
@@ -470,18 +454,18 @@ export function AgentLauncher({
       aria-label={label}
       title={tooltip}
       onClick={onClick}
-      className="agent-liquid-launcher fixed bottom-5 right-5 z-[60] inline-flex h-12 items-center gap-3 rounded-full border px-3 text-sm font-semibold text-white transition hover:border-sky-200/70 sm:bottom-6 sm:right-6 sm:px-4"
+      className="agent-liquid-launcher fixed bottom-5 right-5 z-[60] inline-flex h-11 items-center gap-2.5 rounded-full border px-3 text-sm font-semibold text-slate-100 transition hover:border-slate-400/35 sm:bottom-6 sm:right-6 sm:px-4"
     >
-      <span className="agent-launcher-orb grid h-8 w-8 place-items-center rounded-full text-sky-100">
+      <span className="agent-launcher-orb grid h-8 w-8 place-items-center rounded-full text-slate-200">
         {open ? (
           <X className="h-4 w-4" />
         ) : (
-          <MessageCircle className="h-4 w-4" />
+          <BookOpen className="h-4 w-4" />
         )}
       </span>
       <span className="hidden sm:inline">{label}</span>
       {lowQuota && (
-        <span className="h-2 w-2 rounded-full bg-cyan-300" aria-hidden="true" />
+        <span className="h-2 w-2 rounded-full bg-slate-400" aria-hidden="true" />
       )}
     </button>
   );
@@ -492,7 +476,7 @@ export function AgentMobileSheet({
   children,
 }: {
   isMobile: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div
@@ -538,6 +522,7 @@ export function AgentPanel({
   onLoadConversation,
   onPrompt,
   onSubmit,
+  onCancel,
   messageEndRef,
 }: {
   bootstrapping: boolean;
@@ -574,7 +559,8 @@ export function AgentPanel({
   onLoadConversation: (conversationId: string) => void;
   onPrompt: (message: string) => void;
   onSubmit: (message: string) => void;
-  messageEndRef: React.RefObject<HTMLDivElement | null>;
+  onCancel: () => void;
+  messageEndRef: RefObject<HTMLDivElement | null>;
 }) {
   const { t } = useLanguage();
   const hasStreamingAssistant = messages.some(
@@ -587,11 +573,11 @@ export function AgentPanel({
   }
 
   return (
-    <section className="agent-liquid-panel flex h-full min-h-[420px] flex-col overflow-hidden rounded-lg border text-slate-100">
-      <header className="flex items-start justify-between gap-4 border-b border-sky-300/15 px-4 py-3">
+    <section className="agent-liquid-panel flex h-full min-h-[420px] flex-col overflow-hidden rounded-md border text-slate-100">
+      <header className="flex items-start justify-between gap-4 border-b border-slate-700/50 px-4 py-3.5">
         <div className="flex min-w-0 items-start gap-3">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-sky-300/25 bg-sky-400/10 text-sky-200">
-            <Bot className="h-4 w-4" />
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-slate-600/45 bg-slate-900/70 text-slate-200">
+            <BookOpen className="h-4 w-4" />
           </span>
           <div className="min-w-0">
             <h2 className="text-sm font-semibold text-white">
@@ -612,16 +598,16 @@ export function AgentPanel({
         </button>
       </header>
 
-      <div className="border-b border-sky-300/10 px-4 py-2 text-xs text-slate-300">
+      <div className="border-b border-slate-800 px-4 py-2.5 text-xs text-slate-300">
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-sky-300/20 bg-sky-400/10 px-2.5 py-1">
-              <Sparkles className="h-3.5 w-3.5 text-sky-300" />
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-slate-600/45 bg-slate-900/55 px-2.5 py-1 text-slate-300">
+              <BookOpen className="h-3.5 w-3.5 text-slate-400" />
               {scopeLabel(currentScope, t)}
             </span>
             {quota && <AgentQuotaBadge quota={quota} />}
             {currentScope.type === "post" && (
-              <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-300/20 bg-emerald-400/10 px-2.5 py-1 text-emerald-100">
+              <span className="inline-flex items-center gap-1.5 rounded-md border border-slate-600/45 bg-slate-900/55 px-2.5 py-1 text-slate-300">
                 <Check className="h-3.5 w-3.5" />
                 {t("agent.scope.postContextReady")}
               </span>
@@ -634,8 +620,8 @@ export function AgentPanel({
             className={cn(
               "inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition",
               historyOpen
-                ? "border-sky-300/45 bg-sky-400/15 text-sky-100"
-                : "border-sky-300/15 bg-white/[0.03] text-slate-300 hover:border-sky-300/35 hover:bg-sky-400/10 hover:text-sky-100"
+                ? "border-slate-500 bg-slate-900 text-slate-100"
+                : "border-slate-700 bg-white/[0.025] text-slate-300 hover:border-slate-500 hover:bg-slate-900 hover:text-slate-100"
             )}
           >
             <History className="h-3.5 w-3.5" />
@@ -659,7 +645,7 @@ export function AgentPanel({
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
         {bootstrapping && (
           <div className="grid h-full place-items-center text-sm text-slate-400">
-            <Loader2 className="mb-3 h-5 w-5 animate-spin text-sky-300" />
+            <Loader2 className="mb-3 h-5 w-5 animate-spin text-slate-400" />
             {t("agent.header.subtitle")}
           </div>
         )}
@@ -671,7 +657,7 @@ export function AgentPanel({
         {!bootstrapping && messages.length === 0 && (
           <div className="flex min-h-full flex-col justify-center gap-5 py-4">
             <div>
-              <div className="mb-3 grid h-11 w-11 place-items-center rounded-lg border border-sky-300/25 bg-sky-400/10 text-sky-200">
+              <div className="mb-3 grid h-11 w-11 place-items-center rounded-md border border-slate-700 bg-slate-950/55 text-slate-300">
                 <BookOpen className="h-5 w-5" />
               </div>
               <h3 className="text-lg font-semibold text-white">
@@ -688,7 +674,7 @@ export function AgentPanel({
                   type="button"
                   disabled={sending}
                   onClick={() => onPrompt(prompt)}
-                  className="rounded-lg border border-sky-300/15 bg-white/[0.04] px-3 py-2 text-left text-sm font-medium leading-6 text-slate-200 transition hover:border-sky-300/40 hover:bg-sky-300/10 disabled:opacity-60"
+                  className="rounded-md border border-slate-700 bg-slate-950/45 px-3 py-2 text-left text-sm font-medium leading-6 text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 disabled:opacity-60"
                 >
                   {prompt}
                 </button>
@@ -708,16 +694,16 @@ export function AgentPanel({
                 )}
               >
                 {message.role === "assistant" && (
-                  <span className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-sky-400/10 text-sky-200">
-                    <Bot className="h-4 w-4" />
+                  <span className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-md border border-slate-700 bg-slate-950/55 text-slate-300">
+                    <BookOpen className="h-4 w-4" />
                   </span>
                 )}
                 <div
                   className={cn(
-                    "max-w-[86%] rounded-lg px-3.5 py-2.5 text-sm leading-6",
+                    "max-w-[86%] rounded-md px-3.5 py-2.5 text-sm leading-6",
                     message.role === "user"
-                      ? "bg-sky-500 text-white"
-                      : "border border-sky-300/10 bg-white/[0.04] text-slate-200"
+                      ? "border border-slate-600/50 bg-slate-100/10 text-slate-100"
+                      : "border border-slate-700/70 bg-slate-950/35 text-slate-200"
                   )}
                 >
                   {message.role === "assistant" ? (
@@ -759,7 +745,7 @@ export function AgentPanel({
             ))}
             {sending && !hasStreamingAssistant && (
               <div className="flex items-center gap-3 text-sm text-slate-400">
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-sky-400/10 text-sky-200">
+                <span className="grid h-8 w-8 place-items-center rounded-md border border-slate-700 bg-slate-950/55 text-slate-300">
                   <Loader2 className="h-4 w-4 animate-spin" />
                 </span>
                 {t("agent.header.subtitle")}
@@ -787,16 +773,16 @@ export function AgentPanel({
         onPickFile={onPickContextFile}
       />
 
-      <form onSubmit={submit} className="border-t border-sky-300/15 p-3">
-        <div className="flex items-end gap-2 rounded-lg border border-sky-300/20 bg-slate-950/45 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+      <form onSubmit={submit} className="border-t border-slate-800 p-3">
+        <div className="flex items-end gap-2 rounded-md border border-slate-700 bg-slate-950/45 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
           <Button
             type="button"
             size="icon"
             onClick={onToggleContext}
             aria-label={t("agent.context.toggle")}
             className={cn(
-              "h-10 w-10 shrink-0 rounded-md border border-sky-300/15 bg-white/[0.03] text-slate-300 hover:bg-sky-400/10 hover:text-sky-100",
-              contextOpen && "border-sky-300/40 bg-sky-400/15 text-sky-100"
+              "h-10 w-10 shrink-0 rounded-md border border-slate-700 bg-white/[0.025] text-slate-400 hover:bg-slate-900 hover:text-slate-100",
+              contextOpen && "border-slate-500 bg-slate-900 text-slate-100"
             )}
           >
             <Paperclip className="h-4 w-4" />
@@ -819,17 +805,21 @@ export function AgentPanel({
             className="max-h-28 min-h-10 resize-none border-0 bg-transparent text-sm text-slate-100 shadow-none placeholder:text-slate-500 focus-visible:ring-0"
           />
           <Button
-            type="submit"
+            type={sending ? "button" : "submit"}
             size="icon"
-            disabled={!draft.trim() || sending || bootstrapping}
-            aria-label={t("agent.input.send")}
-            className="h-10 w-10 shrink-0 rounded-md bg-sky-500 text-white hover:bg-sky-400"
-          >
-            {sending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Send className="h-4 w-4" />
+            onClick={sending ? onCancel : undefined}
+            disabled={(!draft.trim() && !sending) || bootstrapping}
+            aria-label={
+              sending ? t("agent.input.cancel") : t("agent.input.send")
+            }
+            className={cn(
+              "h-10 w-10 shrink-0 rounded-md text-white",
+              sending
+                ? "bg-slate-700 hover:bg-slate-600"
+                : "bg-slate-100 text-slate-950 hover:bg-white"
             )}
+          >
+            {sending ? <X className="h-4 w-4" /> : <Send className="h-4 w-4" />}
           </Button>
         </div>
       </form>
@@ -859,23 +849,23 @@ function AgentContextDock({
   const { t } = useLanguage();
 
   return (
-    <div className="border-t border-sky-300/10 px-3 py-2">
+    <div className="border-t border-slate-800 px-3 py-2">
       <div className="flex items-center justify-between gap-3">
         <button
           type="button"
           onClick={onToggle}
-          className="inline-flex min-w-0 items-center gap-2 rounded-md px-1.5 py-1 text-xs font-medium text-slate-400 transition hover:text-sky-100"
+          className="inline-flex min-w-0 items-center gap-2 rounded-md px-1.5 py-1 text-xs font-medium text-slate-400 transition hover:text-slate-100"
         >
-          <Paperclip className="h-3.5 w-3.5 text-sky-300" />
+          <Paperclip className="h-3.5 w-3.5 text-slate-400" />
           <span className="truncate">{t("agent.context.title")}</span>
           {count > 0 && (
-            <span className="rounded-full border border-sky-300/20 bg-sky-400/10 px-1.5 text-[0.68rem] text-sky-100">
+            <span className="rounded-full border border-slate-600/50 bg-slate-900 px-1.5 text-[0.68rem] text-slate-300">
               {t("agent.context.count", { count })}
             </span>
           )}
         </button>
         {count > 0 && (
-          <span className="inline-flex items-center gap-1 text-[0.7rem] text-cyan-200">
+          <span className="inline-flex items-center gap-1 text-[0.7rem] text-slate-400">
             <Check className="h-3.5 w-3.5" />
             {t("agent.context.active")}
           </span>
@@ -883,7 +873,7 @@ function AgentContextDock({
       </div>
 
       {open && (
-        <div className="mt-2 rounded-lg border border-sky-300/15 bg-slate-900/65 p-2">
+        <div className="mt-2 rounded-md border border-slate-700 bg-slate-950/45 p-2">
           <p className="mb-2 text-xs leading-5 text-slate-400">
             {t("agent.context.supported")}
           </p>
@@ -899,7 +889,7 @@ function AgentContextDock({
               type="button"
               onClick={onPickFile}
               disabled={attaching}
-              className="inline-flex items-center gap-1.5 rounded-md border border-sky-300/15 bg-white/[0.03] px-2.5 py-1.5 text-xs text-slate-300 transition hover:border-sky-300/35 hover:bg-sky-400/10 hover:text-sky-100 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-white/[0.025] px-2.5 py-1.5 text-xs text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 hover:text-slate-100 disabled:opacity-50"
             >
               <FileText className="h-3.5 w-3.5" />
               {t("agent.context.file")}
@@ -909,7 +899,7 @@ function AgentContextDock({
               size="sm"
               disabled={!value.trim() || attaching}
               onClick={onAttach}
-              className="h-8 rounded-md bg-sky-500 px-3 text-xs text-white hover:bg-sky-400"
+              className="h-8 rounded-md bg-slate-100 px-3 text-xs text-slate-950 hover:bg-white"
             >
               {attaching ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -933,8 +923,8 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
   const { t } = useLanguage();
 
   return (
-    <div className="mt-3 border-t border-sky-300/10 pt-3">
-      <div className="mb-2 text-[0.7rem] font-semibold uppercase text-sky-200">
+    <div className="mt-3 border-t border-slate-800 pt-3">
+      <div className="mb-2 text-[0.7rem] font-semibold uppercase text-slate-500">
         {t("agent.sources.title")}
       </div>
       <div className="grid gap-2">
@@ -945,17 +935,17 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
           const currentPageSource = isCurrentPageSource(source);
           const relevanceReason = getDisplayRelevanceReason(source, t);
           const card = (
-            <span className="block rounded-md border border-sky-300/15 bg-slate-950/45 p-2.5 transition hover:border-sky-300/35 hover:bg-sky-400/10">
-              <span className="flex items-center justify-between gap-3 text-sm font-semibold text-sky-100">
+            <span className="block rounded-md border border-slate-700 bg-slate-950/35 p-2.5 transition hover:border-slate-500 hover:bg-slate-900/70">
+              <span className="flex items-center justify-between gap-3 text-sm font-semibold text-slate-100">
                 <span className="min-w-0 truncate">{title}</span>
                 <span className="inline-flex shrink-0 items-center gap-1">
-                  <span className="rounded border border-sky-300/15 bg-white/[0.03] px-1.5 py-0.5 text-[0.65rem] font-medium text-slate-400">
+                  <span className="rounded border border-slate-700 bg-white/[0.025] px-1.5 py-0.5 text-[0.65rem] font-medium text-slate-400">
                     {source.sourceType === "user_context"
                       ? t("agent.sources.context")
                       : t("agent.sources.blog")}
                   </span>
                   {currentPageSource && (
-                    <span className="rounded border border-emerald-300/20 bg-emerald-400/10 px-1.5 py-0.5 text-[0.65rem] font-medium text-emerald-100">
+                    <span className="rounded border border-slate-600/50 bg-slate-900 px-1.5 py-0.5 text-[0.65rem] font-medium text-slate-300">
                       {t("agent.sources.currentPage")}
                     </span>
                   )}
@@ -986,7 +976,7 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
                   {source.tagSlugs.slice(0, 4).map(tag => (
                     <span
                       key={tag}
-                      className="rounded border border-sky-300/10 bg-white/[0.03] px-1.5 py-0.5 text-[0.65rem] text-slate-400"
+                      className="rounded border border-slate-700 bg-white/[0.025] px-1.5 py-0.5 text-[0.65rem] text-slate-400"
                     >
                       {tag}
                     </span>
@@ -997,7 +987,7 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
                 {source.excerpt}
               </span>
               {relevanceReason && (
-                <span className="mt-1 block text-[0.68rem] leading-4 text-cyan-200/80">
+                <span className="mt-1 block text-[0.68rem] leading-4 text-slate-400">
                   {t("agent.sources.reason")}: {relevanceReason}
                 </span>
               )}
@@ -1031,10 +1021,7 @@ function AgentReasoningTrace({ message }: { message: ChatMessage }) {
     message.streaming || traceEntries.length > 0 || Boolean(reasoningMarkdown);
   if (!hasTrace) return null;
 
-  const elapsedMs = Math.max(
-    0,
-    ...traceEntries.map(entry => entry.elapsedMs)
-  );
+  const elapsedMs = Math.max(0, ...traceEntries.map(entry => entry.elapsedMs));
   const summaryKey = message.streaming
     ? "agent.trace.thinking"
     : "agent.trace.done";
@@ -1042,7 +1029,7 @@ function AgentReasoningTrace({ message }: { message: ChatMessage }) {
   return (
     <details
       open={message.streaming}
-      className="not-prose mb-3 rounded-md border border-sky-300/15 bg-slate-950/45"
+      className="not-prose mb-3 rounded-md border border-slate-700 bg-slate-950/45"
     >
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-xs font-medium text-slate-300">
         <span>
@@ -1056,10 +1043,10 @@ function AgentReasoningTrace({ message }: { message: ChatMessage }) {
           )}
         </span>
         {message.streaming && (
-          <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-sky-300" />
+          <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-slate-400" />
         )}
       </summary>
-      <div className="border-t border-sky-300/10 px-3 py-2">
+      <div className="border-t border-slate-800 px-3 py-2">
         {traceEntries.length > 0 && (
           <ol className="grid gap-1.5 text-xs leading-5 text-slate-400">
             {traceEntries.map(entry => (
@@ -1078,7 +1065,7 @@ function AgentReasoningTrace({ message }: { message: ChatMessage }) {
 
         {reasoningMarkdown && (
           <div className="mt-2 rounded-md border border-slate-700/60 bg-black/20 px-3 py-2">
-            <div className="mb-1 text-[0.68rem] font-semibold uppercase text-sky-200">
+            <div className="mb-1 text-[0.68rem] font-semibold uppercase text-slate-500">
               {t("agent.trace.reasoning")}
             </div>
             <div className="prose prose-xs prose-invert max-h-44 max-w-none overflow-y-auto text-xs leading-5 prose-p:my-1.5 prose-li:my-1">
@@ -1129,8 +1116,8 @@ function AgentRelatedQuestions({
   const { t } = useLanguage();
 
   return (
-    <div className="mt-3 border-t border-sky-300/10 pt-3">
-      <div className="mb-2 text-[0.7rem] font-semibold uppercase text-sky-200">
+    <div className="mt-3 border-t border-slate-800 pt-3">
+      <div className="mb-2 text-[0.7rem] font-semibold uppercase text-slate-500">
         {t("agent.related.title")}
       </div>
       <div className="flex flex-wrap gap-2">
@@ -1140,7 +1127,7 @@ function AgentRelatedQuestions({
             type="button"
             disabled={disabled}
             onClick={() => onPrompt(question)}
-            className="rounded-md border border-sky-300/15 bg-sky-400/10 px-2.5 py-1.5 text-left text-xs leading-5 text-sky-100 transition hover:border-sky-300/35 hover:bg-sky-400/15 disabled:opacity-60"
+            className="rounded-md border border-slate-700 bg-white/[0.025] px-2.5 py-1.5 text-left text-xs leading-5 text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 disabled:opacity-60"
           >
             {question}
           </button>
@@ -1182,11 +1169,11 @@ function AgentHistoryPanel({
   const visible = conversations.slice(0, 8);
 
   return (
-    <div className="border-b border-sky-300/10 bg-slate-950/55 px-4 py-3">
+    <div className="border-b border-slate-800 bg-slate-950/55 px-4 py-3">
       <div className="mb-2 flex items-center justify-between gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-slate-500">
         <span>{t("agent.history.title")}</span>
         {loading && (
-          <Loader2 className="h-3.5 w-3.5 animate-spin text-sky-300" />
+          <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-400" />
         )}
       </div>
       {visible.length > 0 ? (
@@ -1201,8 +1188,8 @@ function AgentHistoryPanel({
                 className={cn(
                   "grid grid-cols-[1fr_auto] items-center gap-3 rounded-md border px-3 py-2 text-left text-xs leading-5 transition",
                   active
-                    ? "border-sky-300/50 bg-sky-400/15 text-sky-100"
-                    : "border-sky-300/15 bg-white/[0.03] text-slate-300 hover:border-sky-300/35 hover:bg-sky-400/10"
+                    ? "border-slate-500 bg-slate-900 text-slate-100"
+                    : "border-slate-700 bg-white/[0.025] text-slate-300 hover:border-slate-500 hover:bg-slate-900"
                 )}
               >
                 <span className="min-w-0">
@@ -1277,7 +1264,7 @@ function AgentQuotaCallout({
       : t("agent.quota.lowDetail");
 
   return (
-    <div className="mt-2 rounded-md border border-cyan-300/20 bg-cyan-950/20 px-3 py-2 text-xs leading-5 text-cyan-100">
+    <div className="mt-2 rounded-md border border-slate-700 bg-slate-950/45 px-3 py-2 text-xs leading-5 text-slate-300">
       {message}
     </div>
   );
@@ -1300,7 +1287,7 @@ function AgentNotice({
         "flex items-start gap-2 rounded-lg border px-3 py-2 text-sm leading-6",
         tone === "error"
           ? "border-red-300/25 bg-red-950/30 text-red-100"
-          : "border-cyan-300/25 bg-cyan-950/30 text-cyan-100"
+          : "border-slate-700 bg-slate-950/45 text-slate-300"
       )}
     >
       <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
@@ -1364,198 +1351,4 @@ function fallbackPrompts(
     t("agent.prompts.compareTracks"),
     t("agent.prompts.readingPath"),
   ];
-}
-
-type AgentStreamCallbacks = {
-  conversationId?: string;
-  message: string;
-  routeContext: AgentRouteContext;
-  onStatus: (event: AgentStreamStatusEvent) => void;
-  onReasoningDelta: (delta: string) => void;
-  onAnswerDelta: (delta: string) => void;
-  onFinal: (event: AgentStreamFinalEvent) => void;
-};
-
-type AgentStreamStatusEvent = AgentTraceEntry & {
-  type: "status";
-};
-
-type AgentStreamFinalEvent = {
-  type: "final";
-  output: AgentSendMessageResponse;
-  elapsedMs: number;
-  reasoningMarkdown?: string;
-};
-
-type AgentSendMessageResponse =
-  | {
-      status: "blocked";
-      reason: "quota";
-      quota: QuotaInfo;
-    }
-  | {
-      status: "completed";
-      conversationId: string;
-      messageId: string;
-      answer: {
-        answerMarkdown: string;
-      };
-      sourceCards: SourceCard[];
-      relatedQuestions: string[];
-      quota: QuotaInfo;
-      runStatus: "completed";
-    }
-  | {
-      status: "failed";
-      conversationId: string;
-      messageId: string;
-      quota: QuotaInfo;
-      runStatus: "failed";
-      errorCode: string;
-    };
-
-async function streamAgentMessage({
-  conversationId,
-  message,
-  routeContext,
-  onStatus,
-  onReasoningDelta,
-  onAnswerDelta,
-  onFinal,
-}: AgentStreamCallbacks) {
-  const response = await fetch("/api/agent/stream", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "content-type": "application/json",
-      accept: "text/event-stream",
-    },
-    body: JSON.stringify({
-      conversationId,
-      message,
-      routeContext,
-    }),
-  });
-
-  if (!response.ok || !response.body) {
-    throw new Error(`Agent stream failed: ${response.status}`);
-  }
-
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    const frames = buffer.split(/\n\n/);
-    buffer = frames.pop() ?? "";
-
-    for (const frame of frames) {
-      const event = parseSseFrame(frame);
-      if (!event) continue;
-      if (event.type === "status") onStatus(event);
-      if (event.type === "reasoning_delta") onReasoningDelta(event.delta);
-      if (event.type === "answer_delta") onAnswerDelta(event.delta);
-      if (event.type === "final") onFinal(event);
-      if (event.type === "error") {
-        throw new Error(event.message);
-      }
-    }
-  }
-}
-
-function parseSseFrame(frame: string):
-  | AgentStreamStatusEvent
-  | AgentStreamFinalEvent
-  | { type: "reasoning_delta"; delta: string }
-  | { type: "answer_delta"; delta: string }
-  | { type: "error"; message: string }
-  | null {
-  const data = frame
-    .split(/\n/)
-    .map(line => line.trim())
-    .filter(line => line.startsWith("data:"))
-    .map(line => line.replace(/^data:\s*/, ""))
-    .join("\n");
-  if (!data) return null;
-
-  try {
-    return JSON.parse(data);
-  } catch {
-    return null;
-  }
-}
-
-function upsertTraceEntry(
-  entries: AgentTraceEntry[] | undefined,
-  next: AgentTraceEntry
-) {
-  const current = entries ?? [];
-  const index = current.findIndex(entry => entry.stage === next.stage);
-  if (index === -1) return [...current, next];
-  return current.map((entry, entryIndex) =>
-    entryIndex === index ? { ...entry, ...next } : entry
-  );
-}
-
-function toChatMessage(message: {
-  id: string;
-  role: "user" | "assistant" | "system";
-  content: string;
-  sourceJson?: Record<string, unknown> | null;
-}): ChatMessage {
-  return {
-    id: message.id,
-    role: message.role === "assistant" ? "assistant" : "user",
-    content: message.content,
-    sourceCards: extractSourceCards(message.sourceJson),
-    reasoningMarkdown: extractReasoningMarkdown(message.sourceJson),
-  };
-}
-
-function extractReasoningMarkdown(
-  sourceJson: Record<string, unknown> | null | undefined
-) {
-  const reasoning = sourceJson?.reasoningMarkdown;
-  return typeof reasoning === "string" && reasoning.trim()
-    ? reasoning
-    : undefined;
-}
-
-function extractSourceCards(
-  sourceJson: Record<string, unknown> | null | undefined
-): SourceCard[] | undefined {
-  const cards = sourceJson?.sourceCards;
-  if (!Array.isArray(cards)) return undefined;
-  const normalized = cards
-    .map(card => normalizeSourceCard(card))
-    .filter((card): card is SourceCard => Boolean(card));
-  return normalized.length > 0 ? normalized : undefined;
-}
-
-function normalizeSourceCard(value: unknown): SourceCard | null {
-  if (!value || typeof value !== "object") return null;
-  const record = value as Record<string, unknown>;
-  if (
-    typeof record.sourceId !== "string" ||
-    typeof record.postTitle !== "string"
-  )
-    return null;
-  return {
-    sourceId: record.sourceId,
-    sourceType: record.sourceType === "user_context" ? "user_context" : "blog",
-    postTitle: record.postTitle,
-    postSlug: typeof record.postSlug === "string" ? record.postSlug : "",
-    categorySlug:
-      typeof record.categorySlug === "string" ? record.categorySlug : undefined,
-    tagSlugs: Array.isArray(record.tagSlugs)
-      ? record.tagSlugs.filter((tag): tag is string => typeof tag === "string")
-      : [],
-    heading: typeof record.heading === "string" ? record.heading : undefined,
-    excerpt: typeof record.excerpt === "string" ? record.excerpt : "",
-    relevanceReason:
-      typeof record.relevanceReason === "string" ? record.relevanceReason : "",
-  };
 }

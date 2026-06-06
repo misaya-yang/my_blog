@@ -64,6 +64,12 @@ Seed the initial blog content:
 pnpm db:seed
 ```
 
+Validate seed metadata without writing to the database:
+
+```bash
+pnpm db:seed --validate-only
+```
+
 Seed content and rebuild the blog agent's public knowledge chunks:
 
 ```bash
@@ -74,8 +80,8 @@ pnpm content:publish
 the current public article dates, runs `pnpm db:seed`, rebuilds Agent knowledge
 with `pnpm ai:reindex`, and then runs the publish freshness gate. The gate
 checks public article metadata, RSS/sitemap/archive coverage, hidden/draft
-exclusion, Agent knowledge coverage, and whether unchanged public articles had
-their publish/update dates silently drift.
+exclusion, public track/series path coverage, Agent knowledge coverage, and
+whether unchanged public articles had their publish/update dates silently drift.
 
 Important: `pnpm db:seed` updates `posts`, `categories`, and `tags`; it does not update `ai_knowledge_chunks`. Any new public article, title/excerpt/content rewrite, tag/category move, or visibility/status change must be followed by `pnpm ai:reindex` so the right-bottom blog agent can retrieve and explain the latest public article set. Use `pnpm content:publish` when in doubt because it performs both operations and writes `docs/product_optimization/reports/po-08-publish-freshness-latest.json`.
 
@@ -248,10 +254,10 @@ www  A    76.76.21.21
 
 The `yang.misaya.online` record is managed separately and is not part of the Vercel blog deployment.
 
-Latest verified deployment after the liquid-glass UI, i18n, and routing release:
+Latest verified deployment after the research-notebook UI and Agent reliability release:
 
-- Deployment URL: https://my-blog-bbeobzf33-zedpl28174-3992s-projects.vercel.app
-- Vercel deployment id: `dpl_2UPDim2jHQSRivHhfFtTkiedZqeg`
+- Deployment URL: https://my-blog-5vq4r0tgd-zedpl28174-3992s-projects.vercel.app
+- Vercel deployment id: `dpl_A8rcMzLx8pbpk4bjqVhYRfcmpzp6`
 - Verified production alias: https://misaya.online
 - Verified secondary alias: https://www.misaya.online
 

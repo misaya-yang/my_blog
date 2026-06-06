@@ -1,3 +1,6 @@
+import { getContentSeriesForTrack } from "@shared/content-series";
+import type { ResearchTrack } from "@shared/content-series";
+
 export type TrackKind = "algorithms" | "applications";
 
 export type TrackSeriesConfig = {
@@ -62,38 +65,7 @@ export const trackConfigs: Record<TrackKind, TrackConfig> = {
       "home.focusTag5",
       "home.focusTag8",
     ],
-    series: [
-      {
-        slug: "residual-stability",
-        titleKey: "series.residualStability.title",
-        promiseKey: "series.residualStability.promise",
-        postSlugs: ["isohc-fixed-vector-isometric-residual-mixing"],
-        expectedNextKeys: [
-          "series.residualStability.next1",
-          "series.residualStability.next2",
-        ],
-        conceptKeys: [
-          "track.topic.residualMixing",
-          "track.topic.stability",
-          "track.topic.architecture",
-        ],
-      },
-      {
-        slug: "long-context-position-encoding",
-        titleKey: "series.longContext.title",
-        promiseKey: "series.longContext.promise",
-        postSlugs: [],
-        expectedNextKeys: [
-          "series.longContext.next1",
-          "series.longContext.next2",
-        ],
-        conceptKeys: [
-          "track.topic.positionEncoding",
-          "track.topic.rope",
-          "track.topic.longContext",
-        ],
-      },
-    ],
+    series: buildTrackSeries("algorithms"),
   },
   applications: {
     kind: "applications",
@@ -137,44 +109,20 @@ export const trackConfigs: Record<TrackKind, TrackConfig> = {
       "track.applications.focus5",
       "track.applications.focus6",
     ],
-    series: [
-      {
-        slug: "agent-runtime-systems",
-        titleKey: "series.agentRuntime.title",
-        promiseKey: "series.agentRuntime.promise",
-        postSlugs: [
-          "agent-harness-engine-evaluating-tool-using-agents",
-          "rag-evidence-packet-context-compiler",
-          "agent-loop-observable-tool-using-agents",
-        ],
-        expectedNextKeys: [
-          "series.agentRuntime.next1",
-          "series.agentRuntime.next2",
-        ],
-        conceptKeys: [
-          "track.topic.agentSystems",
-          "track.topic.harnessEngine",
-          "track.topic.observability",
-        ],
-      },
-      {
-        slug: "agentic-rag-infrastructure",
-        titleKey: "series.agenticRag.title",
-        promiseKey: "series.agenticRag.promise",
-        postSlugs: ["rag-evidence-packet-context-compiler"],
-        expectedNextKeys: [
-          "series.agenticRag.next1",
-          "series.agenticRag.next2",
-        ],
-        conceptKeys: [
-          "track.topic.ragRetrieval",
-          "track.topic.contextEngineering",
-          "track.topic.evaluation",
-        ],
-      },
-    ],
+    series: buildTrackSeries("applications"),
   },
 };
+
+function buildTrackSeries(track: ResearchTrack): TrackSeriesConfig[] {
+  return getContentSeriesForTrack(track).map(series => ({
+    slug: series.slug,
+    titleKey: series.titleKey,
+    promiseKey: series.promiseKey,
+    postSlugs: [...series.orderedPostSlugs],
+    expectedNextKeys: [...series.expectedNextKeys],
+    conceptKeys: [...series.conceptKeys],
+  }));
+}
 
 export function getPublicTrackSeries(
   track: TrackKind,

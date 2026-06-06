@@ -58,7 +58,9 @@ const agentMocks = vi.hoisted(() => ({
       terms: ["harness", "engine"],
       missingTerms: [],
       notes: ["Retrieved 1 public source."],
-      suggestions: ["Inspect source slugs and headings before changing retrieval."],
+      suggestions: [
+        "Inspect source slugs and headings before changing retrieval.",
+      ],
     },
   })),
   addContext: vi.fn(async () => ({
@@ -144,7 +146,9 @@ const agentMocks = vi.hoisted(() => ({
         sourceConversationId: "11111111-1111-4111-8111-111111111111",
         proposedTitle: "failure modes in agent harness engines",
         rationale: "Reader-facing technical question.",
-        seedQuestions: ["Can you explain failure modes in agent harness engines?"],
+        seedQuestions: [
+          "Can you explain failure modes in agent harness engines?",
+        ],
       },
     ],
   })),
@@ -177,7 +181,9 @@ const agentMocks = vi.hoisted(() => ({
         createdAt: new Date("2026-05-31T00:00:00.000Z"),
       },
     ],
-    scopeBreakdown: [{ scopeType: "track", scopeValue: "ai-applications", count: 3 }],
+    scopeBreakdown: [
+      { scopeType: "track", scopeValue: "ai-applications", count: 3 },
+    ],
     suggestedIdeas: [
       {
         ideaId: "agent-where-does-the-harness-fail",
@@ -189,7 +195,7 @@ const agentMocks = vi.hoisted(() => ({
       },
     ],
   })),
-  buildAgentContext: vi.fn(async (req) => ({
+  buildAgentContext: vi.fn(async req => ({
     req,
     session: {
       isAuthenticated: false,
@@ -217,6 +223,7 @@ vi.mock("./ai/harness.js", () => ({
 }));
 
 import { appRouter } from "./routers";
+import { agentSendMessageInput } from "./ai/inputSchemas";
 
 function createContext() {
   return {
@@ -255,6 +262,37 @@ describe("agent router", () => {
     expect(agentMocks.sendMessage).toHaveBeenCalledTimes(1);
   });
 
+  it("keeps agent message route context and scope bounded", () => {
+    const valid = {
+      message: "What should I read first?",
+      routeContext: { path: "/", routeType: "home" as const },
+    };
+
+    expect(() => agentSendMessageInput.parse(valid)).not.toThrow();
+    expect(() =>
+      agentSendMessageInput.parse({
+        ...valid,
+        routeContext: { path: `/${"x".repeat(501)}` },
+      })
+    ).toThrow();
+    expect(() =>
+      agentSendMessageInput.parse({
+        ...valid,
+        routeContext: {
+          path: "/post/test",
+          routeType: "post",
+          postSlug: "x".repeat(201),
+        },
+      })
+    ).toThrow();
+    expect(() =>
+      agentSendMessageInput.parse({
+        ...valid,
+        scope: { type: "post", value: "x".repeat(201) },
+      })
+    ).toThrow();
+  });
+
   it("exposes conversation history endpoints", async () => {
     const caller = appRouter.createCaller(createContext());
 
@@ -287,11 +325,19 @@ describe("agent router", () => {
 
     const debug = await caller.agent.adminDebugRetrieval({
       query: "harness engine",
-      routeContext: { path: "/applications", routeType: "track", trackSlug: "ai-applications" },
+      routeContext: {
+        path: "/applications",
+        routeType: "track",
+        trackSlug: "ai-applications",
+      },
     });
     const evals = await caller.agent.adminRunEvals({
       questions: ["What is a harness engine?"],
-      routeContext: { path: "/applications", routeType: "track", trackSlug: "ai-applications" },
+      routeContext: {
+        path: "/applications",
+        routeType: "track",
+        trackSlug: "ai-applications",
+      },
     });
     const status = await caller.agent.adminKnowledgeStatus();
     const ideas = await caller.agent.adminExtractArticleIdeas({

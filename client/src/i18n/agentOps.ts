@@ -120,6 +120,26 @@ const agentOps: TranslationDict = {
     en: "No candidate ideas yet.",
     zh: "暂无候选选题。",
   },
+  "agentOps.radar.searchMisses": {
+    en: "Search miss backlog",
+    zh: "搜索缺口 backlog",
+  },
+  "agentOps.radar.searchMissesDescription": {
+    en: "Zero-result public searches become owner-only writing or linking opportunities.",
+    zh: "公开搜索的零结果会变成仅作者可见的写作或补链机会。",
+  },
+  "agentOps.radar.searchMissEmpty": {
+    en: "No zero-result searches yet.",
+    zh: "暂无零结果搜索。",
+  },
+  "agentOps.radar.searchMissCount": {
+    en: "{count} misses",
+    zh: "{count} 次未命中",
+  },
+  "agentOps.radar.searchMissUnique": {
+    en: "{count} queries",
+    zh: "{count} 个查询",
+  },
   "agentOps.radar.failureSignals": {
     en: "Failure and no-source signals",
     zh: "失败与无来源信号",

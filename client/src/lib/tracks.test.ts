@@ -23,6 +23,11 @@ const publishedPosts: TrackSeriesPost[] = [
     category: { slug: "ai-applications" },
     seriesSlug: "agent-runtime-systems",
   },
+  {
+    slug: "goal-harness-agent-phase-protocol",
+    category: { slug: "ai-applications" },
+    seriesSlug: "agent-runtime-systems",
+  },
 ];
 
 describe("public track series", () => {
@@ -48,6 +53,7 @@ describe("public track series", () => {
       "agent-harness-engine-evaluating-tool-using-agents",
       "rag-evidence-packet-context-compiler",
       "agent-loop-observable-tool-using-agents",
+      "goal-harness-agent-phase-protocol",
     ]);
     expect(new Set(slugs).size).toBe(slugs.length);
   });

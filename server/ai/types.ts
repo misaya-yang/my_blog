@@ -12,7 +12,10 @@ export type AgentUsageActionType =
   | "tool_call"
   | "file_upload"
   | "file_parse";
-export type AgentContextSourceKind = "pasted_text" | "text_file" | "markdown_file";
+export type AgentContextSourceKind =
+  | "pasted_text"
+  | "text_file"
+  | "markdown_file";
 
 export type AgentIdentity = {
   type: AgentIdentityType;
@@ -23,7 +26,15 @@ export type AgentIdentity = {
 
 export type AgentRouteContext = {
   path: string;
-  routeType?: "home" | "post" | "category" | "tag" | "search" | "track" | "archive" | "public";
+  routeType?:
+    | "home"
+    | "post"
+    | "category"
+    | "tag"
+    | "search"
+    | "track"
+    | "archive"
+    | "public";
   postSlug?: string;
   postTitle?: string;
   categorySlug?: string;
@@ -47,13 +58,22 @@ export type AgentQuota = {
 };
 
 export type AgentAnswer = {
-  answerType: "direct" | "explanation" | "comparison" | "reading_path" | "refusal";
+  answerType:
+    | "direct"
+    | "explanation"
+    | "comparison"
+    | "reading_path"
+    | "refusal";
   answerMarkdown: string;
   sourceIds: string[];
   sourceCards: AgentSourceCard[];
   relatedQuestions: string[];
   confidence: "high" | "medium" | "low";
-  refusalReason?: "no_public_source" | "hidden_or_unavailable" | "outside_blog_scope" | "unsafe_or_forbidden";
+  refusalReason?:
+    | "no_public_source"
+    | "hidden_or_unavailable"
+    | "outside_blog_scope"
+    | "unsafe_or_forbidden";
 };
 
 export type AgentSourceCard = {
@@ -322,7 +342,13 @@ export type AgentSendMessageOutput =
 export type AgentStreamEvent =
   | {
       type: "status";
-      stage: "understanding" | "retrieval" | "sources" | "reasoning" | "answer" | "saving";
+      stage:
+        | "understanding"
+        | "retrieval"
+        | "sources"
+        | "reasoning"
+        | "answer"
+        | "saving";
       elapsedMs: number;
       sourceCount?: number;
       currentPageContextInjected?: boolean;
@@ -377,6 +403,7 @@ export type AgentModel = {
     sources: KnowledgeSearchResult[];
     contextSources: AgentContextSourceRecord[];
     currentPageContextInjected?: boolean;
+    signal?: AbortSignal;
   }): Promise<AgentModelResult>;
   streamGenerate?(input: {
     message: string;
@@ -385,6 +412,7 @@ export type AgentModel = {
     sources: KnowledgeSearchResult[];
     contextSources: AgentContextSourceRecord[];
     currentPageContextInjected?: boolean;
+    signal?: AbortSignal;
     onAnswerDelta: (delta: string) => void;
     onReasoningDelta: (delta: string) => void;
   }): Promise<AgentModelResult>;

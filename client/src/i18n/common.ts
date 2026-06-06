@@ -181,8 +181,8 @@ const common: TranslationDict = {
 
   // Footer
   "common.copyright": {
-    en: "© 2026 AI Tech Blog. All rights reserved.",
-    zh: "© 2026 AI Tech Blog. 保留所有权利.",
+    en: "© 2026 Misaya Notes. All rights reserved.",
+    zh: "© 2026 Misaya Notes. 保留所有权利.",
   },
 };
 

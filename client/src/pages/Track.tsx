@@ -34,6 +34,8 @@ const fallbackPostTitles: Record<string, string> = {
     "Evidence Packet: Agentic RAG 的上下文编译接口",
   "agent-loop-observable-tool-using-agents":
     "Agent Loop: 从 ReAct 模式到可观测运行时",
+  "goal-harness-agent-phase-protocol":
+    "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
   "isohc-fixed-vector-isometric-residual-mixing":
     "IsoHC: Fixed-Vector Isometric Residual Mixing",
 };

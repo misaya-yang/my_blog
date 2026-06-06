@@ -3,20 +3,20 @@ import type { TranslationDict } from "./types";
 const home: TranslationDict = {
   // Hero section
   "home.title": {
-    en: "AI Algorithms & Application Systems",
-    zh: "AI 算法与应用系统",
+    en: "Mechanisms and systems, kept as working notes",
+    zh: "模型机制与应用工程笔记",
   },
   "home.subtitle": {
-    en: "Technical notes on model mechanisms and AI application engineering: long context, agents, RAG, context engines, and evaluation harnesses.",
-    zh: "记录模型机制与 AI 应用工程：长上下文、Agent、RAG、Context Engine 与评测 Harness。",
+    en: "A small research notebook on long-context behavior, residual stability, retrieval interfaces, and agent runtime boundaries.",
+    zh: "一组持续维护的研究笔记：长上下文行为、残差稳定性、检索接口，以及智能体运行时边界。",
   },
-  "home.chip1": { en: "RoPE", zh: "RoPE" },
-  "home.chip2": { en: "Long Context", zh: "长上下文" },
-  "home.chip3": { en: "Agent Evaluation", zh: "Agent 评测" },
+  "home.chip1": { en: "working notes", zh: "working notes" },
+  "home.chip2": { en: "model mechanisms", zh: "模型机制" },
+  "home.chip3": { en: "system notes", zh: "系统笔记" },
 
   // Author card
   "home.authorName": { en: "Misaya Yang", zh: "Misaya Yang" },
-  "home.authorRole": { en: "AI systems research notes", zh: "AI 系统研究笔记" },
+  "home.authorRole": { en: "research notebook", zh: "研究笔记" },
   "home.googleScholar": { en: "Google Scholar", zh: "Google Scholar" },
 
   // Search
@@ -34,8 +34,8 @@ const home: TranslationDict = {
   // Sidebar - About
   "home.aboutTitle": { en: "About Me", zh: "关于我" },
   "home.aboutDescription": {
-    en: "Research notes on model mechanisms, long-context behavior, agent infrastructure, and reliable AI application systems.",
-    zh: "聚焦模型机制、长上下文行为、Agent 基础设施，以及可靠 AI 应用系统。",
+    en: "Notes on model mechanisms, long-context behavior, retrieval boundaries, and the engineering details behind reliable agent systems.",
+    zh: "记录模型机制、长上下文行为、检索边界，以及可靠智能体系统背后的工程细节。",
   },
   "home.researchDirection": { en: "Research Directions", zh: "研究方向" },
   "home.recentFocus": { en: "Recent Focus", zh: "近期关注" },
@@ -54,11 +54,11 @@ const home: TranslationDict = {
 
   // Sidebar - Tags
   "home.hotTags": { en: "Hot Tags", zh: "热门标签" },
-  "home.algorithmsLabel": { en: "AI Algorithms", zh: "AI 算法" },
-  "home.applicationsLabel": { en: "AI Applications", zh: "AI 应用" },
+  "home.algorithmsLabel": { en: "Mechanisms", zh: "机制笔记" },
+  "home.applicationsLabel": { en: "Systems", zh: "系统笔记" },
 
   // Articles section
-  "home.latestArticles": { en: "Latest Articles", zh: "最新文章" },
+  "home.latestArticles": { en: "Latest notes", zh: "最新笔记" },
   "home.noArticles": { en: "No articles found", zh: "暂无文章" },
   "home.readMore": { en: "Read more", zh: "阅读全文" },
   "home.minRead": { en: "min read", zh: "分钟阅读" },
@@ -69,9 +69,9 @@ const home: TranslationDict = {
   "home.tagResidualMixing": { en: "Residual Mixing", zh: "Residual Mixing" },
 
   // Research Index sidebar
-  "home.researchIndex": { en: "Research Index", zh: "研究索引" },
-  "home.researchIndexKicker": { en: "Working map", zh: "研究地图" },
-  "home.activeSeries": { en: "Active series", zh: "进行中的系列" },
+  "home.researchIndex": { en: "Notebook index", zh: "笔记索引" },
+  "home.researchIndexKicker": { en: "Index", zh: "索引" },
+  "home.activeSeries": { en: "Reading threads", zh: "阅读线索" },
   "home.startHere": { en: "Start here", zh: "从这里开始" },
   "home.pathCount": { en: "{count} paths", zh: "{count} 条路径" },
   "home.publicNotes": { en: "{count} public notes", zh: "{count} 篇公开笔记" },
@@ -141,6 +141,34 @@ const home: TranslationDict = {
     en: "No public articles match this search.",
     zh: "没有匹配的公开文章。",
   },
+  "discovery.recoveryTitle": {
+    en: "No direct match yet",
+    zh: "还没有直接命中",
+  },
+  "discovery.recoveryBody": {
+    en: "“{query}” did not match a public note. Try a nearby topic, ask the reading assistant to synthesize from public sources, or continue through a thread.",
+    zh: "“{query}” 暂时没有匹配公开笔记。可以试试相近主题、让阅读助手基于公开内容综合查找，或从阅读线索继续。",
+  },
+  "discovery.recoveryAskAgent": {
+    en: "Ask the reader",
+    zh: "询问阅读助手",
+  },
+  "discovery.recoveryTopics": {
+    en: "Nearby topics",
+    zh: "相近主题",
+  },
+  "discovery.recoveryTopicQuery": {
+    en: "Search for {query}",
+    zh: "搜索 {query}",
+  },
+  "discovery.recoveryPaths": {
+    en: "Research paths",
+    zh: "研究路径",
+  },
+  "discovery.recoverySignal": {
+    en: "This zero-result query is kept as an owner-only content signal, without email, IP, or visitor details.",
+    zh: "这个无结果查询会作为仅作者可见的内容信号保存，不包含邮箱、IP 或访客身份。",
+  },
   "discovery.tagKicker": { en: "Tag index", zh: "标签索引" },
   "discovery.categoryKicker": { en: "Category index", zh: "分类索引" },
   "discovery.siblingTags": { en: "Related tags", zh: "相关标签" },
@@ -189,7 +217,7 @@ const home: TranslationDict = {
   },
   // Track pages
   "track.articles": { en: "Technical Articles", zh: "技术文章" },
-  "track.backHome": { en: "Back to Portal", zh: "返回总览" },
+  "track.backHome": { en: "Back to index", zh: "返回索引" },
   "track.statTopics": { en: "Topics / Technical Map", zh: "专题 / 技术地图" },
   "track.topicNodes": { en: "Technical Nodes", zh: "技术节点" },
   "track.seriesTitle": { en: "Reading paths", zh: "阅读路径" },
@@ -211,7 +239,7 @@ const home: TranslationDict = {
   "track.algorithms.chip1": { en: "Mechanisms", zh: "机制" },
   "track.algorithms.chip2": { en: "Scaling", zh: "扩展" },
   "track.algorithms.chip3": { en: "Reliability", zh: "可靠性" },
-  "track.algorithms.title": { en: "AI Algorithm Research", zh: "AI 算法研究" },
+  "track.algorithms.title": { en: "Model Mechanisms", zh: "模型机制" },
   "track.algorithms.subtitle": {
     en: "Research notes on architecture, positional encoding, long-context behavior, and residual stability.",
     zh: "围绕模型架构、位置编码、长上下文行为与残差稳定性展开研究记录。",
@@ -225,8 +253,8 @@ const home: TranslationDict = {
   "track.applications.chip2": { en: "Context", zh: "上下文" },
   "track.applications.chip3": { en: "Evaluation", zh: "评测" },
   "track.applications.title": {
-    en: "AI Application Engineering",
-    zh: "AI 应用工程",
+    en: "Applied Systems",
+    zh: "应用系统",
   },
   "track.applications.subtitle": {
     en: "Technical essays on agents, harness engines, RAG, context engineering, tool use, and evaluation loops.",
@@ -234,7 +262,7 @@ const home: TranslationDict = {
   },
   "track.applications.overview": {
     en: "This track is written as engineering analysis rather than product marketing: system boundaries, protocols, trade-offs, evaluation loops, and lessons from building AI application infrastructure.",
-    zh: "这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建 AI 应用基础设施时的经验。",
+    zh: "这个技术区以工程分析而非产品宣传的方式书写：系统边界、协议、权衡、评测循环，以及构建应用系统基础设施时的经验。",
   },
   "track.applications.topicTitle": { en: "Application Index", zh: "应用索引" },
   "track.applications.focus1": { en: "Agent Systems", zh: "Agent 系统" },
@@ -297,8 +325,14 @@ const home: TranslationDict = {
     en: "Mechanistic notes on RoPE, spectral allocation, and long-context behavior.",
     zh: "关于 RoPE、频谱分配和长上下文行为的机制笔记。",
   },
-  "series.longContext.next1": { en: "RoPE spectral budget", zh: "RoPE spectral budget" },
-  "series.longContext.next2": { en: "Extrapolation failures", zh: "Extrapolation failures" },
+  "series.longContext.next1": {
+    en: "RoPE spectral budget",
+    zh: "RoPE spectral budget",
+  },
+  "series.longContext.next2": {
+    en: "Extrapolation failures",
+    zh: "Extrapolation failures",
+  },
   "series.residualStability.title": {
     en: "Residual Stability",
     zh: "Residual Stability",

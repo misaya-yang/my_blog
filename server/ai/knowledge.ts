@@ -89,6 +89,22 @@ const KNOWN_CJK_QUERY_TERMS = [
   "长上下文",
   "位置编码",
   "阅读路径",
+  "固定向量",
+  "等距",
+  "双随机",
+  "约束",
+  "均值",
+  "能量",
+  "投影",
+  "梯度",
+  "精度",
+  "实现",
+  "后半部分",
+  "后半",
+  "失败",
+  "边界",
+  "章节",
+  "部分",
   "残差",
   "稳定性",
   "不变量",
@@ -206,6 +222,11 @@ export function searchPublicKnowledgeChunks(
   const analysis = analyzeKnowledgeQuery(query);
   const terms = analysis.expandedTerms;
   const scope = options.scope;
+  const restrictToCurrentPost = shouldRestrictToCurrentPost(
+    query,
+    analysis,
+    scope
+  );
   const currentPostContext = buildCurrentPostContextResults(
     chunks,
     query,
@@ -221,7 +242,7 @@ export function searchPublicKnowledgeChunks(
         chunk.statusSnapshot === "published" &&
         chunk.visibilitySnapshot === "public"
     )
-    .filter(chunk => matchesScope(chunk, scope))
+    .filter(chunk => matchesScope(chunk, scope, restrictToCurrentPost))
     .map(chunk => {
       const score = scoreChunk(chunk, terms, scope, options.preferredSourceIds);
       const result = {
@@ -469,10 +490,13 @@ function scoreChunk(
 
 function matchesScope(
   chunk: KnowledgeChunkDraft,
-  scope: SearchOptions["scope"]
+  scope: SearchOptions["scope"],
+  restrictToCurrentPost = false
 ) {
   if (!scope || scope.type === "site") return true;
-  if (scope.type === "post") return true;
+  if (scope.type === "post") {
+    return restrictToCurrentPost ? chunk.postSlug === scope.value : true;
+  }
   if (scope.type === "category" || scope.type === "track") {
     return (
       chunk.categorySlug === scope.value ||
@@ -574,6 +598,27 @@ function shouldInjectCurrentPostContext(
   if (CLEARLY_EXTERNAL_QUERY_PATTERN.test(query)) return false;
   if (UNAVAILABLE_CONTENT_QUERY_PATTERN.test(query)) return false;
   return true;
+}
+
+function shouldRestrictToCurrentPost(
+  query: string,
+  analysis: KnowledgeQueryAnalysis,
+  scope: SearchOptions["scope"]
+) {
+  if (scope?.type !== "post" || !scope.value) return false;
+  if (analysis.isIsoStandardQuery) return false;
+  if (CLEARLY_EXTERNAL_QUERY_PATTERN.test(query)) return false;
+  if (UNAVAILABLE_CONTENT_QUERY_PATTERN.test(query)) return false;
+  if (
+    /\b(find|related|compare|recommend|next)\b|找|哪篇|相关文章|比较|对比|推荐|下一篇|阅读路径/i.test(
+      query
+    )
+  ) {
+    return false;
+  }
+  return /这篇|本文|这里|这页|页面|文中|上面|前面|后半|当前|this article|this page|here/i.test(
+    query
+  );
 }
 
 function markCurrentPostResult(
@@ -691,6 +736,37 @@ function expandQueryTerms(
     长上下文: ["long", "context", "rope", "position"],
     位置编码: ["position", "encoding", "rope"],
     阅读路径: ["reading", "path", "map", "overview"],
+    固定向量: [
+      "fixed-vector",
+      "fixed",
+      "vector",
+      "e0",
+      "mean",
+      "direction",
+      "complement",
+      "orthogonal",
+    ],
+    等距: ["isometry", "isometric", "orthogonal", "energy", "isohc"],
+    双随机: ["doubly", "stochastic", "mean", "non-expansive", "diffusive"],
+    约束: ["constraint", "constrained", "orthogonal", "stochastic"],
+    均值: ["mean", "average", "stream", "direction"],
+    能量: ["energy", "frobenius", "norm", "isometry"],
+    投影: ["projection", "polar", "retraction", "orthogonal"],
+    梯度: ["gradient", "backpropagation", "backward", "energy"],
+    精度: ["precision", "dtype", "diagnostic", "engineering"],
+    实现: ["implementation", "mapping", "repository", "projection", "module"],
+    后半部分: [
+      "implementation",
+      "precision",
+      "evidence",
+      "framing",
+      "takeaway",
+    ],
+    后半: ["implementation", "precision", "evidence", "framing", "takeaway"],
+    失败: ["failure", "boundary", "evidence", "limitations", "framing"],
+    边界: ["boundary", "limits", "evidence", "framing"],
+    章节: ["heading", "section", "overview"],
+    部分: ["section", "heading", "overview"],
   };
   const aliasExpansions: KnowledgeQueryAnalysis["aliasExpansions"] = [];
   const blockedAliases: string[] = [];

@@ -59,7 +59,11 @@ const feedback = {
 
 vi.mock("./db", () => ({
   getPostById: vi.fn(async (id: number) =>
-    id === publishedPost.id ? publishedPost : id === privatePost.id ? privatePost : null
+    id === publishedPost.id
+      ? publishedPost
+      : id === privatePost.id
+        ? privatePost
+        : null
   ),
   upsertSubscriber: vi.fn(async () => ({ subscriber, created: true })),
   createPostFeedback: vi.fn(async () => feedback),
@@ -70,16 +74,23 @@ vi.mock("./db", () => ({
     status: "reviewed",
     reviewedAt: new Date("2026-05-21T00:00:00.000Z"),
   })),
-  updatePostFeedbackStatus: vi.fn(async (id: number, status: "new" | "reviewed" | "hidden") => ({
-    ...feedback,
-    id,
-    status,
-    reviewedAt: status === "new" ? null : new Date("2026-05-21T00:00:00.000Z"),
-  })),
+  updatePostFeedbackStatus: vi.fn(
+    async (id: number, status: "new" | "reviewed" | "hidden") => ({
+      ...feedback,
+      id,
+      status,
+      reviewedAt:
+        status === "new" ? null : new Date("2026-05-21T00:00:00.000Z"),
+    })
+  ),
   listSubscribers: vi.fn(async () => [subscriber]),
+  searchPublicPosts: vi.fn(async () => ({ results: [], total: 0 })),
 }));
 
-function createContext(cookie = "", source = "203.0.113.10"): { ctx: TrpcContext; setCookies: string[] } {
+function createContext(
+  cookie = "",
+  source = "203.0.113.10"
+): { ctx: TrpcContext; setCookies: string[] } {
   const setCookies: string[] = [];
   return {
     setCookies,
@@ -113,30 +124,40 @@ function getCookiePair(setCookie: string) {
 async function createAdminCaller() {
   const { ctx, setCookies } = createContext("", "203.0.113.100");
   const caller = routers.appRouter.createCaller(ctx);
-  await caller.auth.adminLogin({ password: process.env.ADMIN_PASSWORD || "admin123" });
+  await caller.auth.adminLogin({
+    password: process.env.ADMIN_PASSWORD || "admin123",
+  });
   const adminCookie = getCookiePair(
-    setCookies.find((cookie) => cookie.startsWith("admin_session="))!
+    setCookies.find(cookie => cookie.startsWith("admin_session="))!
   );
-  return routers.appRouter.createCaller(createContext(adminCookie, "203.0.113.100").ctx);
+  return routers.appRouter.createCaller(
+    createContext(adminCookie, "203.0.113.100").ctx
+  );
 }
 
 describe("engagement router", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (routers as { __resetEngagementRateLimitsForTests?: () => void })
-      .__resetEngagementRateLimitsForTests?.();
+    (
+      routers as { __resetEngagementRateLimitsForTests?: () => void }
+    ).__resetEngagementRateLimitsForTests?.();
   });
 
   it("validates subscription email before storing intent", async () => {
     const caller = routers.appRouter.createCaller(createContext().ctx) as any;
 
-    await expect(caller.engagement.subscribe({ email: "not-an-email" })).rejects.toThrow();
+    await expect(
+      caller.engagement.subscribe({ email: "not-an-email" })
+    ).rejects.toThrow();
 
     expect(db.upsertSubscriber).not.toHaveBeenCalled();
   });
 
   it("returns deterministic duplicate subscription status", async () => {
-    vi.mocked(db.upsertSubscriber).mockResolvedValueOnce({ subscriber, created: false });
+    vi.mocked(db.upsertSubscriber).mockResolvedValueOnce({
+      subscriber,
+      created: false,
+    });
     const caller = routers.appRouter.createCaller(createContext().ctx) as any;
 
     const result = await caller.engagement.subscribe({
@@ -157,7 +178,9 @@ describe("engagement router", () => {
   });
 
   it("allows anonymous readers to submit feedback on public posts", async () => {
-    const caller = routers.appRouter.createCaller(createContext("", "203.0.113.11").ctx) as any;
+    const caller = routers.appRouter.createCaller(
+      createContext("", "203.0.113.11").ctx
+    ) as any;
 
     const result = await caller.engagement.feedback.create({
       postId: publishedPost.id,
@@ -182,9 +205,11 @@ describe("engagement router", () => {
   it("captures visitor identity when feedback comes from a visitor session", async () => {
     const { ctx, setCookies } = createContext("", "203.0.113.12");
     const loginCaller = routers.appRouter.createCaller(ctx);
-    const login = await loginCaller.auth.visitorLogin({ nickname: "Reader One" });
+    const login = await loginCaller.auth.visitorLogin({
+      nickname: "Reader One",
+    });
     const visitorCookie = getCookiePair(
-      setCookies.find((cookie) => cookie.startsWith("visitor_session="))!
+      setCookies.find(cookie => cookie.startsWith("visitor_session="))!
     );
     const caller = routers.appRouter.createCaller(
       createContext(visitorCookie, "203.0.113.12").ctx
@@ -209,7 +234,10 @@ describe("engagement router", () => {
     const caller = routers.appRouter.createCaller(createContext().ctx) as any;
 
     await expect(
-      caller.engagement.feedback.create({ postId: privatePost.id, type: "useful" })
+      caller.engagement.feedback.create({
+        postId: privatePost.id,
+        type: "useful",
+      })
     ).rejects.toThrow("Post not found");
     await expect(
       caller.engagement.feedback.create({ postId: 999, type: "useful" })
@@ -217,7 +245,9 @@ describe("engagement router", () => {
   });
 
   it("keeps feedback and subscriber lists owner-only", async () => {
-    const anonymousCaller = routers.appRouter.createCaller(createContext().ctx) as any;
+    const anonymousCaller = routers.appRouter.createCaller(
+      createContext().ctx
+    ) as any;
 
     await expect(anonymousCaller.engagement.feedback.list({})).rejects.toThrow(
       "Admin authentication required"
@@ -228,16 +258,25 @@ describe("engagement router", () => {
 
     const adminCaller = (await createAdminCaller()) as any;
 
-    await expect(adminCaller.engagement.feedback.list({ limit: 5 })).resolves.toEqual([feedback]);
-    await expect(adminCaller.engagement.subscribers.list()).resolves.toEqual([subscriber]);
+    await expect(
+      adminCaller.engagement.feedback.list({ limit: 5 })
+    ).resolves.toEqual([feedback]);
+    await expect(adminCaller.engagement.subscribers.list()).resolves.toEqual([
+      subscriber,
+    ]);
   });
 
   it("lets the owner mark feedback as reviewed", async () => {
     const adminCaller = (await createAdminCaller()) as any;
 
-    const result = await adminCaller.engagement.feedback.markReviewed({ id: feedback.id });
+    const result = await adminCaller.engagement.feedback.markReviewed({
+      id: feedback.id,
+    });
 
-    expect(result).toMatchObject({ success: true, feedback: { id: feedback.id, status: "reviewed" } });
+    expect(result).toMatchObject({
+      success: true,
+      feedback: { id: feedback.id, status: "reviewed" },
+    });
     expect(db.markPostFeedbackReviewed).toHaveBeenCalledWith(feedback.id);
   });
 
@@ -249,8 +288,14 @@ describe("engagement router", () => {
       status: "hidden",
     });
 
-    expect(result).toMatchObject({ success: true, feedback: { id: feedback.id, status: "hidden" } });
-    expect(db.updatePostFeedbackStatus).toHaveBeenCalledWith(feedback.id, "hidden");
+    expect(result).toMatchObject({
+      success: true,
+      feedback: { id: feedback.id, status: "hidden" },
+    });
+    expect(db.updatePostFeedbackStatus).toHaveBeenCalledWith(
+      feedback.id,
+      "hidden"
+    );
   });
 
   it("summarizes private engagement signals without exposing emails", async () => {
@@ -288,18 +333,67 @@ describe("engagement router", () => {
       total: 2,
       activeCount: 2,
       languageBreakdown: { zh: 1, en: 1, unknown: 0 },
-      delivery: { connected: false, status: "stored_only", exportAvailable: true },
+      delivery: {
+        connected: false,
+        status: "stored_only",
+        exportAvailable: true,
+      },
     });
-    expect(summary.subscriptions.topInterests.map((item: any) => item.phrase)).toContain("agents");
+    expect(
+      summary.subscriptions.topInterests.map((item: any) => item.phrase)
+    ).toContain("agents");
     expect(JSON.stringify(summary)).not.toContain("reader@example.com");
     expect(JSON.stringify(summary)).not.toContain("followup@example.com");
   });
 
+  it("turns zero-result searches into owner-only content opportunities", async () => {
+    vi.mocked(db.searchPublicPosts).mockResolvedValue({
+      results: [],
+      total: 0,
+    } as any);
+    const query = "uncovered agent memory pattern";
+    const anonymousCaller = routers.appRouter.createCaller(
+      createContext("", "203.0.113.120").ctx
+    ) as any;
+
+    await anonymousCaller.discovery.search({ query, limit: 20, offset: 0 });
+    await anonymousCaller.discovery.search({ query: `  ${query}  ` });
+    await expect(
+      anonymousCaller.engagement.contentRadar.summary()
+    ).rejects.toThrow("Admin authentication required");
+
+    const adminCaller = (await createAdminCaller()) as any;
+    const summary = await adminCaller.engagement.contentRadar.summary();
+
+    expect(summary.searchMisses).toMatchObject({
+      total: 2,
+      uniqueQueries: 1,
+      opportunities: [
+        expect.objectContaining({
+          query,
+          normalizedQuery: query,
+          count: 2,
+        }),
+      ],
+    });
+    expect(summary.searchMisses.opportunities[0].suggestedPrompt).toContain(
+      query
+    );
+    expect(JSON.stringify(summary.searchMisses)).not.toContain("203.0.113.120");
+    expect(JSON.stringify(summary.searchMisses)).not.toContain(
+      "reader@example.com"
+    );
+  });
+
   it("rate limits repeated subscription and feedback submissions by source", async () => {
-    const caller = routers.appRouter.createCaller(createContext("", "203.0.113.88").ctx) as any;
+    const caller = routers.appRouter.createCaller(
+      createContext("", "203.0.113.88").ctx
+    ) as any;
 
     for (let attempt = 0; attempt < 4; attempt++) {
-      await caller.engagement.subscribe({ email: `reader-${attempt}@example.com` });
+      await caller.engagement.subscribe({
+        email: `reader-${attempt}@example.com`,
+      });
     }
     await expect(
       caller.engagement.subscribe({ email: "reader-limited@example.com" })
