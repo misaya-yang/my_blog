@@ -26,9 +26,7 @@ import {
   Eye,
   FileText,
   Folder,
-  GraduationCap,
   GitBranch,
-  Mail,
   Map,
   Search,
   Settings2,
@@ -38,7 +36,6 @@ import {
 import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { FormEvent, useState } from "react";
-import { toast } from "sonner";
 
 const focusTagKeys = [
   "home.focusTag1",
@@ -76,6 +73,23 @@ function getArticleTrack(post: ArticleCardPost): ArticleTrack {
 function countTrackPosts(posts: ArticleCardPost[], track: TrackKind) {
   const categorySlug = trackConfigs[track].categorySlug;
   return posts.filter(post => post.category?.slug === categorySlug).length;
+}
+
+function renderHeroTitle(language: "en" | "zh") {
+  if (language === "zh") {
+    return (
+      <>
+        AI 算法与 <span className="home-title-accent">AI</span> 应用
+      </>
+    );
+  }
+
+  return (
+    <>
+      AI Algorithms and <span className="home-title-accent">AI</span>{" "}
+      Applications
+    </>
+  );
 }
 
 export default function Home() {
@@ -130,15 +144,14 @@ export default function Home() {
     fetchedTags.length > 0 ? fetchedTags : fallbackTags
   );
 
-  function copyEmail() {
-    navigator.clipboard.writeText("zedpl28174@gmail.com");
-    toast.success(t("common.emailCopied"));
+  function runSearch() {
+    const query = searchQuery.trim();
+    navigate(query ? `/search?q=${encodeURIComponent(query)}` : "/search");
   }
 
   function submitSearch(event: FormEvent) {
     event.preventDefault();
-    const query = searchQuery.trim();
-    navigate(query ? `/search?q=${encodeURIComponent(query)}` : "/search");
+    runSearch();
   }
 
   return (
@@ -147,28 +160,49 @@ export default function Home() {
       <SiteHeader active="home" />
 
       <main className="relative z-10">
-        <section className="container px-4 pb-8 pt-10 sm:px-6 md:pb-10 md:pt-16">
-          <div className="home-editorial-hero">
-            <h1 className="home-title max-w-4xl text-white">
-              {t("home.title")}
-            </h1>
-            <p className="home-subtitle mt-6 max-w-2xl text-slate-300">
-              {t("home.subtitle")}
-            </p>
+        <section className="home-hero-shell container px-4 pb-8 pt-10 sm:px-6 md:pb-10 md:pt-14">
+          <div className="home-hero-grid">
+            <div className="home-editorial-hero">
+              <div className="home-kicker" aria-label={t("home.kicker")}>
+                {t("home.kicker")}
+              </div>
 
-            {recommendedStartPost && (
-              <Link
-                href={`/post/${recommendedStartPost.slug}`}
-                className="home-start-card mt-7"
-              >
-                <span className="series-card-track">{t("home.startHere")}</span>
-                <strong>{recommendedStartPost.title}</strong>
-                <span>{recommendedStartPost.excerpt}</span>
-                <ArrowRight className="h-4 w-4 text-slate-400" />
-              </Link>
-            )}
+              <h1 className="home-title max-w-5xl text-white">
+                {renderHeroTitle(language)}
+              </h1>
+              <p className="home-subtitle mt-6 max-w-2xl text-slate-300">
+                {t("home.subtitle")}
+              </p>
 
-            <div className="home-track-grid mt-8 grid gap-3 md:grid-cols-2">
+              {recommendedStartPost && (
+                <Link
+                  href={`/post/${recommendedStartPost.slug}`}
+                  className="home-start-card mt-5"
+                >
+                  <span className="series-card-track">
+                    {t("home.startHere")}
+                  </span>
+                  <strong>{recommendedStartPost.title}</strong>
+                  <span>{recommendedStartPost.excerpt}</span>
+                  <ArrowRight className="h-4 w-4 text-slate-300" />
+                </Link>
+              )}
+            </div>
+
+            <figure className="home-hero-visual" aria-hidden="true">
+              <img
+                src="/images/research-orbit-hero.jpg"
+                alt=""
+                loading="eager"
+                decoding="async"
+                width={1672}
+                height={941}
+              />
+            </figure>
+          </div>
+
+          <div className="home-hero-lower">
+            <div className="home-track-grid grid gap-4 md:grid-cols-2">
               {portalTracks.map(track => {
                 const config = trackConfigs[track];
                 const publicCount = countTrackPosts(publishedPosts, track);
@@ -192,13 +226,13 @@ export default function Home() {
                               : "home.applicationsLabel"
                           )}
                         </div>
-                        <ArrowRight className="h-5 w-5 text-slate-400 transition-transform group-hover:translate-x-1" />
+                        <ArrowRight className="h-5 w-5 text-slate-300 transition-transform group-hover:translate-x-1" />
                       </div>
                       <h2 className="home-track-title">{t(config.titleKey)}</h2>
-                      <p className="track-portal-copy mt-3 text-sm leading-7 text-slate-400">
+                      <p className="track-portal-copy mt-3 text-sm leading-6 text-slate-300/85">
                         {t(config.overviewKey)}
                       </p>
-                      <div className="track-portal-cta flex flex-wrap items-center gap-2 text-xs font-medium text-slate-400">
+                      <div className="track-portal-cta flex flex-wrap items-center gap-2 text-xs font-medium text-slate-300/75">
                         <span className="inline-flex items-center gap-1.5">
                           <GitBranch className="h-3.5 w-3.5" />
                           {pathLabel}
@@ -206,7 +240,7 @@ export default function Home() {
                         <span className="inline-flex items-center gap-1.5">
                           {publicNotesLabel}
                         </span>
-                        <span className="ml-auto inline-flex items-center gap-1.5 text-slate-300">
+                        <span className="ml-auto inline-flex items-center gap-1.5 text-slate-100">
                           {t("home.readMore")}
                           <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                         </span>
@@ -216,6 +250,44 @@ export default function Home() {
                 );
               })}
             </div>
+
+            <form onSubmit={submitSearch} className="home-search-dock">
+              <div className="home-search-dock-title">
+                <BookOpen className="h-5 w-5" />
+                <span>{t("home.activeSeries")}</span>
+              </div>
+              <Link href="#research-index" className="home-search-index">
+                {t("home.researchIndexKicker")}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <label className="sr-only" htmlFor="home-search-query">
+                {t("home.searchPlaceholder")}
+              </label>
+              <div className="home-search-field">
+                <Input
+                  id="home-search-query"
+                  type="search"
+                  autoComplete="search"
+                  placeholder={t("home.searchPlaceholder")}
+                  value={searchQuery}
+                  onChange={event => setSearchQuery(event.target.value)}
+                  onKeyDown={event => {
+                    if (event.key !== "Enter") return;
+                    event.preventDefault();
+                    runSearch();
+                  }}
+                  className="h-11 border-0 bg-transparent px-0 text-base font-medium text-white shadow-none placeholder:text-slate-500 focus-visible:ring-0"
+                />
+                <Button
+                  type="submit"
+                  size="icon"
+                  className="home-search-submit"
+                  aria-label={t("discovery.searchButton")}
+                >
+                  <Search className="h-5 w-5" />
+                </Button>
+              </div>
+            </form>
           </div>
         </section>
 
@@ -265,33 +337,7 @@ export default function Home() {
               </section>
             )}
 
-            <form
-              onSubmit={submitSearch}
-              className="glass-panel mt-6 flex max-w-3xl items-center gap-4 px-5 py-4"
-            >
-              <Search className="h-6 w-6 shrink-0 text-slate-400" />
-              <label className="sr-only" htmlFor="home-search-query">
-                {t("home.searchPlaceholder")}
-              </label>
-              <Input
-                id="home-search-query"
-                type="search"
-                autoComplete="search"
-                placeholder={t("home.searchPlaceholder")}
-                value={searchQuery}
-                onChange={event => setSearchQuery(event.target.value)}
-                className="h-11 border-0 bg-transparent px-0 text-base font-medium text-white shadow-none placeholder:text-slate-500 focus-visible:ring-0"
-              />
-              <Button
-                type="submit"
-                size="sm"
-                className="hidden border border-slate-600 bg-slate-100 text-slate-950 hover:bg-white sm:inline-flex"
-              >
-                {t("discovery.searchButton")}
-              </Button>
-            </form>
-
-            <div className="mt-4 flex max-w-3xl flex-wrap gap-2">
+            <div className="mt-6 flex max-w-3xl flex-wrap gap-2">
               <Link href="/search" className="article-tag">
                 {t("nav.search")}
               </Link>
@@ -364,9 +410,9 @@ export default function Home() {
                   {t("home.recentFocus")}
                 </h3>
               </div>
-              <ul className="mt-4 space-y-3 text-[0.82rem] leading-6 text-slate-400">
-                <li>• {t("home.recentFocus1")}</li>
-                <li>• {t("home.recentFocus2")}</li>
+              <ul className="home-focus-list mt-4 space-y-3 text-[0.82rem] leading-6 text-slate-400">
+                <li>{t("home.recentFocus1")}</li>
+                <li>{t("home.recentFocus2")}</li>
               </ul>
             </section>
 

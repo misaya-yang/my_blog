@@ -85,7 +85,48 @@ const MAX_CHUNK_CHARS = 1800;
 const CURRENT_POST_CONTEXT_LIMIT = 3;
 const DEFAULT_POST_RESULT_LIMIT = 2;
 const CURRENT_POST_RESULT_LIMIT = 5;
+const PUBLIC_INVENTORY_CJK_TERMS = [
+  "公开文章",
+  "公开笔记",
+  "都有哪些",
+  "有哪些",
+  "哪几篇",
+  "几篇",
+  "文章目录",
+  "文章列表",
+  "博客目录",
+  "站内文章",
+  "文章",
+  "笔记",
+  "目录",
+  "列表",
+];
+const PUBLIC_INVENTORY_TERMS = [
+  "blog",
+  "map",
+  "overview",
+  "public",
+  "available",
+  "all",
+  "show",
+  "list",
+  "post",
+  "posts",
+  "article",
+  "articles",
+  "note",
+  "notes",
+  "catalog",
+  "index",
+  "目录",
+  "列表",
+  "文章",
+  "笔记",
+  "公开文章",
+  "公开笔记",
+];
 const KNOWN_CJK_QUERY_TERMS = [
+  ...PUBLIC_INVENTORY_CJK_TERMS,
   "核心抽象",
   "核心主张",
   "长上下文",
@@ -133,6 +174,8 @@ const KNOWN_CJK_QUERY_TERMS = [
   "上下文",
 ];
 const ISO_STANDARD_PATTERN = /\biso(?:\/iec)?[\s-]*\d{2,}\b/i;
+const PUBLIC_INVENTORY_QUERY_PATTERN =
+  /\b(?:available|all|list|show|catalog|index|map|what)\s+(?:public\s+)?(?:posts?|articles?|notes?)\b|\b(?:posts?|articles?|notes?)\s+(?:available|list|catalog|index|map)\b|都有哪些|有哪些|哪几篇|几篇|文章目录|文章列表|博客目录|站内文章|公开文章|公开笔记|所有文章|全部文章|目录|列表/i;
 const CLEARLY_EXTERNAL_QUERY_PATTERN =
   /\b(weather|stock|price|flight|recipe)\b|天气|明天|股票|航班|菜谱/i;
 const UNAVAILABLE_CONTENT_QUERY_PATTERN =
@@ -246,8 +289,26 @@ export function searchPublicKnowledgeChunks(
     analysis,
     scope
   );
+  const siteOverviewContext = buildSiteOverviewContextResults(
+    chunks,
+    query,
+    analysis,
+    scope
+  );
 
-  if (terms.length === 0 && currentPostContext.length === 0) return [];
+  if (
+    terms.length === 0 &&
+    currentPostContext.length === 0 &&
+    siteOverviewContext.length === 0
+  ) {
+    return [];
+  }
+  if (
+    siteOverviewContext.length > 0 &&
+    shouldUseOnlySiteOverviewForInventory(analysis)
+  ) {
+    return siteOverviewContext.slice(0, options.limit ?? 8);
+  }
 
   const results = chunks
     .filter(
@@ -275,7 +336,9 @@ export function searchPublicKnowledgeChunks(
     .sort((a, b) => b.score - a.score || a.chunkIndex - b.chunkIndex);
 
   return diversifyByPost(
-    pruneLowConfidenceResults(mergeResults([...currentPostContext, ...results]))
+    pruneLowConfidenceResults(
+      mergeResults([...siteOverviewContext, ...currentPostContext, ...results])
+    )
   ).slice(0, options.limit ?? 8);
 }
 
@@ -296,12 +359,12 @@ function buildSiteOverviewChunk(
   const lines = [
     "Public blog knowledge map.",
     `Tracks and categories: ${categories.join(", ") || "uncategorized"}.`,
-    `Tags: ${tags.join(", ") || "none"}.`,
     "Public posts:",
+    "公开文章目录:",
     ...publicPosts.map(post => {
-      const tagText = (post.tags ?? []).map(tag => tag.slug).join(", ");
-      return `- ${post.title} (${post.slug}) [${post.category?.slug ?? "uncategorized"}] ${tagText}`;
+      return `- ${post.title} (${post.slug}) [${post.category?.slug ?? "uncategorized"}]`;
     }),
+    `Tags: ${tags.join(", ") || "none"}.`,
   ];
 
   return makeChunk({
@@ -319,7 +382,7 @@ function buildSiteOverviewChunk(
     sectionPath: "site",
     content: lines.join("\n"),
     summary: "A compact map of public blog categories, tags, and posts.",
-    keywords: unique(["blog", "map", "overview", ...categories, ...tags]),
+    keywords: unique([...PUBLIC_INVENTORY_TERMS, ...categories, ...tags]),
   });
 }
 
@@ -548,6 +611,12 @@ function mergeResults(results: KnowledgeSearchResult[]) {
   const bySourceId = new Map<string, KnowledgeSearchResult>();
   for (const result of results) {
     const existing = bySourceId.get(result.sourceId);
+    if (
+      existing?.relevanceReason.startsWith("Public blog inventory") &&
+      result.sourceId === existing.sourceId
+    ) {
+      continue;
+    }
     if (!existing || result.score > existing.score) {
       bySourceId.set(result.sourceId, result);
     }
@@ -567,9 +636,94 @@ function pruneLowConfidenceResults(results: KnowledgeSearchResult[]) {
       result.score >= minimumScore ||
       result.relevanceReason.startsWith("Current public article context")
   );
+  if (
+    pruned.some(result =>
+      result.relevanceReason.startsWith("Public blog inventory")
+    )
+  ) {
+    return pruned;
+  }
   return pruned.some(result => result.postSlug)
     ? pruned.filter(result => result.postSlug)
     : pruned;
+}
+
+function buildSiteOverviewContextResults(
+  chunks: KnowledgeChunkDraft[],
+  query: string,
+  analysis: KnowledgeQueryAnalysis,
+  scope: SearchOptions["scope"]
+): KnowledgeSearchResult[] {
+  if (!shouldInjectSiteOverviewContext(query, analysis, scope)) return [];
+
+  const excerptTerms = unique([
+    ...analysis.expandedTerms,
+    ...PUBLIC_INVENTORY_TERMS,
+  ]);
+  return chunks
+    .filter(
+      chunk =>
+        chunk.statusSnapshot === "published" &&
+        chunk.visibilitySnapshot === "public" &&
+        chunk.chunkType === "site_overview_chunk"
+    )
+    .filter(chunk => matchesScope(chunk, scope, false))
+    .slice(0, 1)
+    .map(chunk => ({
+      ...chunk,
+      sourceId: buildSourceId(chunk),
+      score: 46,
+      excerpt: buildInventoryExcerpt(chunk.content, excerptTerms),
+      relevanceReason:
+        "Public blog inventory. Matched public article list intent.",
+    }));
+}
+
+function shouldUseOnlySiteOverviewForInventory(
+  analysis: KnowledgeQueryAnalysis
+) {
+  const inventoryTerms = new Set([
+    ...PUBLIC_INVENTORY_TERMS,
+    ...PUBLIC_INVENTORY_CJK_TERMS,
+  ]);
+  return analysis.terms.every(term => inventoryTerms.has(term));
+}
+
+function buildInventoryExcerpt(content: string, fallbackTerms: string[]) {
+  const compactList = buildCompactPublicPostList(content);
+  if (compactList) return compactList;
+
+  const marker = /Public posts:|公开文章目录:/i.exec(content);
+  const focused = marker ? content.slice(marker.index) : content;
+  const normalized = focused.replace(/\s+/g, " ").trim();
+  if (normalized) return normalized.slice(0, 900);
+  return buildExcerpt(content, fallbackTerms);
+}
+
+function buildCompactPublicPostList(content: string) {
+  const lines = content.split(/\r?\n/);
+  const startIndex = lines.findIndex(line =>
+    /Public posts:|公开文章目录:/i.test(line)
+  );
+  if (startIndex < 0) return null;
+
+  const postLines: string[] = [];
+  for (const line of lines.slice(startIndex + 1)) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    if (/^Tags:/i.test(trimmed)) break;
+    if (/^公开文章目录:/i.test(trimmed)) continue;
+    if (!trimmed.startsWith("-")) {
+      if (postLines.length > 0) break;
+      continue;
+    }
+
+    const compact = /^-\s+(.+?\([^)]+\)\s+\[[^\]]+\])/.exec(trimmed);
+    postLines.push(compact ? `- ${compact[1]}` : trimmed);
+  }
+
+  if (postLines.length === 0) return null;
+  return ["Public posts:", ...postLines].join("\n");
 }
 
 function buildCurrentPostContextResults(
@@ -606,7 +760,10 @@ function buildCurrentPostContextResults(
 }
 
 function currentPostContextRank(chunk: KnowledgeChunkDraft, terms: string[]) {
-  const score = scoreChunk(chunk, terms, { type: "post", value: chunk.postSlug ?? "" });
+  const score = scoreChunk(chunk, terms, {
+    type: "post",
+    value: chunk.postSlug ?? "",
+  });
   return -score * 100 + chunk.chunkIndex;
 }
 
@@ -641,6 +798,23 @@ function shouldRestrictToCurrentPost(
   return /这篇|本文|这里|这页|页面|文中|上面|前面|后半|当前|this article|this page|here/i.test(
     query
   );
+}
+
+function shouldInjectSiteOverviewContext(
+  query: string,
+  analysis: KnowledgeQueryAnalysis,
+  scope: SearchOptions["scope"]
+) {
+  if (analysis.isIsoStandardQuery) return false;
+  if (CLEARLY_EXTERNAL_QUERY_PATTERN.test(query)) return false;
+  if (UNAVAILABLE_CONTENT_QUERY_PATTERN.test(query)) return false;
+  if (
+    scope?.type === "post" &&
+    shouldRestrictToCurrentPost(query, analysis, scope)
+  ) {
+    return false;
+  }
+  return PUBLIC_INVENTORY_QUERY_PATTERN.test(analysis.normalizedQuery);
 }
 
 function markCurrentPostResult(
@@ -772,6 +946,26 @@ function expandQueryTerms(
     评测: ["evaluation", "evaluator", "harness", "trace"],
     工具: ["tool", "tools", "tool-use", "harness"],
     上下文: ["context", "context-engineering", "rag"],
+    公开文章: PUBLIC_INVENTORY_TERMS,
+    公开笔记: PUBLIC_INVENTORY_TERMS,
+    都有哪些: PUBLIC_INVENTORY_TERMS,
+    有哪些: PUBLIC_INVENTORY_TERMS,
+    哪几篇: PUBLIC_INVENTORY_TERMS,
+    几篇: PUBLIC_INVENTORY_TERMS,
+    文章目录: PUBLIC_INVENTORY_TERMS,
+    文章列表: PUBLIC_INVENTORY_TERMS,
+    博客目录: PUBLIC_INVENTORY_TERMS,
+    站内文章: PUBLIC_INVENTORY_TERMS,
+    目录: PUBLIC_INVENTORY_TERMS,
+    列表: PUBLIC_INVENTORY_TERMS,
+    posts: PUBLIC_INVENTORY_TERMS,
+    post: PUBLIC_INVENTORY_TERMS,
+    articles: PUBLIC_INVENTORY_TERMS,
+    article: PUBLIC_INVENTORY_TERMS,
+    notes: PUBLIC_INVENTORY_TERMS,
+    note: PUBLIC_INVENTORY_TERMS,
+    catalog: PUBLIC_INVENTORY_TERMS,
+    index: PUBLIC_INVENTORY_TERMS,
     核心抽象: [
       "core",
       "abstraction",

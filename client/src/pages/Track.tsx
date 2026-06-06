@@ -71,19 +71,18 @@ function TrackPage({ kind }: { kind: TrackKind }) {
       <SiteHeader active={config.active} />
 
       <main className="relative z-10">
-        <section className="container grid gap-10 px-4 pb-12 pt-14 sm:px-6 md:pt-20 lg:grid-cols-[minmax(0,1fr)_360px]">
-          <div className="min-w-0">
-            <p className="technical-label mb-6">{t(config.topicTitleKey)}</p>
+        <section className="container grid gap-10 px-4 pb-12 pt-14 sm:px-6 md:pt-[4.5rem] lg:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="page-hero min-w-0">
+            <div className="signal-chip mb-6">
+              <Network className="h-4 w-4" />
+              {t(config.topicTitleKey)}
+            </div>
 
-            <h1 className="max-w-5xl text-4xl font-semibold leading-[1.08] text-white md:text-5xl xl:text-6xl">
-              {t(config.titleKey)}
-            </h1>
-            <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
-              {t(config.subtitleKey)}
-            </p>
+            <h1 className="page-title">{t(config.titleKey)}</h1>
+            <p className="page-copy mt-6">{t(config.subtitleKey)}</p>
 
             <div className="track-map-note mt-7 max-w-4xl">
-              <Network className="h-5 w-5 text-teal-200" />
+              <Network className="h-5 w-5 text-sky-200" />
               <p>
                 {t(
                   kind === "algorithms"
@@ -104,7 +103,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                         </span>
                         <h2>{t(series.titleKey)}</h2>
                       </div>
-                      <GitBranch className="mt-1 h-5 w-5 shrink-0 text-teal-200" />
+                      <GitBranch className="mt-1 h-5 w-5 shrink-0 text-sky-200" />
                     </div>
                     <p>{t(series.promiseKey)}</p>
                     <div className="series-card-concepts mt-4">
@@ -126,7 +125,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                       ))}
                     </div>
                     <div className="mt-4 border-t border-white/10 pt-4">
-                      <p className="mb-2 text-xs font-semibold uppercase text-slate-500">
+                      <p className="mb-2 text-xs font-semibold text-slate-500">
                         {t("track.nextPlanned")}
                       </p>
                       <div className="flex flex-wrap gap-2">
@@ -163,7 +162,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
 
           <aside className="glass-panel p-5">
             <div className="flex items-center gap-2 text-white">
-              <Network className="h-5 w-5 text-teal-200" />
+              <Network className="h-5 w-5 text-sky-200" />
               <h2 className="text-base font-semibold">
                 {t(config.topicTitleKey)}
               </h2>
@@ -173,10 +172,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
               {config.focusKeys.slice(0, 4).map(key => (
-                <span
-                  key={key}
-                  className="rounded-lg border border-white/10 bg-slate-900/60 px-3 py-1.5 text-xs text-slate-200"
-                >
+                <span key={key} className="article-tag px-3 py-1.5">
                   {t(key)}
                 </span>
               ))}
@@ -232,14 +228,14 @@ function TrackPage({ kind }: { kind: TrackKind }) {
 
           <aside className="glass-panel research-index-panel">
             <div className="flex items-center gap-2">
-              <Boxes className="h-5 w-5 text-teal-200" />
+              <Boxes className="h-5 w-5 text-sky-200" />
               <h2 className="section-title">{t("track.topicNodes")}</h2>
             </div>
             <div className="research-index-list">
               {config.topics.map(topic => (
                 <div key={topic.labelKey} className="research-index-row">
                   <span>{t(topic.labelKey)}</span>
-                  <span className="text-teal-100">{t(topic.metaKey)}</span>
+                  <span className="text-sky-100">{t(topic.metaKey)}</span>
                 </div>
               ))}
             </div>

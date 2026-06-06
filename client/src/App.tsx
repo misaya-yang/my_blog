@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect } from "react";
+import { Loader2 } from "lucide-react";
 import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -35,7 +36,7 @@ const CategoryPage = lazy(() =>
 function RouteLoading() {
   return (
     <div className="space-page grid place-items-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-sky-300" />
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
     </div>
   );
 }

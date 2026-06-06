@@ -105,42 +105,45 @@ export default function Search() {
       <SiteHeader active="search" />
 
       <main className="container relative z-10 px-4 py-10 sm:px-6 md:py-14">
-        <section className="max-w-4xl">
+        <section className="page-hero">
           <div className="signal-chip mb-6">
-            <SearchIcon className="h-4 w-4 text-slate-400" />
+            <SearchIcon className="h-4 w-4" />
             {t("discovery.searchKicker")}
           </div>
-          <h1 className="display-title text-3xl leading-tight text-white md:text-5xl">
-            {t("discovery.searchTitle")}
-          </h1>
-          <p className="mt-5 max-w-3xl text-base leading-8 text-slate-300">
-            {t("discovery.searchSubtitle")}
-          </p>
+          <h1 className="page-title">{t("discovery.searchTitle")}</h1>
+          <p className="page-copy mt-5">{t("discovery.searchSubtitle")}</p>
         </section>
 
         <form
           onSubmit={handleSubmit}
-          className="glass-panel mt-9 flex max-w-4xl gap-3 p-3"
+          className="home-search-dock mt-9 max-w-4xl"
         >
-          <SearchIcon className="ml-2 mt-3 h-5 w-5 shrink-0 text-slate-400" />
+          <div className="home-search-dock-title">
+            <SearchIcon className="h-5 w-5" />
+            <span>{t("discovery.searchButton")}</span>
+          </div>
           <label className="sr-only" htmlFor="search-page-query">
             {t("discovery.searchPlaceholder")}
           </label>
-          <Input
-            id="search-page-query"
-            type="search"
-            autoComplete="search"
-            value={input}
-            onChange={event => setInput(event.target.value)}
-            placeholder={t("discovery.searchPlaceholder")}
-            className="h-11 border-0 bg-transparent text-base text-white shadow-none placeholder:text-slate-500 focus-visible:ring-0"
-          />
-          <Button
-            type="submit"
-            className="h-11 border border-slate-600 bg-slate-100 text-slate-950 hover:bg-white"
-          >
-            {t("discovery.searchButton")}
-          </Button>
+          <div className="home-search-field md:col-span-2">
+            <Input
+              id="search-page-query"
+              type="search"
+              autoComplete="search"
+              value={input}
+              onChange={event => setInput(event.target.value)}
+              placeholder={t("discovery.searchPlaceholder")}
+              className="h-11 border-0 bg-transparent px-0 text-base text-white shadow-none placeholder:text-slate-500 focus-visible:ring-0"
+            />
+            <Button
+              type="submit"
+              size="icon"
+              className="home-search-submit"
+              aria-label={t("discovery.searchButton")}
+            >
+              <SearchIcon className="h-5 w-5" />
+            </Button>
+          </div>
         </form>
 
         <section className="glass-panel mt-8 p-4 sm:p-6">

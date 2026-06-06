@@ -33,6 +33,7 @@ import {
   Twitter,
   Linkedin,
   MessageCircle,
+  Loader2,
 } from "lucide-react";
 import { Link, useParams } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -284,7 +285,7 @@ function buildMainAbstraction(
     technicalHeading ? stripHeadingPrefix(technicalHeading.text) : null,
   ].filter(Boolean);
 
-  return parts.length ? parts.join(" · ") : "";
+  return parts.length ? parts.join(" / ") : "";
 }
 
 function buildRequiredBackground(tags: ArticleTag[]) {
@@ -300,7 +301,7 @@ function buildRequiredBackground(tags: ArticleTag[]) {
     .slice(0, 4)
     .map(tag => tag.name);
 
-  return backgroundTags.join(" · ");
+  return backgroundTags.join(" / ");
 }
 
 function buildImplementationMapping(
@@ -325,7 +326,7 @@ function buildImplementationMapping(
     signals.push(t("post.entry.signalEvaluation"));
   }
 
-  return Array.from(new Set(signals)).slice(0, 4).join(" · ");
+  return Array.from(new Set(signals)).slice(0, 4).join(" / ");
 }
 
 function extractSectionPreview(content: string, targetHeadings: string[]) {
@@ -384,7 +385,6 @@ export default function PostDetail() {
   const siteUrl = getClientSiteUrl();
   const [activeHeading, setActiveHeading] = useState<string>("");
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
-  const [readingProgress, setReadingProgress] = useState(0);
 
   const { data: post, isLoading } = trpc.posts.getBySlug.useQuery(slug || "", {
     enabled: Boolean(slug),
@@ -437,37 +437,29 @@ export default function PostDetail() {
     });
   }, [headings, post?.slug]);
 
-  // Reading progress bar
   useEffect(() => {
-    const handleScroll = () => {
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const scrollTop = window.scrollY;
-      const progress = (scrollTop / (documentHeight - windowHeight)) * 100;
-      setReadingProgress(Math.min(100, Math.max(0, progress)));
-    };
+    if (headings.length === 0) return;
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Scroll spy for TOC
-  useEffect(() => {
-    const handleScroll = () => {
-      const headingElements = headings.map(h => document.getElementById(h.id));
-      const scrollPosition = window.scrollY + 100;
-
-      for (let i = headingElements.length - 1; i >= 0; i--) {
-        const element = headingElements[i];
-        if (element && element.offsetTop <= scrollPosition) {
-          setActiveHeading(headings[i].id);
-          break;
-        }
+    const observer = new IntersectionObserver(
+      entries => {
+        const visible = entries
+          .filter(entry => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        const nextId = visible[0]?.target.id;
+        if (nextId) setActiveHeading(nextId);
+      },
+      {
+        rootMargin: "-18% 0px -65% 0px",
+        threshold: [0, 1],
       }
-    };
+    );
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    headings.forEach(heading => {
+      const element = document.getElementById(heading.id);
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
   }, [headings]);
 
   const copyToClipboard = useCallback(
@@ -530,7 +522,7 @@ export default function PostDetail() {
     return (
       <div className="space-page flex items-center justify-center">
         <SpaceBackdrop subtle />
-        <div className="relative z-10 h-10 w-10 animate-spin rounded-full border-b-2 border-teal-200"></div>
+        <Loader2 className="relative z-10 h-10 w-10 animate-spin text-teal-200" />
       </div>
     );
   }
@@ -583,10 +575,7 @@ export default function PostDetail() {
     <div className="space-page text-foreground">
       <SpaceBackdrop subtle />
       {/* Reading Progress Bar */}
-      <div
-        className="fixed left-0 top-0 z-[60] h-1 bg-gradient-to-r from-teal-400 via-emerald-200 to-slate-200 transition-all duration-150"
-        style={{ width: `${readingProgress}%` }}
-      />
+      <div className="reading-progress-bar fixed left-0 top-0 z-[60] h-1" />
 
       <SiteHeader backHref="/" backLabel={t("nav.back")} compact />
 
@@ -720,7 +709,7 @@ export default function PostDetail() {
                         <p className="article-series-meta">
                           {seriesContext.positionLabel}
                           {seriesContext.promise
-                            ? ` · ${seriesContext.promise}`
+                            ? ` / ${seriesContext.promise}`
                             : ""}
                         </p>
                       </div>
@@ -933,7 +922,7 @@ export default function PostDetail() {
                         {t("post.series.continuity")}
                       </span>
                       <p className="article-series-title">
-                        {seriesContext.title} · {seriesContext.positionLabel}
+                        {seriesContext.title} / {seriesContext.positionLabel}
                       </p>
                     </div>
                     <div className="grid gap-3 md:grid-cols-2">

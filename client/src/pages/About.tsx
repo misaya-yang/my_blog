@@ -21,26 +21,32 @@ export default function About() {
       <SiteHeader active="about" />
 
       <main className="container relative z-10 px-4 py-10 sm:px-6 md:py-14">
-        <section className="max-w-4xl">
+        <section className="page-hero">
           <div className="signal-chip mb-6">
-            <BookOpen className="h-4 w-4 text-sky-300" />
+            <BookOpen className="h-4 w-4" />
             {t("about.kicker")}
           </div>
-          <h1 className="font-serif text-4xl font-semibold leading-tight text-white md:text-6xl">
-            {t("about.title")}
-          </h1>
-          <p className="mt-5 max-w-3xl text-base leading-8 text-slate-300">
-            {t("about.subtitle")}
-          </p>
+          <h1 className="page-title">{t("about.title")}</h1>
+          <p className="page-copy mt-5">{t("about.subtitle")}</p>
         </section>
 
         <section className="mt-10 grid gap-5 lg:grid-cols-3">
           <article className="glass-panel p-6 lg:col-span-2">
             <h2 className="section-title">{t("about.focusTitle")}</h2>
-            <p className="mt-5 text-sm leading-8 text-slate-300">{t("about.focusBody")}</p>
+            <p className="mt-5 text-sm leading-8 text-slate-300">
+              {t("about.focusBody")}
+            </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {["about.focus1", "about.focus2", "about.focus3", "about.focus4"].map((key) => (
-                <div key={key} className="rounded-lg border border-sky-200/10 bg-slate-950/35 p-4 text-sm text-slate-200">
+              {[
+                "about.focus1",
+                "about.focus2",
+                "about.focus3",
+                "about.focus4",
+              ].map(key => (
+                <div
+                  key={key}
+                  className="article-tag min-h-14 items-center rounded-xl px-4 py-3 text-sm text-slate-200"
+                >
                   {t(key)}
                 </div>
               ))}
@@ -59,7 +65,10 @@ export default function About() {
                 <GraduationCap className="h-4 w-4" />
                 {t("nav.scholar")}
               </a>
-              <a href="mailto:zedpl28174@gmail.com" className="nav-ink justify-start gap-2">
+              <a
+                href="mailto:zedpl28174@gmail.com"
+                className="nav-ink justify-start gap-2"
+              >
                 <Mail className="h-4 w-4" />
                 zedpl28174@gmail.com
               </a>

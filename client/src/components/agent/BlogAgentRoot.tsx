@@ -593,7 +593,7 @@ export function AgentPanel({
           type="button"
           aria-label={t("agent.header.close")}
           onClick={onClose}
-          className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-slate-400 transition hover:bg-white/5 hover:text-white"
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-md text-slate-400 transition hover:bg-white/5 hover:text-white sm:h-8 sm:w-8"
         >
           <X className="h-4 w-4" />
         </button>
@@ -619,7 +619,7 @@ export function AgentPanel({
             onClick={onToggleHistory}
             aria-expanded={historyOpen}
             className={cn(
-              "inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition",
+              "inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-medium transition sm:min-h-0 sm:px-2.5 sm:py-1.5",
               historyOpen
                 ? "border-slate-500 bg-slate-900 text-slate-100"
                 : "border-slate-700 bg-white/[0.025] text-slate-300 hover:border-slate-500 hover:bg-slate-900 hover:text-slate-100"
@@ -675,7 +675,7 @@ export function AgentPanel({
                   type="button"
                   disabled={sending}
                   onClick={() => onPrompt(prompt)}
-                  className="rounded-md border border-slate-700 bg-slate-950/45 px-3 py-2 text-left text-sm font-medium leading-6 text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 disabled:opacity-60"
+                  className="min-h-11 rounded-md border border-slate-700 bg-slate-950/45 px-3 py-2 text-left text-sm font-medium leading-6 text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 disabled:opacity-60"
                 >
                   {prompt}
                 </button>
@@ -782,7 +782,7 @@ export function AgentPanel({
             onClick={onToggleContext}
             aria-label={t("agent.context.toggle")}
             className={cn(
-              "h-10 w-10 shrink-0 rounded-md border border-slate-700 bg-white/[0.025] text-slate-400 hover:bg-slate-900 hover:text-slate-100",
+              "h-11 w-11 shrink-0 rounded-md border border-slate-700 bg-white/[0.025] text-slate-400 hover:bg-slate-900 hover:text-slate-100 sm:h-10 sm:w-10",
               contextOpen && "border-slate-500 bg-slate-900 text-slate-100"
             )}
           >
@@ -803,7 +803,7 @@ export function AgentPanel({
             }}
             placeholder={t("agent.input.placeholder")}
             rows={1}
-            className="max-h-28 min-h-10 resize-none border-0 bg-transparent text-sm text-slate-100 shadow-none placeholder:text-slate-500 focus-visible:ring-0"
+            className="max-h-28 min-h-11 resize-none border-0 bg-transparent text-sm text-slate-100 shadow-none placeholder:text-slate-500 focus-visible:ring-0 sm:min-h-10"
           />
           <Button
             type={sending ? "button" : "submit"}
@@ -814,7 +814,7 @@ export function AgentPanel({
               sending ? t("agent.input.cancel") : t("agent.input.send")
             }
             className={cn(
-              "h-10 w-10 shrink-0 rounded-md text-white",
+              "h-11 w-11 shrink-0 rounded-md text-white sm:h-10 sm:w-10",
               sending
                 ? "bg-slate-700 hover:bg-slate-600"
                 : "bg-slate-100 text-slate-950 hover:bg-white"
@@ -855,7 +855,7 @@ function AgentContextDock({
         <button
           type="button"
           onClick={onToggle}
-          className="inline-flex min-w-0 items-center gap-2 rounded-md px-1.5 py-1 text-xs font-medium text-slate-400 transition hover:text-slate-100"
+          className="inline-flex min-h-11 min-w-0 items-center gap-2 rounded-md px-2 py-2 text-xs font-medium text-slate-400 transition hover:text-slate-100 sm:min-h-0 sm:px-1.5 sm:py-1"
         >
           <Paperclip className="h-3.5 w-3.5 text-slate-400" />
           <span className="truncate">{t("agent.context.title")}</span>
@@ -890,7 +890,7 @@ function AgentContextDock({
               type="button"
               onClick={onPickFile}
               disabled={attaching}
-              className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-white/[0.025] px-2.5 py-1.5 text-xs text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 hover:text-slate-100 disabled:opacity-50"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-md border border-slate-700 bg-white/[0.025] px-3 py-2 text-xs text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 hover:text-slate-100 disabled:opacity-50 sm:min-h-0 sm:px-2.5 sm:py-1.5"
             >
               <FileText className="h-3.5 w-3.5" />
               {t("agent.context.file")}
@@ -900,7 +900,7 @@ function AgentContextDock({
               size="sm"
               disabled={!value.trim() || attaching}
               onClick={onAttach}
-              className="h-8 rounded-md bg-slate-100 px-3 text-xs text-slate-950 hover:bg-white"
+              className="h-11 rounded-md bg-slate-100 px-3 text-xs text-slate-950 hover:bg-white sm:h-8"
             >
               {attaching ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -926,10 +926,10 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
   const currentPath = normalizePathWithoutHash(location);
 
   return (
-    <div className="mt-3 border-t border-slate-800/80 pt-3">
-      <div className="mb-2 flex items-center justify-between gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-slate-500">
+    <div className="agent-sources mt-3 border-t border-slate-800/80 pt-3">
+      <div className="mb-2 flex items-center justify-between gap-2 text-xs font-semibold text-slate-500">
         <span>{t("agent.sources.title")}</span>
-        <span className="normal-case tracking-normal text-slate-600">
+        <span className="text-slate-600">
           {t("agent.sources.count", {
             count: Math.min(sources.length, 3),
           })}
@@ -947,7 +947,7 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
           const excerpt = formatSourceExcerpt(source);
           const href = hasBlogLink ? getSourceHref(source) : undefined;
           const card = (
-            <span className="block rounded-md border border-slate-700/80 bg-slate-950/30 px-2.5 py-2 transition hover:border-slate-500 hover:bg-slate-900/55">
+            <span className="agent-source-card block rounded-md border border-slate-700/80 bg-slate-950/30 px-2.5 py-2 transition hover:border-slate-500 hover:bg-slate-900/55">
               <span className="flex items-start justify-between gap-3">
                 <span className="min-w-0">
                   <span className="block truncate text-sm font-semibold text-slate-100">
@@ -988,7 +988,7 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
               key={source.sourceId}
               href={href}
               aria-label={`${t("agent.sources.open")}: ${title}`}
-              title={`${title}${source.heading ? ` · ${source.heading}` : ""}`}
+              title={`${title}${source.heading ? ` / ${source.heading}` : ""}`}
               onClick={event => {
                 if (href) handleSourceLinkClick(event, source, href, navigate);
               }}

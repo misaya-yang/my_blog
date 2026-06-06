@@ -101,7 +101,7 @@ export function SiteHeader({
               </span>
             </Link>
           ) : (
-            <Link href="/" className="flex items-center gap-3">
+            <Link href="/" className="flex min-h-11 items-center gap-3">
               <BrandMark />
               <span className="text-base font-semibold tracking-normal text-white sm:text-lg">
                 {t("nav.brand")}
@@ -193,8 +193,8 @@ export function SiteHeader({
                     <Link
                       href={link.href}
                       className={cn(
-                        "flex h-11 items-center gap-2 rounded-md px-3 text-sm text-slate-300 transition-colors hover:bg-teal-300/10 hover:text-white",
-                        active === link.key && "bg-teal-300/10 text-white"
+                        "flex h-11 items-center gap-2 rounded-md px-3 text-sm text-slate-200 transition-colors hover:bg-white/5 hover:text-white",
+                        active === link.key && "bg-white/7 text-white"
                       )}
                     >
                       {link.key === "search" && <Search className="h-4 w-4" />}

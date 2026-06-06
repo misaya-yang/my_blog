@@ -3,6 +3,7 @@ import {
   createSourceMarkerStreamFilter,
   createSourceGroundedFallbackAnswer,
   createNoPublicSourceAnswer,
+  createNoPublicSourceAnswerForInput,
   normalizeAgentAnswer,
   parseMarkdownAnswerWithSourceMarker,
 } from "./model";
@@ -156,7 +157,8 @@ describe("agent answer quality normalization", () => {
       "agent-harness-engine:3",
       " -->",
     ];
-    const visible = chunks.map(chunk => filter.push(chunk)).join("") + filter.flush();
+    const visible =
+      chunks.map(chunk => filter.push(chunk)).join("") + filter.flush();
 
     expect(visible).toBe("Answer with math $H^\\top H=I$.\n\n");
     expect(visible).not.toContain("blog-agent-sources");
@@ -200,6 +202,22 @@ describe("agent answer quality normalization", () => {
     expect(answer.refusalReason).toBe("no_public_source");
     expect(answer.sourceCards).toEqual([]);
     expect(answer.answerMarkdown).not.toContain("EVQ");
+  });
+
+  it("localizes public-source refusal for Chinese reader questions", () => {
+    const answer = createNoPublicSourceAnswerForInput({
+      message: "这个博客都有哪几篇文章？",
+      routeContext: {
+        path: "/",
+        routeType: "home",
+        locale: "zh",
+      },
+    });
+
+    expect(answer.answerType).toBe("refusal");
+    expect(answer.answerMarkdown).toContain("公开文章");
+    expect(answer.answerMarkdown).not.toContain("I can only answer");
+    expect(answer.relatedQuestions[0]).toContain("公开文章");
   });
 
   it("builds a source-grounded fallback answer when the production model is not configured", () => {

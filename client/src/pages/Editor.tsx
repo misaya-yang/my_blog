@@ -105,7 +105,7 @@ function ToolbarButton({
           className={`rounded-md p-2 transition-all duration-150 ${
             active
               ? "bg-blue-500 text-white shadow-[0_0_18px_rgb(59_130_246_/_0.28)]"
-              : "text-slate-400 hover:bg-sky-400/10 hover:text-white"
+              : "text-slate-400 hover:bg-primary/10 hover:text-white"
           } ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
         >
           {children}
@@ -634,7 +634,7 @@ export default function Editor() {
       <header className="relative z-10 flex h-14 shrink-0 items-center justify-between border-b border-sky-200/10 bg-slate-950/80 px-4 backdrop-blur-xl">
         <div className="flex items-center gap-4">
           <RouterLink href="/">
-            <Button variant="ghost" size="sm" className="gap-2 text-slate-300 hover:bg-sky-400/10 hover:text-white">
+            <Button variant="ghost" size="sm" className="gap-2 text-slate-300 hover:bg-primary/10 hover:text-white">
               <ArrowLeft className="h-4 w-4" />
               <span className="hidden sm:inline">{t("editor.back")}</span>
             </Button>

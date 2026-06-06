@@ -3,7 +3,13 @@ import { Input } from "@/components/ui/input";
 import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { trpc } from "@/lib/trpc";
-import { KeyRound, Library, LockKeyhole, Network, UserRound } from "lucide-react";
+import {
+  KeyRound,
+  Library,
+  LockKeyhole,
+  Network,
+  UserRound,
+} from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
@@ -33,19 +39,19 @@ export default function Login() {
       toast.success(t("login.toast.welcomeBack"));
       navigate("/");
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(error.message || t("login.toast.adminFailed"));
     },
   });
 
   const visitorLogin = trpc.auth.visitorLogin.useMutation({
-    onSuccess: async (data) => {
+    onSuccess: async data => {
       utils.auth.session.setData(undefined, data.session);
       await utils.auth.session.invalidate();
       toast.success(t("login.toast.visitorCreated"));
       navigate("/");
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(error.message || t("login.toast.visitorFailed"));
     },
   });
@@ -63,30 +69,39 @@ export default function Login() {
   return (
     <div className="space-page text-foreground">
       <SpaceBackdrop subtle />
-      <SiteHeader active="login" backHref="/" backLabel={t("login.backToHome")} compact />
+      <SiteHeader
+        active="login"
+        backHref="/"
+        backLabel={t("login.backToHome")}
+        compact
+      />
 
       <main className="container relative z-10 grid min-h-[calc(100vh-68px)] grid-cols-1 items-start gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_440px] lg:items-center lg:py-12">
-        <section className="max-w-2xl">
+        <section className="page-hero max-w-2xl">
           <div className="signal-chip mb-7">
             <Library className="h-3.5 w-3.5" />
             {t("login.chip")}
           </div>
-          <h1 className="max-w-xl font-serif text-4xl font-semibold leading-tight text-white md:text-6xl">
-            {t("login.title")}
-          </h1>
-          <p className="mt-5 max-w-xl text-base leading-8 text-slate-300">
-            {t("login.subtitle")}
-          </p>
+          <h1 className="page-title max-w-xl">{t("login.title")}</h1>
+          <p className="page-copy mt-5 max-w-xl">{t("login.subtitle")}</p>
           <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-2">
             <div className="glass-panel p-4">
               <Network className="mb-3 h-5 w-5 text-sky-300" />
-              <p className="text-sm font-medium text-white">{t("login.visitorCardTitle")}</p>
-              <p className="mt-2 text-xs leading-5 text-slate-400">{t("login.visitorCardDesc")}</p>
+              <p className="text-sm font-medium text-white">
+                {t("login.visitorCardTitle")}
+              </p>
+              <p className="mt-2 text-xs leading-5 text-slate-400">
+                {t("login.visitorCardDesc")}
+              </p>
             </div>
             <div className="glass-panel p-4">
               <LockKeyhole className="mb-3 h-5 w-5 text-blue-300" />
-              <p className="text-sm font-medium text-white">{t("login.ownerCardTitle")}</p>
-              <p className="mt-2 text-xs leading-5 text-slate-400">{t("login.ownerCardDesc")}</p>
+              <p className="text-sm font-medium text-white">
+                {t("login.ownerCardTitle")}
+              </p>
+              <p className="mt-2 text-xs leading-5 text-slate-400">
+                {t("login.ownerCardDesc")}
+              </p>
             </div>
           </div>
         </section>
@@ -107,7 +122,9 @@ export default function Login() {
             <TabsContent value="visitor" className="mt-6">
               <form onSubmit={handleVisitorSubmit} className="space-y-5">
                 <div>
-                  <h2 className="text-xl font-semibold text-white">{t("login.visitorTitle")}</h2>
+                  <h2 className="text-xl font-semibold text-white">
+                    {t("login.visitorTitle")}
+                  </h2>
                   <p className="mt-2 text-sm leading-6 text-slate-400">
                     {t("login.visitorDesc")}
                   </p>
@@ -118,7 +135,7 @@ export default function Login() {
                 <Input
                   id="visitor-nickname"
                   value={nickname}
-                  onChange={(event) => setNickname(event.target.value)}
+                  onChange={event => setNickname(event.target.value)}
                   placeholder={t("login.visitorPlaceholder")}
                   aria-label={t("login.visitorPlaceholder")}
                   autoComplete="nickname"
@@ -131,7 +148,9 @@ export default function Login() {
                   className="w-full bg-blue-500 text-white hover:bg-blue-400"
                   disabled={visitorLogin.isPending}
                 >
-                  {visitorLogin.isPending ? t("login.visitorBtnLoading") : t("login.visitorBtn")}
+                  {visitorLogin.isPending
+                    ? t("login.visitorBtnLoading")
+                    : t("login.visitorBtn")}
                 </Button>
               </form>
             </TabsContent>
@@ -139,7 +158,9 @@ export default function Login() {
             <TabsContent value="admin" className="mt-6">
               <form onSubmit={handleAdminSubmit} className="space-y-5">
                 <div>
-                  <h2 className="text-xl font-semibold text-white">{t("login.adminTitle")}</h2>
+                  <h2 className="text-xl font-semibold text-white">
+                    {t("login.adminTitle")}
+                  </h2>
                   <p className="mt-2 text-sm leading-6 text-slate-400">
                     {t("login.adminDesc")}
                   </p>
@@ -152,7 +173,7 @@ export default function Login() {
                   type="password"
                   placeholder={t("login.adminPasswordPlaceholder")}
                   value={password}
-                  onChange={(event) => setPassword(event.target.value)}
+                  onChange={event => setPassword(event.target.value)}
                   required
                   aria-label={t("login.adminPasswordPlaceholder")}
                   autoComplete="current-password"
@@ -163,7 +184,9 @@ export default function Login() {
                   className="w-full bg-blue-500 text-white hover:bg-blue-400"
                   disabled={adminLogin.isPending}
                 >
-                  {adminLogin.isPending ? t("login.adminBtnLoading") : t("login.adminBtn")}
+                  {adminLogin.isPending
+                    ? t("login.adminBtnLoading")
+                    : t("login.adminBtn")}
                 </Button>
               </form>
             </TabsContent>

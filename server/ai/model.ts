@@ -475,7 +475,9 @@ function dedupeSourceCards(sourceCards: AgentSourceCard[]) {
 }
 
 function selectFallbackSourceCards(sourceCards: AgentSourceCard[]) {
-  const groundedCards = dedupeSourceCards(preferGroundedSourceCards(sourceCards));
+  const groundedCards = dedupeSourceCards(
+    preferGroundedSourceCards(sourceCards)
+  );
   const articleCards = groundedCards.filter(
     source => !isMetadataOnlySource(source)
   );
@@ -492,16 +494,32 @@ function isMetadataOnlySource(source: AgentSourceCard) {
 }
 
 export function createNoPublicSourceAnswer(): AgentAnswer {
+  return createNoPublicSourceAnswerForLanguage(false);
+}
+
+export function createNoPublicSourceAnswerForInput(input: {
+  message: string;
+  routeContext: AgentRouteContext;
+}): AgentAnswer {
+  return createNoPublicSourceAnswerForLanguage(
+    prefersChinese(input.message, input.routeContext.locale)
+  );
+}
+
+function createNoPublicSourceAnswerForLanguage(zh: boolean): AgentAnswer {
   return {
     answerType: "refusal",
-    answerMarkdown:
-      "I can only answer from public posts on this blog. I could not find enough public source context for that question, so I should not infer from hidden, draft, or unavailable material.",
+    answerMarkdown: zh
+      ? "我只能基于这个博客里的公开文章回答。这个问题没有检索到足够的公开来源，所以我不能从隐藏、草稿或不可用内容里推断。"
+      : "I can only answer from public posts on this blog. I could not find enough public source context for that question, so I should not infer from hidden, draft, or unavailable material.",
     sourceIds: [],
     sourceCards: [],
-    relatedQuestions: [
-      "What public posts are available on this blog?",
-      "Can you suggest a public reading path?",
-    ],
+    relatedQuestions: zh
+      ? ["这个博客目前有哪些公开文章？", "可以给我一条公开阅读路径吗？"]
+      : [
+          "What public posts are available on this blog?",
+          "Can you suggest a public reading path?",
+        ],
     confidence: "low",
     refusalReason: "no_public_source",
   };
@@ -519,7 +537,8 @@ export function createSourceGroundedFallbackAnswer(input: {
     ...buildSourceCards(input.sources),
     ...buildContextSourceCards(input.contextSources),
   ];
-  if (sourceCards.length === 0) return createNoPublicSourceAnswer();
+  if (sourceCards.length === 0)
+    return createNoPublicSourceAnswerForInput(input);
 
   const zh = prefersChinese(input.message, input.routeContext.locale);
   const selectedCards = selectFallbackSourceCards(sourceCards).slice(0, 4);
@@ -546,9 +565,7 @@ export function createSourceGroundedFallbackAnswer(input: {
   const sourceLines = selectedCards.map((source, index) => {
     const label = source.heading || source.postTitle || `Source ${index + 1}`;
     const excerpt = normalizeFallbackExcerpt(source.excerpt);
-    return zh
-      ? `- **${label}**：${excerpt}`
-      : `- **${label}**: ${excerpt}`;
+    return zh ? `- **${label}**：${excerpt}` : `- **${label}**: ${excerpt}`;
   });
 
   return {

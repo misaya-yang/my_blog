@@ -10,6 +10,10 @@ const home: TranslationDict = {
     en: "Research notes on model mechanisms, long-context behavior, agent infrastructure, RAG, and evaluation.",
     zh: "记录模型机制、长上下文行为、Agent 基础设施、RAG 与评测工程。",
   },
+  "home.kicker": {
+    en: "notes / thinking / practice",
+    zh: "记录 / 思考 / 实践",
+  },
   "home.chip1": { en: "working notes", zh: "working notes" },
   "home.chip2": { en: "model mechanisms", zh: "模型机制" },
   "home.chip3": { en: "system notes", zh: "系统笔记" },
@@ -97,8 +101,8 @@ const home: TranslationDict = {
 
   // Footer
   "home.footerTagline": {
-    en: "Misaya Yang · Transformer systems · Long-context mechanisms",
-    zh: "Misaya Yang · Transformer systems · Long-context mechanisms",
+    en: "Misaya Yang / Transformer systems / Long-context mechanisms",
+    zh: "Misaya Yang / Transformer systems / Long-context mechanisms",
   },
 
   // Archive placeholder

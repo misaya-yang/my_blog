@@ -199,7 +199,6 @@ export function ArticleFeedback({
           <Button
             type="submit"
             disabled={!type || feedback.isPending}
-            className="bg-sky-400 text-slate-950 hover:bg-sky-300"
           >
             {feedback.isPending ? (
               <>

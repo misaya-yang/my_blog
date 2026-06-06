@@ -25,7 +25,7 @@ import {
 } from "./identity.js";
 import {
   buildSourceCards,
-  createNoPublicSourceAnswer,
+  createNoPublicSourceAnswerForInput,
   createSourceGroundedFallbackAnswer,
   defaultAgentModel,
 } from "./model.js";
@@ -441,7 +441,10 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         });
         currentPageContextInjected = hasCurrentPageContext(sources);
         if (sources.length === 0 && contextSources.length === 0) {
-          const answer = createNoPublicSourceAnswer();
+          const answer = createNoPublicSourceAnswerForInput({
+            message: input.message,
+            routeContext: input.routeContext,
+          });
           const assistantMessage = await deps.conversationStore.addMessage({
             conversationId: conversation.id,
             role: "assistant",
@@ -678,7 +681,10 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         });
 
         if (sources.length === 0 && contextSources.length === 0) {
-          const answer = createNoPublicSourceAnswer();
+          const answer = createNoPublicSourceAnswerForInput({
+            message: input.message,
+            routeContext: input.routeContext,
+          });
           const assistantMessage = await deps.conversationStore.addMessage({
             conversationId: conversation.id,
             role: "assistant",

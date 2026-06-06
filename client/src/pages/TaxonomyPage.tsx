@@ -26,15 +26,20 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
   const query = kind === "tag" ? tagQuery : categoryQuery;
   const data: any = query.data;
   const taxonomy = kind === "tag" ? data?.tag : data?.category;
-  const matchingTrack = kind === "category"
-    ? Object.values(trackConfigs).find((track) => track.categorySlug === taxonomy?.slug)
-    : undefined;
+  const matchingTrack =
+    kind === "category"
+      ? Object.values(trackConfigs).find(
+          track => track.categorySlug === taxonomy?.slug
+        )
+      : undefined;
   useSeo(
     buildRouteMetadata(siteUrl, {
       title: taxonomy?.name ?? slug,
       description:
         taxonomy?.description ??
-        (kind === "tag" ? t("discovery.tagKicker") : t("discovery.categoryKicker")),
+        (kind === "tag"
+          ? t("discovery.tagKicker")
+          : t("discovery.categoryKicker")),
       path: `/${kind === "tag" ? "tags" : "categories"}/${slug}`,
       locale: language === "zh" ? "zh-CN" : "en-US",
       noindex: !taxonomy && !query.isLoading,
@@ -44,7 +49,15 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
   return (
     <div className="space-page">
       <SpaceBackdrop subtle />
-      <SiteHeader active={kind === "category" && slug === "ai-applications" ? "applications" : kind === "category" && slug === "ai-algorithms" ? "algorithms" : undefined} />
+      <SiteHeader
+        active={
+          kind === "category" && slug === "ai-applications"
+            ? "applications"
+            : kind === "category" && slug === "ai-algorithms"
+              ? "algorithms"
+              : undefined
+        }
+      />
 
       <main className="container relative z-10 px-4 py-10 sm:px-6 md:py-14">
         {query.isLoading ? (
@@ -54,18 +67,20 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
         ) : taxonomy ? (
           <>
             <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-              <div>
+              <div className="page-hero">
                 <div className="signal-chip mb-6">
-                  {kind === "tag" ? <Hash className="h-4 w-4 text-sky-300" /> : <Folder className="h-4 w-4 text-sky-300" />}
-                  {kind === "tag" ? t("discovery.tagKicker") : t("discovery.categoryKicker")}
+                  {kind === "tag" ? (
+                    <Hash className="h-4 w-4" />
+                  ) : (
+                    <Folder className="h-4 w-4" />
+                  )}
+                  {kind === "tag"
+                    ? t("discovery.tagKicker")
+                    : t("discovery.categoryKicker")}
                 </div>
-                <h1 className="font-serif text-4xl font-semibold leading-tight text-white md:text-6xl">
-                  {taxonomy.name}
-                </h1>
+                <h1 className="page-title">{taxonomy.name}</h1>
                 {taxonomy.description && (
-                  <p className="mt-5 max-w-3xl text-base leading-8 text-slate-300">
-                    {taxonomy.description}
-                  </p>
+                  <p className="page-copy mt-5">{taxonomy.description}</p>
                 )}
                 <p className="mt-5 text-sm text-slate-400">
                   {t("discovery.articlesCount", { count: data.total })}
@@ -75,7 +90,9 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
               <aside className="glass-panel p-5">
                 <div className="flex items-center gap-2 text-white">
                   <Tags className="h-5 w-5 text-sky-300" />
-                  <h2 className="text-base font-semibold">{t("discovery.siblingTags")}</h2>
+                  <h2 className="text-base font-semibold">
+                    {t("discovery.siblingTags")}
+                  </h2>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {data.siblingTags?.length ? (
@@ -83,13 +100,15 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
                       <Link
                         key={tag.slug}
                         href={`/tags/${tag.slug}`}
-                        className="rounded-lg border border-sky-200/15 bg-slate-900/60 px-3 py-1.5 text-xs text-slate-200 hover:border-sky-300/45 hover:text-white"
+                        className="article-tag px-3 py-1.5"
                       >
                         {tag.name}
                       </Link>
                     ))
                   ) : (
-                    <span className="text-sm text-slate-400">{t("discovery.noSiblingTags")}</span>
+                    <span className="text-sm text-slate-400">
+                      {t("discovery.noSiblingTags")}
+                    </span>
                   )}
                 </div>
 
@@ -97,13 +116,20 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
                   <div className="mt-7">
                     <div className="flex items-center gap-2 text-white">
                       <Network className="h-5 w-5 text-blue-300" />
-                      <h2 className="text-base font-semibold">{t(matchingTrack.topicTitleKey)}</h2>
+                      <h2 className="text-base font-semibold">
+                        {t(matchingTrack.topicTitleKey)}
+                      </h2>
                     </div>
                     <div className="mt-4 grid gap-2">
-                      {matchingTrack.topics.map((topic) => (
-                        <div key={topic.labelKey} className="research-index-row min-h-[3.5rem] px-4 py-3 text-sm">
+                      {matchingTrack.topics.map(topic => (
+                        <div
+                          key={topic.labelKey}
+                          className="research-index-row min-h-[3.5rem] px-4 py-3 text-sm"
+                        >
                           <span>{t(topic.labelKey)}</span>
-                          <span className="text-sky-300">{t(topic.metaKey)}</span>
+                          <span className="text-sky-300">
+                            {t(topic.metaKey)}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -115,7 +141,12 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
             <section className="glass-panel mt-9 p-4 sm:p-6">
               <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                 <h2 className="section-title">{t("track.articles")}</h2>
-                <Button asChild variant="outline" size="sm" className="glass-button">
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="glass-button"
+                >
                   <Link href="/archive">{t("nav.archive")}</Link>
                 </Button>
               </div>
@@ -141,7 +172,9 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
           </>
         ) : (
           <div className="glass-panel p-8 text-center">
-            <h1 className="text-2xl font-semibold text-white">{t("discovery.taxonomyNotFound")}</h1>
+            <h1 className="text-2xl font-semibold text-white">
+              {t("discovery.taxonomyNotFound")}
+            </h1>
             <Button asChild variant="outline" className="glass-button mt-5">
               <Link href="/archive">{t("nav.archive")}</Link>
             </Button>

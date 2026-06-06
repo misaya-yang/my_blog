@@ -216,7 +216,7 @@ export default function ManageAgent() {
               <Bot className="h-4 w-4" />
               {t("agentOps.title")}
             </div>
-            <h1 className="font-serif text-4xl font-semibold text-white">
+            <h1 className="display-title text-4xl leading-tight text-white">
               {t("agentOps.title")}
             </h1>
             <p className="mt-3 text-sm leading-6 text-slate-400">
@@ -959,9 +959,7 @@ function EvalSummary({ summary }: { summary: EvalSummaryData }) {
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-3">
-      <p className="text-[0.68rem] uppercase tracking-[0.16em] text-slate-500">
-        {label}
-      </p>
+      <p className="text-[0.72rem] font-semibold text-slate-500">{label}</p>
       <p className="mt-1 text-lg font-semibold text-white">{value}</p>
     </div>
   );
@@ -1009,9 +1007,7 @@ function SourceList({
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[0.68rem] uppercase tracking-[0.16em] text-slate-500">
-        {label}
-      </p>
+      <p className="text-[0.72rem] font-semibold text-slate-500">{label}</p>
       <p className="mt-1 text-slate-200">{value}</p>
     </div>
   );

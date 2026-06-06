@@ -200,6 +200,30 @@ describe("AI public knowledge chunks", () => {
     );
   });
 
+  it("answers Chinese public article inventory questions from the site overview", () => {
+    const chunks = buildPublicKnowledgeChunks(posts);
+    const analysis = analyzeKnowledgeQuery("都有哪几篇文章啊");
+    const results = searchPublicKnowledgeChunks(chunks, "都有哪几篇文章啊", {
+      limit: 4,
+    });
+
+    expect(analysis.terms).toEqual(expect.arrayContaining(["哪几篇", "文章"]));
+    expect(results[0]).toMatchObject({
+      chunkType: "site_overview_chunk",
+      postSlug: null,
+      visibilitySnapshot: "public",
+    });
+    expect(results).toHaveLength(1);
+    expect(results[0]?.relevanceReason).toContain("Public blog inventory");
+    expect(results[0]?.excerpt).toContain("Public posts");
+    expect(results[0]?.excerpt).toContain("Agent Harness Engine");
+    expect(results[0]?.excerpt).toContain("DF-RoPE Frequency Budget");
+    expect(results[0]?.content).toContain("Agent Harness Engine");
+    expect(results[0]?.content).toContain("DF-RoPE Frequency Budget");
+    expect(results[0]?.content).not.toContain("Hidden Harness Note");
+    expect(results[0]?.content).not.toContain("Draft Harness Note");
+  });
+
   it("creates metadata and body chunks with source metadata", () => {
     const chunks = buildPublicKnowledgeChunks(posts);
     const metadata = chunks.find(

@@ -34,7 +34,9 @@ export default function Archive() {
   const siteUrl = getClientSiteUrl();
   const locale = language === "zh" ? "zh-CN" : "en-US";
   const { data: groups, isLoading } = trpc.discovery.archive.useQuery();
-  const total = groups?.reduce((sum: number, group: any) => sum + group.posts.length, 0) ?? 0;
+  const total =
+    groups?.reduce((sum: number, group: any) => sum + group.posts.length, 0) ??
+    0;
   useSeo(
     buildRouteMetadata(siteUrl, {
       title: t("discovery.archiveTitle"),
@@ -50,15 +52,13 @@ export default function Archive() {
       <SiteHeader active="archive" />
 
       <main className="container relative z-10 px-4 py-10 sm:px-6 md:py-14">
-        <section className="max-w-4xl">
+        <section className="page-hero">
           <div className="signal-chip mb-6">
-            <CalendarDays className="h-4 w-4 text-sky-300" />
+            <CalendarDays className="h-4 w-4" />
             {t("discovery.archiveKicker")}
           </div>
-          <h1 className="font-serif text-4xl font-semibold leading-tight text-white md:text-6xl">
-            {t("discovery.archiveTitle")}
-          </h1>
-          <p className="mt-5 max-w-3xl text-base leading-8 text-slate-300">
+          <h1 className="page-title">{t("discovery.archiveTitle")}</h1>
+          <p className="page-copy mt-5">
             {t("discovery.archiveSubtitle", { count: total })}
           </p>
         </section>
@@ -66,7 +66,7 @@ export default function Archive() {
         <section className="glass-panel mt-10 p-4 sm:p-6">
           {isLoading ? (
             <div className="grid gap-3">
-              {[1, 2, 3].map((item) => (
+              {[1, 2, 3].map(item => (
                 <div key={item} className="article-skeleton h-20" />
               ))}
             </div>
@@ -79,7 +79,9 @@ export default function Archive() {
                       {formatMonth(group.year, group.month, locale)}
                     </h2>
                     <span className="text-sm text-slate-400">
-                      {t("discovery.articlesCount", { count: group.posts.length })}
+                      {t("discovery.articlesCount", {
+                        count: group.posts.length,
+                      })}
                     </span>
                   </div>
 
@@ -127,7 +129,11 @@ export default function Archive() {
                             {post.readingMinutes} {t("home.minRead")}
                           </span>
                           {hasMeaningfulUpdate(post) && (
-                            <span>{t("discovery.updated", { date: formatDay(post.updatedAt, locale) })}</span>
+                            <span>
+                              {t("discovery.updated", {
+                                date: formatDay(post.updatedAt, locale),
+                              })}
+                            </span>
                           )}
                         </div>
                       </article>
@@ -138,7 +144,9 @@ export default function Archive() {
             </div>
           ) : (
             <div className="py-14 text-center">
-              <p className="text-sm text-slate-400">{t("discovery.archiveEmpty")}</p>
+              <p className="text-sm text-slate-400">
+                {t("discovery.archiveEmpty")}
+              </p>
               <Button asChild variant="outline" className="glass-button mt-5">
                 <Link href="/">{t("nav.backToHome")}</Link>
               </Button>

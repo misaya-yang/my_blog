@@ -125,7 +125,7 @@ export function SubscriptionForm({
           <Button
             type="submit"
             disabled={subscribe.isPending}
-            className="w-full bg-teal-200 text-slate-950 hover:bg-teal-100 md:w-auto"
+            className="w-full md:w-auto"
           >
             {subscribe.isPending ? (
               <>

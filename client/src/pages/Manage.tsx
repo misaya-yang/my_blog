@@ -86,9 +86,19 @@ export default function Manage() {
   const [search, setSearch] = useState("");
   const [categorySlug, setCategorySlug] = useState("all");
   const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [newCategory, setNewCategory] = useState({ name: "", slug: "", description: "" });
-  const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
-  const [categoryDraft, setCategoryDraft] = useState({ name: "", slug: "", description: "" });
+  const [newCategory, setNewCategory] = useState({
+    name: "",
+    slug: "",
+    description: "",
+  });
+  const [editingCategoryId, setEditingCategoryId] = useState<number | null>(
+    null
+  );
+  const [categoryDraft, setCategoryDraft] = useState({
+    name: "",
+    slug: "",
+    description: "",
+  });
   const [newTag, setNewTag] = useState({ name: "", slug: "" });
   const [editingTagId, setEditingTagId] = useState<number | null>(null);
   const [tagDraft, setTagDraft] = useState({ name: "", slug: "" });
@@ -120,7 +130,7 @@ export default function Manage() {
       refetch();
       setDeleteId(null);
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(error.message || t("manage.toast.deleteFailed"));
     },
   });
@@ -135,7 +145,9 @@ export default function Manage() {
   const { data: subscribersData, isLoading: subscribersLoading } =
     trpc.engagement.subscribers.list.useQuery(undefined, { enabled: isAdmin });
   const { data: contentRadarData, isLoading: contentRadarLoading } =
-    trpc.engagement.contentRadar.summary.useQuery(undefined, { enabled: isAdmin });
+    trpc.engagement.contentRadar.summary.useQuery(undefined, {
+      enabled: isAdmin,
+    });
 
   // 切换发布状态
   const updateMutation = trpc.posts.update.useMutation({
@@ -143,31 +155,37 @@ export default function Manage() {
       toast.success(t("manage.toast.statusUpdated"));
       refetch();
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(error.message || t("manage.toast.updateFailed"));
     },
   });
 
-  const markFeedbackReviewed = trpc.engagement.feedback.markReviewed.useMutation({
-    onSuccess: () => {
-      toast.success(t("manage.engagement.feedbackReviewed"));
-      utils.engagement.feedback.list.invalidate();
-      utils.engagement.contentRadar.summary.invalidate();
-    },
-    onError: (error) => {
-      toast.error(error.message || t("manage.engagement.feedbackReviewFailed"));
-    },
-  });
-  const updateFeedbackStatus = trpc.engagement.feedback.updateStatus.useMutation({
-    onSuccess: () => {
-      toast.success(t("manage.engagement.feedbackReviewed"));
-      utils.engagement.feedback.list.invalidate();
-      utils.engagement.contentRadar.summary.invalidate();
-    },
-    onError: (error) => {
-      toast.error(error.message || t("manage.engagement.feedbackReviewFailed"));
-    },
-  });
+  const markFeedbackReviewed =
+    trpc.engagement.feedback.markReviewed.useMutation({
+      onSuccess: () => {
+        toast.success(t("manage.engagement.feedbackReviewed"));
+        utils.engagement.feedback.list.invalidate();
+        utils.engagement.contentRadar.summary.invalidate();
+      },
+      onError: error => {
+        toast.error(
+          error.message || t("manage.engagement.feedbackReviewFailed")
+        );
+      },
+    });
+  const updateFeedbackStatus =
+    trpc.engagement.feedback.updateStatus.useMutation({
+      onSuccess: () => {
+        toast.success(t("manage.engagement.feedbackReviewed"));
+        utils.engagement.feedback.list.invalidate();
+        utils.engagement.contentRadar.summary.invalidate();
+      },
+      onError: error => {
+        toast.error(
+          error.message || t("manage.engagement.feedbackReviewFailed")
+        );
+      },
+    });
 
   const contentHealth = useMemo(
     () => getContentHealthSummary((postsData?.posts ?? []) as any[]),
@@ -180,7 +198,7 @@ export default function Manage() {
       setNewCategory({ name: "", slug: "", description: "" });
       utils.categories.list.invalidate();
     },
-    onError: (error) => toast.error(error.message),
+    onError: error => toast.error(error.message),
   });
 
   const updateCategoryMutation = trpc.categories.update.useMutation({
@@ -189,7 +207,7 @@ export default function Manage() {
       setEditingCategoryId(null);
       utils.categories.list.invalidate();
     },
-    onError: (error) => toast.error(error.message),
+    onError: error => toast.error(error.message),
   });
 
   const deleteCategoryMutation = trpc.categories.delete.useMutation({
@@ -197,7 +215,7 @@ export default function Manage() {
       toast.success(t("manage.taxonomy.categoryDeleted"));
       utils.categories.list.invalidate();
     },
-    onError: (error) => toast.error(error.message),
+    onError: error => toast.error(error.message),
   });
 
   const createTag = trpc.tags.create.useMutation({
@@ -206,7 +224,7 @@ export default function Manage() {
       setNewTag({ name: "", slug: "" });
       utils.tags.list.invalidate();
     },
-    onError: (error) => toast.error(error.message),
+    onError: error => toast.error(error.message),
   });
 
   const updateTagMutation = trpc.tags.update.useMutation({
@@ -215,7 +233,7 @@ export default function Manage() {
       setEditingTagId(null);
       utils.tags.list.invalidate();
     },
-    onError: (error) => toast.error(error.message),
+    onError: error => toast.error(error.message),
   });
 
   const deleteTagMutation = trpc.tags.delete.useMutation({
@@ -223,7 +241,7 @@ export default function Manage() {
       toast.success(t("manage.taxonomy.tagDeleted"));
       utils.tags.list.invalidate();
     },
-    onError: (error) => toast.error(error.message),
+    onError: error => toast.error(error.message),
   });
 
   const handleDelete = () => {
@@ -250,7 +268,8 @@ export default function Manage() {
   const exportSubscribers = () => {
     if (!subscribersData?.length) return;
 
-    const escapeCsv = (value: unknown) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+    const escapeCsv = (value: unknown) =>
+      `"${String(value ?? "").replace(/"/g, '""')}"`;
     const rows = subscribersData.map((subscriber: any) => [
       subscriber.email,
       subscriber.preferredLanguage ?? "",
@@ -262,10 +281,12 @@ export default function Manage() {
       ["email", "preferred_language", "interests", "status", "created_at"],
       ...rows,
     ]
-      .map((row) => row.map(escapeCsv).join(","))
+      .map(row => row.map(escapeCsv).join(","))
       .join("\n");
 
-    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const url = URL.createObjectURL(
+      new Blob([csv], { type: "text/csv;charset=utf-8" })
+    );
     const link = document.createElement("a");
     link.href = url;
     link.download = "subscribers.csv";
@@ -289,7 +310,7 @@ export default function Manage() {
 
   const renderVisibilityControl = (post: any) => (
     <div className="inline-grid grid-cols-3 rounded-md border border-sky-200/15 bg-slate-950/50 p-1">
-      {visibilityOptions.map((option) => {
+      {visibilityOptions.map(option => {
         const Icon = option.icon;
         const active = (post.visibility ?? "admin") === option.value;
         return (
@@ -320,7 +341,9 @@ export default function Manage() {
       <div className="space-page flex items-center justify-center">
         <SpaceBackdrop subtle />
         <div className="glass-panel relative z-10 space-y-4 p-8 text-center">
-          <h2 className="text-2xl font-bold text-white">{t("manage.pleaseLogin")}</h2>
+          <h2 className="text-2xl font-bold text-white">
+            {t("manage.pleaseLogin")}
+          </h2>
           <p className="text-slate-400">{t("manage.loginRequired")}</p>
           <Button asChild className="bg-blue-500 text-white hover:bg-blue-400">
             <a href={"/login"}>{t("manage.loginBtn")}</a>
@@ -343,7 +366,12 @@ export default function Manage() {
   return (
     <div className="space-page">
       <SpaceBackdrop subtle />
-      <SiteHeader active="write" backHref="/" backLabel={t("manage.backLabel")} compact />
+      <SiteHeader
+        active="write"
+        backHref="/"
+        backLabel={t("manage.backLabel")}
+        compact
+      />
 
       <main className="container relative z-10 px-4 py-8 sm:px-6">
         <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -352,20 +380,29 @@ export default function Manage() {
               <FileText className="h-4 w-4" />
               {t("manage.cmsLabel")}
             </div>
-            <h2 className="font-serif text-4xl font-semibold text-white">{t("manage.pageTitle")}</h2>
+            <h2 className="display-title text-4xl leading-tight text-white">
+              {t("manage.pageTitle")}
+            </h2>
             <p className="mt-3 text-sm leading-6 text-slate-400">
               {t("manage.pageSubtitle")}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button asChild variant="outline" className="border-sky-200/20 bg-slate-950/50 text-sky-100">
+            <Button
+              asChild
+              variant="outline"
+              className="glass-button border-sky-200/20 bg-slate-950/50 text-sky-100"
+            >
               <Link href="/manage/agent">
                 <Bot className="mr-2 h-4 w-4" />
                 {t("agentOps.title")}
               </Link>
             </Button>
-            <Button asChild className="bg-blue-500 text-white hover:bg-blue-400">
+            <Button
+              asChild
+              className="bg-blue-500 text-white hover:bg-blue-400"
+            >
               <Link href="/write">
                 <Plus className="mr-2 h-4 w-4" />
                 {t("manage.writeArticle")}
@@ -380,7 +417,7 @@ export default function Manage() {
             <Input
               placeholder={t("manage.searchPlaceholder")}
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={e => setSearch(e.target.value)}
               className="border-sky-200/15 bg-slate-950/40 pl-10 text-white placeholder:text-slate-500"
             />
           </div>
@@ -390,7 +427,7 @@ export default function Manage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t("manage.categoryAll")}</SelectItem>
-              {categoriesData?.map((category) => (
+              {categoriesData?.map(category => (
                 <SelectItem key={category.id} value={category.slug}>
                   {category.name}
                 </SelectItem>
@@ -413,7 +450,10 @@ export default function Manage() {
             ["manage.health.noTags", contentHealth.missingTags],
             ["manage.health.recent", contentHealth.updatedRecently],
           ].map(([labelKey, value]) => (
-            <div key={labelKey} className="rounded-lg border border-sky-200/10 bg-slate-950/35 p-3">
+            <div
+              key={labelKey}
+              className="rounded-lg border border-sky-200/10 bg-slate-950/35 p-3"
+            >
               <p className="text-xs text-slate-500">{t(labelKey as string)}</p>
               <p className="mt-1 text-2xl font-semibold text-white">{value}</p>
             </div>
@@ -428,9 +468,14 @@ export default function Manage() {
         ) : postsData?.posts.length === 0 ? (
           <div className="glass-panel py-12 text-center">
             <FileText className="mx-auto mb-4 h-12 w-12 text-sky-300" />
-            <h3 className="mb-2 text-lg font-medium text-white">{t("manage.noArticles")}</h3>
+            <h3 className="mb-2 text-lg font-medium text-white">
+              {t("manage.noArticles")}
+            </h3>
             <p className="mb-4 text-slate-400">{t("manage.noArticlesHint")}</p>
-            <Button asChild className="bg-blue-500 text-white hover:bg-blue-400">
+            <Button
+              asChild
+              className="bg-blue-500 text-white hover:bg-blue-400"
+            >
               <Link href="/write">
                 <Plus className="mr-2 h-4 w-4" />
                 {t("manage.writeArticle")}
@@ -440,7 +485,7 @@ export default function Manage() {
         ) : (
           <>
             <div className="grid gap-3 md:hidden">
-              {postsData?.posts.map((post) => (
+              {postsData?.posts.map(post => (
                 <article key={post.id} className="glass-panel p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -451,25 +496,55 @@ export default function Manage() {
                         {post.title}
                       </Link>
                       <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-400">
-                        <span>{categoriesMap.get(post.categoryId ?? 0) || t("common.uncategorized")}</span>
+                        <span>
+                          {categoriesMap.get(post.categoryId ?? 0) ||
+                            t("common.uncategorized")}
+                        </span>
                         <span>·</span>
-                        <span>{new Date(post.createdAt).toLocaleDateString(language === "zh" ? "zh-CN" : "en-US")}</span>
+                        <span>
+                          {new Date(post.createdAt).toLocaleDateString(
+                            language === "zh" ? "zh-CN" : "en-US"
+                          )}
+                        </span>
                         <span>·</span>
-                        <span>{post.viewCount} {t("manage.table.views")}</span>
+                        <span>
+                          {post.viewCount} {t("manage.table.views")}
+                        </span>
                       </div>
                     </div>
-                    <Badge variant={post.status === "published" ? "default" : "secondary"} className="shrink-0">
-                      {post.status === "published" ? t("manage.status.published") : t("manage.status.draft")}
+                    <Badge
+                      variant={
+                        post.status === "published" ? "default" : "secondary"
+                      }
+                      className="shrink-0"
+                    >
+                      {post.status === "published"
+                        ? t("manage.status.published")
+                        : t("manage.status.draft")}
                     </Badge>
                   </div>
                   <div className="mt-4 flex flex-col gap-3">
                     {renderVisibilityControl(post)}
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                      <Button asChild variant="outline" size="sm" className="glass-button">
-                        <Link href={`/post/${post.slug}`}>{t("manage.action.view")}</Link>
+                      <Button
+                        asChild
+                        variant="outline"
+                        size="sm"
+                        className="glass-button"
+                      >
+                        <Link href={`/post/${post.slug}`}>
+                          {t("manage.action.view")}
+                        </Link>
                       </Button>
-                      <Button asChild variant="outline" size="sm" className="glass-button">
-                        <Link href={`/write/${post.slug}`}>{t("manage.action.edit")}</Link>
+                      <Button
+                        asChild
+                        variant="outline"
+                        size="sm"
+                        className="glass-button"
+                      >
+                        <Link href={`/write/${post.slug}`}>
+                          {t("manage.action.edit")}
+                        </Link>
                       </Button>
                       <Button
                         variant="outline"
@@ -477,7 +552,9 @@ export default function Manage() {
                         className="glass-button"
                         onClick={() => togglePublish(post)}
                       >
-                        {post.status === "published" ? t("manage.action.unpublish") : t("manage.action.publish")}
+                        {post.status === "published"
+                          ? t("manage.action.unpublish")
+                          : t("manage.action.publish")}
                       </Button>
                       <Button
                         variant="outline"
@@ -497,18 +574,35 @@ export default function Manage() {
               <Table className="min-w-[980px]">
                 <TableHeader>
                   <TableRow className="border-sky-200/10 hover:bg-transparent">
-                    <TableHead className="w-[400px] text-slate-300">{t("manage.table.title")}</TableHead>
-                    <TableHead className="text-slate-300">{t("manage.table.category")}</TableHead>
-                    <TableHead className="text-slate-300">{t("manage.table.status")}</TableHead>
-                    <TableHead className="min-w-[280px] text-slate-300">{t("manage.table.visibility")}</TableHead>
-                    <TableHead className="text-slate-300">{t("manage.table.views")}</TableHead>
-                    <TableHead className="text-slate-300">{t("manage.table.createdAt")}</TableHead>
-                    <TableHead className="w-[70px] text-slate-300">{t("manage.table.actions")}</TableHead>
+                    <TableHead className="w-[400px] text-slate-300">
+                      {t("manage.table.title")}
+                    </TableHead>
+                    <TableHead className="text-slate-300">
+                      {t("manage.table.category")}
+                    </TableHead>
+                    <TableHead className="text-slate-300">
+                      {t("manage.table.status")}
+                    </TableHead>
+                    <TableHead className="min-w-[280px] text-slate-300">
+                      {t("manage.table.visibility")}
+                    </TableHead>
+                    <TableHead className="text-slate-300">
+                      {t("manage.table.views")}
+                    </TableHead>
+                    <TableHead className="text-slate-300">
+                      {t("manage.table.createdAt")}
+                    </TableHead>
+                    <TableHead className="w-[70px] text-slate-300">
+                      {t("manage.table.actions")}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {postsData?.posts.map((post) => (
-                    <TableRow key={post.id} className="border-sky-200/10 hover:bg-sky-400/5">
+                  {postsData?.posts.map(post => (
+                    <TableRow
+                      key={post.id}
+                      className="border-sky-200/10 hover:bg-sky-400/5"
+                    >
                       <TableCell>
                         <Link
                           href={`/post/${post.slug}`}
@@ -519,27 +613,41 @@ export default function Manage() {
                       </TableCell>
                       <TableCell>
                         {categoriesMap.get(post.categoryId ?? 0) || (
-                          <span className="text-slate-500">{t("common.uncategorized")}</span>
+                          <span className="text-slate-500">
+                            {t("common.uncategorized")}
+                          </span>
                         )}
                       </TableCell>
                       <TableCell>
                         <Badge
-                          variant={post.status === "published" ? "default" : "secondary"}
+                          variant={
+                            post.status === "published"
+                              ? "default"
+                              : "secondary"
+                          }
                         >
-                          {post.status === "published" ? t("manage.status.published") : t("manage.status.draft")}
+                          {post.status === "published"
+                            ? t("manage.status.published")
+                            : t("manage.status.draft")}
                         </Badge>
                       </TableCell>
-                      <TableCell>
-                        {renderVisibilityControl(post)}
+                      <TableCell>{renderVisibilityControl(post)}</TableCell>
+                      <TableCell className="text-slate-300">
+                        {post.viewCount}
                       </TableCell>
-                      <TableCell className="text-slate-300">{post.viewCount}</TableCell>
                       <TableCell>
-                        {new Date(post.createdAt).toLocaleDateString(language === "zh" ? "zh-CN" : "en-US")}
+                        {new Date(post.createdAt).toLocaleDateString(
+                          language === "zh" ? "zh-CN" : "en-US"
+                        )}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" aria-label={t("manage.table.actions")}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label={t("manage.table.actions")}
+                            >
                               <MoreHorizontal className="w-4 h-4" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -556,7 +664,9 @@ export default function Manage() {
                                 {t("manage.action.edit")}
                               </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => togglePublish(post)}>
+                            <DropdownMenuItem
+                              onClick={() => togglePublish(post)}
+                            >
                               {post.status === "published" ? (
                                 <>
                                   <EyeOff className="w-4 h-4 mr-2" />
@@ -592,77 +702,140 @@ export default function Manage() {
           <div className="glass-panel p-5">
             <div className="mb-5 flex items-center gap-2 text-white">
               <Folder className="h-5 w-5 text-sky-300" />
-              <h3 className="text-lg font-semibold">{t("manage.taxonomy.categoriesTitle")}</h3>
+              <h3 className="text-lg font-semibold">
+                {t("manage.taxonomy.categoriesTitle")}
+              </h3>
             </div>
             <div className="mb-4 grid gap-3 md:grid-cols-[1fr_1fr_1.4fr_auto]">
               <Input
                 value={newCategory.name}
-                onChange={(e) => setNewCategory((prev) => ({ ...prev, name: e.target.value }))}
+                onChange={e =>
+                  setNewCategory(prev => ({ ...prev, name: e.target.value }))
+                }
                 placeholder={t("manage.taxonomy.name")}
                 className="border-sky-200/15 bg-slate-950/40 text-white"
               />
               <Input
                 value={newCategory.slug}
-                onChange={(e) => setNewCategory((prev) => ({ ...prev, slug: e.target.value }))}
+                onChange={e =>
+                  setNewCategory(prev => ({ ...prev, slug: e.target.value }))
+                }
                 placeholder={t("manage.taxonomy.slug")}
                 className="border-sky-200/15 bg-slate-950/40 text-white"
               />
               <Input
                 value={newCategory.description}
-                onChange={(e) => setNewCategory((prev) => ({ ...prev, description: e.target.value }))}
+                onChange={e =>
+                  setNewCategory(prev => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 placeholder={t("manage.taxonomy.description")}
                 className="border-sky-200/15 bg-slate-950/40 text-white"
               />
               <Button
                 type="button"
-                className="bg-sky-400 text-slate-950 hover:bg-sky-300"
-                disabled={!newCategory.name.trim() || !newCategory.slug.trim() || createCategory.isPending}
-                onClick={() => createCategory.mutate({
-                  name: newCategory.name.trim(),
-                  slug: newCategory.slug.trim(),
-                  description: newCategory.description.trim() || undefined,
-                })}
+                disabled={
+                  !newCategory.name.trim() ||
+                  !newCategory.slug.trim() ||
+                  createCategory.isPending
+                }
+                onClick={() =>
+                  createCategory.mutate({
+                    name: newCategory.name.trim(),
+                    slug: newCategory.slug.trim(),
+                    description: newCategory.description.trim() || undefined,
+                  })
+                }
               >
                 <Plus className="h-4 w-4" />
                 {t("common.create")}
               </Button>
             </div>
             <div className="grid gap-2">
-              {categoriesData?.map((category) => (
-                <div key={category.id} className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-3">
+              {categoriesData?.map(category => (
+                <div
+                  key={category.id}
+                  className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-3"
+                >
                   {editingCategoryId === category.id ? (
                     <div className="grid gap-2 md:grid-cols-[1fr_1fr_1.4fr_auto_auto]">
-                      <Input value={categoryDraft.name} onChange={(e) => setCategoryDraft((prev) => ({ ...prev, name: e.target.value }))} />
-                      <Input value={categoryDraft.slug} onChange={(e) => setCategoryDraft((prev) => ({ ...prev, slug: e.target.value }))} />
-                      <Input value={categoryDraft.description} onChange={(e) => setCategoryDraft((prev) => ({ ...prev, description: e.target.value }))} />
+                      <Input
+                        value={categoryDraft.name}
+                        onChange={e =>
+                          setCategoryDraft(prev => ({
+                            ...prev,
+                            name: e.target.value,
+                          }))
+                        }
+                      />
+                      <Input
+                        value={categoryDraft.slug}
+                        onChange={e =>
+                          setCategoryDraft(prev => ({
+                            ...prev,
+                            slug: e.target.value,
+                          }))
+                        }
+                      />
+                      <Input
+                        value={categoryDraft.description}
+                        onChange={e =>
+                          setCategoryDraft(prev => ({
+                            ...prev,
+                            description: e.target.value,
+                          }))
+                        }
+                      />
                       <Button
                         type="button"
                         size="sm"
-                        className="bg-sky-400 text-slate-950 hover:bg-sky-300"
-                        onClick={() => updateCategoryMutation.mutate({
-                          id: category.id,
-                          name: categoryDraft.name.trim(),
-                          slug: categoryDraft.slug.trim(),
-                          description: categoryDraft.description.trim() || null,
-                        })}
+                        onClick={() =>
+                          updateCategoryMutation.mutate({
+                            id: category.id,
+                            name: categoryDraft.name.trim(),
+                            slug: categoryDraft.slug.trim(),
+                            description:
+                              categoryDraft.description.trim() || null,
+                          })
+                        }
                       >
                         <Save className="h-4 w-4" />
                       </Button>
-                      <Button type="button" size="sm" variant="outline" className="glass-button" onClick={() => setEditingCategoryId(null)}>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="glass-button"
+                        onClick={() => setEditingCategoryId(null)}
+                      >
                         <X className="h-4 w-4" />
                       </Button>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                       <div className="min-w-0">
-                        <p className="font-medium text-white">{category.name}</p>
-                        <p className="text-xs text-slate-500">/{category.slug}</p>
+                        <p className="font-medium text-white">
+                          {category.name}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          /{category.slug}
+                        </p>
                         {category.description && (
-                          <p className="mt-1 text-sm text-slate-400">{category.description}</p>
+                          <p className="mt-1 text-sm text-slate-400">
+                            {category.description}
+                          </p>
                         )}
                       </div>
                       <div className="flex gap-2">
-                        <Button type="button" size="sm" variant="outline" className="glass-button" onClick={() => beginCategoryEdit(category)}>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="glass-button"
+                          onClick={() => beginCategoryEdit(category)}
+                        >
                           <Edit className="h-4 w-4" />
                           {t("common.edit")}
                         </Button>
@@ -672,7 +845,11 @@ export default function Manage() {
                           variant="outline"
                           className="border-red-400/25 bg-red-950/15 text-red-100 hover:bg-red-500/15"
                           onClick={() => {
-                            if (window.confirm(t("manage.taxonomy.deleteCategoryConfirm"))) {
+                            if (
+                              window.confirm(
+                                t("manage.taxonomy.deleteCategoryConfirm")
+                              )
+                            ) {
                               deleteCategoryMutation.mutate(category.id);
                             }
                           }}
@@ -691,49 +868,107 @@ export default function Manage() {
           <div className="glass-panel p-5">
             <div className="mb-5 flex items-center gap-2 text-white">
               <Tags className="h-5 w-5 text-cyan-300" />
-              <h3 className="text-lg font-semibold">{t("manage.taxonomy.tagsTitle")}</h3>
+              <h3 className="text-lg font-semibold">
+                {t("manage.taxonomy.tagsTitle")}
+              </h3>
             </div>
             <div className="mb-4 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
               <Input
                 value={newTag.name}
-                onChange={(e) => setNewTag((prev) => ({ ...prev, name: e.target.value }))}
+                onChange={e =>
+                  setNewTag(prev => ({ ...prev, name: e.target.value }))
+                }
                 placeholder={t("manage.taxonomy.name")}
                 className="border-sky-200/15 bg-slate-950/40 text-white"
               />
               <Input
                 value={newTag.slug}
-                onChange={(e) => setNewTag((prev) => ({ ...prev, slug: e.target.value }))}
+                onChange={e =>
+                  setNewTag(prev => ({ ...prev, slug: e.target.value }))
+                }
                 placeholder={t("manage.taxonomy.slug")}
                 className="border-sky-200/15 bg-slate-950/40 text-white"
               />
               <Button
                 type="button"
-                className="bg-cyan-300 text-slate-950 hover:bg-cyan-200"
-                disabled={!newTag.name.trim() || !newTag.slug.trim() || createTag.isPending}
-                onClick={() => createTag.mutate({ name: newTag.name.trim(), slug: newTag.slug.trim() })}
+                disabled={
+                  !newTag.name.trim() ||
+                  !newTag.slug.trim() ||
+                  createTag.isPending
+                }
+                onClick={() =>
+                  createTag.mutate({
+                    name: newTag.name.trim(),
+                    slug: newTag.slug.trim(),
+                  })
+                }
               >
                 <Plus className="h-4 w-4" />
                 {t("common.create")}
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {tagsData?.map((tag) => (
-                <div key={tag.id} className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-2">
+              {tagsData?.map(tag => (
+                <div
+                  key={tag.id}
+                  className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-2"
+                >
                   {editingTagId === tag.id ? (
                     <div className="flex flex-wrap gap-2">
-                      <Input className="h-8 w-36" value={tagDraft.name} onChange={(e) => setTagDraft((prev) => ({ ...prev, name: e.target.value }))} />
-                      <Input className="h-8 w-36" value={tagDraft.slug} onChange={(e) => setTagDraft((prev) => ({ ...prev, slug: e.target.value }))} />
-                      <Button type="button" size="icon-sm" className="bg-cyan-300 text-slate-950 hover:bg-cyan-200" onClick={() => updateTagMutation.mutate({ id: tag.id, name: tagDraft.name.trim(), slug: tagDraft.slug.trim() })}>
+                      <Input
+                        className="h-8 w-36"
+                        value={tagDraft.name}
+                        onChange={e =>
+                          setTagDraft(prev => ({
+                            ...prev,
+                            name: e.target.value,
+                          }))
+                        }
+                      />
+                      <Input
+                        className="h-8 w-36"
+                        value={tagDraft.slug}
+                        onChange={e =>
+                          setTagDraft(prev => ({
+                            ...prev,
+                            slug: e.target.value,
+                          }))
+                        }
+                      />
+                      <Button
+                        type="button"
+                        size="icon-sm"
+                        onClick={() =>
+                          updateTagMutation.mutate({
+                            id: tag.id,
+                            name: tagDraft.name.trim(),
+                            slug: tagDraft.slug.trim(),
+                          })
+                        }
+                      >
                         <Save className="h-4 w-4" />
                       </Button>
-                      <Button type="button" size="icon-sm" variant="outline" className="glass-button" onClick={() => setEditingTagId(null)}>
+                      <Button
+                        type="button"
+                        size="icon-sm"
+                        variant="outline"
+                        className="glass-button"
+                        onClick={() => setEditingTagId(null)}
+                      >
                         <X className="h-4 w-4" />
                       </Button>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <span className="px-2 text-sm text-white">{tag.name}</span>
-                      <Button type="button" size="icon-sm" variant="ghost" onClick={() => beginTagEdit(tag)}>
+                      <span className="px-2 text-sm text-white">
+                        {tag.name}
+                      </span>
+                      <Button
+                        type="button"
+                        size="icon-sm"
+                        variant="ghost"
+                        onClick={() => beginTagEdit(tag)}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
@@ -742,7 +977,11 @@ export default function Manage() {
                         variant="ghost"
                         className="text-red-200 hover:bg-red-500/15"
                         onClick={() => {
-                          if (window.confirm(t("manage.taxonomy.deleteTagConfirm"))) {
+                          if (
+                            window.confirm(
+                              t("manage.taxonomy.deleteTagConfirm")
+                            )
+                          ) {
                             deleteTagMutation.mutate(tag.id);
                           }
                         }}
@@ -757,7 +996,10 @@ export default function Manage() {
           </div>
         </section>
 
-        <ContentRadarPanel loading={contentRadarLoading} radar={contentRadarData} />
+        <ContentRadarPanel
+          loading={contentRadarLoading}
+          radar={contentRadarData}
+        />
 
         <section className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
           <div className="glass-panel p-5">
@@ -765,14 +1007,18 @@ export default function Manage() {
               <div>
                 <div className="mb-2 flex items-center gap-2 text-white">
                   <MessageSquareText className="h-5 w-5 text-sky-300" />
-                  <h3 className="text-lg font-semibold">{t("manage.engagement.feedbackTitle")}</h3>
+                  <h3 className="text-lg font-semibold">
+                    {t("manage.engagement.feedbackTitle")}
+                  </h3>
                 </div>
                 <p className="text-sm leading-6 text-slate-400">
                   {t("manage.engagement.feedbackDescription")}
                 </p>
               </div>
               <Badge variant="secondary" className="w-fit">
-                {t("manage.engagement.feedbackCount", { count: feedbackData?.length ?? 0 })}
+                {t("manage.engagement.feedbackCount", {
+                  count: feedbackData?.length ?? 0,
+                })}
               </Badge>
             </div>
 
@@ -790,12 +1036,20 @@ export default function Manage() {
                     <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                       <div className="min-w-0">
                         <div className="mb-2 flex flex-wrap items-center gap-2">
-                          <Badge variant={item.type === "useful" ? "default" : "secondary"}>
+                          <Badge
+                            variant={
+                              item.type === "useful" ? "default" : "secondary"
+                            }
+                          >
                             {item.type === "useful"
                               ? t("manage.engagement.useful")
                               : t("manage.engagement.notUseful")}
                           </Badge>
-                          <Badge variant={item.status === "new" ? "default" : "secondary"}>
+                          <Badge
+                            variant={
+                              item.status === "new" ? "default" : "secondary"
+                            }
+                          >
                             {getFeedbackStatusLabel(item.status, t)}
                           </Badge>
                         </div>
@@ -806,8 +1060,10 @@ export default function Manage() {
                           {item.message || t("manage.engagement.noMessage")}
                         </p>
                         <p className="mt-2 text-xs text-slate-500">
-                          {(item.visitorName || t("manage.engagement.anonymous"))}
-                          {item.replyEmail ? ` · ${maskEmail(item.replyEmail)}` : ""}
+                          {item.visitorName || t("manage.engagement.anonymous")}
+                          {item.replyEmail
+                            ? ` · ${maskEmail(item.replyEmail)}`
+                            : ""}
                           {item.createdAt
                             ? ` · ${new Date(item.createdAt).toLocaleString(language === "zh" ? "zh-CN" : "en-US")}`
                             : ""}
@@ -815,8 +1071,15 @@ export default function Manage() {
                       </div>
                       <div className="flex shrink-0 gap-2">
                         {item.postSlug && (
-                          <Button asChild variant="outline" size="sm" className="glass-button">
-                            <Link href={`/post/${item.postSlug}`}>{t("manage.action.view")}</Link>
+                          <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className="glass-button"
+                          >
+                            <Link href={`/post/${item.postSlug}`}>
+                              {t("manage.action.view")}
+                            </Link>
                           </Button>
                         )}
                         {item.status === "new" && (
@@ -824,8 +1087,13 @@ export default function Manage() {
                             variant="outline"
                             size="sm"
                             className="glass-button"
-                            disabled={markFeedbackReviewed.isPending || updateFeedbackStatus.isPending}
-                            onClick={() => markFeedbackReviewed.mutate({ id: item.id })}
+                            disabled={
+                              markFeedbackReviewed.isPending ||
+                              updateFeedbackStatus.isPending
+                            }
+                            onClick={() =>
+                              markFeedbackReviewed.mutate({ id: item.id })
+                            }
                           >
                             <CheckCircle2 className="h-4 w-4" />
                             {t("manage.engagement.markReviewed")}
@@ -837,7 +1105,12 @@ export default function Manage() {
                             size="sm"
                             className="border-amber-300/20 bg-amber-950/15 text-amber-100 hover:bg-amber-500/15"
                             disabled={updateFeedbackStatus.isPending}
-                            onClick={() => updateFeedbackStatus.mutate({ id: item.id, status: "hidden" })}
+                            onClick={() =>
+                              updateFeedbackStatus.mutate({
+                                id: item.id,
+                                status: "hidden",
+                              })
+                            }
                           >
                             <EyeOff className="h-4 w-4" />
                             {t("manage.engagement.markHidden")}
@@ -851,7 +1124,9 @@ export default function Manage() {
             ) : (
               <div className="rounded-lg border border-sky-200/10 bg-slate-950/25 py-10 text-center">
                 <MessageSquareText className="mx-auto mb-3 h-8 w-8 text-sky-300" />
-                <p className="text-sm text-slate-400">{t("manage.engagement.feedbackEmpty")}</p>
+                <p className="text-sm text-slate-400">
+                  {t("manage.engagement.feedbackEmpty")}
+                </p>
               </div>
             )}
           </div>
@@ -861,7 +1136,9 @@ export default function Manage() {
               <div>
                 <div className="mb-2 flex items-center gap-2 text-white">
                   <Users className="h-5 w-5 text-cyan-300" />
-                  <h3 className="text-lg font-semibold">{t("manage.engagement.subscribersTitle")}</h3>
+                  <h3 className="text-lg font-semibold">
+                    {t("manage.engagement.subscribersTitle")}
+                  </h3>
                 </div>
                 <p className="text-sm leading-6 text-slate-400">
                   {t("manage.engagement.subscribersDescription")}
@@ -891,7 +1168,9 @@ export default function Manage() {
                     key={subscriber.id}
                     className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-3"
                   >
-                    <p className="truncate text-sm font-medium text-white">{maskEmail(subscriber.email)}</p>
+                    <p className="truncate text-sm font-medium text-white">
+                      {maskEmail(subscriber.email)}
+                    </p>
                     <p className="mt-1 text-xs text-slate-500">
                       {(subscriber.preferredLanguage || "-").toUpperCase()}
                       {subscriber.interests ? ` · ${subscriber.interests}` : ""}
@@ -902,7 +1181,9 @@ export default function Manage() {
             ) : (
               <div className="rounded-lg border border-sky-200/10 bg-slate-950/25 py-10 text-center">
                 <Users className="mx-auto mb-3 h-8 w-8 text-cyan-300" />
-                <p className="text-sm text-slate-400">{t("manage.engagement.subscribersEmpty")}</p>
+                <p className="text-sm text-slate-400">
+                  {t("manage.engagement.subscribersEmpty")}
+                </p>
               </div>
             )}
           </div>
@@ -933,11 +1214,21 @@ export default function Manage() {
   );
 }
 
-function ContentRadarPanel({ loading, radar }: { loading: boolean; radar: any }) {
+function ContentRadarPanel({
+  loading,
+  radar,
+}: {
+  loading: boolean;
+  radar: any;
+}) {
   const { language, t } = useLanguage();
   const opportunities = radar?.feedback?.opportunities ?? [];
   const topInterests = radar?.subscriptions?.topInterests ?? [];
-  const languageBreakdown = radar?.subscriptions?.languageBreakdown ?? { zh: 0, en: 0, unknown: 0 };
+  const languageBreakdown = radar?.subscriptions?.languageBreakdown ?? {
+    zh: 0,
+    en: 0,
+    unknown: 0,
+  };
 
   return (
     <section className="glass-panel mt-8 p-5">
@@ -945,13 +1236,18 @@ function ContentRadarPanel({ loading, radar }: { loading: boolean; radar: any })
         <div>
           <div className="mb-2 flex items-center gap-2 text-white">
             <Bot className="h-5 w-5 text-sky-300" />
-            <h3 className="text-lg font-semibold">{t("manage.engagement.radarTitle")}</h3>
+            <h3 className="text-lg font-semibold">
+              {t("manage.engagement.radarTitle")}
+            </h3>
           </div>
           <p className="max-w-3xl text-sm leading-6 text-slate-400">
             {t("manage.engagement.radarDescription")}
           </p>
         </div>
-        <Badge variant="outline" className="w-fit border-sky-200/20 text-sky-200">
+        <Badge
+          variant="outline"
+          className="w-fit border-sky-200/20 text-sky-200"
+        >
           {t("manage.engagement.deliveryStored")}
         </Badge>
       </div>
@@ -964,12 +1260,26 @@ function ContentRadarPanel({ loading, radar }: { loading: boolean; radar: any })
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)]">
           <div>
             <div className="mb-3 grid gap-3 md:grid-cols-4">
-              <RadarMetric label={t("manage.engagement.radarNewFeedback")} value={String(radar?.feedback?.newCount ?? 0)} />
-              <RadarMetric label={t("manage.engagement.radarNotUseful")} value={String(radar?.feedback?.notUsefulCount ?? 0)} />
-              <RadarMetric label={t("manage.engagement.radarSubscribers")} value={String(radar?.subscriptions?.activeCount ?? 0)} />
-              <RadarMetric label={t("manage.engagement.radarHidden")} value={String(radar?.feedback?.hiddenCount ?? 0)} />
+              <RadarMetric
+                label={t("manage.engagement.radarNewFeedback")}
+                value={String(radar?.feedback?.newCount ?? 0)}
+              />
+              <RadarMetric
+                label={t("manage.engagement.radarNotUseful")}
+                value={String(radar?.feedback?.notUsefulCount ?? 0)}
+              />
+              <RadarMetric
+                label={t("manage.engagement.radarSubscribers")}
+                value={String(radar?.subscriptions?.activeCount ?? 0)}
+              />
+              <RadarMetric
+                label={t("manage.engagement.radarHidden")}
+                value={String(radar?.feedback?.hiddenCount ?? 0)}
+              />
             </div>
-            <h4 className="mb-3 text-sm font-semibold text-white">{t("manage.engagement.opportunitiesTitle")}</h4>
+            <h4 className="mb-3 text-sm font-semibold text-white">
+              {t("manage.engagement.opportunitiesTitle")}
+            </h4>
             <div className="grid gap-3">
               {opportunities.length === 0 ? (
                 <p className="rounded-lg border border-sky-200/10 bg-slate-950/25 p-4 text-sm text-slate-500">
@@ -977,12 +1287,21 @@ function ContentRadarPanel({ loading, radar }: { loading: boolean; radar: any })
                 </p>
               ) : (
                 opportunities.map((item: any) => (
-                  <article key={item.postSlug || item.postId} className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-4">
+                  <article
+                    key={item.postSlug || item.postId}
+                    className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-4"
+                  >
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div className="min-w-0">
-                        <h5 className="line-clamp-1 text-sm font-semibold text-white">{item.postTitle}</h5>
+                        <h5 className="line-clamp-1 text-sm font-semibold text-white">
+                          {item.postTitle}
+                        </h5>
                         <p className="mt-1 text-xs text-slate-500">
-                          {t("manage.engagement.feedbackCount", { count: item.total })} · {t("manage.engagement.notUseful")} {item.notUseful} · {t("manage.engagement.statusNew")} {item.newCount}
+                          {t("manage.engagement.feedbackCount", {
+                            count: item.total,
+                          })}{" "}
+                          · {t("manage.engagement.notUseful")} {item.notUseful}{" "}
+                          · {t("manage.engagement.statusNew")} {item.newCount}
                         </p>
                         {item.sampleMessages?.length > 0 && (
                           <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-300">
@@ -991,13 +1310,23 @@ function ContentRadarPanel({ loading, radar }: { loading: boolean; radar: any })
                         )}
                         {item.latestAt && (
                           <p className="mt-2 text-xs text-slate-500">
-                            {t("manage.engagement.latestSignal")}: {new Date(item.latestAt).toLocaleString(language === "zh" ? "zh-CN" : "en-US")}
+                            {t("manage.engagement.latestSignal")}:{" "}
+                            {new Date(item.latestAt).toLocaleString(
+                              language === "zh" ? "zh-CN" : "en-US"
+                            )}
                           </p>
                         )}
                       </div>
                       {item.postSlug && (
-                        <Button asChild variant="outline" size="sm" className="glass-button shrink-0">
-                          <Link href={`/post/${item.postSlug}`}>{t("manage.action.view")}</Link>
+                        <Button
+                          asChild
+                          variant="outline"
+                          size="sm"
+                          className="glass-button shrink-0"
+                        >
+                          <Link href={`/post/${item.postSlug}`}>
+                            {t("manage.action.view")}
+                          </Link>
                         </Button>
                       )}
                     </div>
@@ -1008,7 +1337,9 @@ function ContentRadarPanel({ loading, radar }: { loading: boolean; radar: any })
           </div>
 
           <div className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-4">
-            <h4 className="text-sm font-semibold text-white">{t("manage.engagement.subscriptionSummary")}</h4>
+            <h4 className="text-sm font-semibold text-white">
+              {t("manage.engagement.subscriptionSummary")}
+            </h4>
             <p className="mt-2 text-sm leading-6 text-slate-400">
               {t("manage.engagement.languageBreakdown", {
                 zh: languageBreakdown.zh,
@@ -1019,12 +1350,18 @@ function ContentRadarPanel({ loading, radar }: { loading: boolean; radar: any })
             <div className="mt-4 flex flex-wrap gap-2">
               {topInterests.length > 0 ? (
                 topInterests.map((item: any) => (
-                  <Badge key={item.phrase} variant="outline" className="border-cyan-200/20 text-cyan-100">
+                  <Badge
+                    key={item.phrase}
+                    variant="outline"
+                    className="border-cyan-200/20 text-cyan-100"
+                  >
                     {item.phrase} · {item.count}
                   </Badge>
                 ))
               ) : (
-                <span className="text-sm text-slate-500">{t("manage.engagement.noInterests")}</span>
+                <span className="text-sm text-slate-500">
+                  {t("manage.engagement.noInterests")}
+                </span>
               )}
             </div>
             <p className="mt-4 text-xs leading-5 text-slate-500">
