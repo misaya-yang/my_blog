@@ -1,12 +1,14 @@
 # Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议
 
-我们最近踩到一个很典型的 Agent Coding 坑：PRD 写得很完整，Codex 也“跑完了”，但最后做出来的博客 Agent 几乎不可用。
+有一类 Coding Agent 失败很迷惑：它不是完全没做，也不是代码不能运行，而是“看起来到处都做了，真正用户路径还是断的”。
+
+我们最近就踩过一次。PRD 写得很完整，Codex 也“跑完了”，仓库里出现了 schema、router、UI、测试名、后台页和一堆看似正确的文案。但打开博客 Agent 一问当前文章，它并不知道当前页面；问一个口语问题，检索打偏；source card 看起来有来源，却不一定能定位到读者正在看的内容。
 
 这不是一个简单的模型能力问题。更准确地说，是我们把一个长期目标交给了 Agent，却没有给它一个能持续工作的运行协议。PRD 说明了产品想要什么，但没有把工作切成可冷启动、可验证、可回归、可交接的执行单元。于是 Agent 很容易做出一堆看起来像完成的改动：有表、有路由、有 UI、有测试名，但核心体验没有闭环，隐藏内容边界可能没被完整验证，quota、retrieval、source cards、mobile sheet、eval 和 admin trace 之间也没有被逐个锁住。
 
 这篇文章讨论一个更实用的抽象：**Goal Harness**。
 
-它不是新的框架，也不是把 prompt 写得更长。它是一种面向 Codex、Claude Code 这类 goal-mode coding agent 的工程协议：把 PRD、Figma、代码库事实和测试要求编译成一个 phase folder，让新 Agent 可以在干净上下文里接手一个 phase，完成它，验证它，留下证据，再解锁下一个 phase。
+它不是新的框架，也不是把 prompt 写得更长。它更像给 Agent 铺一条带护栏的施工路：把 PRD、Figma、代码库事实和测试要求编译成一个 phase folder，让新 Agent 可以在干净上下文里接手一个 phase，完成它，验证它，留下证据，再解锁下一个 phase。
 
 ```text
 Product Intent
@@ -19,7 +21,7 @@ Product Intent
   -> Next Phase
 ```
 
-核心目标只有一个：让 Agent 从“看起来跑完了”变成“可以交付、可以回放、可以继续”。
+核心目标只有一个：把“看起来跑完了”变成“可以交付、可以回放、可以继续”。
 
 ## Design Boundary
 
@@ -311,7 +313,7 @@ python3 scripts/validate_harness_prd.py docs/<topic> --strict --quality-score
 - AI phase 没有 golden questions / trace evidence。
 - migration phase 没有 rollback。
 - auth/payment phase 没有 compliance gates。
-- final docs 仍有 TODO。
+- final docs 仍残留未决项、占位段落或无法执行的验收描述。
 
 这才是 skill 的价值：不是让 Agent 更会写计划，而是让 Agent 写出来的计划可以被另一个 Agent 执行、质疑、回归和接手。
 

@@ -10,15 +10,7 @@ import {
 } from "@/components/ui/sheet";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
-import {
-  ArrowLeft,
-  BookOpen,
-  Edit,
-  LogOut,
-  Menu,
-  Search,
-  UserRound,
-} from "lucide-react";
+import { ArrowLeft, Edit, LogOut, Menu, Search, UserRound } from "lucide-react";
 import { Link } from "wouter";
 import type React from "react";
 
@@ -53,7 +45,7 @@ export function SpaceBackdrop({ subtle = false }: { subtle?: boolean }) {
 export function BrandMark({ className }: { className?: string }) {
   return (
     <span className={cn("brand-mark", className)}>
-      <BookOpen className="h-5 w-5" />
+      <span aria-hidden="true">M</span>
     </span>
   );
 }
@@ -188,8 +180,8 @@ export function SiteHeader({
                 <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[20rem] border-sky-200/15 bg-slate-950/95 p-0 text-white">
-              <SheetHeader className="border-b border-sky-200/10 p-5">
+            <SheetContent className="w-[20rem] border-white/10 bg-slate-950/95 p-0 text-white">
+              <SheetHeader className="border-b border-white/10 p-5">
                 <SheetTitle className="flex items-center gap-3 text-white">
                   <BrandMark />
                   {t("nav.brand")}
@@ -201,8 +193,8 @@ export function SiteHeader({
                     <Link
                       href={link.href}
                       className={cn(
-                        "flex h-11 items-center gap-2 rounded-md px-3 text-sm text-slate-300 transition-colors hover:bg-sky-400/10 hover:text-white",
-                        active === link.key && "bg-sky-400/10 text-white"
+                        "flex h-11 items-center gap-2 rounded-md px-3 text-sm text-slate-300 transition-colors hover:bg-teal-300/10 hover:text-white",
+                        active === link.key && "bg-teal-300/10 text-white"
                       )}
                     >
                       {link.key === "search" && <Search className="h-4 w-4" />}
@@ -211,7 +203,7 @@ export function SiteHeader({
                   </SheetClose>
                 ))}
               </div>
-              <div className="grid gap-2 border-t border-sky-200/10 px-4 py-5">
+              <div className="grid gap-2 border-t border-white/10 px-4 py-5">
                 <button
                   type="button"
                   className="nav-ink h-11 justify-start"
@@ -267,9 +259,9 @@ export function ResearchWaveVisual({
       <svg viewBox="0 0 640 300" aria-hidden="true" focusable="false">
         <defs>
           <linearGradient id={`line-${variant}`} x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="#38bdf8" stopOpacity=".1" />
-            <stop offset="45%" stopColor="#60a5fa" stopOpacity=".95" />
-            <stop offset="100%" stopColor="#a78bfa" stopOpacity=".15" />
+            <stop offset="0%" stopColor="#5eead4" stopOpacity=".08" />
+            <stop offset="48%" stopColor="#2dd4bf" stopOpacity=".82" />
+            <stop offset="100%" stopColor="#fbbf24" stopOpacity=".2" />
           </linearGradient>
           <filter
             id={`glow-${variant}`}
@@ -307,7 +299,7 @@ export function ResearchWaveVisual({
             cx={(index * 47) % 640}
             cy={40 + ((index * 71) % 220)}
             r={index % 5 === 0 ? 2.8 : 1.4}
-            fill={index % 3 === 0 ? "#67e8f9" : "#60a5fa"}
+            fill={index % 3 === 0 ? "#5eead4" : "#94a3b8"}
             opacity={0.22 + (index % 5) * 0.12}
           />
         ))}

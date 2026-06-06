@@ -41,7 +41,7 @@ const categorySeeds = [
     name: "AI Algorithms",
     slug: "ai-algorithms",
     description:
-      "Model architecture, Transformers, position encoding, long-context behavior, and algorithmic reliability research",
+      "Model architecture, Transformers, feed-forward mechanisms, position encoding, long-context behavior, and algorithmic reliability research",
   },
   {
     name: "AI Applications",
@@ -83,7 +83,7 @@ const posts = [
     featuredRank: 4,
     pinnedTrack: "algorithms",
     excerpt:
-      "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.",
+      "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
     tags: [
       { name: "IsoHC", slug: "isohc" },
       { name: "Hyper-Connections", slug: "hyper-connections" },
@@ -91,6 +91,28 @@ const posts = [
       { name: "Orthogonal Projection", slug: "orthogonal-projection" },
       { name: "Transformer", slug: "transformer" },
       { name: "GNN", slug: "gnn" },
+    ],
+  },
+  {
+    title: "Gated FFN: Transformer 里的乘法通道",
+    slug: "gated-ffn-multiplicative-channel-control",
+    contentPath: "./gated_ffn_blog.md",
+    categorySlug: "ai-algorithms",
+    status: "published",
+    visibility: "public",
+    publishedAt: "2026-06-06T00:00:00.000Z",
+    featuredRank: 5,
+    pinnedTrack: "algorithms",
+    excerpt:
+      "从普通 FFN 推到 GLU、GEGLU 和 SwiGLU：门控 FFN 如何把逐 token MLP 变成输入依赖的通道控制器。",
+    tags: [
+      { name: "Gated FFN", slug: "gated-ffn" },
+      { name: "SwiGLU", slug: "swiglu" },
+      { name: "GEGLU", slug: "geglu" },
+      { name: "Feed-Forward Network", slug: "feed-forward-network" },
+      { name: "Transformer", slug: "transformer" },
+      { name: "Channel Mixing", slug: "channel-mixing" },
+      { name: "MLP", slug: "mlp" },
     ],
   },
   {
@@ -105,7 +127,7 @@ const posts = [
     featuredRank: 3,
     pinnedTrack: "applications",
     excerpt:
-      "A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals.",
+      "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 和 evaluator 这几层。",
     tags: [
       { name: "Agent Systems", slug: "agent-systems" },
       { name: "Harness Engine", slug: "harness-engine" },
@@ -128,7 +150,7 @@ const posts = [
     featuredRank: 2,
     pinnedTrack: "applications",
     excerpt:
-      "把知识库从 top-k chunk 搜索升级为面向 Agent 的上下文编译器，用 Evidence Packet 统一检索信号、来源引用、权限范围、token budget、trace 和评测。",
+      "RAG 真正麻烦的不是找几个 chunk，而是让检索结果在进入 Agent 前变成可引用、可裁剪、可复盘的证据包。",
     tags: [
       { name: "Agent Systems", slug: "agent-systems" },
       { name: "Agentic RAG", slug: "agentic-rag" },
@@ -152,7 +174,7 @@ const posts = [
     featuredRank: 1,
     pinnedTrack: "applications",
     excerpt:
-      "Agent Loop 将 ReAct 式多步行为收束为可观测运行时：用状态机、上下文构建器、决策合约、工具运行时、预算、检查点和 trace 管理模型行动。",
+      "从一段看似简单的 while-loop 伪代码出发，拆开状态、工具、预算、检查点和 trace 如何共同约束 Agent 行动。",
     tags: [
       { name: "Agent Systems", slug: "agent-systems" },
       { name: "AgentLoop", slug: "agent-loop" },
@@ -176,7 +198,7 @@ const posts = [
     featuredRank: 0,
     pinnedTrack: "applications",
     excerpt:
-      "把 PRD、Figma、代码库事实和测试要求编译成 Goal Harness，让 Codex 与 Claude Code 在长任务中逐 phase 执行、回归、留证据并安全交接。",
+      "一次“看起来跑完了”的 Coding Agent 失败复盘：为什么 PRD 还需要被编译成 phase、验收闸门和证据报告。",
     tags: [
       { name: "Agent Systems", slug: "agent-systems" },
       { name: "Goal Harness", slug: "goal-harness" },

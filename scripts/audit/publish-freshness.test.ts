@@ -28,6 +28,12 @@ describe("publish freshness track coverage", () => {
         pinnedTrack: "algorithms",
       }),
       publicPost({
+        slug: "gated-ffn-multiplicative-channel-control",
+        categorySlug: "ai-algorithms",
+        seriesSlug: "feed-forward-mechanisms",
+        pinnedTrack: "algorithms",
+      }),
+      publicPost({
         slug: "agent-harness-engine-evaluating-tool-using-agents",
         categorySlug: "ai-applications",
         seriesSlug: "agent-runtime-systems",

@@ -107,6 +107,29 @@ export const contentSeriesCatalog = [
       "track.topic.architecture",
     ],
   },
+  {
+    slug: "feed-forward-mechanisms",
+    title: "Feed-Forward Mechanisms",
+    promise:
+      "A bottom-up path through Transformer FFN, gating, channel mixing, and multiplicative feature control.",
+    track: "algorithms",
+    orderedPostSlugs: ["gated-ffn-multiplicative-channel-control"],
+    expectedNext: [
+      "Activation statistics in gated MLPs",
+      "FFN width, parameter budget, and scaling trade-offs",
+    ],
+    titleKey: "series.feedForward.title",
+    promiseKey: "series.feedForward.promise",
+    expectedNextKeys: [
+      "series.feedForward.next1",
+      "series.feedForward.next2",
+    ],
+    conceptKeys: [
+      "track.topic.gatedFfn",
+      "track.topic.swiglu",
+      "track.topic.channelMixing",
+    ],
+  },
 ] satisfies ContentSeriesDefinition[];
 
 export function getContentSeriesBySlug(slug: string) {

@@ -8,6 +8,7 @@ import {
 import { SubscriptionForm } from "@/components/SubscriptionForm";
 import { openBlogAgentWithPrompt } from "@/components/agent/routeContext";
 import { Button } from "@/components/ui/button";
+import { getPublicArticleTitle } from "@/lib/publicArticles";
 import { trackConfigs } from "@/lib/tracks";
 import { trpc } from "@/lib/trpc";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
@@ -112,19 +113,6 @@ type SeriesContext = {
   next?: PostLink;
   first?: PostLink;
   isFirst: boolean;
-};
-
-const publicArticleTitlesBySlug: Record<string, string> = {
-  "agent-harness-engine-evaluating-tool-using-agents":
-    "Agent Harness Engine: Evaluating Tool-Using Agents",
-  "rag-evidence-packet-context-compiler":
-    "Evidence Packet: Agentic RAG 的上下文编译接口",
-  "agent-loop-observable-tool-using-agents":
-    "Agent Loop: 从 ReAct 模式到可观测运行时",
-  "goal-harness-agent-phase-protocol":
-    "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
-  "isohc-fixed-vector-isometric-residual-mixing":
-    "IsoHC: Fixed-Vector Isometric Residual Mixing",
 };
 
 const articleAgentPromptKeys = [
@@ -258,8 +246,7 @@ function resolvePostTitle(
   ].filter(Boolean) as PostLink[];
   return (
     contextLinks.find(link => link.slug === slug)?.title ??
-    publicArticleTitlesBySlug[slug] ??
-    slug.replace(/-/g, " ")
+    getPublicArticleTitle(slug)
   );
 }
 
@@ -438,6 +425,18 @@ export default function PostDetail() {
     }
   }, [post?.content]);
 
+  useEffect(() => {
+    if (headings.length === 0 || !window.location.hash) return;
+
+    const targetId = decodeURIComponent(window.location.hash.slice(1));
+    window.requestAnimationFrame(() => {
+      document.getElementById(targetId)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  }, [headings, post?.slug]);
+
   // Reading progress bar
   useEffect(() => {
     const handleScroll = () => {
@@ -531,7 +530,7 @@ export default function PostDetail() {
     return (
       <div className="space-page flex items-center justify-center">
         <SpaceBackdrop subtle />
-        <div className="relative z-10 h-10 w-10 animate-spin rounded-full border-b-2 border-sky-300"></div>
+        <div className="relative z-10 h-10 w-10 animate-spin rounded-full border-b-2 border-teal-200"></div>
       </div>
     );
   }
@@ -585,7 +584,7 @@ export default function PostDetail() {
       <SpaceBackdrop subtle />
       {/* Reading Progress Bar */}
       <div
-        className="fixed left-0 top-0 z-[60] h-1 bg-gradient-to-r from-blue-500 via-sky-300 to-cyan-300 transition-all duration-150"
+        className="fixed left-0 top-0 z-[60] h-1 bg-gradient-to-r from-teal-400 via-emerald-200 to-slate-200 transition-all duration-150"
         style={{ width: `${readingProgress}%` }}
       />
 
@@ -600,26 +599,26 @@ export default function PostDetail() {
               <h1 className="article-page-title mb-5">{post.title}</h1>
 
               {/* Author Info */}
-              <div className="mb-5 flex flex-wrap items-center gap-3 border-b border-sky-200/10 pb-5">
+              <div className="mb-5 flex flex-wrap items-center gap-3 border-b border-white/10 pb-5">
                 <div className="flex items-center gap-2 text-sm">
-                  <User className="h-4 w-4 text-sky-300" />
+                  <User className="h-4 w-4 text-teal-200" />
                   <span className="font-medium text-white">
                     {t("post.authorName")}
                   </span>
                 </div>
-                <div className="h-4 w-px bg-sky-200/20" />
+                <div className="h-4 w-px bg-white/15" />
                 <a
                   href="https://scholar.google.com/citations?user=6X9HlDAAAAAJ"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sky-200"
+                  className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-teal-100"
                 >
                   <GraduationCap className="h-3.5 w-3.5" />
                   {t("nav.scholar")}
                 </a>
                 <button
                   onClick={copyEmail}
-                  className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sky-200"
+                  className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-teal-100"
                 >
                   <Mail className="h-3.5 w-3.5" />
                   {t("nav.email")}
@@ -769,7 +768,7 @@ export default function PostDetail() {
                     aria-label={t("post.agentCompanion.title")}
                   >
                     <div className="article-agent-prompts-heading">
-                      <BookOpen className="h-4 w-4 text-sky-300" />
+                      <BookOpen className="h-4 w-4 text-teal-200" />
                       <span>{t("post.agentCompanion.title")}</span>
                     </div>
                     <div className="article-agent-prompt-list">
@@ -871,7 +870,7 @@ export default function PostDetail() {
             )}
 
             {headings.length > 0 && (
-              <details className="mb-8 rounded-lg border border-sky-200/10 bg-slate-950/35 p-4 lg:hidden">
+              <details className="mb-8 rounded-lg border border-white/10 bg-slate-950/35 p-4 lg:hidden">
                 <summary className="cursor-pointer text-sm font-semibold text-white">
                   {t("post.toc")}
                 </summary>
@@ -880,7 +879,7 @@ export default function PostDetail() {
                     <a
                       key={heading.id}
                       href={`#${heading.id}`}
-                      className="text-sm text-slate-400 hover:text-sky-200"
+                      className="text-sm text-slate-400 hover:text-teal-100"
                       style={{
                         paddingLeft: `${(heading.level - 1) * 0.75}rem`,
                       }}
@@ -910,7 +909,7 @@ export default function PostDetail() {
             </div>
 
             {/* Author Footer */}
-            <div className="mt-16 border-t border-sky-200/10 pt-8">
+            <div className="mt-16 border-t border-white/10 pt-8">
               <div className="mb-6 flex items-center justify-between gap-4">
                 <h2 className="section-title">{t("post.discoveryTitle")}</h2>
                 <Button
@@ -975,7 +974,7 @@ export default function PostDetail() {
                   {postContext.previous && (
                     <Link
                       href={`/post/${postContext.previous.slug}`}
-                      className="rounded-lg border border-sky-200/10 bg-slate-950/35 p-4 transition hover:border-sky-300/45"
+                      className="rounded-lg border border-white/10 bg-slate-950/35 p-4 transition hover:border-teal-200/35"
                     >
                       <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
                         <ArrowLeft className="h-3.5 w-3.5" />
@@ -989,7 +988,7 @@ export default function PostDetail() {
                   {postContext.next && (
                     <Link
                       href={`/post/${postContext.next.slug}`}
-                      className="rounded-lg border border-sky-200/10 bg-slate-950/35 p-4 text-right transition hover:border-sky-300/45"
+                      className="rounded-lg border border-white/10 bg-slate-950/35 p-4 text-right transition hover:border-teal-200/35"
                     >
                       <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
                         {t("post.next")}
@@ -1013,17 +1012,17 @@ export default function PostDetail() {
                       <Link
                         key={related.id}
                         href={`/post/${related.slug}`}
-                        className="flex items-center justify-between gap-4 rounded-lg border border-sky-200/10 bg-slate-950/30 px-4 py-3 text-sm text-slate-200 transition hover:border-sky-300/45 hover:text-white"
+                        className="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-slate-950/30 px-4 py-3 text-sm text-slate-200 transition hover:border-teal-200/35 hover:text-white"
                       >
                         <span className="line-clamp-1">{related.title}</span>
-                        <ArrowRight className="h-4 w-4 shrink-0 text-sky-300" />
+                        <ArrowRight className="h-4 w-4 shrink-0 text-teal-200" />
                       </Link>
                     ))}
                   </div>
                 </div>
               ) : null}
 
-              <div className="mt-10 grid gap-8 border-t border-sky-200/10 pt-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
+              <div className="mt-10 grid gap-8 border-t border-white/10 pt-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
                 <ArticleFeedback
                   postId={post.id}
                   postTitle={post.title}
@@ -1033,7 +1032,7 @@ export default function PostDetail() {
               </div>
             </div>
 
-            <div className="mt-16 border-t border-sky-200/10 pt-8">
+            <div className="mt-16 border-t border-white/10 pt-8">
               <div className="flex items-start gap-4">
                 <div className="flex-1">
                   <h3 className="mb-2 text-lg font-semibold text-white">
@@ -1083,7 +1082,7 @@ export default function PostDetail() {
                     href={`#${heading.id}`}
                     className={`block text-sm transition-colors ${
                       activeHeading === heading.id
-                        ? "text-sky-200 font-medium"
+                        ? "text-teal-100 font-medium"
                         : "text-slate-400 hover:text-white"
                     }`}
                     style={{ paddingLeft: `${(heading.level - 1) * 0.75}rem` }}

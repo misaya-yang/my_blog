@@ -1,8 +1,16 @@
 # Evidence Packet: Agentic RAG 的上下文编译接口
 
-Agentic RAG 的关键问题不只是“如何检索到相关 chunk”，而是“如何把知识库结果变成 Agent 可以稳定消费的上下文对象”。在通用 AI Assistant 中，模型、工具、记忆、任务规划和上下文预算都会同时参与决策。如果 KB 只返回 top-k 文本片段，后续系统很难判断这些片段为什么出现、如何裁剪、如何引用，以及错误发生在检索链路的哪一层。
+我以前对 RAG 的理解很粗暴：用户问一句话，系统把相似 chunk 找出来，塞进 prompt，模型回答。这个版本当然能跑 demo，但一旦把它接到一个真正的 Assistant 里，问题就开始变得难看。
 
-本文从一个很小的技术点切入：**Evidence Packet**。它是 Assistant 与 KB 之间的结构化上下文中间表示。KB 不再只是向量搜索服务，而是一个面向 Agent 的 **Context Compiler**：把原始文档、召回信号、来源元数据、token 预算和引用约束编译成可执行上下文。
+模型会问：这些 chunk 为什么进来了？
+
+前端会问：来源卡片应该指向哪篇文章、哪个小节？
+
+调试时会问：这是 query rewrite 错了，BM25 错了，rerank 错了，还是上下文裁剪把关键句删了？
+
+这些问题都不是“再换一个向量库”能解决的。Agentic RAG 的关键不只是“如何检索到相关 chunk”，而是“如何把知识库结果变成 Agent 可以稳定消费、可以引用、可以复盘的上下文对象”。
+
+这篇文章只从一个小接口切进去：**Evidence Packet**。它是 Assistant 与 KB 之间的结构化中间表示。KB 不再只是向量搜索服务，而是一个面向 Agent 的 **Context Compiler**：把原始文档、召回信号、来源元数据、token 预算和引用约束编译成可执行上下文。
 
 核心技术方向可以概括为：
 
@@ -12,11 +20,11 @@ Raw Knowledge -> Retrieval Signals -> Evidence Packet -> Compiled Context -> Age
 
 这个方向的重点不是发明新的检索算法，而是把 RAG 从“搜索结果列表”提升为“Agent runtime 的上下文接口”。
 
-## Design Boundary
+## 先把边界放在桌面上
 
-Evidence Packet 是接口层和工程抽象，不等同于宣称已经完成一整套企业级 RAG 平台。它适合用来描述博客 Agent、文档助手和通用 Assistant 的后续演进方向：知识如何被检索、裁剪、授权、引用和评测。
+Evidence Packet 不是“我们已经做完一套企业级 RAG 平台”的包装词。它更像一个工程接口：当博客 Agent、文档助手或通用 Assistant 从原型走向产品时，知识如何被检索、裁剪、授权、引用和评测。
 
-文章只讨论公开可复用的系统设计，不披露私有实验指标、未发布结果或敏感实现细节。涉及 Qdrant、BM25、rerank、MMR、GraphRAG 等组件时，它们代表可替换的参考技术路线，而不是固定依赖。
+下面提到 Qdrant、BM25、rerank、MMR、GraphRAG 等组件时，它们都只是可替换路线。真正重要的不是选哪一个库，而是检索结果在进入模型前，有没有变成一个可观察、可治理的对象。
 
 ## 1. Problem Boundary
 

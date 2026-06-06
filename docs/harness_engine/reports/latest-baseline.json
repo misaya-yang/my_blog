@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-06-06T02:07:05.647Z",
+  "generatedAt": "2026-06-06T07:19:27.163Z",
   "git": {
     "branch": "codex/blog-agent-retrieval-rescue",
-    "commit": "0abaa19",
+    "commit": "c652c26",
     "dirty": true
   },
   "commands": [],
@@ -326,12 +326,12 @@
         "contentType": "text/html; charset=utf-8",
         "metadata": {
           "title": "IsoHC: Fixed-Vector Isometric Residual Mixing · Misaya Notes",
-          "description": "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.",
+          "description": "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
           "canonical": "http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing",
           "htmlLang": "en",
           "openGraph": {
             "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
-            "description": "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.",
+            "description": "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
             "image": "http://localhost:3000/og-default.svg",
             "type": "article",
             "url": "http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing"
@@ -339,7 +339,7 @@
           "twitter": {
             "card": "summary_large_image",
             "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
-            "description": "IsoHC constrains residual stream mixing to a fixed-vector orthogonal manifold, preserving both stream mean and residual energy in deep architectures.",
+            "description": "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
             "image": "http://localhost:3000/og-default.svg"
           },
           "jsonLdTypes": [
@@ -362,12 +362,12 @@
         "contentType": "text/html; charset=utf-8",
         "metadata": {
           "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context · Misaya Notes",
-          "description": "A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals.",
+          "description": "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 和 evaluator 这几层。",
           "canonical": "http://localhost:3000/post/agent-harness-engine-evaluating-tool-using-agents",
           "htmlLang": "en",
           "openGraph": {
             "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
-            "description": "A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals.",
+            "description": "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 和 evaluator 这几层。",
             "image": "http://localhost:3000/og-default.svg",
             "type": "article",
             "url": "http://localhost:3000/post/agent-harness-engine-evaluating-tool-using-agents"
@@ -375,7 +375,7 @@
           "twitter": {
             "card": "summary_large_image",
             "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
-            "description": "A harness engine makes tool-using agents observable and repeatable by controlling task protocols, context policy, tool traces, and evaluation signals.",
+            "description": "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 和 evaluator 这几层。",
             "image": "http://localhost:3000/og-default.svg"
           },
           "jsonLdTypes": [
@@ -449,29 +449,29 @@
         "gzipBytes": 90823
       },
       {
-        "file": "assets/index-XOpAGqZ0.js",
-        "rawBytes": 181404,
-        "gzipBytes": 58208
+        "file": "assets/index-DzmAMxVx.js",
+        "rawBytes": 184146,
+        "gzipBytes": 59365
       },
       {
-        "file": "assets/MarkdownRenderer-BMF7KKxZ.js",
-        "rawBytes": 175961,
-        "gzipBytes": 53922
+        "file": "assets/MarkdownRenderer-BI9g_vhQ.js",
+        "rawBytes": 175957,
+        "gzipBytes": 53914
       },
       {
-        "file": "assets/select-Zm6rdSeO.js",
+        "file": "assets/select-Dmavwlc1.js",
         "rawBytes": 50493,
-        "gzipBytes": 17954
+        "gzipBytes": 17950
       },
       {
-        "file": "assets/Manage-BkCTP2M9.js",
+        "file": "assets/Manage-BQ-YNICe.js",
         "rawBytes": 55958,
-        "gzipBytes": 14012
+        "gzipBytes": 14011
       },
       {
-        "file": "assets/Editor-C8Fv5l3b.js",
+        "file": "assets/Editor-CiNEcaCS.js",
         "rawBytes": 40383,
-        "gzipBytes": 11139
+        "gzipBytes": 11133
       },
       {
         "file": "assets/index-CczHSCOW.js",
@@ -479,14 +479,14 @@
         "gzipBytes": 9549
       },
       {
-        "file": "assets/PostDetail-E9nCq94s.js",
-        "rawBytes": 26329,
-        "gzipBytes": 8081
+        "file": "assets/PostDetail-BpOSK5pT.js",
+        "rawBytes": 26098,
+        "gzipBytes": 7801
       },
       {
-        "file": "assets/ManageAgent-DXYflfX4.js",
+        "file": "assets/ManageAgent-7567rYFc.js",
         "rawBytes": 25219,
-        "gzipBytes": 6341
+        "gzipBytes": 6340
       },
       {
         "file": "__manus__/debug-collector.js",
@@ -494,72 +494,72 @@
         "gzipBytes": 5705
       },
       {
-        "file": "assets/metadata-BxYdxA52.js",
-        "rawBytes": 15866,
-        "gzipBytes": 5404
+        "file": "assets/metadata-CjBbjjC0.js",
+        "rawBytes": 15871,
+        "gzipBytes": 5396
       },
       {
-        "file": "assets/Home-MfOkhlht.js",
-        "rawBytes": 11535,
-        "gzipBytes": 3485
+        "file": "assets/Home-CS3grNhy.js",
+        "rawBytes": 11316,
+        "gzipBytes": 3458
       },
       {
-        "file": "assets/Search-ophSQ-OL.js",
+        "file": "assets/Search-DtvfwZn6.js",
         "rawBytes": 8593,
-        "gzipBytes": 3217
+        "gzipBytes": 3210
       },
       {
-        "file": "assets/Track-DtCyZ2Tn.js",
-        "rawBytes": 7066,
-        "gzipBytes": 2776
+        "file": "assets/Track-UJ540o7T.js",
+        "rawBytes": 6614,
+        "gzipBytes": 2410
       },
       {
-        "file": "assets/Login-DaaUMMSu.js",
+        "file": "assets/Login-BHotskcp.js",
         "rawBytes": 6056,
-        "gzipBytes": 1990
+        "gzipBytes": 1988
       },
       {
-        "file": "assets/SubscriptionForm-B4qwhMC6.js",
-        "rawBytes": 4912,
-        "gzipBytes": 1872
+        "file": "assets/SubscriptionForm-DoE-HP42.js",
+        "rawBytes": 4913,
+        "gzipBytes": 1868
       },
       {
-        "file": "assets/Archive-Cwslg6Te.js",
+        "file": "assets/Archive-BNQLFywv.js",
         "rawBytes": 4357,
-        "gzipBytes": 1725
+        "gzipBytes": 1724
       },
       {
-        "file": "assets/TaxonomyPage-B6rUC5ZV.js",
+        "file": "assets/tracks-Bzk0nB2x.js",
+        "rawBytes": 5569,
+        "gzipBytes": 1706
+      },
+      {
+        "file": "assets/TaxonomyPage-DGQLDtLX.js",
         "rawBytes": 4380,
-        "gzipBytes": 1631
+        "gzipBytes": 1629
       },
       {
-        "file": "assets/index-Cb7LhuR_.js",
+        "file": "assets/index-I0vprq7S.js",
         "rawBytes": 3524,
-        "gzipBytes": 1604
+        "gzipBytes": 1601
       },
       {
-        "file": "assets/tabs-gWVaTjiB.js",
+        "file": "assets/tabs-DNdfg5sI.js",
         "rawBytes": 3533,
-        "gzipBytes": 1517
+        "gzipBytes": 1511
       },
       {
-        "file": "assets/tracks-POUyoX3B.js",
-        "rawBytes": 4906,
-        "gzipBytes": 1506
-      },
-      {
-        "file": "assets/ArticleCard-EqY27plN.js",
+        "file": "assets/ArticleCard-BFekRCkp.js",
         "rawBytes": 2845,
-        "gzipBytes": 1163
+        "gzipBytes": 1161
       },
       {
-        "file": "assets/NotFound-C9Y_868r.js",
+        "file": "assets/NotFound-DDdd7Lz3.js",
         "rawBytes": 2381,
-        "gzipBytes": 1066
+        "gzipBytes": 1065
       },
       {
-        "file": "assets/About-BjjH5_vX.js",
+        "file": "assets/About-BR8IDi_f.js",
         "rawBytes": 2238,
         "gzipBytes": 882
       },
@@ -569,34 +569,39 @@
         "gzipBytes": 809
       },
       {
-        "file": "assets/index-P6gz7TQ7.js",
+        "file": "assets/index-D3h0nl5q.js",
         "rawBytes": 1310,
-        "gzipBytes": 663
+        "gzipBytes": 661
       },
       {
-        "file": "assets/input-TVfn3ATA.js",
+        "file": "assets/input-KabPaxBj.js",
         "rawBytes": 1268,
-        "gzipBytes": 640
+        "gzipBytes": 638
       },
       {
-        "file": "assets/badge-MvJRJ45p.js",
+        "file": "assets/badge-DoqYtj7I.js",
         "rawBytes": 1183,
-        "gzipBytes": 579
+        "gzipBytes": 580
       },
       {
-        "file": "assets/shield-check-BRO06n_t.js",
+        "file": "assets/publicArticles-CtlvjvmJ.js",
+        "rawBytes": 659,
+        "gzipBytes": 499
+      },
+      {
+        "file": "assets/shield-check-DCiiKWyw.js",
         "rawBytes": 936,
-        "gzipBytes": 476
+        "gzipBytes": 475
       },
       {
-        "file": "assets/tags-CLZ9vKQG.js",
+        "file": "assets/tags-DFWPV9WX.js",
         "rawBytes": 909,
-        "gzipBytes": 466
+        "gzipBytes": 464
       },
       {
-        "file": "assets/mail-BBzVqWqw.js",
+        "file": "assets/mail-BaftKb7D.js",
         "rawBytes": 835,
-        "gzipBytes": 441
+        "gzipBytes": 440
       },
       {
         "file": "assets/AgentMarkdown-Du5qF4_C.js",
@@ -604,46 +609,46 @@
         "gzipBytes": 430
       },
       {
-        "file": "assets/map-BNE9XQ-e.js",
+        "file": "assets/map-CVO0bYaa.js",
         "rawBytes": 594,
-        "gzipBytes": 379
+        "gzipBytes": 376
       },
       {
-        "file": "assets/calendar-rdpJG_15.js",
+        "file": "assets/calendar-Px-vdrzN.js",
         "rawBytes": 710,
-        "gzipBytes": 360
+        "gzipBytes": 359
       },
       {
-        "file": "assets/network-CPswkpCk.js",
+        "file": "assets/network-Dv6EHQsF.js",
         "rawBytes": 553,
-        "gzipBytes": 338
+        "gzipBytes": 336
       },
       {
-        "file": "assets/git-branch-BmehUCPK.js",
+        "file": "assets/git-branch-BfU48g8n.js",
         "rawBytes": 443,
-        "gzipBytes": 321
+        "gzipBytes": 320
       },
       {
-        "file": "assets/copy-DZ9JGmWd.js",
+        "file": "assets/copy-ClZhmFNH.js",
         "rawBytes": 400,
-        "gzipBytes": 310
+        "gzipBytes": 309
       },
       {
-        "file": "assets/eye-BGlbeZOM.js",
+        "file": "assets/eye-CBLp-rXA.js",
         "rawBytes": 420,
-        "gzipBytes": 304
+        "gzipBytes": 302
       },
       {
-        "file": "assets/hash-BAlmvn_L.js",
+        "file": "assets/hash-CsxfPQv0.js",
         "rawBytes": 465,
-        "gzipBytes": 300
+        "gzipBytes": 298
       }
     ],
     "css": [
       {
-        "file": "assets/index-D7TBngdN.css",
-        "rawBytes": 174195,
-        "gzipBytes": 28932
+        "file": "assets/index-ZZMKgWgl.css",
+        "rawBytes": 176011,
+        "gzipBytes": 29030
       },
       {
         "file": "assets/katex-DvXFAOB1.css",

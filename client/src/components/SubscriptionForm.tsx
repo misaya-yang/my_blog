@@ -83,7 +83,7 @@ export function SubscriptionForm({
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="mb-2 flex items-center gap-2 text-white">
-            <MailPlus className="h-4 w-4 text-sky-300" />
+            <MailPlus className="h-4 w-4 text-teal-200" />
             <h2 className="text-base font-semibold">{t(titleKey)}</h2>
           </div>
           <p className="max-w-2xl text-sm leading-6 text-slate-400">
@@ -120,12 +120,12 @@ export function SubscriptionForm({
             onChange={event => setEmail(event.target.value)}
             placeholder={t("engagement.subscribe.emailPlaceholder")}
             aria-describedby={statusId}
-            className="border-sky-200/15 bg-slate-950/40 text-white placeholder:text-slate-500"
+            className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-500"
           />
           <Button
             type="submit"
             disabled={subscribe.isPending}
-            className="w-full bg-sky-400 text-slate-950 hover:bg-sky-300 md:w-auto"
+            className="w-full bg-teal-200 text-slate-950 hover:bg-teal-100 md:w-auto"
           >
             {subscribe.isPending ? (
               <>
@@ -147,7 +147,7 @@ export function SubscriptionForm({
             value={interests}
             onChange={event => setInterests(event.target.value)}
             placeholder={t("engagement.subscribe.interestsPlaceholder")}
-            className="border-sky-200/15 bg-slate-950/40 text-white placeholder:text-slate-500"
+            className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-500"
             maxLength={240}
             aria-describedby={statusId}
           />
@@ -159,7 +159,7 @@ export function SubscriptionForm({
             <span className="subscription-language-label">
               {t("engagement.subscribe.languageLabel")}
             </span>
-            <div className="inline-grid grid-cols-2 rounded-md border border-sky-200/15 bg-slate-950/50 p-1">
+            <div className="inline-grid grid-cols-2 rounded-md border border-white/10 bg-slate-950/50 p-1">
               {(["zh", "en"] as const).map(option => (
                 <button
                   key={option}
@@ -169,7 +169,7 @@ export function SubscriptionForm({
                   className={cn(
                     "h-8 rounded px-3 text-xs font-medium transition",
                     preferredLanguage === option
-                      ? "bg-sky-400/20 text-sky-100"
+                      ? "bg-teal-300/15 text-teal-100"
                       : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-100"
                   )}
                 >
@@ -213,14 +213,14 @@ function getSubscriptionMessage(
   if (status === "created") {
     return {
       text: t("engagement.subscribe.successCreated"),
-      className: "text-sky-200",
+      className: "text-teal-100",
     };
   }
 
   if (status === "existing") {
     return {
       text: t("engagement.subscribe.successExisting"),
-      className: "text-sky-200",
+      className: "text-teal-100",
     };
   }
 

@@ -244,7 +244,7 @@ function SearchRecoveryPanel({
 
   return (
     <div className="py-3">
-      <div className="rounded-lg border border-amber-300/20 bg-amber-950/15 p-5">
+      <div className="rounded-lg border border-slate-300/15 bg-slate-950/35 p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-2xl">
             <h3 className="text-lg font-semibold text-white">

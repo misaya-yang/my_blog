@@ -1,8 +1,18 @@
 # Agent Loop: 从 ReAct 模式到可观测运行时
 
-Agent loop 常被写成一个朴素循环：模型读取上下文，决定是否调用工具，工具返回 observation，再把 observation 放回上下文。这个结构可以复现 ReAct 的核心思想：reasoning 和 acting 交替发生，模型通过外部环境修正自己的下一步行动。
+Agent loop 很容易被写成一句伪代码：
 
-但生产系统里的 AgentLoop 不是 `while true` 调模型。真正困难的问题是：状态由谁保存，工具调用如何治理，什么时候停止，失败如何恢复，预算如何消耗，人工确认在哪里插入，trace 如何复盘。
+```ts
+while (!done) {
+  decision = model(context)
+  observation = tool(decision)
+  context.push(observation)
+}
+```
+
+这段代码看着很顺。它也确实能表达 ReAct 的核心直觉：模型一边推理，一边行动，再根据外部 observation 修正下一步。
+
+但我现在看到这段伪代码会本能地紧张。因为真正上线的 AgentLoop 从来不是 `while true` 调模型。它更像一个小型操作系统：状态由谁保存，工具调用如何治理，什么时候停止，失败如何恢复，预算如何消耗，人工确认在哪里插入，trace 如何复盘。
 
 本文讨论一个更窄的抽象：
 
@@ -16,11 +26,11 @@ State -> Context -> Model Decision -> Action -> Observation -> Reducer -> Checkp
 
 这个方向的目标不是让 Agent 更“自主”，而是让多步行动变得可观测、可恢复、可评测。
 
-## Design Boundary
+## 先把边界说清楚
 
-这里的 Agent Loop 指运行时抽象，而不是某个已经完整商品化的产品声明。讨论重点放在架构边界、状态转移、工具治理、会话恢复和评测面上，不依赖私有实验数据或未公开指标。
+这里的 Agent Loop 指运行时抽象，不是某个已经完整商品化的产品声明。讨论重点放在架构边界、状态转移、工具治理、会话恢复和评测面上。
 
-在博客 Agent、文档助手、工具型 Assistant 等场景里，这个抽象可以逐步落地：先保存会话和 trace，再引入受控工具，最后扩展到文件、权限、限流和人工确认。复杂度应随着真实任务需求增加，而不是一开始就堆叠多 Agent 或重型编排。
+在博客 Agent、文档助手、工具型 Assistant 等场景里，这个抽象可以逐步落地：先保存会话和 trace，再引入受控工具，最后扩展到文件、权限、限流和人工确认。复杂度应该随着真实任务需求增加，而不是一开始就堆叠多 Agent 或重型编排。
 
 ## 1. From Pattern to Runtime
 

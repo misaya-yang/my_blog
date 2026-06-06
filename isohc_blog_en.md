@@ -1,40 +1,59 @@
-IsoHC studies a narrow stability problem in stream-based residual architectures: how to mix multiple residual streams without destroying the invariants that make deep residual networks trainable. The method constrains the residual mixing operator to preserve both the global stream mean and Euclidean energy. This article summarizes the technical mechanism without disclosing unpublished experimental metrics or run-level details.
+我写 IsoHC 的时候，真正困扰我的不是“能不能再设计一个残差混合矩阵”。这个问题太容易给出一个看起来漂亮的答案。真正麻烦的是：如果把一个残差流拆成多条 stream，再让它们在每一层互相混合，什么量应该被完整保留下来？
 
-## 1. Motivation
-
-Residual architectures are stable partly because they keep an identity path through depth:
+标准残差网络有一条很朴素的生命线：
 
 $$
 x_{l+1}=x_l+F(x_l,\theta_l).
 $$
 
-Hyper-Connection style models generalize this idea by expanding the residual stream into multiple parallel streams. A simplified residual transport step can be written as:
+无论 $F$ 多复杂，$x_l$ 至少有一条 identity path 穿过深度。很多深层网络的稳定性，都在某种程度上依赖这条路径。Hyper-Connection 这类多 stream 结构把残差流展开成矩阵：
+
+$$
+X_l\in\mathbb{R}^{n\times d},
+$$
+
+其中 $n$ 是 stream 数，$d$ 是每条 stream 的 hidden dimension。此时一个简化的 residual transport 可以写成：
 
 $$
 X_{l+1}=H_l^{\mathrm{res}}X_l+\mathcal{A}_l(X_l),
 $$
 
-where $X_l\in\mathbb{R}^{n\times d}$ contains $n$ residual streams and $H_l^{\mathrm{res}}\in\mathbb{R}^{n\times n}$ mixes those streams.
+问题也随之出现：$H_l^{\mathrm{res}}$ 不是 identity，而是每层都会变的混合矩阵。单层看起来很温和的混合，乘过几十层、几百层之后，可能把某些方向悄悄放大，也可能把有用差异磨平。
 
-This additional mixing increases expressivity, but it also introduces a new stability risk. If the residual mixing matrices are unconstrained, the product of many such matrices can amplify or contract signals in ways that are not present in a standard identity residual path.
+IsoHC 试图回答的是一个很窄的问题：
 
-The core question is:
+> 多 stream 残差混合能不能既允许 stream 之间互动，又不要破坏残差网络最该保留的几何量？
 
-> What constraint on residual stream mixing preserves the useful invariants of residual networks while still allowing nontrivial cross-stream interaction?
+这篇笔记只讲机制和数学边界，不把它包装成“万能稳定性方案”。
+
+## 1. Motivation
+
+先把直觉说清楚。
+
+如果所有 stream 只是简单平均，模型会很稳定，但 expressivity 会受限；如果所有 stream 都可以自由线性混合，模型会更灵活，但深度方向的谱行为会变得难以控制。
+
+于是我们需要问：混合矩阵 $H$ 至少应该满足什么？
+
+一个自然答案是保留 stream mean。令 $\mathbf{1}$ 表示全 1 向量，stream mean 是：
+
+$$
+\bar{x}
+=\frac{1}{n}\mathbf{1}^{\top}X.
+$$
+
+如果 $H\mathbf{1}=\mathbf{1}$ 且 $\mathbf{1}^{\top}H=\mathbf{1}^{\top}$，那么平均 stream 不会漂移。这就是 doubly stochastic 约束带来的直觉安全感。
+
+但我不太满意这个答案。因为 mean 只是一个方向。真正承载差异的是 mean-zero subspace：
+
+$$
+\left\{v\in\mathbb{R}^{n}:\mathbf{1}^{\top}v=0\right\}.
+$$
+
+如果这个子空间里的能量被反复压缩，多个 stream 会越来越像；如果被反复放大，深度方向又会变得尖锐。只保留均值，还不足以说明残差流的几何没有被改坏。
 
 ## 2. From Mean Preservation to Isometry
 
-A common stabilizing strategy is to constrain stream mixing to preserve the global stream mean. Doubly stochastic matrices provide one route:
-
-$$
-H\mathbf{1}=\mathbf{1},
-\qquad
-\mathbf{1}^{\top}H=\mathbf{1}^{\top}.
-$$
-
-This keeps the stream average invariant. However, mean preservation alone does not guarantee that the mean-zero component of the residual signal keeps its energy. A mixing matrix can preserve the mean while still acting diffusively on the complementary subspace.
-
-IsoHC strengthens the constraint by requiring residual transport to be both mean-preserving and orthogonal:
+IsoHC 的约束是：
 
 $$
 \mathcal{M}_{\mathrm{iso}}
@@ -42,11 +61,20 @@ $$
 \{H\in\mathbb{R}^{n\times n}: H^\top H=I,\ H\mathbf{1}=\mathbf{1}\}.
 $$
 
-This is the subgroup of the orthogonal group that fixes the all-ones direction. Equivalently, it is an orthogonal transform on the mean-zero subspace plus an identity action on the mean direction.
+这句话很短，但信息量很大。
+
+- $H^\top H=I$：混合矩阵是正交的，不改变欧氏长度。
+- $H\mathbf{1}=\mathbf{1}$：全 1 方向是 fixed vector，stream mean 不被移动。
+
+换一个更几何的说法：IsoHC 不碰 mean direction，只在 mean-zero subspace 上做旋转或反射。
+
+这和 doubly stochastic 的气质不同。Doubly stochastic 更像“扩散后仍然保持总量”，IsoHC 更像“换一个坐标角度，但不磨损能量”。这也是我觉得它值得单独写出来的原因。
 
 ## 3. Exact Invariants
 
-Let $H\in\mathcal{M}_{\mathrm{iso}}$ and $X\in\mathbb{R}^{n\times d}$. The stream mean is preserved:
+令 $H\in\mathcal{M}_{\mathrm{iso}}$，$X\in\mathbb{R}^{n\times d}$。
+
+stream mean 保持不变：
 
 $$
 \frac{1}{n}\mathbf{1}^{\top}HX
@@ -54,7 +82,7 @@ $$
 \frac{1}{n}\mathbf{1}^{\top}X.
 $$
 
-The residual energy is also preserved:
+Frobenius energy 也保持不变：
 
 $$
 \|HX\|_F^2
@@ -66,152 +94,159 @@ $$
 \|X\|_F^2.
 $$
 
-Thus IsoHC preserves both the average stream direction and the full Frobenius energy of the stream tensor. This is the main distinction from purely stochastic or diffusive mixing constraints.
+所以 IsoHC 同时保留两个量：
+
+```text
+mean(HX) = mean(X)
+energy(HX) = energy(X)
+```
+
+这不是说网络整体永远不放大信号。注意 $\mathcal{A}_l(X_l)$ 仍然会注入 attention、MLP 或其它 block 的输出。IsoHC 只约束 residual transport 这条路径，让它不要在混合 stream 时额外制造不受控的谱变化。
 
 ## 4. Fixed-Vector Orthogonal Decomposition
 
-The constraint can be implemented by separating the fixed mean direction from its orthogonal complement.
+实现上，最方便的做法是把全 1 方向拆出来。
 
-Define:
+定义：
 
 $$
 e_0=\frac{\mathbf{1}}{\sqrt{n}}.
 $$
 
-Choose an orthonormal basis $U\in\mathbb{R}^{n\times(n-1)}$ for the complement of $e_0$:
+再选一组正交基 $U\in\mathbb{R}^{n\times(n-1)}$ 张成 $e_0$ 的正交补：
 
 $$
-U^\top U=I,
-\qquad
-U^\top e_0=0.
+U^\top U=I,\qquad U^\top e_0=0.
 $$
 
-Any IsoHC mixing matrix can then be represented as:
+任何 IsoHC 矩阵都可以写成：
 
 $$
-H=e_0e_0^\top+URU^\top,
+H
+=
+e_0e_0^\top
++UQU^\top,
+\qquad Q\in O(n-1).
 $$
 
-where $R\in O(n-1)$ is an orthogonal transform on the mean-zero subspace.
+这就是固定向量正交分解。$e_0e_0^\top$ 保留平均方向，$UQU^\top$ 在剩下的差异方向上做等距变换。
 
-This decomposition makes the constraint practical: instead of projecting a full matrix directly onto a fixed-vector manifold, the implementation projects only the complement block onto an orthogonal group.
+从工程角度看，这个分解还有一个好处：我们不需要在完整 $n\times n$ 空间里硬投影“既正交又固定 $\mathbf{1}$”的矩阵，而是只需要在 $n-1$ 维子空间里参数化或投影 $Q$。
 
-## 5. Differentiable Projection
+## 5. A Small Mental Model
 
-The repository implements an IsoHC projection path in `isohc/projection.py`. Given an unconstrained raw matrix $\widetilde{H}$, the projection proceeds conceptually as follows:
+可以把每个 token 的 residual stream 看成一把扇子。mean direction 是扇子的柄，mean-zero directions 是扇面里各条骨架之间的相对差异。
 
-1. Construct the fixed direction $e_0$ and complement basis $U$.
-2. Extract the complement block:
-   $$
-   A=U^\top \widetilde{H}U.
-   $$
-3. Project $A$ to an orthogonal factor $R$ using a polar retraction.
-4. Reconstruct:
-   $$
-   H=e_0e_0^\top+URU^\top.
-   $$
+Doubly stochastic mixing 会保证扇子的中心不跑掉，但扇面可能被慢慢压平。IsoHC 要求更强：中心不跑，扇面长度也不变，只允许旋转。
 
-The polar factor can be computed by iterative Newton-Schulz style updates:
+这个比喻不严谨，但对理解约束很有帮助：
 
-$$
-X_{k+1}=\frac{1}{2}X_k(3I-X_k^\top X_k).
-$$
+```text
+mean preservation: center does not drift
+isometry: relative energy does not leak
+```
 
-The code also includes diagnostic and fallback paths so the projection can be monitored during training.
+如果你关心的是深层残差路径的稳定性，第二句话往往比第一句话更关键。
 
-## 6. Gradient Stability Interpretation
+## 6. Why Not Just Identity?
 
-Consider residual-only propagation:
+一个合理的反问是：如果稳定性这么重要，为什么不直接用 identity transport？
 
-$$
-X_{l+1}=H_lX_l.
-$$
+因为多 stream 结构本来就是为了让不同残差路径之间交换信息。完全 identity 最安全，但也最保守。IsoHC 想要的是一个折中：
 
-During backpropagation:
+- 允许 stream 之间发生非平凡混合。
+- 不让 residual transport 改变 stream mean。
+- 不让 residual transport 改变 residual energy。
+- 把不稳定性尽量留给可观测、可初始化、可归因的其它 block。
 
-$$
-G_l=H_l^\top G_{l+1}.
-$$
-
-If each $H_l$ is IsoHC-constrained, then:
-
-$$
-\|G_l\|_F=\|G_{l+1}\|_F.
-$$
-
-The same isometry that preserves forward residual energy also preserves backward gradient energy through the residual transport path. This gives a clean geometric explanation for why the constraint targets both exploding and vanishing modes.
+换句话说，IsoHC 不是在消灭混合，而是在给混合加几何护栏。
 
 ## 7. Implementation Mapping
 
-The `isoHC` repository separates the mechanism into small modules:
+一个概念化实现可以写成：
 
-- `isohc/projection.py`: fixed-vector orthogonal projection utilities.
-- `isohc/layers.py`: residual stream mixing layers.
-- `isohc/transformer.py`: Transformer integration.
-- `lm/mixing.py`: language-model mixing ablations.
-- `gnn/projection.py` and `gnn/models.py`: graph-neural-network variants.
+```python
+def project_to_isohc(raw_h, basis_u, e0):
+    # raw_h is an unconstrained matrix on the mean-zero subspace
+    q = orthogonal_projection(raw_h)
+    fixed = e0[:, None] @ e0[None, :]
+    residual = basis_u @ q @ basis_u.T
+    return fixed + residual
+```
 
-The implementation tracks two central diagnostics:
+真实实现里还要处理几件事：
 
-$$
-\|H^\top H-I\|_F
-$$
+- `basis_u` 应该稳定构造，避免每次初始化带来不必要差异。
+- `orthogonal_projection` 可以通过 QR、Cayley、polar decomposition 或其它方式实现。
+- 如果使用混合精度训练，需要注意投影步骤的数值误差。
+- 当 $n$ 很小时，约束空间很小；当 $n$ 变大时，投影成本和参数化方式需要重新评估。
 
-and:
-
-$$
-\|H\mathbf{1}-\mathbf{1}\|_2.
-$$
-
-These diagnostics directly correspond to the two defining constraints.
+我更倾向于把 IsoHC 看作一个 projection path，而不是一个纯 prompt-level 概念。只要实现里不能稳定地把矩阵送回 $\mathcal{M}_{\mathrm{iso}}$，上面的数学都只是纸面安全。
 
 ## 8. Precision and Engineering Considerations
 
-Projection precision is an important engineering detail. The projection operation is numerically more sensitive than ordinary unconstrained matrix multiplication, especially when low-precision arithmetic is used throughout the entire projection path.
+正交约束在数学上干净，在工程里却不总是便宜。
 
-A practical implementation should distinguish:
+几个容易踩的点：
 
-- parameter storage dtype,
-- activation dtype,
-- projection computation dtype,
-- diagnostic computation dtype.
+1. **投影误差。** 有限精度下 $H^\top H$ 不会精确等于 $I$，需要 sanity check。
+2. **初始化尺度。** 如果其它分支初始化过大，IsoHC 只能保护 residual transport，不能保护整个 block。
+3. **频繁投影成本。** 每一步都做昂贵投影可能不划算，需要权衡参数化和训练效率。
+4. **stream 数选择。** $n$ 不是越大越好。stream 越多，混合空间越大，调参和诊断也越复杂。
 
-The safest pattern is to keep the projection math in a higher-precision path while allowing the surrounding model to use lower precision where appropriate.
+所以我不建议把 IsoHC 理解成一个随手替换的 trick。它更适合在你已经明确看到 residual stream mixing 稳定性问题时使用。
 
-## 9. Relation to Doubly Stochastic Mixing
+## 9. Relation to Doubly Stochastic Constraints
 
-Doubly stochastic constraints preserve stream means and are naturally non-expansive. IsoHC chooses a different trade-off:
+Doubly stochastic 约束满足：
 
-- It removes the nonnegativity requirement.
-- It keeps exact orthogonality.
-- It preserves energy on the mean-zero subspace.
-- It allows signed rotations and reflections rather than only convex averaging.
+$$
+H\mathbf{1}=\mathbf{1},\qquad \mathbf{1}^{\top}H=\mathbf{1}^{\top}.
+$$
 
-This is useful when diffusion is not desired. For very deep residual stacks, repeated non-expansive averaging can collapse stream diversity, while isometric mixing preserves the norm of the complementary components.
+它的优点是直观、非负、像概率转移矩阵，也很容易解释为 stream 之间的加权平均。
+
+但它通常不是 isometry。即使 mean 被保留，mean-zero component 也可能被收缩。长期堆叠后，这种收缩会改变 stream 差异的表达方式。
+
+IsoHC 则放弃非负性，换来正交等距：
+
+| Constraint | Preserves Mean | Preserves Energy | Allows Signed Mixing |
+| --- | --- | --- | --- |
+| Doubly stochastic | Yes | Not guaranteed | No |
+| IsoHC | Yes | Yes | Yes |
+
+这张表也说明了边界：IsoHC 不是“更自然的概率混合”，而是“更硬的几何约束”。
 
 ## 10. Evidence Framing
 
-The repository evaluates IsoHC through projection sanity checks, residual-only propagation probes, Transformer smoke tests, real-text diagnostics, and GNN variants. The public technical conclusion should be framed carefully:
+这类方法最容易被写坏的地方，是把稳定性机制写成性能宣言。
 
-- IsoHC is a stability mechanism, not a standalone claim of universal task superiority.
-- The strongest claim is geometric: the constraint exactly preserves mean and energy by construction.
-- Empirical artifacts support the stability story, but broader downstream claims require larger and more standardized evaluation.
-- GNN results should be interpreted jointly with architecture choices such as stream embeddings, readout design, and message-branch handling.
+我更愿意把公开结论放窄：
+
+- IsoHC 是 residual transport 的几何约束。
+- 它精确保留 stream mean 和 Frobenius energy。
+- 它提供了不同于 doubly stochastic mixing 的稳定性偏置。
+- 它不自动证明所有任务上更强。
+- 真正的任务收益需要标准化、可复现、跨尺度评测。
+
+这不是谦虚用语，而是工程事实。一个约束可以非常漂亮，但最终仍要面对训练速度、数值误差、任务分布、模型规模和实现成本。
 
 ## 11. Core Takeaway
 
-IsoHC replaces a diffusion-style residual mixing constraint with a fixed-vector isometric constraint:
+IsoHC 的核心可以压成一句话：
+
+```text
+Residual mixing should move information across streams without drifting the stream mean or leaking residual energy.
+```
+
+用数学写就是：
 
 $$
-H^\top H=I,
-\qquad
-H\mathbf{1}=\mathbf{1}.
+H\in\{H:H^\top H=I,\ H\mathbf{1}=\mathbf{1}\}.
 $$
 
-This preserves the global stream mean and residual energy simultaneously. The method is compact, auditable, and directly implementable via a complement-space polar projection.
+它保留一条固定平均方向，同时在剩余子空间里做正交变换。这样，多 stream 残差结构不必退回 identity，也不必接受无约束混合带来的谱风险。
 
-The main contribution is not another generic residual block. It is a geometric stabilization rule for stream-based residual transport: keep the mean direction fixed, rotate the residual complement isometrically, and monitor the constraints explicitly during training.
+如果把深层网络看成很多层微小几何操作的叠加，IsoHC 想守住的不是某个宏大的故事，而是两个很朴素的量：平均不漂，能量不漏。
 
 **Keywords**: IsoHC, Hyper-Connections, residual mixing, orthogonal projection, Transformer stability, GNN stability
-
-**Author**: Misaya Yang

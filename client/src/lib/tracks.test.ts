@@ -9,6 +9,11 @@ const publishedPosts: TrackSeriesPost[] = [
     seriesSlug: "residual-stability",
   },
   {
+    slug: "gated-ffn-multiplicative-channel-control",
+    category: { slug: "ai-algorithms" },
+    seriesSlug: "feed-forward-mechanisms",
+  },
+  {
     slug: "agent-harness-engine-evaluating-tool-using-agents",
     category: { slug: "ai-applications" },
     seriesSlug: "agent-runtime-systems",
@@ -36,6 +41,7 @@ describe("public track series", () => {
 
     expect(algorithmsSeries.map(series => series.slug)).toEqual([
       "residual-stability",
+      "feed-forward-mechanisms",
     ]);
   });
 

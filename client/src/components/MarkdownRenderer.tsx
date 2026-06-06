@@ -43,7 +43,7 @@ export default function MarkdownRenderer({
         h2: createHeadingComponent(
           "h2",
           headingIdResolver,
-          "mb-4 mt-10 border-b border-sky-200/10 pb-2 text-2xl font-semibold"
+          "mb-4 mt-10 border-b border-white/10 pb-2 text-2xl font-semibold"
         ),
         h3: createHeadingComponent("h3", headingIdResolver, "mb-3 mt-8 text-xl font-semibold"),
         img: ({ node: _node, alt, ...props }: any) => (
@@ -53,7 +53,7 @@ export default function MarkdownRenderer({
             loading="lazy"
             decoding="async"
             sizes="(min-width: 1024px) 768px, calc(100vw - 48px)"
-            className="h-auto max-w-full rounded-lg border border-sky-200/10"
+            className="h-auto max-w-full rounded-lg border border-white/10"
           />
         ),
         pre: ({ node: _node, children, ...props }: any) => {

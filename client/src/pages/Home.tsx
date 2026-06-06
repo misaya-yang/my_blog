@@ -149,14 +149,6 @@ export default function Home() {
       <main className="relative z-10">
         <section className="container px-4 pb-8 pt-10 sm:px-6 md:pb-10 md:pt-16">
           <div className="home-editorial-hero">
-            <div className="home-kicker mb-7">
-              <span>{t("home.chip1")}</span>
-              <span aria-hidden="true">/</span>
-              <span>{t("home.chip2")}</span>
-              <span aria-hidden="true">/</span>
-              <span>{t("home.chip3")}</span>
-            </div>
-
             <h1 className="home-title max-w-4xl text-white">
               {t("home.title")}
             </h1>
@@ -182,13 +174,17 @@ export default function Home() {
                 const publicCount = countTrackPosts(publishedPosts, track);
                 const pathCount = publicSeriesByTrack[track].length;
                 const number = track === "algorithms" ? "01" : "02";
+                const pathLabel = isLoading
+                  ? t("home.pathsPending")
+                  : t("home.pathCount", { count: pathCount });
+                const publicNotesLabel = isLoading
+                  ? t("home.notesPending")
+                  : t("home.publicNotes", { count: publicCount });
                 return (
                   <Link key={track} href={config.href}>
                     <article className="track-portal-card home-track-card group">
                       <div className="mb-4 flex items-center justify-between gap-4">
-                        <div className="home-track-number">
-                          {number}
-                        </div>
+                        <div className="home-track-number">{number}</div>
                         <div className="home-track-label">
                           {t(
                             track === "algorithms"
@@ -198,19 +194,17 @@ export default function Home() {
                         </div>
                         <ArrowRight className="h-5 w-5 text-slate-400 transition-transform group-hover:translate-x-1" />
                       </div>
-                      <h2 className="home-track-title">
-                        {t(config.titleKey)}
-                      </h2>
+                      <h2 className="home-track-title">{t(config.titleKey)}</h2>
                       <p className="track-portal-copy mt-3 text-sm leading-7 text-slate-400">
                         {t(config.overviewKey)}
                       </p>
                       <div className="track-portal-cta flex flex-wrap items-center gap-2 text-xs font-medium text-slate-400">
                         <span className="inline-flex items-center gap-1.5">
                           <GitBranch className="h-3.5 w-3.5" />
-                          {t("home.pathCount", { count: pathCount })}
+                          {pathLabel}
                         </span>
                         <span className="inline-flex items-center gap-1.5">
-                          {t("home.publicNotes", { count: publicCount })}
+                          {publicNotesLabel}
                         </span>
                         <span className="ml-auto inline-flex items-center gap-1.5 text-slate-300">
                           {t("home.readMore")}
@@ -475,7 +469,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="relative z-10 border-t border-sky-200/10 bg-slate-950/40">
+      <footer className="relative z-10 border-t border-white/10 bg-slate-950/40">
         <div className="container flex flex-col gap-3 px-4 py-8 text-sm text-slate-500 sm:px-6 md:flex-row md:items-center md:justify-between">
           <p>{t("common.copyright")}</p>
           <p>{t("home.footerTagline")}</p>

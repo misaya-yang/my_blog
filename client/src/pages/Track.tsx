@@ -6,6 +6,7 @@ import {
 } from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getPublicArticleTitle } from "@/lib/publicArticles";
 import {
   getPublicTrackSeries,
   trackConfigs,
@@ -27,24 +28,9 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 
-const fallbackPostTitles: Record<string, string> = {
-  "agent-harness-engine-evaluating-tool-using-agents":
-    "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
-  "rag-evidence-packet-context-compiler":
-    "Evidence Packet: Agentic RAG 的上下文编译接口",
-  "agent-loop-observable-tool-using-agents":
-    "Agent Loop: 从 ReAct 模式到可观测运行时",
-  "goal-harness-agent-phase-protocol":
-    "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
-  "isohc-fixed-vector-isometric-residual-mixing":
-    "IsoHC: Fixed-Vector Isometric Residual Mixing",
-};
-
 function resolvePostTitle(posts: ArticleCardPost[], slug: string) {
   return (
-    posts.find(post => post.slug === slug)?.title ??
-    fallbackPostTitles[slug] ??
-    slug
+    posts.find(post => post.slug === slug)?.title ?? getPublicArticleTitle(slug)
   );
 }
 
@@ -60,7 +46,10 @@ function TrackPage({ kind }: { kind: TrackKind }) {
     orderBy: "publishedAt",
   });
 
-  const trackPosts = (posts?.posts ?? []) as ArticleCardPost[];
+  const hasLoadedPosts = !isLoading && Boolean(posts);
+  const trackPosts = hasLoadedPosts
+    ? ((posts?.posts ?? []) as ArticleCardPost[])
+    : [];
   const publicSeries = getPublicTrackSeries(kind, trackPosts);
   const totalViews = trackPosts.reduce(
     (sum, post) => sum + (post.viewCount || 0),
@@ -86,7 +75,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
           <div className="min-w-0">
             <p className="technical-label mb-6">{t(config.topicTitleKey)}</p>
 
-            <h1 className="display-title max-w-5xl text-4xl leading-[1.06] text-white md:text-6xl xl:text-7xl">
+            <h1 className="max-w-5xl text-4xl font-semibold leading-[1.08] text-white md:text-5xl xl:text-6xl">
               {t(config.titleKey)}
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
@@ -94,7 +83,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
             </p>
 
             <div className="track-map-note mt-7 max-w-4xl">
-              <Network className="h-5 w-5 text-sky-300" />
+              <Network className="h-5 w-5 text-teal-200" />
               <p>
                 {t(
                   kind === "algorithms"
@@ -115,7 +104,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                         </span>
                         <h2>{t(series.titleKey)}</h2>
                       </div>
-                      <GitBranch className="mt-1 h-5 w-5 shrink-0 text-sky-300" />
+                      <GitBranch className="mt-1 h-5 w-5 shrink-0 text-teal-200" />
                     </div>
                     <p>{t(series.promiseKey)}</p>
                     <div className="series-card-concepts mt-4">
@@ -132,11 +121,11 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                         >
                           <span>{String(index + 1).padStart(2, "0")}</span>
                           <strong>{resolvePostTitle(trackPosts, slug)}</strong>
-                          <ArrowRight className="h-4 w-4 text-sky-300" />
+                          <ArrowRight className="h-4 w-4 text-slate-300" />
                         </Link>
                       ))}
                     </div>
-                    <div className="mt-4 border-t border-sky-200/10 pt-4">
+                    <div className="mt-4 border-t border-white/10 pt-4">
                       <p className="mb-2 text-xs font-semibold uppercase text-slate-500">
                         {t("track.nextPlanned")}
                       </p>
@@ -156,7 +145,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
             <div className="mt-6 grid max-w-4xl gap-3 sm:grid-cols-3">
               <StatTile
                 icon={<FileText className="h-5 w-5" />}
-                value={trackPosts.length}
+                value={hasLoadedPosts ? trackPosts.length : "..."}
                 label={t("home.statArticles")}
               />
               <StatTile
@@ -166,7 +155,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
               />
               <StatTile
                 icon={<Eye className="h-5 w-5" />}
-                value={totalViews}
+                value={hasLoadedPosts ? totalViews : "..."}
                 label={t("home.statViews")}
               />
             </div>
@@ -174,7 +163,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
 
           <aside className="glass-panel p-5">
             <div className="flex items-center gap-2 text-white">
-              <Network className="h-5 w-5 text-sky-300" />
+              <Network className="h-5 w-5 text-teal-200" />
               <h2 className="text-base font-semibold">
                 {t(config.topicTitleKey)}
               </h2>
@@ -186,7 +175,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
               {config.focusKeys.slice(0, 4).map(key => (
                 <span
                   key={key}
-                  className="rounded-lg border border-sky-200/15 bg-slate-900/60 px-3 py-1.5 text-xs text-slate-200"
+                  className="rounded-lg border border-white/10 bg-slate-900/60 px-3 py-1.5 text-xs text-slate-200"
                 >
                   {t(key)}
                 </span>
@@ -243,19 +232,19 @@ function TrackPage({ kind }: { kind: TrackKind }) {
 
           <aside className="glass-panel research-index-panel">
             <div className="flex items-center gap-2">
-              <Boxes className="h-5 w-5 text-sky-300" />
+              <Boxes className="h-5 w-5 text-teal-200" />
               <h2 className="section-title">{t("track.topicNodes")}</h2>
             </div>
             <div className="research-index-list">
               {config.topics.map(topic => (
                 <div key={topic.labelKey} className="research-index-row">
                   <span>{t(topic.labelKey)}</span>
-                  <span className="text-sky-300">{t(topic.metaKey)}</span>
+                  <span className="text-teal-100">{t(topic.metaKey)}</span>
                 </div>
               ))}
             </div>
             <div className="mt-6 flex flex-wrap gap-2">
-              <Tags className="h-4 w-4 text-blue-300" />
+              <Tags className="h-4 w-4 text-slate-400" />
               <span className="text-xs text-slate-400">
                 {t("track.topicHint")}
               </span>

@@ -50,6 +50,12 @@ const agentLoopTag = {
   slug: "agent-loop",
 };
 
+const gatedFfnTag = {
+  id: 6,
+  name: "Gated FFN",
+  slug: "gated-ffn",
+};
+
 function isohcPost(
   overrides: Partial<KnowledgePostInput> = {}
 ): KnowledgePostInput {
@@ -79,6 +85,23 @@ function agentLoopPost(
     excerpt: "Agent Loop 将 ReAct 式多步行为收束为可观测运行时。",
     category: applications,
     tags: [agentLoopTag, harnessTag],
+    ...overrides,
+  });
+}
+
+function gatedFfnPost(
+  overrides: Partial<KnowledgePostInput> = {}
+): KnowledgePostInput {
+  return post({
+    id: 22,
+    title: "Gated FFN: Transformer 里的乘法通道",
+    slug: "gated-ffn-multiplicative-channel-control",
+    content:
+      "## 往数学底层看：输入依赖的对角算子\nGated FFN uses SwiGLU and channel-wise multiplication: Wd diag(phi(Wg x)) Wu x. It compares vanilla FFN with GLU, GEGLU, and SwiGLU.",
+    excerpt:
+      "从普通 FFN 推到 GLU、GEGLU 和 SwiGLU：门控 FFN 如何把逐 token MLP 变成输入依赖的通道控制器。",
+    category: algorithms,
+    tags: [gatedFfnTag],
     ...overrides,
   });
 }
@@ -314,6 +337,28 @@ describe("AI public knowledge chunks", () => {
       "isohc-fixed-vector-isometric-residual-mixing"
     );
     expect(results[0]?.relevanceReason).toContain("isohc");
+  });
+
+  it("retrieves gated FFN posts from Chinese and SwiGLU aliases", () => {
+    const chunks = buildPublicKnowledgeChunks([isohcPost(), gatedFfnPost()]);
+
+    const chineseResults = searchPublicKnowledgeChunks(
+      chunks,
+      "门控 FFN 和普通 FFN 有什么区别？",
+      { limit: 4 }
+    );
+    const swigluResults = searchPublicKnowledgeChunks(
+      chunks,
+      "SwiGLU 为什么常用于 Transformer FFN？",
+      { limit: 4 }
+    );
+
+    expect(chineseResults[0]?.postSlug).toBe(
+      "gated-ffn-multiplicative-channel-control"
+    );
+    expect(swigluResults[0]?.postSlug).toBe(
+      "gated-ffn-multiplicative-channel-control"
+    );
   });
 
   it("keeps Chinese agent-loop intent focused on the AgentLoop article", () => {

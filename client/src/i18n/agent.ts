@@ -202,16 +202,16 @@ const agent: TranslationDict = {
     zh: "这个博客的主要技术主题是什么？",
   },
   "agent.prompts.compareTracks": {
-    en: "Compare the model-mechanism and applied-system threads.",
-    zh: "比较模型机制和应用系统两条阅读线索。",
+    en: "Compare the AI Algorithms and AI Applications threads.",
+    zh: "比较 AI 算法和 AI 应用两条阅读线索。",
   },
   "agent.prompts.readingPath": {
     en: "Suggest a source-grounded reading path.",
     zh: "推荐一条有来源依据的阅读路径。",
   },
   "agent.prompts.applicationsFirst": {
-    en: "Which applied-system note should I read first?",
-    zh: "应用系统方向应该先读哪篇？",
+    en: "Which AI Applications note should I read first?",
+    zh: "AI 应用方向应该先读哪篇？",
   },
   "agent.prompts.applicationsPath": {
     en: "Build a reading path for agent evaluation.",
@@ -222,16 +222,16 @@ const agent: TranslationDict = {
     zh: "比较 Harness Engine、Evidence Packet 和 Agent Loop。",
   },
   "agent.prompts.applicationsMap": {
-    en: "Explain the applied-systems topic map.",
-    zh: "解释应用系统技术地图。",
+    en: "Explain the AI Applications topic map.",
+    zh: "解释 AI 应用技术地图。",
   },
   "agent.prompts.algorithmsFirst": {
-    en: "Which model-mechanism note should I read first?",
-    zh: "模型机制方向应该先读哪篇？",
+    en: "Which AI Algorithms note should I read first?",
+    zh: "AI 算法方向应该先读哪篇？",
   },
   "agent.prompts.algorithmsMap": {
-    en: "Explain the model-mechanisms research map.",
-    zh: "解释模型机制研究地图。",
+    en: "Explain the AI Algorithms research map.",
+    zh: "解释 AI 算法研究地图。",
   },
   "agent.prompts.algorithmsCompare": {
     en: "Compare residual stability and long-context mechanisms.",
@@ -268,6 +268,10 @@ const agent: TranslationDict = {
   "agent.sources.title": {
     en: "Sources",
     zh: "来源",
+  },
+  "agent.sources.count": {
+    en: "{count} shown",
+    zh: "{count} 个",
   },
   "agent.sources.open": {
     en: "Open source",

@@ -86,6 +86,14 @@ export const AGENT_GOLDEN_QUESTIONS: AgentGoldenQuestion[] = [
     notes: ["Should cite the public harness article."],
   },
   {
+    id: "gated-ffn-compare",
+    category: "Gated FFN",
+    question: "门控 FFN 和普通 FFN 有什么区别？",
+    expectedBehavior: "sources",
+    expectedSourceSlugs: ["gated-ffn-multiplicative-channel-control"],
+    notes: ["Should cite the public Gated FFN article."],
+  },
+  {
     id: "evidence-packet",
     category: "Evidence Packet",
     question: "What is the role of an Evidence Packet in agentic RAG?",

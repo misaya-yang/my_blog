@@ -56,6 +56,10 @@ export const trackConfigs: Record<TrackKind, TrackConfig> = {
         labelKey: "track.topic.residualMixing",
         metaKey: "track.topic.architecture",
       },
+      {
+        labelKey: "track.topic.gatedFfn",
+        metaKey: "track.topic.swiglu",
+      },
     ],
     focusKeys: [
       "home.focusTag1",

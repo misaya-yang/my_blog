@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
   type FormEvent,
+  type MouseEvent,
   type ReactNode,
   type RefObject,
 } from "react";
@@ -458,15 +459,14 @@ export function AgentLauncher({
       className="agent-liquid-launcher fixed bottom-5 right-5 z-[60] inline-flex h-11 items-center gap-2.5 rounded-full border px-3 text-sm font-semibold text-slate-100 transition hover:border-slate-400/35 sm:bottom-6 sm:right-6 sm:px-4"
     >
       <span className="agent-launcher-orb grid h-8 w-8 place-items-center rounded-full text-slate-200">
-        {open ? (
-          <X className="h-4 w-4" />
-        ) : (
-          <BookOpen className="h-4 w-4" />
-        )}
+        {open ? <X className="h-4 w-4" /> : <BookOpen className="h-4 w-4" />}
       </span>
       <span className="hidden sm:inline">{label}</span>
       {lowQuota && (
-        <span className="h-2 w-2 rounded-full bg-slate-400" aria-hidden="true" />
+        <span
+          className="h-2 w-2 rounded-full bg-slate-400"
+          aria-hidden="true"
+        />
       )}
     </button>
   );
@@ -922,23 +922,43 @@ function AgentContextDock({
 
 export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
   const { t } = useLanguage();
+  const [location, navigate] = useLocation();
+  const currentPath = normalizePathWithoutHash(location);
 
   return (
-    <div className="mt-3 border-t border-slate-800 pt-3">
-      <div className="mb-2 text-[0.7rem] font-semibold uppercase text-slate-500">
-        {t("agent.sources.title")}
+    <div className="mt-3 border-t border-slate-800/80 pt-3">
+      <div className="mb-2 flex items-center justify-between gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-slate-500">
+        <span>{t("agent.sources.title")}</span>
+        <span className="normal-case tracking-normal text-slate-600">
+          {t("agent.sources.count", {
+            count: Math.min(sources.length, 3),
+          })}
+        </span>
       </div>
       <div className="grid gap-2">
         {sources.slice(0, 3).map(source => {
           const title = source.postTitle || t("agent.sources.site");
           const hasBlogLink =
             source.sourceType !== "user_context" && Boolean(source.postSlug);
-          const currentPageSource = isCurrentPageSource(source);
-          const relevanceReason = getDisplayRelevanceReason(source, t);
+          const currentPageSource =
+            isCurrentPathSource(source, currentPath) ||
+            isCurrentPageSource(source);
+          const section = getSourceSectionLabel(source, t);
+          const excerpt = formatSourceExcerpt(source);
+          const href = hasBlogLink ? getSourceHref(source) : undefined;
           const card = (
-            <span className="block rounded-md border border-slate-700 bg-slate-950/35 p-2.5 transition hover:border-slate-500 hover:bg-slate-900/70">
-              <span className="flex items-center justify-between gap-3 text-sm font-semibold text-slate-100">
-                <span className="min-w-0 truncate">{title}</span>
+            <span className="block rounded-md border border-slate-700/80 bg-slate-950/30 px-2.5 py-2 transition hover:border-slate-500 hover:bg-slate-900/55">
+              <span className="flex items-start justify-between gap-3">
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-semibold text-slate-100">
+                    {section}
+                  </span>
+                  {source.postTitle && section !== title && (
+                    <span className="mt-0.5 block truncate text-[0.72rem] text-slate-500">
+                      {title}
+                    </span>
+                  )}
+                </span>
                 <span className="inline-flex shrink-0 items-center gap-1">
                   <span className="rounded border border-slate-700 bg-white/[0.025] px-1.5 py-0.5 text-[0.65rem] font-medium text-slate-400">
                     {source.sourceType === "user_context"
@@ -950,46 +970,14 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
                       {t("agent.sources.currentPage")}
                     </span>
                   )}
-                  {source.postSlug && (
+                  {hasBlogLink && (
                     <ExternalLink className="h-3.5 w-3.5 shrink-0" />
                   )}
                 </span>
               </span>
-              <span className="mt-1 flex flex-wrap gap-1.5 text-[0.68rem] text-slate-500">
-                {source.postSlug && (
-                  <span>
-                    {t("agent.sources.slug")}: {source.postSlug}
-                  </span>
-                )}
-                {source.heading && (
-                  <span>
-                    {t("agent.sources.section")}: {source.heading}
-                  </span>
-                )}
-                {source.categorySlug && (
-                  <span>
-                    {t("agent.sources.category")}: {source.categorySlug}
-                  </span>
-                )}
-              </span>
-              {source.tagSlugs.length > 0 && (
-                <span className="mt-1 flex flex-wrap gap-1">
-                  {source.tagSlugs.slice(0, 4).map(tag => (
-                    <span
-                      key={tag}
-                      className="rounded border border-slate-700 bg-white/[0.025] px-1.5 py-0.5 text-[0.65rem] text-slate-400"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </span>
-              )}
-              <span className="mt-1 line-clamp-2 text-xs leading-5 text-slate-400">
-                {source.excerpt}
-              </span>
-              {relevanceReason && (
-                <span className="mt-1 block text-[0.68rem] leading-4 text-slate-400">
-                  {t("agent.sources.reason")}: {relevanceReason}
+              {excerpt && (
+                <span className="mt-1 block line-clamp-1 text-xs leading-5 text-slate-500">
+                  {excerpt}
                 </span>
               )}
             </span>
@@ -998,8 +986,12 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
           return hasBlogLink ? (
             <a
               key={source.sourceId}
-              href={`/post/${source.postSlug}`}
+              href={href}
               aria-label={`${t("agent.sources.open")}: ${title}`}
+              title={`${title}${source.heading ? ` · ${source.heading}` : ""}`}
+              onClick={event => {
+                if (href) handleSourceLinkClick(event, source, href, navigate);
+              }}
             >
               {card}
             </a>
@@ -1010,6 +1002,151 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
       </div>
     </div>
   );
+}
+
+export function getSourceHref(source: SourceCard) {
+  if (!source.postSlug) return "#";
+  const anchorId = getSourceFallbackAnchorId(source);
+  return anchorId
+    ? `/post/${source.postSlug}#${anchorId}`
+    : `/post/${source.postSlug}`;
+}
+
+export function getSourceFallbackAnchorId(source: SourceCard) {
+  const chunkIndex = parseSourceChunkIndex(source.sourceId);
+  if (chunkIndex === null) return null;
+  return `heading-${Math.max(0, chunkIndex - 2)}`;
+}
+
+export function formatSourceExcerpt(source: SourceCard) {
+  const heading = source.heading ? normalizeSourceText(source.heading) : "";
+  let excerpt = source.excerpt
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/!\[[^\]]*]\([^)]*\)/g, " ")
+    .replace(/\[([^\]]+)]\([^)]*\)/g, "$1")
+    .replace(/#{1,6}\s+/g, " ")
+    .replace(/[*_>]+/g, " ")
+    .replace(/\$\$/g, "$")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (heading) {
+    const normalizedExcerpt = normalizeSourceText(excerpt);
+    if (normalizedExcerpt.startsWith(heading)) {
+      excerpt = excerpt.slice(source.heading?.length ?? 0).trim();
+    }
+  }
+
+  return excerpt.length > 150 ? `${excerpt.slice(0, 147).trim()}...` : excerpt;
+}
+
+function handleSourceLinkClick(
+  event: MouseEvent<HTMLAnchorElement>,
+  source: SourceCard,
+  href: string,
+  navigate: (to: string) => void
+) {
+  if (
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    event.metaKey ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.shiftKey
+  ) {
+    return;
+  }
+
+  event.preventDefault();
+  const targetPath = normalizePathWithoutHash(href);
+  const currentPath = normalizePathWithoutHash(window.location.pathname);
+  if (targetPath === currentPath) {
+    scrollToSource(source, href);
+    return;
+  }
+
+  navigate(href);
+}
+
+function scrollToSource(source: SourceCard, href: string) {
+  const target =
+    findSourceHeadingElement(source) ??
+    findHashElement(href) ??
+    document.querySelector<HTMLElement>(".article-prose");
+  if (!target) {
+    window.history.pushState(null, "", href);
+    return;
+  }
+
+  const targetHash = target.id ? `#${target.id}` : "";
+  window.history.pushState(
+    null,
+    "",
+    `${window.location.pathname}${targetHash}`
+  );
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
+  target.focus?.({ preventScroll: true });
+}
+
+function findSourceHeadingElement(source: SourceCard) {
+  const heading = source.heading ? normalizeSourceText(source.heading) : "";
+  const articleHeadings = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      ".article-prose h1[id], .article-prose h2[id], .article-prose h3[id]"
+    )
+  );
+
+  if (heading) {
+    const exactMatch = articleHeadings.find(
+      element => normalizeSourceText(element.textContent ?? "") === heading
+    );
+    if (exactMatch) return exactMatch;
+
+    const sectionMatch = articleHeadings.find(element => {
+      const text = normalizeSourceText(element.textContent ?? "");
+      return text.includes(heading) || heading.includes(text);
+    });
+    if (sectionMatch) return sectionMatch;
+  }
+
+  const fallbackId = getSourceFallbackAnchorId(source);
+  return fallbackId ? document.getElementById(fallbackId) : null;
+}
+
+function findHashElement(href: string) {
+  const hash = href.split("#")[1];
+  if (!hash) return null;
+  return document.getElementById(decodeURIComponent(hash));
+}
+
+function getSourceSectionLabel(source: SourceCard, t: (key: string) => string) {
+  if (source.heading) return source.heading;
+  if (source.sourceType === "user_context")
+    return source.postTitle || t("agent.sources.context");
+  return source.postTitle || t("agent.sources.site");
+}
+
+function isCurrentPathSource(source: SourceCard, currentPath: string) {
+  return Boolean(source.postSlug) && currentPath === `/post/${source.postSlug}`;
+}
+
+function normalizePathWithoutHash(value: string) {
+  return value.split("#")[0].split("?")[0] || "/";
+}
+
+function parseSourceChunkIndex(sourceId: string) {
+  const match = /(?::|^)(\d+)$/.exec(sourceId);
+  if (!match) return null;
+  return Number.parseInt(match[1], 10);
+}
+
+function normalizeSourceText(value: string) {
+  return value
+    .replace(/[#*_`]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
 }
 
 function AgentReasoningTrace({ message }: { message: ChatMessage }) {
@@ -1307,10 +1444,7 @@ function getQuotaBlockedNotice(tier: string, t: (key: string) => string) {
     : t("agent.quota.blockedVisitor");
 }
 
-function getAgentFailureNotice(
-  errorCode: string,
-  t: (key: string) => string
-) {
+function getAgentFailureNotice(errorCode: string, t: (key: string) => string) {
   return errorCode === "model_not_configured"
     ? t("agent.error.modelNotConfigured")
     : t("agent.error.send");

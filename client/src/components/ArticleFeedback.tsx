@@ -118,7 +118,7 @@ export function ArticleFeedback({
             className={cn(
               "flex h-11 items-center justify-center gap-2 rounded-md border px-3 text-sm font-medium transition",
               type === "not_useful"
-                ? "border-amber-300/60 bg-amber-400/15 text-amber-100"
+                ? "border-rose-300/55 bg-rose-400/12 text-rose-100"
                 : "border-sky-200/15 bg-slate-950/35 text-slate-300 hover:border-sky-300/45 hover:text-white"
             )}
           >

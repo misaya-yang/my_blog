@@ -3,12 +3,12 @@ import type { TranslationDict } from "./types";
 const home: TranslationDict = {
   // Hero section
   "home.title": {
-    en: "Mechanisms and systems, kept as working notes",
-    zh: "模型机制与应用工程笔记",
+    en: "AI Algorithms and Applications",
+    zh: "AI 算法与 AI 应用",
   },
   "home.subtitle": {
-    en: "A small research notebook on long-context behavior, residual stability, retrieval interfaces, and agent runtime boundaries.",
-    zh: "一组持续维护的研究笔记：长上下文行为、残差稳定性、检索接口，以及智能体运行时边界。",
+    en: "Research notes on model mechanisms, long-context behavior, agent infrastructure, RAG, and evaluation.",
+    zh: "记录模型机制、长上下文行为、Agent 基础设施、RAG 与评测工程。",
   },
   "home.chip1": { en: "working notes", zh: "working notes" },
   "home.chip2": { en: "model mechanisms", zh: "模型机制" },
@@ -54,8 +54,8 @@ const home: TranslationDict = {
 
   // Sidebar - Tags
   "home.hotTags": { en: "Hot Tags", zh: "热门标签" },
-  "home.algorithmsLabel": { en: "Mechanisms", zh: "机制笔记" },
-  "home.applicationsLabel": { en: "Systems", zh: "系统笔记" },
+  "home.algorithmsLabel": { en: "AI Algorithms", zh: "AI 算法" },
+  "home.applicationsLabel": { en: "AI Applications", zh: "AI 应用" },
 
   // Articles section
   "home.latestArticles": { en: "Latest notes", zh: "最新笔记" },
@@ -73,6 +73,8 @@ const home: TranslationDict = {
   "home.researchIndexKicker": { en: "Index", zh: "索引" },
   "home.activeSeries": { en: "Reading threads", zh: "阅读线索" },
   "home.startHere": { en: "Start here", zh: "从这里开始" },
+  "home.pathsPending": { en: "Paths loading", zh: "路径整理中" },
+  "home.notesPending": { en: "Notes loading", zh: "文章整理中" },
   "home.pathCount": { en: "{count} paths", zh: "{count} 条路径" },
   "home.publicNotes": { en: "{count} public notes", zh: "{count} 篇公开笔记" },
   "home.indexModels": { en: "Models", zh: "模型" },
@@ -239,7 +241,7 @@ const home: TranslationDict = {
   "track.algorithms.chip1": { en: "Mechanisms", zh: "机制" },
   "track.algorithms.chip2": { en: "Scaling", zh: "扩展" },
   "track.algorithms.chip3": { en: "Reliability", zh: "可靠性" },
-  "track.algorithms.title": { en: "Model Mechanisms", zh: "模型机制" },
+  "track.algorithms.title": { en: "AI Algorithms", zh: "AI 算法研究" },
   "track.algorithms.subtitle": {
     en: "Research notes on architecture, positional encoding, long-context behavior, and residual stability.",
     zh: "围绕模型架构、位置编码、长上下文行为与残差稳定性展开研究记录。",
@@ -253,8 +255,8 @@ const home: TranslationDict = {
   "track.applications.chip2": { en: "Context", zh: "上下文" },
   "track.applications.chip3": { en: "Evaluation", zh: "评测" },
   "track.applications.title": {
-    en: "Applied Systems",
-    zh: "应用系统",
+    en: "AI Applications",
+    zh: "AI 应用工程",
   },
   "track.applications.subtitle": {
     en: "Technical essays on agents, harness engines, RAG, context engineering, tool use, and evaluation loops.",
@@ -282,6 +284,9 @@ const home: TranslationDict = {
   "track.topic.scaling": { en: "Scaling", zh: "扩展" },
   "track.topic.residualMixing": { en: "Residual Mixing", zh: "残差混合" },
   "track.topic.architecture": { en: "Architecture", zh: "架构" },
+  "track.topic.gatedFfn": { en: "Gated FFN", zh: "门控 FFN" },
+  "track.topic.swiglu": { en: "SwiGLU", zh: "SwiGLU" },
+  "track.topic.channelMixing": { en: "Channel Mixing", zh: "通道混合" },
   "track.topic.agentSystems": { en: "Agent Systems", zh: "Agent 系统" },
   "track.topic.toolUse": { en: "Tool Use", zh: "工具调用" },
   "track.topic.harnessEngine": { en: "Harness Engine", zh: "Harness Engine" },
@@ -348,6 +353,22 @@ const home: TranslationDict = {
   "series.residualStability.next2": {
     en: "Orthogonal constraints",
     zh: "Orthogonal constraints",
+  },
+  "series.feedForward.title": {
+    en: "Feed-Forward Mechanisms",
+    zh: "前馈机制",
+  },
+  "series.feedForward.promise": {
+    en: "From vanilla FFN to gated MLPs, channel mixing, and multiplicative feature control.",
+    zh: "从普通 FFN 走到门控 MLP、通道混合和乘法特征控制。",
+  },
+  "series.feedForward.next1": {
+    en: "Gated activation statistics",
+    zh: "门控激活统计",
+  },
+  "series.feedForward.next2": {
+    en: "FFN parameter budget",
+    zh: "FFN 参数预算",
   },
 };
 
