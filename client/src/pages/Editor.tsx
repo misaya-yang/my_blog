@@ -104,7 +104,7 @@ function ToolbarButton({
           disabled={disabled}
           className={`rounded-md p-2 transition-all duration-150 ${
             active
-              ? "bg-blue-500 text-white shadow-[0_0_18px_rgb(59_130_246_/_0.28)]"
+              ? "bg-primary/15 text-primary shadow-[0_0_18px_oklch(0.72_0.16_235_/_0.18)]"
               : "text-slate-400 hover:bg-primary/10 hover:text-white"
           } ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
         >
@@ -125,7 +125,7 @@ function ToolbarButton({
 
 // 分隔符组件
 function ToolbarDivider() {
-  return <div className="mx-1 h-6 w-px bg-sky-200/10" />;
+  return <div className="mx-1 h-6 w-px bg-primary/10" />;
 }
 
 export default function Editor() {
@@ -605,7 +605,7 @@ export default function Editor() {
     return (
       <div className="space-page flex items-center justify-center">
         <SpaceBackdrop subtle />
-        <Loader2 className="relative z-10 h-8 w-8 animate-spin text-sky-300" />
+        <Loader2 className="relative z-10 h-8 w-8 animate-spin owner-icon-accent" />
       </div>
     );
   }
@@ -614,12 +614,12 @@ export default function Editor() {
     return (
       <div className="space-page flex items-center justify-center">
         <SpaceBackdrop subtle />
-        <div className="glass-panel relative z-10 space-y-4 p-8 text-center">
-          <FileText className="mx-auto h-16 w-16 text-sky-300" />
+        <div className="owner-panel relative z-10 space-y-4 p-8 text-center">
+          <FileText className="mx-auto h-16 w-16 owner-icon-accent" />
           <h2 className="text-xl font-semibold text-white">{t("editor.authRequired")}</h2>
           <p className="text-slate-400">{t("editor.authDescription")}</p>
           <a href={"/login"}>
-            <Button className="bg-blue-500 text-white hover:bg-blue-400">{t("editor.goToLogin")}</Button>
+            <Button className="owner-primary-action">{t("editor.goToLogin")}</Button>
           </a>
         </div>
       </div>
@@ -628,10 +628,10 @@ export default function Editor() {
 
   return (
     <TooltipProvider>
-      <div className={`relative flex min-h-screen flex-col overflow-hidden bg-[#060b16] text-slate-100 ${isFullscreen ? "fixed inset-0 z-50" : ""}`}>
+      <div className={`owner-editor-shell relative flex min-h-screen flex-col overflow-hidden text-slate-100 ${isFullscreen ? "fixed inset-0 z-50" : ""}`}>
       <SpaceBackdrop subtle />
       {/* 顶部工具栏 */}
-      <header className="relative z-10 flex h-14 shrink-0 items-center justify-between border-b border-sky-200/10 bg-slate-950/80 px-4 backdrop-blur-xl">
+      <header className="owner-toolbar relative z-10 flex h-14 shrink-0 items-center justify-between border-b px-4">
         <div className="flex items-center gap-4">
           <RouterLink href="/">
             <Button variant="ghost" size="sm" className="gap-2 text-slate-300 hover:bg-primary/10 hover:text-white">
@@ -643,7 +643,7 @@ export default function Editor() {
           <div className="hidden items-center gap-2 text-sm text-slate-400 md:flex">
             {lastSaved && (
               <>
-                <Check className="h-3.5 w-3.5 text-cyan-300" />
+                <Check className="h-3.5 w-3.5 owner-icon-accent" />
                 <span>{t("editor.savedAt")} {lastSaved.toLocaleTimeString()}</span>
               </>
             )}
@@ -700,7 +700,7 @@ export default function Editor() {
                 <Settings className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[400px] border-sky-200/15 bg-slate-950 text-slate-100 sm:w-[540px]">
+            <SheetContent className="w-[400px] border-primary/15 bg-slate-950 text-slate-100 sm:w-[540px]">
               <SheetHeader>
                 <SheetTitle>{t("editor.settingsTitle")}</SheetTitle>
                 <SheetDescription>{t("editor.settingsDescription")}</SheetDescription>
@@ -780,9 +780,9 @@ export default function Editor() {
                   </div>
                 </div>
 
-                <div className="space-y-3 rounded-lg border border-sky-200/10 bg-slate-950/35 p-4">
+                <div className="space-y-3 rounded-lg border border-primary/10 bg-slate-950/35 p-4">
                   <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 text-sky-300" />
+                    <Star className="h-4 w-4 owner-icon-accent" />
                     <Label>{t("editor.curationTitle")}</Label>
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -828,9 +828,9 @@ export default function Editor() {
                 </div>
 
                 {postId && (
-                  <div className="space-y-3 rounded-lg border border-sky-200/10 bg-slate-950/35 p-4">
+                  <div className="space-y-3 rounded-lg border border-primary/10 bg-slate-950/35 p-4">
                     <div className="flex items-center gap-2">
-                      <History className="h-4 w-4 text-cyan-300" />
+                      <History className="h-4 w-4 owner-icon-accent" />
                       <Label>{t("editor.versionHistoryTitle")}</Label>
                     </div>
                     {versions?.length ? (
@@ -838,7 +838,7 @@ export default function Editor() {
                         {versions.slice(0, 8).map((version) => (
                           <div
                             key={version.id}
-                            className="flex items-center justify-between gap-3 rounded-md border border-sky-200/10 bg-slate-950/40 px-3 py-2"
+                            className="flex items-center justify-between gap-3 rounded-md border border-primary/10 bg-slate-950/40 px-3 py-2"
                           >
                             <div className="min-w-0">
                               <p className="truncate text-sm font-medium text-white">{version.title}</p>
@@ -850,7 +850,7 @@ export default function Editor() {
                               type="button"
                               size="sm"
                               variant="outline"
-                              className="glass-button shrink-0"
+                              className="owner-button shrink-0"
                               disabled={restoreVersion.isPending}
                               onClick={() => handleRestoreVersion(version)}
                             >
@@ -874,7 +874,7 @@ export default function Editor() {
             size="sm"
             onClick={() => handleSaveDraft()}
             disabled={isSaving}
-            className="glass-button gap-2"
+            className="owner-button gap-2"
           >
             {isSaving ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -888,7 +888,7 @@ export default function Editor() {
             size="sm"
             onClick={handlePublish}
             disabled={isPublishing}
-            className="gap-2 bg-blue-500 text-white hover:bg-blue-400"
+            className="gap-2 owner-primary-action"
           >
             {isPublishing ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -901,7 +901,7 @@ export default function Editor() {
       </header>
 
       {/* 格式工具栏 */}
-      <div className="relative z-10 flex h-12 shrink-0 items-center gap-1 overflow-x-auto border-b border-sky-200/10 bg-slate-950/55 px-4 backdrop-blur-xl">
+      <div className="owner-toolbar relative z-10 flex h-12 shrink-0 items-center gap-1 overflow-x-auto border-b px-4">
         <ToolbarButton onClick={() => insertBlock("# ", t("editor.placeholder.heading"))} tooltip={t("editor.toolbar.heading1")} shortcut="Ctrl+1">
           <Heading1 className="w-4 h-4" />
         </ToolbarButton>
@@ -963,7 +963,7 @@ export default function Editor() {
 
       {/* 主编辑区域 */}
       <div className="relative z-10 flex flex-1 overflow-hidden">
-        <aside className="hidden w-64 shrink-0 border-r border-sky-200/10 bg-slate-950/45 p-4 backdrop-blur-xl xl:block">
+        <aside className="owner-editor-pane hidden w-64 shrink-0 border-r p-4 xl:block">
           <div className="mb-4">
             <p className="text-sm font-semibold text-white">{t("editor.snippetsTitle")}</p>
             <p className="mt-1 text-xs leading-5 text-slate-400">
@@ -976,7 +976,7 @@ export default function Editor() {
                 key={snippet.label}
                 type="button"
                 onClick={() => insertSnippet(snippet.value)}
-                className="w-full rounded-lg border border-sky-200/10 bg-slate-950/45 px-3 py-2 text-left transition-colors hover:border-sky-300/45 hover:bg-sky-400/10"
+                className="w-full rounded-lg border border-primary/10 bg-slate-950/45 px-3 py-2 text-left transition-colors hover:border-primary/45 hover:bg-primary/10"
               >
                 <span className="block text-sm font-medium text-white">{snippet.label}</span>
                 <span className="mt-1 block text-xs text-slate-400">{snippet.hint}</span>
@@ -984,7 +984,7 @@ export default function Editor() {
             ))}
           </div>
 
-          <div className="mt-6 border-t border-sky-200/10 pt-4 text-xs text-slate-400">
+          <div className="mt-6 border-t border-primary/10 pt-4 text-xs text-slate-400">
             <div className="flex items-center justify-between py-1">
               <span>{t("editor.statEquations")}</span>
               <span className="font-mono text-white">{equationCount}</span>
@@ -1001,15 +1001,15 @@ export default function Editor() {
         </aside>
 
         {/* 编辑器 */}
-        <div className={`min-w-0 flex flex-col ${showPreview ? "flex-1 border-r border-sky-200/10" : "w-full"}`}>
+        <div className={`min-w-0 flex flex-col ${showPreview ? "flex-1 border-r border-primary/10" : "w-full"}`}>
           {/* 标题输入 */}
-          <div className="border-b border-sky-200/10 bg-slate-950/35 p-4 backdrop-blur-xl">
+          <div className="owner-editor-pane border-b p-4">
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder={t("editor.titlePlaceholder")}
-              className="w-full bg-transparent font-serif text-2xl font-semibold leading-tight text-white outline-none placeholder:text-slate-500"
+              className="owner-editor-title-input w-full bg-transparent text-2xl font-semibold leading-tight outline-none placeholder:text-slate-500"
             />
           </div>
 
@@ -1021,7 +1021,7 @@ export default function Editor() {
               onChange={(e) => setContent(e.target.value)}
               onScroll={handleEditorScroll}
               placeholder={t("editor.contentPlaceholder")}
-              className="h-full w-full resize-none border-none bg-slate-950/20 p-5 font-mono text-sm leading-7 text-slate-200 outline-none placeholder:text-slate-600"
+              className="owner-editor-textarea h-full w-full resize-none border-none p-5 font-mono text-sm leading-7 outline-none placeholder:text-slate-600"
               style={{ minHeight: "100%" }}
             />
           </div>
@@ -1031,13 +1031,13 @@ export default function Editor() {
         {showPreview && (
           <div 
             ref={previewRef}
-            className="min-w-0 flex-1 overflow-y-auto bg-slate-950/38 backdrop-blur-xl"
+            className="owner-editor-preview min-w-0 flex-1 overflow-y-auto"
           >
             <div className="mx-auto max-w-3xl p-8">
               {title && (
                 <h1 className="mb-6 font-serif text-3xl font-semibold leading-tight text-white">{title}</h1>
               )}
-              <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:font-serif prose-headings:text-white prose-p:text-slate-300 prose-li:text-slate-300 prose-a:text-sky-300">
+              <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:font-serif prose-headings:text-white prose-p:text-slate-300 prose-li:text-slate-300 prose-a:text-primary">
                 <Suspense fallback={<div className="h-24 animate-pulse rounded-lg bg-slate-800/40" />}>
                   <MarkdownRenderer content={content || `*${t("editor.previewPlaceholder")}*`} />
                 </Suspense>
@@ -1049,7 +1049,7 @@ export default function Editor() {
 
       {/* 链接对话框 */}
       <Dialog open={showLinkDialog} onOpenChange={setShowLinkDialog}>
-        <DialogContent className="border-sky-200/15 bg-slate-950 text-slate-100">
+        <DialogContent className="border-primary/15 bg-slate-950 text-slate-100">
           <DialogHeader>
             <DialogTitle>{t("editor.linkDialogTitle")}</DialogTitle>
             <DialogDescription>{t("editor.linkDialogDescription")}</DialogDescription>
@@ -1083,7 +1083,7 @@ export default function Editor() {
 
       {/* 图片对话框 */}
       <Dialog open={showImageDialog} onOpenChange={setShowImageDialog}>
-        <DialogContent className="border-sky-200/15 bg-slate-950 text-slate-100">
+        <DialogContent className="border-primary/15 bg-slate-950 text-slate-100">
           <DialogHeader>
             <DialogTitle>{t("editor.imageDialogTitle")}</DialogTitle>
             <DialogDescription>{t("editor.imageDialogDescription")}</DialogDescription>

@@ -1,0 +1,74 @@
+@reference "../index.css";
+
+@layer components {
+  .agent-liquid-launcher {
+    border-color: oklch(0.84 0.08 235 / 26%);
+    background: linear-gradient(
+      145deg,
+      oklch(0.16 0.044 248 / 76%),
+      oklch(0.07 0.02 252 / 84%)
+    );
+    box-shadow:
+      inset 0 1px 0 oklch(0.98 0.012 235 / 12%),
+      0 6px 10px oklch(0.02 0.018 255 / 28%),
+      0 0 12px oklch(0.72 0.16 235 / 16%);
+  }
+
+  .agent-launcher-orb {
+    border-color: oklch(0.78 0.16 235 / 34%);
+    background: oklch(0.18 0.05 245 / 58%);
+    color: oklch(0.86 0.12 225);
+  }
+
+  .agent-liquid-panel {
+    border-color: oklch(0.84 0.08 235 / 22%);
+    background: linear-gradient(
+      180deg,
+      oklch(0.11 0.026 250 / 98%),
+      oklch(0.058 0.018 252 / 98%)
+    );
+    border-radius: 1.05rem;
+    box-shadow:
+      inset 0 1px 0 oklch(0.98 0.012 235 / 10%),
+      0 12px 14px oklch(0.015 0.018 255 / 42%);
+  }
+
+  .agent-liquid-panel header,
+  .agent-liquid-panel form,
+  .agent-liquid-panel .border-b,
+  .agent-liquid-panel .border-t {
+    border-color: oklch(0.84 0.08 235 / 16%);
+  }
+
+  .agent-liquid-panel textarea,
+  .agent-liquid-panel input {
+    color: oklch(0.93 0.012 235);
+  }
+
+  .agent-liquid-panel button:not(:disabled):active {
+    transform: translateY(1px);
+  }
+
+  .agent-liquid-panel [class*="rounded-md"],
+  .agent-liquid-panel [class*="rounded-lg"] {
+    border-radius: 0.82rem;
+  }
+
+  .agent-sources {
+    color: oklch(0.68 0.03 235);
+  }
+
+  .agent-source-card {
+    border-color: oklch(0.84 0.08 235 / 14%);
+    background: oklch(0.07 0.018 252 / 42%);
+  }
+
+  .agent-source-card:hover {
+    border-color: oklch(0.78 0.16 235 / 30%);
+    background: oklch(0.1 0.024 250 / 54%);
+  }
+
+  .agent-source-card .line-clamp-1 {
+    max-height: 1.25rem;
+  }
+}

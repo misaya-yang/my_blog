@@ -7,6 +7,10 @@ import superjson from "superjson";
 import App from "./App";
 import { getLoginUrl } from "./const";
 import "./index.css";
+import "./styles/public-components.css";
+import "./styles/visual-refresh.css";
+import "./styles/agent-surfaces.css";
+import "./styles/owner-tools.css";
 import { initAnalytics } from "./lib/analytics";
 
 const queryClient = new QueryClient();

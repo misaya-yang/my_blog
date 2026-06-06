@@ -309,7 +309,7 @@ export default function Manage() {
   };
 
   const renderVisibilityControl = (post: any) => (
-    <div className="inline-grid grid-cols-3 rounded-md border border-sky-200/15 bg-slate-950/50 p-1">
+    <div className="owner-segmented inline-grid grid-cols-3">
       {visibilityOptions.map(option => {
         const Icon = option.icon;
         const active = (post.visibility ?? "admin") === option.value;
@@ -321,10 +321,8 @@ export default function Manage() {
             title={t(option.labelKey)}
             disabled={updateMutation.isPending}
             onClick={() => setVisibility(post, option.value)}
-            className={`flex h-8 min-w-0 items-center justify-center gap-1.5 rounded px-2 text-xs font-medium transition ${
-              active
-                ? "bg-sky-400/20 text-sky-100 shadow-[0_0_18px_rgba(56,189,248,0.18)]"
-                : "text-slate-400 hover:bg-slate-800/80 hover:text-slate-100"
+            className={`owner-segmented-item flex min-w-0 items-center justify-center gap-1.5 px-2 text-xs font-medium ${
+              active ? "owner-segmented-item-active" : ""
             }`}
           >
             <Icon className="h-3.5 w-3.5 shrink-0" />
@@ -340,12 +338,12 @@ export default function Manage() {
     return (
       <div className="space-page flex items-center justify-center">
         <SpaceBackdrop subtle />
-        <div className="glass-panel relative z-10 space-y-4 p-8 text-center">
+        <div className="owner-panel relative z-10 space-y-4 p-8 text-center">
           <h2 className="text-2xl font-bold text-white">
             {t("manage.pleaseLogin")}
           </h2>
           <p className="text-slate-400">{t("manage.loginRequired")}</p>
-          <Button asChild className="bg-blue-500 text-white hover:bg-blue-400">
+          <Button asChild className="owner-primary-action">
             <a href={"/login"}>{t("manage.loginBtn")}</a>
           </Button>
         </div>
@@ -358,7 +356,7 @@ export default function Manage() {
     return (
       <div className="space-page flex items-center justify-center">
         <SpaceBackdrop subtle />
-        <Loader2 className="relative z-10 h-8 w-8 animate-spin text-sky-300" />
+        <Loader2 className="relative z-10 h-8 w-8 animate-spin owner-icon-accent" />
       </div>
     );
   }
@@ -392,7 +390,7 @@ export default function Manage() {
             <Button
               asChild
               variant="outline"
-              className="glass-button border-sky-200/20 bg-slate-950/50 text-sky-100"
+              className="owner-button border-primary/20 bg-slate-950/50 text-primary"
             >
               <Link href="/manage/agent">
                 <Bot className="mr-2 h-4 w-4" />
@@ -401,7 +399,7 @@ export default function Manage() {
             </Button>
             <Button
               asChild
-              className="bg-blue-500 text-white hover:bg-blue-400"
+              className="owner-primary-action"
             >
               <Link href="/write">
                 <Plus className="mr-2 h-4 w-4" />
@@ -411,18 +409,18 @@ export default function Manage() {
           </div>
         </div>
 
-        <div className="glass-panel mb-6 flex flex-col gap-4 p-4 lg:flex-row lg:items-center">
+        <div className="owner-panel mb-6 flex flex-col gap-4 p-4 lg:flex-row lg:items-center">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input
               placeholder={t("manage.searchPlaceholder")}
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="border-sky-200/15 bg-slate-950/40 pl-10 text-white placeholder:text-slate-500"
+              className="border-primary/15 bg-slate-950/40 pl-10 text-white placeholder:text-slate-500"
             />
           </div>
           <Select value={categorySlug} onValueChange={setCategorySlug}>
-            <SelectTrigger className="w-full border-sky-200/15 bg-slate-950/40 text-white lg:w-[220px]">
+            <SelectTrigger className="w-full border-primary/15 bg-slate-950/40 text-white lg:w-[220px]">
               <SelectValue placeholder={t("manage.categoryFilter")} />
             </SelectTrigger>
             <SelectContent>
@@ -452,7 +450,7 @@ export default function Manage() {
           ].map(([labelKey, value]) => (
             <div
               key={labelKey}
-              className="rounded-lg border border-sky-200/10 bg-slate-950/35 p-3"
+              className="rounded-lg border border-primary/10 bg-slate-950/35 p-3"
             >
               <p className="text-xs text-slate-500">{t(labelKey as string)}</p>
               <p className="mt-1 text-2xl font-semibold text-white">{value}</p>
@@ -463,18 +461,18 @@ export default function Manage() {
         {/* 文章列表 */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-sky-300" />
+            <Loader2 className="h-8 w-8 animate-spin owner-icon-accent" />
           </div>
         ) : postsData?.posts.length === 0 ? (
-          <div className="glass-panel py-12 text-center">
-            <FileText className="mx-auto mb-4 h-12 w-12 text-sky-300" />
+          <div className="owner-panel py-12 text-center">
+            <FileText className="mx-auto mb-4 h-12 w-12 owner-icon-accent" />
             <h3 className="mb-2 text-lg font-medium text-white">
               {t("manage.noArticles")}
             </h3>
             <p className="mb-4 text-slate-400">{t("manage.noArticlesHint")}</p>
             <Button
               asChild
-              className="bg-blue-500 text-white hover:bg-blue-400"
+              className="owner-primary-action"
             >
               <Link href="/write">
                 <Plus className="mr-2 h-4 w-4" />
@@ -486,12 +484,12 @@ export default function Manage() {
           <>
             <div className="grid gap-3 md:hidden">
               {postsData?.posts.map(post => (
-                <article key={post.id} className="glass-panel p-4">
+                <article key={post.id} className="owner-panel p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <Link
                         href={`/post/${post.slug}`}
-                        className="line-clamp-2 text-sm font-semibold leading-6 text-white hover:text-sky-200"
+                        className="line-clamp-2 text-sm font-semibold leading-6 text-white hover:text-primary"
                       >
                         {post.title}
                       </Link>
@@ -530,7 +528,7 @@ export default function Manage() {
                         asChild
                         variant="outline"
                         size="sm"
-                        className="glass-button"
+                        className="owner-button"
                       >
                         <Link href={`/post/${post.slug}`}>
                           {t("manage.action.view")}
@@ -540,7 +538,7 @@ export default function Manage() {
                         asChild
                         variant="outline"
                         size="sm"
-                        className="glass-button"
+                        className="owner-button"
                       >
                         <Link href={`/write/${post.slug}`}>
                           {t("manage.action.edit")}
@@ -549,7 +547,7 @@ export default function Manage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="glass-button"
+                        className="owner-button"
                         onClick={() => togglePublish(post)}
                       >
                         {post.status === "published"
@@ -570,10 +568,10 @@ export default function Manage() {
               ))}
             </div>
 
-            <div className="glass-panel hidden overflow-x-auto md:block">
+            <div className="owner-panel hidden overflow-x-auto md:block">
               <Table className="min-w-[980px]">
                 <TableHeader>
-                  <TableRow className="border-sky-200/10 hover:bg-transparent">
+                  <TableRow className="border-primary/10 hover:bg-transparent">
                     <TableHead className="w-[400px] text-slate-300">
                       {t("manage.table.title")}
                     </TableHead>
@@ -601,12 +599,12 @@ export default function Manage() {
                   {postsData?.posts.map(post => (
                     <TableRow
                       key={post.id}
-                      className="border-sky-200/10 hover:bg-sky-400/5"
+                      className="border-primary/10 hover:bg-primary/5"
                     >
                       <TableCell>
                         <Link
                           href={`/post/${post.slug}`}
-                          className="line-clamp-1 font-medium text-white hover:text-sky-200"
+                          className="line-clamp-1 font-medium text-white hover:text-primary"
                         >
                           {post.title}
                         </Link>
@@ -699,9 +697,9 @@ export default function Manage() {
         )}
 
         <section className="mt-8 grid gap-6 xl:grid-cols-2">
-          <div className="glass-panel p-5">
+          <div className="owner-panel p-5">
             <div className="mb-5 flex items-center gap-2 text-white">
-              <Folder className="h-5 w-5 text-sky-300" />
+              <Folder className="h-5 w-5 owner-icon-accent" />
               <h3 className="text-lg font-semibold">
                 {t("manage.taxonomy.categoriesTitle")}
               </h3>
@@ -713,7 +711,7 @@ export default function Manage() {
                   setNewCategory(prev => ({ ...prev, name: e.target.value }))
                 }
                 placeholder={t("manage.taxonomy.name")}
-                className="border-sky-200/15 bg-slate-950/40 text-white"
+                className="border-primary/15 bg-slate-950/40 text-white"
               />
               <Input
                 value={newCategory.slug}
@@ -721,7 +719,7 @@ export default function Manage() {
                   setNewCategory(prev => ({ ...prev, slug: e.target.value }))
                 }
                 placeholder={t("manage.taxonomy.slug")}
-                className="border-sky-200/15 bg-slate-950/40 text-white"
+                className="border-primary/15 bg-slate-950/40 text-white"
               />
               <Input
                 value={newCategory.description}
@@ -732,7 +730,7 @@ export default function Manage() {
                   }))
                 }
                 placeholder={t("manage.taxonomy.description")}
-                className="border-sky-200/15 bg-slate-950/40 text-white"
+                className="border-primary/15 bg-slate-950/40 text-white"
               />
               <Button
                 type="button"
@@ -757,7 +755,7 @@ export default function Manage() {
               {categoriesData?.map(category => (
                 <div
                   key={category.id}
-                  className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-3"
+                  className="rounded-lg border border-primary/10 bg-slate-950/30 p-3"
                 >
                   {editingCategoryId === category.id ? (
                     <div className="grid gap-2 md:grid-cols-[1fr_1fr_1.4fr_auto_auto]">
@@ -807,7 +805,7 @@ export default function Manage() {
                         type="button"
                         size="sm"
                         variant="outline"
-                        className="glass-button"
+                        className="owner-button"
                         onClick={() => setEditingCategoryId(null)}
                       >
                         <X className="h-4 w-4" />
@@ -833,7 +831,7 @@ export default function Manage() {
                           type="button"
                           size="sm"
                           variant="outline"
-                          className="glass-button"
+                          className="owner-button"
                           onClick={() => beginCategoryEdit(category)}
                         >
                           <Edit className="h-4 w-4" />
@@ -865,9 +863,9 @@ export default function Manage() {
             </div>
           </div>
 
-          <div className="glass-panel p-5">
+          <div className="owner-panel p-5">
             <div className="mb-5 flex items-center gap-2 text-white">
-              <Tags className="h-5 w-5 text-cyan-300" />
+              <Tags className="h-5 w-5 owner-icon-accent" />
               <h3 className="text-lg font-semibold">
                 {t("manage.taxonomy.tagsTitle")}
               </h3>
@@ -879,7 +877,7 @@ export default function Manage() {
                   setNewTag(prev => ({ ...prev, name: e.target.value }))
                 }
                 placeholder={t("manage.taxonomy.name")}
-                className="border-sky-200/15 bg-slate-950/40 text-white"
+                className="border-primary/15 bg-slate-950/40 text-white"
               />
               <Input
                 value={newTag.slug}
@@ -887,7 +885,7 @@ export default function Manage() {
                   setNewTag(prev => ({ ...prev, slug: e.target.value }))
                 }
                 placeholder={t("manage.taxonomy.slug")}
-                className="border-sky-200/15 bg-slate-950/40 text-white"
+                className="border-primary/15 bg-slate-950/40 text-white"
               />
               <Button
                 type="button"
@@ -911,7 +909,7 @@ export default function Manage() {
               {tagsData?.map(tag => (
                 <div
                   key={tag.id}
-                  className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-2"
+                  className="rounded-lg border border-primary/10 bg-slate-950/30 p-2"
                 >
                   {editingTagId === tag.id ? (
                     <div className="flex flex-wrap gap-2">
@@ -952,7 +950,7 @@ export default function Manage() {
                         type="button"
                         size="icon-sm"
                         variant="outline"
-                        className="glass-button"
+                        className="owner-button"
                         onClick={() => setEditingTagId(null)}
                       >
                         <X className="h-4 w-4" />
@@ -1002,11 +1000,11 @@ export default function Manage() {
         />
 
         <section className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
-          <div className="glass-panel p-5">
+          <div className="owner-panel p-5">
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <div className="mb-2 flex items-center gap-2 text-white">
-                  <MessageSquareText className="h-5 w-5 text-sky-300" />
+                  <MessageSquareText className="h-5 w-5 owner-icon-accent" />
                   <h3 className="text-lg font-semibold">
                     {t("manage.engagement.feedbackTitle")}
                   </h3>
@@ -1024,14 +1022,14 @@ export default function Manage() {
 
             {feedbackLoading ? (
               <div className="flex items-center justify-center py-10">
-                <Loader2 className="h-6 w-6 animate-spin text-sky-300" />
+                <Loader2 className="h-6 w-6 animate-spin owner-icon-accent" />
               </div>
             ) : feedbackData?.length ? (
               <div className="grid gap-3">
                 {feedbackData.map((item: any) => (
                   <article
                     key={item.id}
-                    className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-4"
+                    className="rounded-lg border border-primary/10 bg-slate-950/30 p-4"
                   >
                     <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                       <div className="min-w-0">
@@ -1075,7 +1073,7 @@ export default function Manage() {
                             asChild
                             variant="outline"
                             size="sm"
-                            className="glass-button"
+                            className="owner-button"
                           >
                             <Link href={`/post/${item.postSlug}`}>
                               {t("manage.action.view")}
@@ -1086,7 +1084,7 @@ export default function Manage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="glass-button"
+                            className="owner-button"
                             disabled={
                               markFeedbackReviewed.isPending ||
                               updateFeedbackStatus.isPending
@@ -1122,8 +1120,8 @@ export default function Manage() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-lg border border-sky-200/10 bg-slate-950/25 py-10 text-center">
-                <MessageSquareText className="mx-auto mb-3 h-8 w-8 text-sky-300" />
+              <div className="rounded-lg border border-primary/10 bg-slate-950/25 py-10 text-center">
+                <MessageSquareText className="mx-auto mb-3 h-8 w-8 owner-icon-accent" />
                 <p className="text-sm text-slate-400">
                   {t("manage.engagement.feedbackEmpty")}
                 </p>
@@ -1131,11 +1129,11 @@ export default function Manage() {
             )}
           </div>
 
-          <div className="glass-panel p-5">
+          <div className="owner-panel p-5">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
                 <div className="mb-2 flex items-center gap-2 text-white">
-                  <Users className="h-5 w-5 text-cyan-300" />
+                  <Users className="h-5 w-5 owner-icon-accent" />
                   <h3 className="text-lg font-semibold">
                     {t("manage.engagement.subscribersTitle")}
                   </h3>
@@ -1148,7 +1146,7 @@ export default function Manage() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="glass-button shrink-0"
+                className="owner-button shrink-0"
                 disabled={!subscribersData?.length}
                 onClick={exportSubscribers}
               >
@@ -1159,14 +1157,14 @@ export default function Manage() {
 
             {subscribersLoading ? (
               <div className="flex items-center justify-center py-10">
-                <Loader2 className="h-6 w-6 animate-spin text-sky-300" />
+                <Loader2 className="h-6 w-6 animate-spin owner-icon-accent" />
               </div>
             ) : subscribersData?.length ? (
               <div className="grid gap-3">
                 {subscribersData.slice(0, 8).map((subscriber: any) => (
                   <div
                     key={subscriber.id}
-                    className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-3"
+                    className="rounded-lg border border-primary/10 bg-slate-950/30 p-3"
                   >
                     <p className="truncate text-sm font-medium text-white">
                       {maskEmail(subscriber.email)}
@@ -1179,8 +1177,8 @@ export default function Manage() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-lg border border-sky-200/10 bg-slate-950/25 py-10 text-center">
-                <Users className="mx-auto mb-3 h-8 w-8 text-cyan-300" />
+              <div className="rounded-lg border border-primary/10 bg-slate-950/25 py-10 text-center">
+                <Users className="mx-auto mb-3 h-8 w-8 owner-icon-accent" />
                 <p className="text-sm text-slate-400">
                   {t("manage.engagement.subscribersEmpty")}
                 </p>
@@ -1231,11 +1229,11 @@ function ContentRadarPanel({
   };
 
   return (
-    <section className="glass-panel mt-8 p-5">
+    <section className="owner-panel mt-8 p-5">
       <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <div className="mb-2 flex items-center gap-2 text-white">
-            <Bot className="h-5 w-5 text-sky-300" />
+            <Bot className="h-5 w-5 owner-icon-accent" />
             <h3 className="text-lg font-semibold">
               {t("manage.engagement.radarTitle")}
             </h3>
@@ -1246,7 +1244,7 @@ function ContentRadarPanel({
         </div>
         <Badge
           variant="outline"
-          className="w-fit border-sky-200/20 text-sky-200"
+          className="w-fit border-primary/20 text-primary"
         >
           {t("manage.engagement.deliveryStored")}
         </Badge>
@@ -1254,7 +1252,7 @@ function ContentRadarPanel({
 
       {loading ? (
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin text-sky-300" />
+          <Loader2 className="h-6 w-6 animate-spin owner-icon-accent" />
         </div>
       ) : (
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)]">
@@ -1282,14 +1280,14 @@ function ContentRadarPanel({
             </h4>
             <div className="grid gap-3">
               {opportunities.length === 0 ? (
-                <p className="rounded-lg border border-sky-200/10 bg-slate-950/25 p-4 text-sm text-slate-500">
+                <p className="rounded-lg border border-primary/10 bg-slate-950/25 p-4 text-sm text-slate-500">
                   {t("manage.engagement.opportunitiesEmpty")}
                 </p>
               ) : (
                 opportunities.map((item: any) => (
                   <article
                     key={item.postSlug || item.postId}
-                    className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-4"
+                    className="rounded-lg border border-primary/10 bg-slate-950/30 p-4"
                   >
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div className="min-w-0">
@@ -1322,7 +1320,7 @@ function ContentRadarPanel({
                           asChild
                           variant="outline"
                           size="sm"
-                          className="glass-button shrink-0"
+                          className="owner-button shrink-0"
                         >
                           <Link href={`/post/${item.postSlug}`}>
                             {t("manage.action.view")}
@@ -1336,7 +1334,7 @@ function ContentRadarPanel({
             </div>
           </div>
 
-          <div className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-4">
+          <div className="rounded-lg border border-primary/10 bg-slate-950/30 p-4">
             <h4 className="text-sm font-semibold text-white">
               {t("manage.engagement.subscriptionSummary")}
             </h4>
@@ -1353,7 +1351,7 @@ function ContentRadarPanel({
                   <Badge
                     key={item.phrase}
                     variant="outline"
-                    className="border-cyan-200/20 text-cyan-100"
+                    className="border-primary/20 text-primary"
                   >
                     {item.phrase} · {item.count}
                   </Badge>
@@ -1376,7 +1374,7 @@ function ContentRadarPanel({
 
 function RadarMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-3">
+    <div className="rounded-lg border border-primary/10 bg-slate-950/30 p-3">
       <p className="text-xs text-slate-500">{label}</p>
       <p className="mt-1 text-xl font-semibold text-white">{value}</p>
     </div>
