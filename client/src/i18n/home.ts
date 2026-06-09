@@ -222,13 +222,17 @@ const home: TranslationDict = {
     zh: "上海 / 远程研究笔记",
   },
   // Track pages
-  "track.articles": { en: "Technical Articles", zh: "技术文章" },
+  "track.articles": { en: "Article index", zh: "文章索引" },
   "track.backHome": { en: "Back to index", zh: "返回索引" },
   "track.statTopics": { en: "Topics / Technical Map", zh: "专题 / 技术地图" },
   "track.topicNodes": { en: "Technical Nodes", zh: "技术节点" },
   "track.seriesTitle": { en: "Reading paths", zh: "阅读路径" },
   "track.nextPlanned": { en: "Next planned", zh: "后续计划" },
   "track.readingOrder": { en: "Reading order", zh: "阅读顺序" },
+  "track.readingOrderHint": {
+    en: "Read as an ordered path first; use the article index below for scanning and lookup.",
+    zh: "先按路径顺序阅读；需要快速查找时，再使用下方文章索引。",
+  },
   "track.researchMap": { en: "Research map", zh: "研究地图" },
   "track.algorithms.mapNote": {
     en: "Follow the invariant: what quantity is preserved, what projection enforces it, and where the architecture pays for the constraint.",

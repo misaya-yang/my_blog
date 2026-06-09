@@ -656,7 +656,7 @@ export function AgentPanel({
         )}
 
         {!bootstrapping && messages.length === 0 && (
-          <div className="flex min-h-full flex-col justify-center gap-5 py-4">
+          <div className="flex min-h-full flex-col justify-start gap-4 py-2">
             <div>
               <div className="mb-3 grid h-11 w-11 place-items-center rounded-md border border-slate-700 bg-slate-950/55 text-slate-300">
                 <BookOpen className="h-5 w-5" />
@@ -943,7 +943,8 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
           const currentPageSource =
             isCurrentPathSource(source, currentPath) ||
             isCurrentPageSource(source);
-          const section = getSourceSectionLabel(source, t);
+          const section =
+            source.sectionTitle ?? getSourceSectionLabel(source, t);
           const excerpt = formatSourceExcerpt(source);
           const href = hasBlogLink ? getSourceHref(source) : undefined;
           const card = (
@@ -1019,6 +1020,8 @@ export function getSourceFallbackAnchorId(source: SourceCard) {
 }
 
 export function formatSourceExcerpt(source: SourceCard) {
+  if (source.compactExcerpt?.trim()) return source.compactExcerpt.trim();
+
   const heading = source.heading ? normalizeSourceText(source.heading) : "";
   let excerpt = source.excerpt
     .replace(/```[\s\S]*?```/g, " ")
@@ -1276,6 +1279,7 @@ function AgentRelatedQuestions({
 }
 
 function isCurrentPageSource(source: SourceCard) {
+  if (source.isCurrentPage) return true;
   return source.relevanceReason
     .toLowerCase()
     .startsWith("current public article context");
@@ -1471,8 +1475,9 @@ function buildCompanionPrompts(
   const prompts = getCompanionPromptKeys(routeContext)
     .map(key => t(key))
     .filter(prompt => prompt && !prompt.startsWith("agent.prompts."));
-  if (prompts.length > 0) return prompts;
-  if (serverPrompts && serverPrompts.length > 0) return serverPrompts;
+  if (prompts.length > 0) return prompts.slice(0, 3);
+  if (serverPrompts && serverPrompts.length > 0)
+    return serverPrompts.slice(0, 3);
   return fallbackPrompts(t);
 }
 

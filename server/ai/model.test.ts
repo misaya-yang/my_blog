@@ -93,6 +93,23 @@ describe("agent answer quality normalization", () => {
     expect(answer.relatedQuestions.length).toBeGreaterThan(0);
   });
 
+  it("removes visible model work notes from the answer body", () => {
+    const answer = normalizeAgentAnswer(
+      {
+        answerMarkdown: [
+          "我需要用简洁的中文回答，基于这些来源。",
+          "这篇文章的核心是把 AgentLoop 写成受控运行时。",
+        ].join("\n"),
+        sourceIds: [harnessSource.sourceId],
+      },
+      [harnessSource]
+    );
+
+    expect(answer.answerMarkdown).toBe(
+      "这篇文章的核心是把 AgentLoop 写成受控运行时。"
+    );
+  });
+
   it("shows only the source cards selected by valid model source ids", () => {
     const relatedSource: AgentSourceCard = {
       ...harnessSource,

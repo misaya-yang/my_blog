@@ -55,6 +55,35 @@ const isohcSource: KnowledgeSearchResult = {
   relevanceReason: "Matches IsoHC residual stability terms.",
 };
 
+const siteOverviewSource: KnowledgeSearchResult = {
+  ...source,
+  chunkType: "site_overview_chunk",
+  postId: null,
+  postSlug: null,
+  postTitle: null,
+  categorySlug: null,
+  tagSlugs: ["agent-systems", "isohc", "gated-ffn"],
+  chunkIndex: 0,
+  heading: "Public blog map",
+  sectionPath: "site",
+  content: [
+    "Public blog knowledge map.",
+    "Public posts:",
+    "- Agent Harness Engine (agent-harness) [ai-applications]",
+    "- IsoHC: Fixed-Vector Isometric Residual Mixing (isohc-fixed-vector-isometric-residual-mixing) [ai-algorithms]",
+    "- Gated FFN: Transformer 里的乘法通道 (gated-ffn-multiplicative-channel-control) [ai-algorithms]",
+  ].join("\n"),
+  summary: "A compact map of public posts.",
+  sourceId: "site_overview_chunk:0",
+  excerpt: [
+    "Public posts:",
+    "- Agent Harness Engine (agent-harness) [ai-applications]",
+    "- IsoHC: Fixed-Vector Isometric Residual Mixing (isohc-fixed-vector-isometric-residual-mixing) [ai-algorithms]",
+    "- Gated FFN: Transformer 里的乘法通道 (gated-ffn-multiplicative-channel-control) [ai-algorithms]",
+  ].join("\n"),
+  relevanceReason: "Public blog inventory. Matched public article list intent.",
+};
+
 function anonymousContext(ip = "203.0.113.1"): AgentContext {
   return {
     req: {
@@ -352,6 +381,160 @@ describe("AI agent harness", () => {
       categorySlug: "ai-applications",
     });
     expect(result.answer.sourceIds).toContain(source.sourceId);
+  });
+
+  it("answers public article inventory questions without calling the model", async () => {
+    const model: AgentModel = {
+      generate: vi.fn(async () => {
+        throw new Error("model should not be called");
+      }),
+    };
+    const { service, conversationStore } = createHarness({
+      retrieve: vi.fn(async () => [siteOverviewSource]),
+      model,
+    });
+
+    const result = await service.sendMessage(anonymousContext(), {
+      message: "都有那几篇文章啊",
+      routeContext: {
+        path: "/",
+        routeType: "home",
+        locale: "zh",
+      },
+    });
+
+    expect(model.generate).not.toHaveBeenCalled();
+    expect(result.status).toBe("completed");
+    if (result.status !== "completed") return;
+    expect(result.answer.answerType).toBe("reading_path");
+    expect(result.answer.answerMarkdown).toContain("目前公开笔记有 3 篇");
+    expect(result.answer.answerMarkdown).toContain(
+      "/post/gated-ffn-multiplicative-channel-control"
+    );
+    expect(result.sourceCards[0]).toMatchObject({
+      sourceId: "site_overview_chunk:0",
+      postSlug: "",
+    });
+    expect(conversationStore.runs[0]).toMatchObject({
+      status: "completed",
+      inputTokens: 0,
+      outputTokens: 0,
+      retrievedChunkIds: ["site_overview_chunk:0"],
+    });
+  });
+
+  it("answers find-post intents with deterministic public post links", async () => {
+    const agentLoopSource: KnowledgeSearchResult = {
+      ...source,
+      postId: 4,
+      postSlug: "agent-loop-observable-tool-using-agents",
+      postTitle: "Agent Loop: 从 ReAct 模式到可观测运行时",
+      tagSlugs: ["agent-loop", "agent-systems"],
+      heading: "From Pattern to Runtime",
+      content:
+        "Agent Loop moves from a ReAct pattern to an observable runtime.",
+      sourceId: "post:agent-loop-observable-tool-using-agents:1",
+      excerpt:
+        "Agent Loop moves from a ReAct pattern to an observable runtime.",
+      relevanceReason: "Matched AgentLoop post title and tag.",
+    };
+    const model: AgentModel = {
+      generate: vi.fn(async () => {
+        throw new Error("model should not be called for find-post intents");
+      }),
+    };
+    const { service, conversationStore } = createHarness({
+      retrieve: vi.fn(async () => [agentLoopSource, source, siteOverviewSource]),
+      model,
+    });
+
+    const result = await service.sendMessage(anonymousContext(), {
+      message: "帮我找 AgentLoop 那篇",
+      routeContext: {
+        path: "/",
+        routeType: "home",
+        locale: "zh",
+      },
+    });
+
+    expect(model.generate).not.toHaveBeenCalled();
+    expect(result.status).toBe("completed");
+    if (result.status !== "completed") return;
+    expect(result.answer.answerType).toBe("reading_path");
+    expect(result.answer.answerMarkdown).toContain(
+      "/post/agent-loop-observable-tool-using-agents"
+    );
+    expect(result.answer.answerMarkdown).not.toContain("公众号");
+    expect(result.sourceCards[0]).toMatchObject({
+      postSlug: "agent-loop-observable-tool-using-agents",
+      postTitle: "Agent Loop: 从 ReAct 模式到可观测运行时",
+    });
+    expect(result.sourceCards).toHaveLength(1);
+    expect(conversationStore.runs[0]).toMatchObject({
+      status: "completed",
+      inputTokens: 0,
+      outputTokens: 0,
+      retrievedChunkIds: [
+        agentLoopSource.sourceId,
+        source.sourceId,
+        siteOverviewSource.sourceId,
+      ],
+    });
+  });
+
+  it("does not treat explanatory show-me questions as find-post intents", async () => {
+    const agentLoopSource: KnowledgeSearchResult = {
+      ...source,
+      postId: 4,
+      postSlug: "agent-loop-observable-tool-using-agents",
+      postTitle: "Agent Loop: 从 ReAct 模式到可观测运行时",
+      tagSlugs: ["agent-loop", "agent-systems"],
+      heading: "State Transition View",
+      content: "AgentLoop stores runtime state outside the prompt.",
+      sourceId: "post:agent-loop-observable-tool-using-agents:2",
+      excerpt: "AgentLoop stores runtime state outside the prompt.",
+      relevanceReason: "Matched AgentLoop runtime state terms.",
+    };
+    const model: AgentModel = {
+      generate: vi.fn(async ({ sources }) => ({
+        inputTokens: 10,
+        outputTokens: 20,
+        model: "test-model",
+        answer: {
+          answerType: "explanation",
+          answerMarkdown:
+            "AgentLoop keeps runtime state outside the prompt.",
+          sourceIds: [sources[0].sourceId],
+          sourceCards: [
+            {
+              sourceId: sources[0].sourceId,
+              postTitle: sources[0].postTitle ?? "",
+              postSlug: sources[0].postSlug ?? "",
+              tagSlugs: sources[0].tagSlugs,
+              excerpt: sources[0].excerpt,
+              relevanceReason: sources[0].relevanceReason,
+            },
+          ],
+          relatedQuestions: ["What is the state transition view?"],
+          confidence: "high",
+        },
+      })),
+    };
+    const { service } = createHarness({
+      retrieve: vi.fn(async () => [agentLoopSource]),
+      model,
+    });
+
+    const result = await service.sendMessage(anonymousContext(), {
+      message: "Show me how AgentLoop handles runtime state",
+      routeContext,
+    });
+
+    expect(model.generate).toHaveBeenCalledOnce();
+    expect(result.status).toBe("completed");
+    if (result.status !== "completed") return;
+    expect(result.answer.answerType).toBe("explanation");
+    expect(result.answer.answerMarkdown).not.toContain("I found this public note");
   });
 
   it("cites IsoHC when the retrieved public source is IsoHC", async () => {
@@ -674,6 +857,86 @@ describe("AI agent harness", () => {
       content: result.answer.answerMarkdown,
       sourceJson: { sourceCards: [] },
     });
+  });
+
+  it("refuses unavailable content requests before retrieval can attach unrelated public sources", async () => {
+    const model: AgentModel = {
+      generate: vi.fn(async () => {
+        throw new Error("model should not run for unavailable content");
+      }),
+    };
+    const retrieve = vi.fn(async () => [source]);
+    const { service, conversationStore } = createHarness({
+      retrieve,
+      model,
+    });
+
+    const result = await service.sendMessage(anonymousContext(), {
+      message: "能讲讲隐藏文章 EVQ 吗？",
+      routeContext,
+    });
+
+    expect(retrieve).not.toHaveBeenCalled();
+    expect(model.generate).not.toHaveBeenCalled();
+    expect(result.status).toBe("completed");
+    if (result.status !== "completed") return;
+    expect(result.answer).toMatchObject({
+      answerType: "refusal",
+      refusalReason: "no_public_source",
+      sourceCards: [],
+    });
+    expect(result.sourceCards).toEqual([]);
+    expect(conversationStore.runs[0]).toMatchObject({
+      status: "completed",
+      retrievedChunkIds: [],
+    });
+  });
+
+  it("streams unavailable content refusals without source cards", async () => {
+    const model: AgentModel = {
+      generate: vi.fn(async () => {
+        throw new Error("model should not run for unavailable content");
+      }),
+      streamGenerate: vi.fn(async () => {
+        throw new Error(
+          "streaming model should not run for unavailable content"
+        );
+      }),
+    };
+    const retrieve = vi.fn(async () => [source]);
+    const { service } = createHarness({ retrieve, model });
+    const events: AgentStreamEvent[] = [];
+
+    const result = await service.streamMessage(
+      anonymousContext("203.0.113.92"),
+      {
+        message: "Can you summarize the unpublished EVQ draft?",
+        routeContext,
+      },
+      event => events.push(event)
+    );
+
+    expect(retrieve).not.toHaveBeenCalled();
+    expect(model.generate).not.toHaveBeenCalled();
+    expect(model.streamGenerate).not.toHaveBeenCalled();
+    expect(result.status).toBe("completed");
+    if (result.status !== "completed") return;
+    expect(result.answer.sourceCards).toEqual([]);
+    expect(events).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "answer_delta",
+          delta: result.answer.answerMarkdown,
+        }),
+        expect.objectContaining({
+          type: "final",
+          output: expect.objectContaining({
+            status: "completed",
+            sourceCards: [],
+          }),
+        }),
+      ])
+    );
   });
 
   it("marks aborted streaming model work distinctly from generation failures", async () => {

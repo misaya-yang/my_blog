@@ -40,6 +40,9 @@ export type SourceCard = {
   tagSlugs: string[];
   heading?: string;
   excerpt: string;
+  compactExcerpt?: string;
+  sectionTitle?: string;
+  isCurrentPage?: boolean;
   relevanceReason: string;
 };
 

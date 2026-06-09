@@ -12,9 +12,9 @@ while (!done) {
 
 这段代码看着很顺。它也确实能表达 ReAct 的核心直觉：模型一边推理，一边行动，再根据外部 observation 修正下一步。
 
-但我现在看到这段伪代码会本能地紧张。因为真正上线的 AgentLoop 从来不是 `while true` 调模型。它更像一个小型操作系统：状态由谁保存，工具调用如何治理，什么时候停止，失败如何恢复，预算如何消耗，人工确认在哪里插入，trace 如何复盘。
+但真正要上线时，这段伪代码会让人紧张。AgentLoop 从来不是 `while true` 调模型。它更像一个小型操作系统：状态由谁保存，工具调用如何治理，什么时候停止，失败如何恢复，预算如何消耗，人工确认在哪里插入，trace 如何复盘。
 
-本文讨论一个更窄的抽象：
+这里讨论一个更窄的抽象：
 
 > AgentLoop 是围绕随机模型决策构建的确定性运行时。
 
@@ -24,7 +24,7 @@ while (!done) {
 State -> Context -> Model Decision -> Action -> Observation -> Reducer -> Checkpoint -> State
 ```
 
-这个方向的目标不是让 Agent 更“自主”，而是让多步行动变得可观测、可恢复、可评测。
+目标不是让 Agent 更“自主”，而是让多步行动变得可观测、可恢复、可评测。
 
 ## 先把边界说清楚
 
@@ -118,11 +118,11 @@ $$
 | Event Stream | 暴露运行过程 | phase events, tool events, stop reason |
 | Evaluator | 基于 trace 判断质量 | path quality, recovery, cost discipline |
 
-这张表也说明了一个关键点：AgentLoop 不是 prompt 技巧，而是 AI application runtime。模型只是其中一层。
+这层拆分说明了一个关键点：AgentLoop 不是 prompt 技巧，而是 AI application runtime。模型只是其中一层。
 
 ## 4. Phase Machine
 
-生产 AgentLoop 需要相位，而不是一团循环逻辑。
+真正生产化的 AgentLoop 需要相位，而不是一团循环逻辑。
 
 ```text
 INIT

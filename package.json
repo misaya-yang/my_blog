@@ -13,6 +13,7 @@
     "audit:baseline": "tsx scripts/audit/baseline.ts",
     "audit:baseline:quick": "tsx scripts/audit/baseline.ts --skip-checks",
     "ai:reindex": "tsx scripts/ai/reindex-knowledge.ts",
+    "content:audit": "tsx scripts/audit/content-quality.ts",
     "content:verify": "tsx scripts/audit/publish-freshness.ts --output=docs/product_optimization/reports/po-08-publish-freshness-latest.json",
     "content:publish": "tsx scripts/audit/publish-freshness.ts --snapshot-only --output=.cache/content-publish-before.json && pnpm db:seed && pnpm ai:reindex && tsx scripts/audit/publish-freshness.ts --compare=.cache/content-publish-before.json --output=docs/product_optimization/reports/po-08-publish-freshness-latest.json",
     "db:generate": "drizzle-kit generate",

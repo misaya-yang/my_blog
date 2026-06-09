@@ -4,7 +4,7 @@
 
 它可能检索到了相似但无关的材料，可能工具参数少了一个字段，可能在第三轮 observation 后忘了最初的约束，也可能只是被一个看起来合理的中间结果带偏。最后用户看到的是一句“助手没有完成回答”，但工程上这句话没有任何诊断价值。
 
-所以我后来更愿意把 Agent 开发拆成两个问题：
+后来我更愿意把 Agent 开发拆成两个问题：
 
 ```text
 模型能不能给出一个聪明动作？
@@ -77,7 +77,7 @@ Then:
 
 ## 3. Context Builder: Agent 真正吃进去的东西
 
-Agent 的上下文不是越多越好。更准确地说，上下文是一个预算接口。
+Agent 的上下文不是越多越好。上下文首先是一个预算接口。
 
 Context Builder 至少要回答五个问题：
 
@@ -89,7 +89,7 @@ Context Builder 至少要回答五个问题：
 
 同一个模型、同一个问题，只要 context builder 改了，Agent 行为就可能完全不同。所以 harness 应该让 context policy 成为可替换模块，而不是藏在 prompt 字符串里。
 
-我现在更倾向于把它写成一个显式对象：
+更可靠的做法，是把它写成一个显式对象：
 
 ```ts
 type BuiltContext = {
@@ -152,7 +152,7 @@ run_finished
 
 每个事件都应该有版本信息：模型版本、prompt 版本、retrieval policy、chunker 版本、工具 schema 版本。否则你今天修好的问题，明天可能因为一个无关改动重新出现，却没有办法定位。
 
-对于博客 Agent 这种产品，trace 还有一个额外价值：它能告诉作者读者到底卡在哪里。不是“用户体验不好”这种空话，而是：
+对于博客 Agent 这种产品，trace 还有一个额外价值：它能告诉作者读者到底卡在哪里。不是“用户体验不好”这种空话，而是更具体的故障信号：
 
 ```text
 用户经常问 IsoHC，但 retrieval 命中 ISO 8601。
@@ -176,7 +176,7 @@ Agent 评测至少应该分三层：
 
 比如一个回答看起来正确，但它引用了 hidden draft；这不是质量小瑕疵，而是权限事故。又比如模型答对了，但没有使用检索结果；这说明当前题碰巧在模型记忆里，不能证明 RAG 可用。
 
-所以我更关心 failure taxonomy：
+所以 failure taxonomy 比单次回答分数更重要：
 
 - retrieval miss
 - wrong-source citation
@@ -191,7 +191,7 @@ Agent 评测至少应该分三层：
 
 ## 7. 一个最小可用版本
 
-如果只做博客 Agent 的第一版 harness，我不会一开始就做复杂平台。最小闭环可以是：
+如果只做博客 Agent 的第一版 harness，不需要一开始就做复杂平台。最小闭环可以是：
 
 ```text
 golden questions
@@ -229,4 +229,4 @@ task + context + tool trace + source decision + eval result
 
 有了这层，Agent 开发才从 prompt 感觉变成工程循环。你可以知道是哪类问题在失败，也可以知道一次修复有没有真正保护住真实用户路径。
 
-对我来说，这就是 Agent 产品化最朴素的分界线：不是它偶尔能答得多聪明，而是它答错时我们能不能知道错在哪里。
+这就是 Agent 产品化最朴素的分界线：不是它偶尔能答得多聪明，而是它答错时系统能不能定位错在哪里。

@@ -5,7 +5,10 @@ import {
   resolveLLMModel,
 } from "../_core/llm.js";
 import { z } from "zod";
-import type { KnowledgeSearchResult } from "./knowledge.js";
+import {
+  isPublicInventoryQuery,
+  type KnowledgeSearchResult,
+} from "./knowledge.js";
 import type {
   AgentAnswer,
   AgentConversationMemoryTurn,
@@ -21,6 +24,14 @@ const MAX_CONTEXT_SOURCES = 4;
 const MAX_AGENT_OUTPUT_TOKENS = 1800;
 const SOURCE_MARKER_PATTERN =
   /<!--\s*blog-agent-sources\s*:\s*([\s\S]*?)\s*-->/gi;
+const FIND_POST_QUERY_PATTERN =
+  /\b(find|locate)\s+(?:the\s+)?(?:post|article|note|page|link)\b|\b(?:post|article|note|page|link)\s+(?:for|about)\b|帮我找|找.*(?:篇|文章|笔记)|哪篇|链接|在哪里|在哪/i;
+
+type PublicInventoryPost = {
+  title: string;
+  slug: string;
+  categorySlug: string;
+};
 
 export const BLOG_AGENT_MODEL = DEFAULT_LLM_MODEL;
 
@@ -141,6 +152,7 @@ function buildSystemPrompt() {
     "Treat user-provided conversation context as private to the current conversation, not as public blog knowledge.",
     "Use recent conversation memory only to resolve follow-up references; do not treat it as a public source.",
     "Return concise Markdown with source-grounded technical reasoning.",
+    "Do not expose internal planning, self-instructions, or meta commentary such as 'I need to answer' in the visible answer.",
     "Use $...$ for inline math and $$...$$ for display math when formulas are useful.",
     "Answer in the user's language unless the user explicitly asks otherwise.",
     "When the question asks about the current article, prioritize sources marked as current page context.",
@@ -420,9 +432,10 @@ export function normalizeAgentAnswer(
 
   return {
     answerType,
-    answerMarkdown:
+    answerMarkdown: sanitizeVisibleAnswer(
       parsed.answerMarkdown ??
-      "I found relevant public blog sources, but the model returned an empty answer.",
+        "I found relevant public blog sources, but the model returned an empty answer."
+    ),
     sourceIds: finalSourceIds,
     sourceCards: finalSourceCards,
     relatedQuestions: normalizeRelatedQuestions(
@@ -607,6 +620,131 @@ export function createSourceGroundedFallbackAnswer(input: {
   };
 }
 
+export function createPublicInventoryAnswerForInput(input: {
+  message: string;
+  routeContext: AgentRouteContext;
+  sources: KnowledgeSearchResult[];
+}): AgentAnswer | null {
+  if (!isPublicInventoryQuery(input.message)) return null;
+
+  const inventorySource = input.sources.find(
+    source => source.chunkType === "site_overview_chunk"
+  );
+  if (!inventorySource) return null;
+
+  const zh = prefersChinese(input.message, input.routeContext.locale);
+  const posts = parsePublicInventoryPosts(inventorySource.excerpt);
+  const sourceCards = buildSourceCards([inventorySource]);
+
+  return {
+    answerType: "reading_path",
+    answerMarkdown:
+      posts.length > 0
+        ? buildPublicInventoryMarkdown(posts, zh)
+        : inventorySource.excerpt,
+    sourceIds: sourceCards.map(source => source.sourceId),
+    sourceCards,
+    relatedQuestions: zh
+      ? [
+          "AI 应用方向应该先读哪篇？",
+          "AI 算法方向应该先读哪篇？",
+          "帮我整理一条 Agent 系统阅读路径。",
+        ]
+      : [
+          "Which AI Applications note should I read first?",
+          "Which AI Algorithms note should I read first?",
+          "Build a reading path for agent systems.",
+        ],
+    confidence: "high",
+    refusalReason: undefined,
+  };
+}
+
+function buildPublicInventoryMarkdown(
+  posts: PublicInventoryPost[],
+  zh: boolean
+) {
+  const intro = zh
+    ? `目前公开笔记有 ${posts.length} 篇：`
+    : `There are ${posts.length} public notes available:`;
+  const readingHint = zh
+    ? "如果想按顺序读，应用工程方向可以从 Goal Harness、Harness Engine、Evidence Packet、Agent Loop 这一组开始；算法方向可以先读 IsoHC 和 Gated FFN。"
+    : "For a first pass, read the application-engineering notes through Goal Harness, Harness Engine, Evidence Packet, and Agent Loop; for algorithms, start with IsoHC and Gated FFN.";
+
+  return [
+    intro,
+    "",
+    ...posts.map(post => formatInventoryPostLink(post, zh)),
+    "",
+    readingHint,
+  ].join("\n");
+}
+
+function formatInventoryPostLink(post: PublicInventoryPost, zh: boolean) {
+  if (zh) return `- [${post.title}](/post/${post.slug})（${post.categorySlug}）`;
+  return `- [${post.title}](/post/${post.slug}) (${post.categorySlug})`;
+}
+
+export function createFindPostAnswerForInput(input: {
+  message: string;
+  routeContext: AgentRouteContext;
+  sources: KnowledgeSearchResult[];
+}): AgentAnswer | null {
+  if (!FIND_POST_QUERY_PATTERN.test(input.message)) return null;
+
+  const sourceCards = selectPostResultCards(input.sources, input.message);
+  if (sourceCards.length === 0) return null;
+
+  const zh = prefersChinese(input.message, input.routeContext.locale);
+  const sourceIds = sourceCards.map(source => source.sourceId);
+
+  return {
+    answerType: "reading_path",
+    answerMarkdown: [
+      getFindPostIntro(zh, sourceCards.length),
+      "",
+      ...sourceCards.map(source => formatFindPostLink(source, zh)),
+      "",
+      zh
+        ? "只列出站内公开文章链接；如果要继续，我可以基于这篇文章整理阅读重点。"
+        : "I only listed public in-site links. I can summarize the selected note next.",
+    ].join("\n"),
+    sourceIds,
+    sourceCards,
+    relatedQuestions: zh
+      ? [
+          "这篇文章的核心是什么？",
+          "这篇文章适合接在哪条阅读路径后面？",
+          "帮我找一篇相关公开文章。",
+        ]
+      : [
+          "What is the core idea of this note?",
+          "Where does this note fit in a reading path?",
+          "Find a related public note.",
+        ],
+    confidence: "high",
+    refusalReason: undefined,
+  };
+}
+
+function getFindPostIntro(zh: boolean, count: number) {
+  if (zh) {
+    return count === 1 ? "找到了这篇公开笔记：" : "找到了这些公开笔记：";
+  }
+  return count === 1
+    ? "I found this public note:"
+    : "I found these public notes:";
+}
+
+function formatFindPostLink(source: AgentSourceCard, zh: boolean) {
+  const title = source.postTitle || source.heading || source.postSlug;
+  const category = source.categorySlug ? ` (${source.categorySlug})` : "";
+  if (!zh) return `- [${title}](/post/${source.postSlug})${category}`;
+
+  const zhCategory = source.categorySlug ? `（${source.categorySlug}）` : "";
+  return `- [${title}](/post/${source.postSlug})${zhCategory}`;
+}
+
 export function buildSourceCards(
   sources: KnowledgeSearchResult[]
 ): AgentSourceCard[] {
@@ -619,8 +757,57 @@ export function buildSourceCards(
     tagSlugs: source.tagSlugs,
     heading: source.heading ?? undefined,
     excerpt: source.excerpt,
+    compactExcerpt: compactSourceExcerpt(source.excerpt),
+    sectionTitle: source.heading ?? undefined,
+    isCurrentPage: source.relevanceReason
+      .toLowerCase()
+      .startsWith("current public article context"),
     relevanceReason: source.relevanceReason,
   }));
+}
+
+function selectPostResultCards(
+  sources: KnowledgeSearchResult[],
+  message: string
+) {
+  const seenPostSlugs = new Set<string>();
+  const cards: AgentSourceCard[] = [];
+
+  for (const source of buildSourceCards(sources)) {
+    if (!source.postSlug || seenPostSlugs.has(source.postSlug)) continue;
+    seenPostSlugs.add(source.postSlug);
+    cards.push(source);
+    if (cards.length >= 3) break;
+  }
+
+  const preciseTerms = extractPreciseFindTerms(message);
+  if (preciseTerms.length === 0) return cards;
+
+  const preciseCards = cards.filter(source => {
+    const haystack = normalizeFindText(
+      [
+        source.postTitle,
+        source.postSlug,
+        source.heading,
+        ...(source.tagSlugs ?? []),
+      ].join(" ")
+    );
+    return preciseTerms.some(term => haystack.includes(term));
+  });
+
+  return preciseCards.length > 0 ? preciseCards : cards;
+}
+
+function extractPreciseFindTerms(message: string) {
+  return Array.from(
+    new Set(
+      (message.match(/[a-z0-9][a-z0-9-]{2,}/gi) ?? []).map(normalizeFindText)
+    )
+  );
+}
+
+function normalizeFindText(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "");
 }
 
 export function buildContextSourceCards(
@@ -635,6 +822,10 @@ export function buildContextSourceCards(
     heading:
       source.kind === "pasted_text" ? "Pasted context" : "Uploaded context",
     excerpt: source.excerpt,
+    compactExcerpt: compactSourceExcerpt(source.excerpt),
+    sectionTitle:
+      source.kind === "pasted_text" ? "Pasted context" : "Uploaded context",
+    isCurrentPage: false,
     relevanceReason: "User-provided context attached to this conversation.",
   }));
 }
@@ -669,6 +860,57 @@ function normalizeFallbackExcerpt(excerpt: string) {
   return normalized.length > 260
     ? `${normalized.slice(0, 257).trim()}...`
     : normalized;
+}
+
+function sanitizeVisibleAnswer(markdown: string) {
+  return markdown
+    .split(/\r?\n/)
+    .filter(line => !isModelWorkNoteLine(line))
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+function isModelWorkNoteLine(line: string) {
+  const normalized = line.trim();
+  if (!normalized) return false;
+  return (
+    /^(我需要|我会|我将).*(回答|基于这些来源|用.*中文|整理|总结)/.test(
+      normalized
+    ) ||
+    /^(i need to|i should|i will).*(answer|respond|use the sources|summarize)/i.test(
+      normalized
+    )
+  );
+}
+
+function compactSourceExcerpt(excerpt: string) {
+  const normalized = excerpt
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/!\[[^\]]*]\([^)]*\)/g, " ")
+    .replace(/\[([^\]]+)]\([^)]*\)/g, "$1")
+    .replace(/#{1,6}\s+/g, " ")
+    .replace(/[*_>]+/g, " ")
+    .replace(/\$\$/g, "$")
+    .replace(/\s+/g, " ")
+    .trim();
+  return normalized.length > 150
+    ? `${normalized.slice(0, 147).trim()}...`
+    : normalized;
+}
+
+function parsePublicInventoryPosts(excerpt: string): PublicInventoryPost[] {
+  return excerpt
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .map(line => /^-\s+(.+?)\s+\(([^)]+)\)\s+\[([^\]]+)]/.exec(line))
+    .filter((match): match is RegExpExecArray => Boolean(match))
+    .map(match => ({
+      title: match[1],
+      slug: match[2],
+      categorySlug: match[3],
+    }));
 }
 
 function truncatePromptText(value: string, maxLength: number) {

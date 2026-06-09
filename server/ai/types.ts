@@ -85,6 +85,9 @@ export type AgentSourceCard = {
   tagSlugs: string[];
   heading?: string;
   excerpt: string;
+  compactExcerpt?: string;
+  sectionTitle?: string;
+  isCurrentPage?: boolean;
   relevanceReason: string;
 };
 

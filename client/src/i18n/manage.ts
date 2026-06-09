@@ -3,7 +3,10 @@ import type { TranslationDict } from "./types";
 const manage: TranslationDict = {
   // Auth guard
   "manage.pleaseLogin": { en: "Please log in first", zh: "请先登录" },
-  "manage.loginRequired": { en: "You need to log in to manage articles", zh: "你需要登录后才能管理文章" },
+  "manage.loginRequired": {
+    en: "You need to log in to manage articles",
+    zh: "你需要登录后才能管理文章",
+  },
   "manage.loginBtn": { en: "Log in", zh: "登录" },
 
   // Page header
@@ -44,16 +47,28 @@ const manage: TranslationDict = {
     en: "Delete this tag? Deletion is blocked while posts still use it.",
     zh: "确认删除这个标签吗？如果仍有文章使用它，系统会阻止删除。",
   },
-  "manage.taxonomy.categoryCreated": { en: "Category created", zh: "分类已创建" },
-  "manage.taxonomy.categoryUpdated": { en: "Category updated", zh: "分类已更新" },
-  "manage.taxonomy.categoryDeleted": { en: "Category deleted", zh: "分类已删除" },
+  "manage.taxonomy.categoryCreated": {
+    en: "Category created",
+    zh: "分类已创建",
+  },
+  "manage.taxonomy.categoryUpdated": {
+    en: "Category updated",
+    zh: "分类已更新",
+  },
+  "manage.taxonomy.categoryDeleted": {
+    en: "Category deleted",
+    zh: "分类已删除",
+  },
   "manage.taxonomy.tagCreated": { en: "Tag created", zh: "标签已创建" },
   "manage.taxonomy.tagUpdated": { en: "Tag updated", zh: "标签已更新" },
   "manage.taxonomy.tagDeleted": { en: "Tag deleted", zh: "标签已删除" },
 
   // Empty state
   "manage.noArticles": { en: "No articles", zh: "暂无文章" },
-  "manage.noArticlesHint": { en: "Start writing your first article", zh: "开始撰写你的第一篇文章吧" },
+  "manage.noArticlesHint": {
+    en: "Start writing your first article",
+    zh: "开始撰写你的第一篇文章吧",
+  },
 
   // Table headers
   "manage.table.title": { en: "Title", zh: "标题" },
@@ -80,7 +95,10 @@ const manage: TranslationDict = {
 
   // Delete dialog
   "manage.deleteTitle": { en: "Confirm Deletion", zh: "确认删除" },
-  "manage.deleteDescription": { en: "This action cannot be undone. The article will be permanently deleted.", zh: "此操作不可撤销，文章将被永久删除。" },
+  "manage.deleteDescription": {
+    en: "This action cannot be undone. The article will be permanently deleted.",
+    zh: "此操作不可撤销，文章将被永久删除。",
+  },
   "manage.deleteCancel": { en: "Cancel", zh: "取消" },
   "manage.deleteConfirm": { en: "Delete", zh: "删除" },
 
@@ -89,6 +107,10 @@ const manage: TranslationDict = {
   "manage.toast.deleteFailed": { en: "Delete failed", zh: "删除失败" },
   "manage.toast.statusUpdated": { en: "Status updated", zh: "状态已更新" },
   "manage.toast.updateFailed": { en: "Update failed", zh: "更新失败" },
+  "manage.toast.knowledgeRefreshStale": {
+    en: "Content changed, but Agent knowledge still needs refresh. Run pnpm ai:reindex before relying on assistant answers.",
+    zh: "内容已更新，但 Agent 知识仍待刷新。依赖助手回答前请运行 pnpm ai:reindex。",
+  },
 
   // Engagement workflow
   "manage.engagement.feedbackTitle": { en: "Reader Feedback", zh: "读者反馈" },
@@ -103,46 +125,79 @@ const manage: TranslationDict = {
   "manage.engagement.statusReviewed": { en: "Reviewed", zh: "已查看" },
   "manage.engagement.statusHidden": { en: "Hidden", zh: "已隐藏" },
   "manage.engagement.unknownPost": { en: "Unknown article", zh: "未知文章" },
-  "manage.engagement.noMessage": { en: "No message attached.", zh: "没有补充说明。" },
+  "manage.engagement.noMessage": {
+    en: "No message attached.",
+    zh: "没有补充说明。",
+  },
   "manage.engagement.anonymous": { en: "Anonymous reader", zh: "匿名读者" },
   "manage.engagement.markReviewed": { en: "Mark reviewed", zh: "标记已查看" },
   "manage.engagement.markHidden": { en: "Hide", zh: "隐藏" },
-  "manage.engagement.feedbackEmpty": { en: "No reader feedback yet.", zh: "暂无读者反馈。" },
-  "manage.engagement.feedbackReviewed": { en: "Feedback reviewed", zh: "反馈已标记查看" },
-  "manage.engagement.feedbackReviewFailed": { en: "Could not update feedback", zh: "反馈状态更新失败" },
+  "manage.engagement.feedbackEmpty": {
+    en: "No reader feedback yet.",
+    zh: "暂无读者反馈。",
+  },
+  "manage.engagement.feedbackReviewed": {
+    en: "Feedback reviewed",
+    zh: "反馈已标记查看",
+  },
+  "manage.engagement.feedbackReviewFailed": {
+    en: "Could not update feedback",
+    zh: "反馈状态更新失败",
+  },
   "manage.engagement.subscribersTitle": { en: "Subscribers", zh: "订阅者" },
   "manage.engagement.subscribersDescription": {
     en: "Stored subscription intent. Export this list when connecting an email provider.",
     zh: "已保存的订阅意向；接入邮件服务商时可导出这份列表。",
   },
   "manage.engagement.export": { en: "Export", zh: "导出" },
-  "manage.engagement.subscribersEmpty": { en: "No subscribers yet.", zh: "暂无订阅者。" },
+  "manage.engagement.subscribersEmpty": {
+    en: "No subscribers yet.",
+    zh: "暂无订阅者。",
+  },
   "manage.engagement.radarTitle": { en: "Content Radar", zh: "内容雷达" },
   "manage.engagement.radarDescription": {
     en: "Private reader signals grouped into writing opportunities. This stays owner-only and does not create public comments or analytics pages.",
     zh: "把私密读者信号聚合成写作机会。这里只面向作者，不开放评论区或公开数据页。",
   },
-  "manage.engagement.deliveryStored": { en: "Stored-only subscription", zh: "仅保存订阅意向" },
+  "manage.engagement.deliveryStored": {
+    en: "Stored-only subscription",
+    zh: "仅保存订阅意向",
+  },
   "manage.engagement.deliveryDescription": {
     en: "No email delivery provider is connected yet. Export subscribers when you are ready to send updates, and keep RSS available.",
     zh: "当前尚未接入邮件发送服务。需要发送更新时先导出订阅列表，同时继续保留 RSS。",
   },
   "manage.engagement.radarNewFeedback": { en: "New feedback", zh: "新反馈" },
-  "manage.engagement.radarNotUseful": { en: "Confusion signals", zh: "疑惑信号" },
-  "manage.engagement.radarSubscribers": { en: "Active subscribers", zh: "有效订阅" },
+  "manage.engagement.radarNotUseful": {
+    en: "Confusion signals",
+    zh: "疑惑信号",
+  },
+  "manage.engagement.radarSubscribers": {
+    en: "Active subscribers",
+    zh: "有效订阅",
+  },
   "manage.engagement.radarHidden": { en: "Hidden signals", zh: "已隐藏信号" },
-  "manage.engagement.opportunitiesTitle": { en: "Writing opportunities", zh: "写作机会" },
+  "manage.engagement.opportunitiesTitle": {
+    en: "Writing opportunities",
+    zh: "写作机会",
+  },
   "manage.engagement.opportunitiesEmpty": {
     en: "No article-level feedback signals yet.",
     zh: "还没有文章级反馈信号。",
   },
   "manage.engagement.latestSignal": { en: "Latest signal", zh: "最近信号" },
-  "manage.engagement.subscriptionSummary": { en: "Subscription interest summary", zh: "订阅兴趣摘要" },
+  "manage.engagement.subscriptionSummary": {
+    en: "Subscription interest summary",
+    zh: "订阅兴趣摘要",
+  },
   "manage.engagement.languageBreakdown": {
     en: "Language: ZH {zh} · EN {en} · Unknown {unknown}",
     zh: "语言偏好：中文 {zh} · 英文 {en} · 未知 {unknown}",
   },
-  "manage.engagement.noInterests": { en: "No topic interests yet.", zh: "暂无主题偏好。" },
+  "manage.engagement.noInterests": {
+    en: "No topic interests yet.",
+    zh: "暂无主题偏好。",
+  },
 
   // Actions
   "manage.writeArticle": { en: "Write Article", zh: "撰写文章" },

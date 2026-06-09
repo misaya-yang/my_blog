@@ -58,8 +58,6 @@ export function getCompanionPromptKeys(routeContext: AgentRouteContext) {
     return [
       "agent.prompts.postAbstraction",
       "agent.prompts.postImplementation",
-      "agent.prompts.postChecklist",
-      "agent.prompts.postCompare",
       "agent.prompts.nextReading",
     ];
   }
@@ -72,7 +70,6 @@ export function getCompanionPromptKeys(routeContext: AgentRouteContext) {
       "agent.prompts.applicationsFirst",
       "agent.prompts.applicationsPath",
       "agent.prompts.applicationsCompare",
-      "agent.prompts.applicationsMap",
     ];
   }
 
@@ -84,7 +81,6 @@ export function getCompanionPromptKeys(routeContext: AgentRouteContext) {
       "agent.prompts.algorithmsFirst",
       "agent.prompts.algorithmsMap",
       "agent.prompts.algorithmsCompare",
-      "agent.prompts.algorithmsPrereq",
     ];
   }
 

@@ -2,13 +2,13 @@
 
 有一类 Coding Agent 失败很迷惑：它不是完全没做，也不是代码不能运行，而是“看起来到处都做了，真正用户路径还是断的”。
 
-我们最近就踩过一次。PRD 写得很完整，Codex 也“跑完了”，仓库里出现了 schema、router、UI、测试名、后台页和一堆看似正确的文案。但打开博客 Agent 一问当前文章，它并不知道当前页面；问一个口语问题，检索打偏；source card 看起来有来源，却不一定能定位到读者正在看的内容。
+最近一次博客 Agent 改造就踩过这个坑。PRD 写得很完整，Codex 也“跑完了”，仓库里出现了 schema、router、UI、测试名、后台页和一堆看似正确的文案。但打开博客 Agent 一问当前文章，它并不知道当前页面；问一个口语问题，检索打偏；source card 看起来有来源，却不一定能定位到读者正在看的内容。
 
-这不是一个简单的模型能力问题。更准确地说，是我们把一个长期目标交给了 Agent，却没有给它一个能持续工作的运行协议。PRD 说明了产品想要什么，但没有把工作切成可冷启动、可验证、可回归、可交接的执行单元。于是 Agent 很容易做出一堆看起来像完成的改动：有表、有路由、有 UI、有测试名，但核心体验没有闭环，隐藏内容边界可能没被完整验证，quota、retrieval、source cards、mobile sheet、eval 和 admin trace 之间也没有被逐个锁住。
+把这个问题归因成“模型能力不够”太粗了。更根本的原因是：长期目标被交给了 Agent，却没有配套一个能持续工作的运行协议。PRD 说明了产品想要什么，但没有把工作切成可冷启动、可验证、可回归、可交接的执行单元。于是 Agent 很容易做出一堆看起来像完成的改动：有表、有路由、有 UI、有测试名，但核心体验没有闭环，隐藏内容边界可能没被完整验证，quota、retrieval、source cards、mobile sheet、eval 和 admin trace 之间也没有被逐个锁住。
 
-这篇文章讨论一个更实用的抽象：**Goal Harness**。
+这里讨论一个更实用的抽象：**Goal Harness**。
 
-它不是新的框架，也不是把 prompt 写得更长。它更像给 Agent 铺一条带护栏的施工路：把 PRD、Figma、代码库事实和测试要求编译成一个 phase folder，让新 Agent 可以在干净上下文里接手一个 phase，完成它，验证它，留下证据，再解锁下一个 phase。
+Goal Harness 不靠新的框架，也不靠把 prompt 写得更长。它更像一套仓库内执行协议：把 PRD、Figma、代码库事实和测试要求编译成一个 phase folder，让新 Agent 可以在干净上下文里接手一个 phase，完成它，验证它，留下证据，再解锁下一个 phase。
 
 ```text
 Product Intent
@@ -25,9 +25,9 @@ Product Intent
 
 ## Design Boundary
 
-Goal Harness 不是 evaluation harness 的替代品。Anthropic 在 [Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) 里区分了 agent harness 和 evaluation harness：前者让模型能行动，后者衡量行动结果。我们的 phase folder 属于 agent harness，但必须为 eval 留出接口。
+Goal Harness 不是 evaluation harness 的替代品。Anthropic 在 [Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) 里区分了 agent harness 和 evaluation harness：前者让模型能行动，后者衡量行动结果。这里的 phase folder 属于 agent harness，但必须为 eval 留出接口。
 
-Goal Harness 也不是“多 Agent 更高级”。Anthropic 的 long-running harness 文章强调 initializer agent、coding agent、progress file 和 clean handoff；后来的 [harness design](https://www.anthropic.com/engineering/harness-design-long-running-apps) 又进一步引入 planner / generator / evaluator 的分工。但这不意味着每个任务都应该上多 Agent。真正重要的是：任务被拆成可验证的增量，每个增量都有明确上下文、边界、证据和交接。
+Goal Harness 也不是“多 Agent 更高级”。Anthropic 的 [long-running harness](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) 文章强调 initializer agent、coding agent、progress file 和 clean handoff；后续 harness design 又进一步引入 planner / generator / evaluator 的分工。但这不意味着每个任务都应该上多 Agent。真正重要的是：任务被拆成可验证的增量，每个增量都有明确上下文、边界、证据和交接。
 
 OpenAI Codex 的 [Skills](https://developers.openai.com/codex/skills)、[Subagents](https://developers.openai.com/codex/subagents)、[Rules](https://developers.openai.com/codex/rules) 和 [MCP](https://developers.openai.com/codex/mcp) 文档指向同一个工程方向：重复工作要沉淀成 skill，复杂上下文要隔离，工具和权限要显式。Claude Code 的 [Skills](https://code.claude.com/docs/en/skills)、[Subagents](https://code.claude.com/docs/en/sub-agents) 和 [Memory](https://code.claude.com/docs/en/memory) 也是类似逻辑：把长期任务从聊天上下文搬到项目文件和可复用协议里。
 
@@ -41,6 +41,34 @@ OpenAI Codex 的 [Skills](https://developers.openai.com/codex/skills)、[Subagen
 - 什么条件下下一个 phase 才能开始。
 
 在这个系列里，它的位置也很明确：`Agent Harness Engine` 讨论如何让工具型 Agent 的运行可观测；`Evidence Packet` 讨论知识如何被编译成 Agent 可消费的上下文；`Agent Loop` 讨论多步行动如何成为状态机。Goal Harness 补的是另一层：**当 Agent 自己变成开发者时，产品需求如何被编译成它可以持续执行的工作环境**。
+
+## 0. Anthropic 的两段式解法
+
+Anthropic 的 long-running harness 思路里，关键动作很朴素：不要让同一个 session 既搭环境、又理解需求、又写完整产品。长任务先交给 **Initializer Agent**，后续推进再交给 **Coding Agent**。这不是把工作拆给两个“人格”，而是把冷启动和增量开发拆成两类不同协议。
+
+### 关键细节
+
+Initializer Agent 只做准备，不追求马上把功能写完。它应该把仓库变成可连续工作的状态：
+
+- 写一个 `init.sh`，让后续 session 可以一键安装依赖、启动开发服务器、跑基础检查。
+- 建一个 `claude-progress.txt` 或等价进度日志，记录当前阶段、已完成项、失败项、下次入口。
+- 做一次初始 git commit，给后续增量修改一个干净基线。
+- 把用户的一句话需求展开成详尽 feature list。Anthropic 的示例里，`claude.ai clone` 这类需求会被拆成两百多个功能点。
+- 每个功能点初始标记为 `failing`，直到真实代码、测试、浏览器检查或人工验收把它翻成 `passing`。
+
+Coding Agent 的职责刚好相反：它不重新发明全局计划，只在既有 harness 里做一小段增量。每个 session 读取进度日志和当前 failing feature，完成一组有限任务，跑验证，然后把结构化结果写回日志。完成之后留下的不是一句“已完成”，而是：改了什么、跑了什么、哪些 feature 从 failing 变成 passing、哪些 blocker 仍然存在、下一个 session 从哪里继续。
+
+### 面试加分点
+
+这个模式的亮点不在“用了多 Agent”，而在把长任务从聊天流搬进仓库状态。面试里如果只说“让 Claude Code 先规划再编码”，信息量不够；更有区分度的说法是：
+
+- Initializer Agent 负责把自然语言需求编译成可执行测试簿，避免后续 session 被空泛 PRD 牵着走。
+- `failing -> passing` 的 feature list 是轻量 acceptance test registry，不依赖模型自我感觉。
+- `init.sh` 和初始 commit 解决环境可复现问题，进度日志解决上下文窗口断裂问题。
+- Coding Agent 每轮只做小批量 failing items，天然形成可 code review、可回滚、可继续的增量。
+- Goal Harness 可以把 Anthropic 的进度日志升级成 phase folder：Source Packet 记录可信上下文，Feature Oracle 记录 failing/passing，Phase Contract 限定读写边界，Evidence Report 记录验证证据。
+
+所以这个抽象的重点不是“把 prompt 写得更长”，而是让 Agent 的工作环境本身带状态、带闸门、带恢复点。
 
 ## 1. PRD 不是执行协议
 
@@ -60,7 +88,7 @@ OpenAI Codex 的 [Skills](https://developers.openai.com/codex/skills)、[Subagen
 PRD 回答的是：
 
 ```text
-我们要做什么？
+目标到底是什么？
 ```
 
 Goal Harness 必须回答的是：
@@ -270,7 +298,7 @@ draft -> ready -> planned -> in_progress -> passed
 
 ## 9. Goal Harness Skill
 
-这次我们把这个方法沉淀成一个 `prd-phase-harness` skill。它的目标不是帮 Agent 写更多 Markdown，而是强迫它生成一种可执行文件夹：
+这次把这个方法沉淀成一个 `prd-phase-harness` skill。它的目标不是帮 Agent 写更多 Markdown，而是强迫它生成一种可执行文件夹：
 
 ```text
 docs/<topic>/
@@ -319,7 +347,7 @@ python3 scripts/validate_harness_prd.py docs/<topic> --strict --quality-score
 
 ## Engineering Takeaway
 
-Codex、Claude Code 这类 Agent 已经足够强，强到可以一次读很多文件、写很多代码、跑很多命令。问题是它们也足够强，强到会在没有边界时把复杂任务做成一团“看起来完成”的半成品。
+Codex、Claude Code 这类 Agent 已经足够强，强到可以一次读很多文件、写很多代码、跑很多命令。问题是它们也足够强，强到会在没有边界时把复杂任务做成一堆“看起来完成”的半成品。
 
 Goal Harness 的核心不是限制 Agent，而是给它一条持续工作的轨道：
 

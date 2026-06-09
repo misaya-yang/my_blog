@@ -12,6 +12,7 @@ import {
 } from "./knowledgeDb.js";
 import {
   analyzeKnowledgeQuery,
+  isUnavailableContentQuery,
   type KnowledgeSearchResult,
 } from "./knowledge.js";
 import {
@@ -25,7 +26,9 @@ import {
 } from "./identity.js";
 import {
   buildSourceCards,
+  createFindPostAnswerForInput,
   createNoPublicSourceAnswerForInput,
+  createPublicInventoryAnswerForInput,
   createSourceGroundedFallbackAnswer,
   defaultAgentModel,
 } from "./model.js";
@@ -33,6 +36,7 @@ import { PostgresQuotaStore, type QuotaStore } from "./quota.js";
 import type {
   AgentAddContextInput,
   AgentAddContextOutput,
+  AgentAnswer,
   AgentArticleIdeaOutput,
   AgentBootstrapInput,
   AgentBootstrapOutput,
@@ -45,6 +49,7 @@ import type {
   AgentIdentity,
   AgentKnowledgeIndexStatusOutput,
   AgentModel,
+  AgentQuota,
   AgentQuestionRadarOutput,
   AgentRetrievalDebugOutput,
   AgentRunRecord,
@@ -129,6 +134,52 @@ export type AgentService = {
 
 export function createAgentService(deps: AgentServiceDeps): AgentService {
   const now = deps.now ?? (() => new Date());
+
+  async function completeAssistantAnswer(input: {
+    conversationId: string;
+    runId: string;
+    quota: AgentQuota;
+    answer: AgentAnswer;
+    sourceCards?: AgentAnswer["sourceCards"];
+    latencyMs: number;
+    retrievedChunkIds: string[];
+    model: string | null;
+  }): Promise<Extract<AgentSendMessageOutput, { status: "completed" }>> {
+    const sourceCards = input.sourceCards ?? input.answer.sourceCards;
+    const assistantMessage = await deps.conversationStore.addMessage({
+      conversationId: input.conversationId,
+      role: "assistant",
+      status: "completed",
+      content: input.answer.answerMarkdown,
+      sourceJson: { sourceCards },
+      usageJson: {
+        inputTokens: 0,
+        outputTokens: 0,
+        model: input.model,
+      },
+    });
+
+    await deps.conversationStore.finishRun({
+      runId: input.runId,
+      assistantMessageId: assistantMessage.id,
+      status: "completed",
+      inputTokens: 0,
+      outputTokens: 0,
+      latencyMs: input.latencyMs,
+      retrievedChunkIds: input.retrievedChunkIds,
+    });
+
+    return {
+      status: "completed",
+      conversationId: input.conversationId,
+      messageId: assistantMessage.id,
+      answer: input.answer,
+      sourceCards,
+      relatedQuestions: input.answer.relatedQuestions,
+      quota: input.quota,
+      runStatus: "completed",
+    };
+  }
 
   return {
     async bootstrap(ctx, input) {
@@ -422,6 +473,23 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
       let currentPageContextInjected = false;
 
       try {
+        if (isUnavailableContentQuery(input.message)) {
+          const answer = createNoPublicSourceAnswerForInput({
+            message: input.message,
+            routeContext: input.routeContext,
+          });
+
+          return completeAssistantAnswer({
+            conversationId: conversation.id,
+            runId: run.id,
+            quota,
+            answer,
+            sourceCards: [],
+            latencyMs: now().getTime() - startedAt.getTime(),
+            retrievedChunkIds: [],
+            model: null,
+          });
+        }
         sources = await deps.retrieve({
           query: input.message,
           scope,
@@ -445,39 +513,49 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
             message: input.message,
             routeContext: input.routeContext,
           });
-          const assistantMessage = await deps.conversationStore.addMessage({
-            conversationId: conversation.id,
-            role: "assistant",
-            status: "completed",
-            content: answer.answerMarkdown,
-            sourceJson: { sourceCards: [] },
-            usageJson: {
-              inputTokens: 0,
-              outputTokens: 0,
-              model: null,
-            },
-          });
 
-          await deps.conversationStore.finishRun({
+          return completeAssistantAnswer({
+            conversationId: conversation.id,
             runId: run.id,
-            assistantMessageId: assistantMessage.id,
-            status: "completed",
-            inputTokens: 0,
-            outputTokens: 0,
-            latencyMs: now().getTime() - startedAt.getTime(),
-            retrievedChunkIds: [],
-          });
-
-          return {
-            status: "completed",
-            conversationId: conversation.id,
-            messageId: assistantMessage.id,
+            quota,
             answer,
             sourceCards: [],
-            relatedQuestions: answer.relatedQuestions,
+            latencyMs: now().getTime() - startedAt.getTime(),
+            retrievedChunkIds: [],
+            model: null,
+          });
+        }
+        const inventoryAnswer = createPublicInventoryAnswerForInput({
+          message: input.message,
+          routeContext: input.routeContext,
+          sources,
+        });
+        if (inventoryAnswer) {
+          return completeAssistantAnswer({
+            conversationId: conversation.id,
+            runId: run.id,
             quota,
-            runStatus: "completed",
-          };
+            answer: inventoryAnswer,
+            latencyMs: now().getTime() - startedAt.getTime(),
+            retrievedChunkIds: sources.map(source => source.sourceId),
+            model: "deterministic_inventory",
+          });
+        }
+        const findPostAnswer = createFindPostAnswerForInput({
+          message: input.message,
+          routeContext: input.routeContext,
+          sources,
+        });
+        if (findPostAnswer) {
+          return completeAssistantAnswer({
+            conversationId: conversation.id,
+            runId: run.id,
+            quota,
+            answer: findPostAnswer,
+            latencyMs: now().getTime() - startedAt.getTime(),
+            retrievedChunkIds: sources.map(source => source.sourceId),
+            model: "deterministic_find_post",
+          });
         }
         const modelResult = await deps.model.generate({
           message: input.message,
@@ -653,6 +731,32 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
       let answerStarted = false;
 
       try {
+        if (isUnavailableContentQuery(input.message)) {
+          const answer = createNoPublicSourceAnswerForInput({
+            message: input.message,
+            routeContext: input.routeContext,
+          });
+          emit({ type: "status", stage: "answer", elapsedMs: elapsedMs() });
+          emit({
+            type: "answer_delta",
+            delta: answer.answerMarkdown,
+            elapsedMs: elapsedMs(),
+          });
+          emit({ type: "status", stage: "saving", elapsedMs: elapsedMs() });
+
+          const output = await completeAssistantAnswer({
+            conversationId: conversation.id,
+            runId: run.id,
+            quota,
+            answer,
+            sourceCards: [],
+            latencyMs: elapsedMs(),
+            retrievedChunkIds: [],
+            model: null,
+          });
+          emit({ type: "final", output, elapsedMs: elapsedMs() });
+          return output;
+        }
         emit({ type: "status", stage: "retrieval", elapsedMs: elapsedMs() });
         sources = await deps.retrieve({
           query: input.message,
@@ -685,43 +789,73 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
             message: input.message,
             routeContext: input.routeContext,
           });
-          const assistantMessage = await deps.conversationStore.addMessage({
-            conversationId: conversation.id,
-            role: "assistant",
-            status: "completed",
-            content: answer.answerMarkdown,
-            sourceJson: { sourceCards: [] },
-            usageJson: {
-              inputTokens: 0,
-              outputTokens: 0,
-              model: null,
-            },
-          });
 
-          await deps.conversationStore.finishRun({
+          const output = await completeAssistantAnswer({
+            conversationId: conversation.id,
             runId: run.id,
-            assistantMessageId: assistantMessage.id,
-            status: "completed",
-            inputTokens: 0,
-            outputTokens: 0,
-            latencyMs: elapsedMs(),
-            retrievedChunkIds: [],
-          });
-
-          const output: AgentSendMessageOutput = {
-            status: "completed",
-            conversationId: conversation.id,
-            messageId: assistantMessage.id,
+            quota,
             answer,
             sourceCards: [],
-            relatedQuestions: answer.relatedQuestions,
-            quota,
-            runStatus: "completed",
-          };
+            latencyMs: elapsedMs(),
+            retrievedChunkIds: [],
+            model: null,
+          });
           emit({
             type: "answer_delta",
             delta: answer.answerMarkdown,
             elapsedMs: elapsedMs(),
+          });
+          emit({ type: "final", output, elapsedMs: elapsedMs() });
+          return output;
+        }
+        const inventoryAnswer = createPublicInventoryAnswerForInput({
+          message: input.message,
+          routeContext: input.routeContext,
+          sources,
+        });
+        if (inventoryAnswer) {
+          emit({ type: "status", stage: "answer", elapsedMs: elapsedMs() });
+          emit({
+            type: "answer_delta",
+            delta: inventoryAnswer.answerMarkdown,
+            elapsedMs: elapsedMs(),
+          });
+          emit({ type: "status", stage: "saving", elapsedMs: elapsedMs() });
+
+          const output = await completeAssistantAnswer({
+            conversationId: conversation.id,
+            runId: run.id,
+            quota,
+            answer: inventoryAnswer,
+            latencyMs: elapsedMs(),
+            retrievedChunkIds: sources.map(source => source.sourceId),
+            model: "deterministic_inventory",
+          });
+          emit({ type: "final", output, elapsedMs: elapsedMs() });
+          return output;
+        }
+        const findPostAnswer = createFindPostAnswerForInput({
+          message: input.message,
+          routeContext: input.routeContext,
+          sources,
+        });
+        if (findPostAnswer) {
+          emit({ type: "status", stage: "answer", elapsedMs: elapsedMs() });
+          emit({
+            type: "answer_delta",
+            delta: findPostAnswer.answerMarkdown,
+            elapsedMs: elapsedMs(),
+          });
+          emit({ type: "status", stage: "saving", elapsedMs: elapsedMs() });
+
+          const output = await completeAssistantAnswer({
+            conversationId: conversation.id,
+            runId: run.id,
+            quota,
+            answer: findPostAnswer,
+            latencyMs: elapsedMs(),
+            retrievedChunkIds: sources.map(source => source.sourceId),
+            model: "deterministic_find_post",
           });
           emit({ type: "final", output, elapsedMs: elapsedMs() });
           return output;

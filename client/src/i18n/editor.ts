@@ -3,7 +3,10 @@ import type { TranslationDict } from "./types";
 const editor: TranslationDict = {
   // Auth guard
   "editor.authRequired": { en: "Admin login required", zh: "需要管理员登录" },
-  "editor.authDescription": { en: "Sign in with the admin password to create or edit posts.", zh: "使用管理员密码登录后可创建或编辑文章。" },
+  "editor.authDescription": {
+    en: "Sign in with the admin password to create or edit posts.",
+    zh: "使用管理员密码登录后可创建或编辑文章。",
+  },
   "editor.goToLogin": { en: "Go to login", zh: "去登录" },
 
   // Toolbar tooltips
@@ -51,7 +54,10 @@ const editor: TranslationDict = {
   "editor.enterFullscreen": { en: "Fullscreen", zh: "全屏模式" },
 
   // Title input
-  "editor.titlePlaceholder": { en: "Enter article title...", zh: "输入文章标题..." },
+  "editor.titlePlaceholder": {
+    en: "Enter article title...",
+    zh: "输入文章标题...",
+  },
 
   // Content placeholder
   "editor.contentPlaceholder": {
@@ -60,7 +66,10 @@ const editor: TranslationDict = {
   },
 
   // Preview placeholder
-  "editor.previewPlaceholder": { en: "Preview will appear here after you start writing...", zh: "开始撰写后，预览将显示在这里..." },
+  "editor.previewPlaceholder": {
+    en: "Preview will appear here after you start writing...",
+    zh: "开始撰写后，预览将显示在这里...",
+  },
 
   // Research snippets sidebar
   "editor.snippetsTitle": { en: "Research Snippets", zh: "研究片段" },
@@ -69,13 +78,22 @@ const editor: TranslationDict = {
     zh: "快速插入论文式结构，保持主张和证据边界清楚。",
   },
   "editor.snippet.claim": { en: "Claim", zh: "主张" },
-  "editor.snippet.claimHint": { en: "Claim / evidence / caveat", zh: "Claim / evidence / caveat" },
+  "editor.snippet.claimHint": {
+    en: "Claim / evidence / caveat",
+    zh: "Claim / evidence / caveat",
+  },
   "editor.snippet.theorem": { en: "Theorem", zh: "定理" },
   "editor.snippet.theoremHint": { en: "Theorem block", zh: "Theorem block" },
   "editor.snippet.proposition": { en: "Proposition", zh: "命题" },
-  "editor.snippet.propositionHint": { en: "Proposition block", zh: "Proposition block" },
+  "editor.snippet.propositionHint": {
+    en: "Proposition block",
+    zh: "Proposition block",
+  },
   "editor.snippet.experiment": { en: "Experiment", zh: "实验" },
-  "editor.snippet.experimentHint": { en: "Setup / metric / result", zh: "Setup / metric / result" },
+  "editor.snippet.experimentHint": {
+    en: "Setup / metric / result",
+    zh: "Setup / metric / result",
+  },
   "editor.snippet.formula": { en: "Formula", zh: "公式" },
   "editor.snippet.formulaHint": { en: "Display math", zh: "Display math" },
   "editor.snippet.figure": { en: "Figure", zh: "图注" },
@@ -88,9 +106,15 @@ const editor: TranslationDict = {
 
   // Settings sheet
   "editor.settingsTitle": { en: "Article Settings", zh: "文章设置" },
-  "editor.settingsDescription": { en: "Configure category, tags, and other article properties", zh: "设置文章的分类、标签和其他属性" },
+  "editor.settingsDescription": {
+    en: "Configure category, tags, and other article properties",
+    zh: "设置文章的分类、标签和其他属性",
+  },
   "editor.excerptLabel": { en: "Excerpt", zh: "文章摘要" },
-  "editor.excerptPlaceholder": { en: "Enter article excerpt, leave blank to auto-extract first 200 characters", zh: "输入文章摘要，留空将自动截取正文前200字" },
+  "editor.excerptPlaceholder": {
+    en: "Enter article excerpt, leave blank to auto-extract first 200 characters",
+    zh: "输入文章摘要，留空将自动截取正文前200字",
+  },
   "editor.coverImageLabel": { en: "Cover Image", zh: "封面图片" },
   "editor.coverImagePlaceholder": { en: "Enter image URL", zh: "输入图片URL" },
   "editor.coverPreview": { en: "Cover preview", zh: "封面预览" },
@@ -105,7 +129,10 @@ const editor: TranslationDict = {
   "editor.pinnedTrackPlaceholder": { en: "Pinned track", zh: "置顶技术区" },
   "editor.pinnedTrackNone": { en: "No track pin", zh: "不置顶" },
   "editor.versionHistoryTitle": { en: "Version history", zh: "版本历史" },
-  "editor.versionHistoryEmpty": { en: "No saved versions yet.", zh: "暂无已保存版本。" },
+  "editor.versionHistoryEmpty": {
+    en: "No saved versions yet.",
+    zh: "暂无已保存版本。",
+  },
   "editor.versionRestore": { en: "Restore", zh: "恢复" },
   "editor.versionRestoreConfirm": {
     en: "Restore this version? The current content will be saved as a new version first.",
@@ -114,18 +141,30 @@ const editor: TranslationDict = {
 
   // Link dialog
   "editor.linkDialogTitle": { en: "Insert Link", zh: "插入链接" },
-  "editor.linkDialogDescription": { en: "Enter link address and display text", zh: "输入链接地址和显示文本" },
+  "editor.linkDialogDescription": {
+    en: "Enter link address and display text",
+    zh: "输入链接地址和显示文本",
+  },
   "editor.linkTextLabel": { en: "Link text", zh: "链接文本" },
   "editor.linkTextPlaceholder": { en: "Display text", zh: "显示的文本" },
   "editor.linkUrlLabel": { en: "Link address", zh: "链接地址" },
-  "editor.linkUrlPlaceholder": { en: "https://example.com", zh: "https://example.com" },
+  "editor.linkUrlPlaceholder": {
+    en: "https://example.com",
+    zh: "https://example.com",
+  },
   "editor.linkInsert": { en: "Insert", zh: "插入" },
 
   // Image dialog
   "editor.imageDialogTitle": { en: "Insert Image", zh: "插入图片" },
-  "editor.imageDialogDescription": { en: "Enter image address", zh: "输入图片地址" },
+  "editor.imageDialogDescription": {
+    en: "Enter image address",
+    zh: "输入图片地址",
+  },
   "editor.imageUrlLabel": { en: "Image address", zh: "图片地址" },
-  "editor.imageUrlPlaceholder": { en: "https://example.com/image.jpg", zh: "https://example.com/image.jpg" },
+  "editor.imageUrlPlaceholder": {
+    en: "https://example.com/image.jpg",
+    zh: "https://example.com/image.jpg",
+  },
   "editor.imageAltLabel": { en: "Alt text", zh: "替代文本" },
   "editor.imageAltPlaceholder": { en: "Image description", zh: "图片描述" },
   "editor.imagePreview": { en: "Preview", zh: "预览" },
@@ -136,24 +175,49 @@ const editor: TranslationDict = {
   "editor.publish": { en: "Publish", zh: "发布" },
 
   // Toast
-  "editor.toast.titleRequired": { en: "Please enter article title", zh: "请输入文章标题" },
-  "editor.toast.contentRequired": { en: "Please enter article content", zh: "请输入文章内容" },
+  "editor.toast.titleRequired": {
+    en: "Please enter article title",
+    zh: "请输入文章标题",
+  },
+  "editor.toast.contentRequired": {
+    en: "Please enter article content",
+    zh: "请输入文章内容",
+  },
   "editor.toast.draftSaved": { en: "Draft saved", zh: "草稿已保存" },
-  "editor.toast.saveFailed": { en: "Save failed, please try again", zh: "保存失败，请重试" },
+  "editor.toast.saveFailed": {
+    en: "Save failed, please try again",
+    zh: "保存失败，请重试",
+  },
   "editor.toast.published": { en: "Article published!", zh: "文章已发布！" },
-  "editor.toast.publishFailed": { en: "Publish failed, please try again", zh: "发布失败，请重试" },
+  "editor.toast.publishFailed": {
+    en: "Publish failed, please try again",
+    zh: "发布失败，请重试",
+  },
   "editor.toast.versionRestored": { en: "Version restored", zh: "版本已恢复" },
-  "editor.toast.versionRestoreFailed": { en: "Version restore failed", zh: "版本恢复失败" },
+  "editor.toast.versionRestoreFailed": {
+    en: "Version restore failed",
+    zh: "版本恢复失败",
+  },
+  "editor.toast.knowledgeRefreshStale": {
+    en: "Article saved, but Agent knowledge still needs refresh. Run pnpm ai:reindex before relying on assistant answers.",
+    zh: "文章已保存，但 Agent 知识仍待刷新。依赖助手回答前请运行 pnpm ai:reindex。",
+  },
 
   // Misc
   "editor.readingTimeApprox": { en: "~ {time} min", zh: "约 {time} 分钟" },
-  "editor.codeBlockPlaceholder": { en: "// Enter code here", zh: "// 在此输入代码" },
+  "editor.codeBlockPlaceholder": {
+    en: "// Enter code here",
+    zh: "// 在此输入代码",
+  },
 
   // Inline placeholders (inserted into editor content)
   "editor.placeholder.heading": { en: "Heading", zh: "标题" },
   "editor.placeholder.bold": { en: "Bold text", zh: "粗体文本" },
   "editor.placeholder.italic": { en: "Italic text", zh: "斜体文本" },
-  "editor.placeholder.strikethrough": { en: "Strikethrough text", zh: "删除文本" },
+  "editor.placeholder.strikethrough": {
+    en: "Strikethrough text",
+    zh: "删除文本",
+  },
   "editor.placeholder.code": { en: "Code", zh: "代码" },
   "editor.placeholder.listItem": { en: "List item", zh: "列表项" },
   "editor.placeholder.quote": { en: "Quoted content", zh: "引用内容" },

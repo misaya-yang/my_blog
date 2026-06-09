@@ -15,6 +15,13 @@ export type KnowledgeReindexResult = {
   skipped: number;
 };
 
+type IndexedKnowledgeChunkSnapshot = Pick<
+  typeof aiKnowledgeChunks.$inferSelect,
+  "postSlug" | "chunkIndex" | "chunkType" | "contentHash"
+>;
+
+let latestReindexError: string | null = null;
+
 export async function reindexPublicKnowledgeChunks(): Promise<KnowledgeReindexResult> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -22,7 +29,7 @@ export async function reindexPublicKnowledgeChunks(): Promise<KnowledgeReindexRe
   const publicPosts = await getPublicDiscoveryPosts();
   const chunks = buildPublicKnowledgeChunks(publicPosts);
 
-  return await db.transaction(async (tx) => {
+  const result = await db.transaction(async tx => {
     const deletedRows = await tx
       .delete(aiKnowledgeChunks)
       .returning({ id: aiKnowledgeChunks.id });
@@ -37,6 +44,13 @@ export async function reindexPublicKnowledgeChunks(): Promise<KnowledgeReindexRe
       skipped: 0,
     };
   });
+  latestReindexError = null;
+  return result;
+}
+
+export function recordKnowledgeReindexFailure(error: unknown) {
+  latestReindexError =
+    error instanceof Error ? error.message : "Unknown reindex failure";
 }
 
 export async function searchPublicKnowledgeChunkSources(params: {
@@ -59,7 +73,9 @@ export async function searchPublicKnowledgeChunkSources(params: {
         eq(aiKnowledgeChunks.visibilitySnapshot, "public")
       )
     );
-  const preferredSourceIds = await selectFullTextPreferredSourceIds(params.query);
+  const preferredSourceIds = await selectFullTextPreferredSourceIds(
+    params.query
+  );
 
   return searchPublicKnowledgeChunks(rows.map(fromRow), params.query, {
     limit: params.limit,
@@ -78,16 +94,24 @@ export async function getKnowledgeIndexStatus(): Promise<AgentKnowledgeIndexStat
     db.select().from(aiKnowledgeChunks),
   ]);
 
-  const publicPostSlugs = new Set(publicPosts.map((post) => post.slug));
+  const publicPostSlugs = new Set(publicPosts.map(post => post.slug));
   const publicRows = rows.filter(
-    (row) =>
-      row.statusSnapshot === "published" &&
-      row.visibilitySnapshot === "public"
+    row =>
+      row.statusSnapshot === "published" && row.visibilitySnapshot === "public"
   );
+  const expectedChunks = buildPublicKnowledgeChunks(publicPosts);
+  const stalePublicPostSlugs = getStalePublicPostSlugs({
+    expectedChunks,
+    publicRows,
+    publicPostSlugs,
+  });
   const indexedPostSlugs = Array.from(
-    new Set(publicRows.map((row) => row.postSlug).filter((slug): slug is string => Boolean(slug)))
+    new Set(
+      publicRows
+        .map(row => row.postSlug)
+        .filter((slug): slug is string => Boolean(slug))
+    )
   ).sort();
-  const indexedPostSlugSet = new Set(indexedPostSlugs);
   const lastReindexAt = rows.reduce<Date | null>((latest, row) => {
     const value = row.updatedAt ?? row.createdAt;
     if (!value) return latest;
@@ -98,24 +122,75 @@ export async function getKnowledgeIndexStatus(): Promise<AgentKnowledgeIndexStat
   return {
     chunkCount: publicRows.length,
     publicPostCount: publicPosts.length,
-    indexedPublicPostCount: indexedPostSlugs.filter((slug) => publicPostSlugs.has(slug)).length,
-    hiddenOrDraftExcludedCount: Math.max(0, totalPostCount - publicPosts.length),
+    indexedPublicPostCount: indexedPostSlugs.filter(slug =>
+      publicPostSlugs.has(slug)
+    ).length,
+    hiddenOrDraftExcludedCount: Math.max(
+      0,
+      totalPostCount - publicPosts.length
+    ),
     lastReindexAt,
-    latestReindexError: null,
+    latestReindexError,
     reindexCommand: "pnpm ai:reindex",
     publishCommand: "pnpm content:publish",
-    stalePublicPostSlugs: publicPosts
-      .map((post) => post.slug)
-      .filter((slug) => !indexedPostSlugSet.has(slug))
-      .sort(),
+    stalePublicPostSlugs,
     extraIndexedPostSlugs: indexedPostSlugs
-      .filter((slug) => !publicPostSlugs.has(slug))
+      .filter(slug => !publicPostSlugs.has(slug))
       .sort(),
     indexedPostSlugs,
   };
 }
 
-function toInsertValue(chunk: KnowledgeChunkDraft): typeof aiKnowledgeChunks.$inferInsert {
+export function getStalePublicPostSlugs(input: {
+  expectedChunks: KnowledgeChunkDraft[];
+  publicRows: IndexedKnowledgeChunkSnapshot[];
+  publicPostSlugs: Set<string>;
+}): string[] {
+  const expectedHashBySourceId = new Map(
+    input.expectedChunks.map(chunk => [
+      buildChunkSourceId(chunk),
+      chunk.contentHash,
+    ])
+  );
+  const indexedHashBySourceId = new Map(
+    input.publicRows.map(row => [buildRowSourceId(row), row.contentHash])
+  );
+  const staleSlugs = new Set<string>();
+
+  for (const chunk of input.expectedChunks) {
+    if (!chunk.postSlug) continue;
+    const indexedHash = indexedHashBySourceId.get(buildChunkSourceId(chunk));
+
+    if (indexedHash !== chunk.contentHash) {
+      staleSlugs.add(chunk.postSlug);
+    }
+  }
+
+  for (const row of input.publicRows) {
+    if (!row.postSlug || !input.publicPostSlugs.has(row.postSlug)) continue;
+    if (!expectedHashBySourceId.has(buildRowSourceId(row))) {
+      staleSlugs.add(row.postSlug);
+    }
+  }
+
+  return Array.from(staleSlugs).sort();
+}
+
+function buildChunkSourceId(chunk: KnowledgeChunkDraft) {
+  return chunk.postSlug
+    ? `${chunk.postSlug}:${chunk.chunkIndex}`
+    : `${chunk.chunkType}:${chunk.chunkIndex}`;
+}
+
+function buildRowSourceId(row: IndexedKnowledgeChunkSnapshot) {
+  return row.postSlug
+    ? `${row.postSlug}:${row.chunkIndex}`
+    : `${row.chunkType}:${row.chunkIndex}`;
+}
+
+function toInsertValue(
+  chunk: KnowledgeChunkDraft
+): typeof aiKnowledgeChunks.$inferInsert {
   return {
     chunkType: chunk.chunkType,
     postId: chunk.postId,
@@ -138,7 +213,9 @@ function toInsertValue(chunk: KnowledgeChunkDraft): typeof aiKnowledgeChunks.$in
   };
 }
 
-function fromRow(row: typeof aiKnowledgeChunks.$inferSelect): KnowledgeChunkDraft {
+function fromRow(
+  row: typeof aiKnowledgeChunks.$inferSelect
+): KnowledgeChunkDraft {
   return {
     chunkType: row.chunkType,
     postId: row.postId,
@@ -185,11 +262,13 @@ async function selectFullTextPreferredSourceIds(query: string) {
       .orderBy(sql`ts_rank_cd(${document}, ${tsQuery}) desc`)
       .limit(32);
 
-    return new Set(rows.map((row) =>
-      row.postSlug
-        ? `${row.postSlug}:${row.chunkIndex}`
-        : `${row.chunkType}:${row.chunkIndex}`
-    ));
+    return new Set(
+      rows.map(row =>
+        row.postSlug
+          ? `${row.postSlug}:${row.chunkIndex}`
+          : `${row.chunkType}:${row.chunkIndex}`
+      )
+    );
   } catch {
     return new Set<string>();
   }

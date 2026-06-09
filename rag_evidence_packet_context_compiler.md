@@ -1,6 +1,6 @@
 # Evidence Packet: Agentic RAG 的上下文编译接口
 
-我以前对 RAG 的理解很粗暴：用户问一句话，系统把相似 chunk 找出来，塞进 prompt，模型回答。这个版本当然能跑 demo，但一旦把它接到一个真正的 Assistant 里，问题就开始变得难看。
+RAG 很容易被理解成一条直线：用户问一句话，系统把相似 chunk 找出来，塞进 prompt，模型回答。这个版本当然能跑 demo，但一旦接到真正的 Assistant 里，问题就开始变得难看。
 
 模型会问：这些 chunk 为什么进来了？
 
@@ -10,19 +10,19 @@
 
 这些问题都不是“再换一个向量库”能解决的。Agentic RAG 的关键不只是“如何检索到相关 chunk”，而是“如何把知识库结果变成 Agent 可以稳定消费、可以引用、可以复盘的上下文对象”。
 
-这篇文章只从一个小接口切进去：**Evidence Packet**。它是 Assistant 与 KB 之间的结构化中间表示。KB 不再只是向量搜索服务，而是一个面向 Agent 的 **Context Compiler**：把原始文档、召回信号、来源元数据、token 预算和引用约束编译成可执行上下文。
+这里从一个很小的接口切进去：**Evidence Packet**。它是 Assistant 与 KB 之间的结构化中间表示。KB 不再只是向量搜索服务，而是一个面向 Agent 的 **Context Compiler**：把原始文档、召回信号、来源元数据、token 预算和引用约束编译成可执行上下文。
 
-核心技术方向可以概括为：
+这条链路可以压成：
 
 ```text
 Raw Knowledge -> Retrieval Signals -> Evidence Packet -> Compiled Context -> Agent Execution
 ```
 
-这个方向的重点不是发明新的检索算法，而是把 RAG 从“搜索结果列表”提升为“Agent runtime 的上下文接口”。
+重点不是发明新的检索算法，而是把 RAG 从“搜索结果列表”提升为“Agent runtime 的上下文接口”。
 
 ## 先把边界放在桌面上
 
-Evidence Packet 不是“我们已经做完一套企业级 RAG 平台”的包装词。它更像一个工程接口：当博客 Agent、文档助手或通用 Assistant 从原型走向产品时，知识如何被检索、裁剪、授权、引用和评测。
+Evidence Packet 不是“已经做完一套企业级 RAG 平台”的包装词。它更像一个工程接口：当博客 Agent、文档助手或通用 Assistant 从原型走向产品时，知识如何被检索、裁剪、授权、引用和评测。
 
 下面提到 Qdrant、BM25、rerank、MMR、GraphRAG 等组件时，它们都只是可替换路线。真正重要的不是选哪一个库，而是检索结果在进入模型前，有没有变成一个可观察、可治理的对象。
 
@@ -107,7 +107,7 @@ type EvidenceItem = {
 
 这个接口把“可回答性”从一段 prompt 中拆出来。Context Builder 可以基于它决定如何排序、压缩、展开父 chunk、保留图片描述或生成引用。Evaluator 也可以基于它判断 retrieval 是否命中、source 是否可信、context 是否足够。
 
-`policy` 字段是产品化 Agent 的关键边界。匿名读者、登录用户和作者账号可以看到的内容、可继续的会话、可消耗的额度、可上传的文件都不同。Evidence Packet 应在进入模型窗口前完成权限裁剪，而不是依赖模型在回答时“自觉忽略”不该看到的材料。
+`policy` 字段是产品化 Agent 的关键边界。匿名读者、登录用户和作者账号能够访问的内容、可继续的会话、可消耗的额度、可上传的文件都不同。Evidence Packet 应在进入模型窗口前完成权限裁剪，而不是依赖模型在回答时“自觉忽略”不该看到的材料。
 
 ## 3. Technical Direction
 
@@ -145,7 +145,7 @@ Document Layer
 | Context Runtime           | 把 evidence 编译成模型上下文       | context builder, budget manager, compressor, permission filter, session memory     |
 | Agent Execution           | 基于上下文执行推理和工具调用       | model runtime, tool registry, streaming events, quota checks, trace/eval hooks     |
 
-这张栈图能更准确地表达系统定位：它不是单点 RAG demo，而是围绕 Agent 上下文生产建立的一套可迭代基础设施。
+这张栈图更适合表达系统定位：它关注的不是单点 RAG demo，而是围绕 Agent 上下文生产建立的一套可迭代基础设施。
 
 ## 5. Retrieval Signals
 
@@ -249,7 +249,7 @@ Evidence Packet = retrieval signals + source metadata + budget policy + traceabl
 
 这个抽象把 KB 服务和 Assistant runtime 解耦。底层可以替换 Qdrant、embedding、BM25、reranker 或 chunking 策略；上层 Agent 仍然消费同一种证据接口。系统因此获得可调试性、可预算性、可引用性和可评测性。
 
-换句话说，这个方向真正值得突出的不是“支持 RAG”，而是：
+真正值得突出的不是“支持 RAG”，而是：
 
 > 用 Evidence Packet 把 RAG 结果编译成 Agent 可执行、可追踪、可评测的上下文。
 

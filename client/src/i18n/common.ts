@@ -82,14 +82,14 @@ const common: TranslationDict = {
   "common.ui.loading": { en: "Loading", zh: "加载中" },
 
   // Engagement
-  "engagement.subscribe.title": { en: "Follow updates", zh: "订阅更新" },
+  "engagement.subscribe.title": { en: "Save reading preferences", zh: "保存阅读偏好" },
   "engagement.subscribe.articleTitle": {
-    en: "Get future notes",
-    zh: "接收后续笔记",
+    en: "Save interest in future notes",
+    zh: "保存后续阅读兴趣",
   },
   "engagement.subscribe.description": {
-    en: "Leave an email and topic preference for future updates. Email delivery is not automated yet; RSS is available now.",
-    zh: "留下邮箱和主题偏好，供后续更新使用。当前邮件发送尚未自动化；现在可以直接使用 RSS。",
+    en: "Leave an email and topic preference as a private reading signal. Email delivery is not automated yet; RSS is available now.",
+    zh: "留下邮箱和主题偏好，作为私密阅读意向。当前邮件发送尚未自动化；现在可以直接使用 RSS。",
   },
   "engagement.subscribe.rss": { en: "RSS", zh: "RSS" },
   "engagement.subscribe.emailPlaceholder": {
@@ -105,27 +105,27 @@ const common: TranslationDict = {
     zh: "接收语言",
   },
   "engagement.subscribe.loading": { en: "Saving...", zh: "保存中..." },
-  "engagement.subscribe.button": { en: "Subscribe", zh: "订阅" },
+  "engagement.subscribe.button": { en: "Save preference", zh: "保存偏好" },
   "engagement.subscribe.toastCreated": {
-    en: "Subscription saved",
-    zh: "订阅已保存",
+    en: "Reading preference saved",
+    zh: "阅读偏好已保存",
   },
   "engagement.subscribe.toastExisting": {
-    en: "Subscription updated",
-    zh: "订阅已更新",
+    en: "Reading preference updated",
+    zh: "阅读偏好已更新",
   },
-  "engagement.subscribe.error": { en: "Subscription failed", zh: "订阅失败" },
+  "engagement.subscribe.error": { en: "Preference could not be saved", zh: "偏好保存失败" },
   "engagement.subscribe.rateLimited": {
     en: "Too many attempts. Please try again later.",
     zh: "提交过于频繁，请稍后再试。",
   },
   "engagement.subscribe.successCreated": {
-    en: "Saved. Updates will be sent when email delivery is connected.",
-    zh: "已保存。邮件发送接入后会用于更新通知。",
+    en: "Saved as a reading signal. Use RSS for updates until email delivery is connected.",
+    zh: "已保存为阅读意向。邮件发送接入前，请使用 RSS 获取更新。",
   },
   "engagement.subscribe.successExisting": {
-    en: "Already on the list. Preferences were refreshed.",
-    zh: "你已在列表中，偏好已刷新。",
+    en: "Already saved. Preferences were refreshed.",
+    zh: "偏好已存在，并已刷新。",
   },
   "engagement.subscribe.privacy": {
     en: "Only email and optional topics are stored. No delivery provider is connected yet.",

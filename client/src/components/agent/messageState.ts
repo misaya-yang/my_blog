@@ -67,6 +67,16 @@ function normalizeSourceCard(value: unknown): SourceCard | null {
       : [],
     heading: typeof record.heading === "string" ? record.heading : undefined,
     excerpt: typeof record.excerpt === "string" ? record.excerpt : "",
+    compactExcerpt:
+      typeof record.compactExcerpt === "string"
+        ? record.compactExcerpt
+        : undefined,
+    sectionTitle:
+      typeof record.sectionTitle === "string" ? record.sectionTitle : undefined,
+    isCurrentPage:
+      typeof record.isCurrentPage === "boolean"
+        ? record.isCurrentPage
+        : undefined,
     relevanceReason:
       typeof record.relevanceReason === "string" ? record.relevanceReason : "",
   };

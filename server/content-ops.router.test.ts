@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
+import { reindexPublicKnowledgeChunks } from "./ai/knowledgeDb";
 import * as db from "./db";
 
 const now = new Date("2026-05-30T00:00:00.000Z");
@@ -59,6 +60,15 @@ vi.mock("./db", () => ({
   getPostVersionById: vi.fn(async (id: number) => (id === previousVersion.id ? previousVersion : null)),
   createPostVersion: vi.fn(async () => 13),
   updatePost: vi.fn(async () => undefined),
+}));
+
+vi.mock("./ai/knowledgeDb", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./ai/knowledgeDb")>()),
+  reindexPublicKnowledgeChunks: vi.fn(async () => ({
+    created: 3,
+    deleted: 3,
+    skipped: 0,
+  })),
 }));
 
 function createContext(cookie = ""): { ctx: TrpcContext; setCookies: string[] } {
@@ -155,7 +165,10 @@ describe("content ops router", () => {
       saveCurrent: true,
     });
 
-    expect(result).toEqual({ success: true });
+    expect(result).toEqual({
+      success: true,
+      knowledgeRefresh: { status: "fresh" },
+    });
     expect(db.createPostVersion).toHaveBeenCalledWith({
       postId: currentPost.id,
       title: currentPost.title,
@@ -165,6 +178,7 @@ describe("content ops router", () => {
       title: previousVersion.title,
       content: previousVersion.content,
     });
+    expect(reindexPublicKnowledgeChunks).toHaveBeenCalledTimes(1);
   });
 
   it("keeps content ops procedures owner-only", async () => {

@@ -63,7 +63,7 @@ const posts = [
     visibility: "hidden",
     pinnedTrack: "algorithms",
     excerpt:
-      "EVQ-Cosh treats RoPE inverse frequencies as a finite spectral allocation problem and derives a closed-form initialization rule for rotary channels.",
+      "把 RoPE inverse frequency table 当成有限光谱预算：频率不是默认表，而是一个可以推导、实现和消融的初始化选择。",
     tags: [
       { name: "EVQ-Cosh", slug: "evq-cosh" },
       { name: "RoPE", slug: "rope" },
@@ -127,7 +127,7 @@ const posts = [
     featuredRank: 3,
     pinnedTrack: "applications",
     excerpt:
-      "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 和 evaluator 这几层。",
+      "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 与 evaluator。",
     tags: [
       { name: "Agent Systems", slug: "agent-systems" },
       { name: "Harness Engine", slug: "harness-engine" },
@@ -150,7 +150,7 @@ const posts = [
     featuredRank: 2,
     pinnedTrack: "applications",
     excerpt:
-      "RAG 真正麻烦的不是找几个 chunk，而是让检索结果在进入 Agent 前变成可引用、可裁剪、可复盘的证据包。",
+      "RAG 的难点不止是找几个 chunk，而是让检索结果在进入 Agent 前变成可引用、可裁剪、可复盘的证据包。",
     tags: [
       { name: "Agent Systems", slug: "agent-systems" },
       { name: "Agentic RAG", slug: "agentic-rag" },
@@ -198,7 +198,7 @@ const posts = [
     featuredRank: 0,
     pinnedTrack: "applications",
     excerpt:
-      "一次“看起来跑完了”的 Coding Agent 失败复盘：为什么 PRD 还需要被编译成 phase、验收闸门和证据报告。",
+      "一次“看起来跑完了”的 Coding Agent 失败复盘：PRD 如何被编译成 phase、验收闸门和证据报告。",
     tags: [
       { name: "Agent Systems", slug: "agent-systems" },
       { name: "Goal Harness", slug: "goal-harness" },

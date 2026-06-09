@@ -92,55 +92,6 @@ function TrackPage({ kind }: { kind: TrackKind }) {
               </p>
             </div>
 
-            {publicSeries.length > 0 && (
-              <div className="mt-6 grid max-w-5xl gap-4 md:grid-cols-2">
-                {publicSeries.map(series => (
-                  <section key={series.slug} className="track-series-card">
-                    <div className="mb-4 flex items-start justify-between gap-4">
-                      <div>
-                        <span className="series-card-track">
-                          {t("track.seriesTitle")}
-                        </span>
-                        <h2>{t(series.titleKey)}</h2>
-                      </div>
-                      <GitBranch className="mt-1 h-5 w-5 shrink-0 text-sky-200" />
-                    </div>
-                    <p>{t(series.promiseKey)}</p>
-                    <div className="series-card-concepts mt-4">
-                      {series.conceptKeys.map(key => (
-                        <span key={key}>{t(key)}</span>
-                      ))}
-                    </div>
-                    <div className="series-card-steps mt-5">
-                      {series.postSlugs.map((slug, index) => (
-                        <Link
-                          key={slug}
-                          href={`/post/${slug}`}
-                          className="series-step"
-                        >
-                          <span>{String(index + 1).padStart(2, "0")}</span>
-                          <strong>{resolvePostTitle(trackPosts, slug)}</strong>
-                          <ArrowRight className="h-4 w-4 text-slate-300" />
-                        </Link>
-                      ))}
-                    </div>
-                    <div className="mt-4 border-t border-white/10 pt-4">
-                      <p className="mb-2 text-xs font-semibold text-slate-500">
-                        {t("track.nextPlanned")}
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {series.expectedNextKeys.map(key => (
-                          <span key={key} className="article-tag">
-                            {t(key)}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </section>
-                ))}
-              </div>
-            )}
-
             <div className="mt-6 grid max-w-4xl gap-3 sm:grid-cols-3">
               <StatTile
                 icon={<FileText className="h-5 w-5" />}
@@ -158,6 +109,74 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                 label={t("home.statViews")}
               />
             </div>
+
+            {publicSeries.length > 0 && (
+              <section className="track-path-section mt-7 max-w-5xl">
+                <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+                  <div>
+                    <h2 className="section-title">{t("track.seriesTitle")}</h2>
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+                      {t("track.readingOrderHint")}
+                    </p>
+                  </div>
+                  <Link
+                    href="#research-index"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white"
+                  >
+                    {t("track.articles")}
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {publicSeries.map(series => (
+                    <section key={series.slug} className="track-series-card">
+                      <div className="mb-4 flex items-start justify-between gap-4">
+                        <div>
+                          <span className="series-card-track">
+                            {t("track.readingOrder")}
+                          </span>
+                          <h2>{t(series.titleKey)}</h2>
+                        </div>
+                        <GitBranch className="mt-1 h-5 w-5 shrink-0 text-sky-200" />
+                      </div>
+                      <p>{t(series.promiseKey)}</p>
+                      <div className="series-card-concepts mt-4">
+                        {series.conceptKeys.map(key => (
+                          <span key={key}>{t(key)}</span>
+                        ))}
+                      </div>
+                      <div className="series-card-steps mt-5">
+                        {series.postSlugs.map((slug, index) => (
+                          <Link
+                            key={slug}
+                            href={`/post/${slug}`}
+                            className="series-step"
+                          >
+                            <span>{String(index + 1).padStart(2, "0")}</span>
+                            <strong>
+                              {resolvePostTitle(trackPosts, slug)}
+                            </strong>
+                            <ArrowRight className="h-4 w-4 text-slate-300" />
+                          </Link>
+                        ))}
+                      </div>
+                      <div className="mt-4 border-t border-white/10 pt-4">
+                        <p className="mb-2 text-xs font-semibold text-slate-500">
+                          {t("track.nextPlanned")}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {series.expectedNextKeys.map(key => (
+                            <span key={key} className="article-tag">
+                              {t(key)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </section>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
 
           <aside className="glass-panel p-5">

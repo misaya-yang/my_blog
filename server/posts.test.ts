@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 import { ENV } from "./_core/env";
+import { reindexPublicKnowledgeChunks } from "./ai/knowledgeDb";
 import * as db from "./db";
 
 type AuthenticatedUser = NonNullable<TrpcContext["user"]>;
@@ -100,6 +101,15 @@ vi.mock("./db", () => ({
   deletePost: vi.fn(async () => undefined),
   deletePostCascade: vi.fn(async () => undefined),
   setPostTags: vi.fn(async () => undefined),
+}));
+
+vi.mock("./ai/knowledgeDb", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./ai/knowledgeDb")>()),
+  reindexPublicKnowledgeChunks: vi.fn(async () => ({
+    created: 3,
+    deleted: 3,
+    skipped: 0,
+  })),
 }));
 
 // Create context for the blog owner
@@ -420,6 +430,7 @@ describe("auth router", () => {
       }),
       []
     );
+    expect(reindexPublicKnowledgeChunks).toHaveBeenCalledTimes(1);
   });
 
   it("rate limits repeated admin password failures by request source", async () => {
@@ -476,6 +487,7 @@ describe("owner-only operations", () => {
       }),
       undefined
     );
+    expect(reindexPublicKnowledgeChunks).toHaveBeenCalledTimes(1);
   });
 
   it("unpublishing from management returns a post to owner-only draft state", async () => {
@@ -495,6 +507,7 @@ describe("owner-only operations", () => {
       }),
       undefined
     );
+    expect(reindexPublicKnowledgeChunks).toHaveBeenCalledTimes(1);
   });
 
   it("updates post content and tags through a single transactional helper", async () => {
@@ -513,6 +526,40 @@ describe("owner-only operations", () => {
     );
     expect(db.updatePost).not.toHaveBeenCalled();
     expect(db.setPostTags).not.toHaveBeenCalled();
+    expect(reindexPublicKnowledgeChunks).toHaveBeenCalledTimes(1);
+  });
+
+  it("surfaces knowledge refresh failures after post updates", async () => {
+    const adminCaller = await createAdminCaller();
+    const consoleError = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+    vi.mocked(reindexPublicKnowledgeChunks).mockRejectedValueOnce(
+      new Error("reindex failed")
+    );
+
+    const result = await adminCaller.posts.update({
+      id: seededPost.id,
+      title: "Updated title",
+    });
+
+    expect(db.updatePostWithTags).toHaveBeenCalledWith(
+      seededPost.id,
+      expect.objectContaining({ title: "Updated title" }),
+      undefined
+    );
+    expect(reindexPublicKnowledgeChunks).toHaveBeenCalledTimes(1);
+    expect(consoleError).toHaveBeenCalledWith(
+      expect.stringContaining("Failed to refresh chunks after post update"),
+      expect.any(Error)
+    );
+    expect(result).toMatchObject({
+      knowledgeRefresh: {
+        status: "stale",
+        message: expect.stringContaining("Agent knowledge refresh failed"),
+      },
+    });
+    consoleError.mockRestore();
   });
 
   it("deletes posts through the cascade helper", async () => {
@@ -522,6 +569,7 @@ describe("owner-only operations", () => {
 
     expect(db.deletePostCascade).toHaveBeenCalledWith(seededPost.id);
     expect(db.deletePost).not.toHaveBeenCalled();
+    expect(reindexPublicKnowledgeChunks).toHaveBeenCalledTimes(1);
   });
 
   it("should reject post creation from non-owner users", async () => {

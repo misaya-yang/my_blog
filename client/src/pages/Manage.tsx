@@ -37,6 +37,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { trpc } from "@/lib/trpc";
+import { isKnowledgeRefreshStale } from "@/lib/knowledgeRefresh";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
 import { buildRouteMetadata } from "@shared/metadata";
 import { getContentHealthSummary } from "@shared/content-ops";
@@ -63,7 +64,7 @@ import {
   Bot,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 
@@ -122,11 +123,25 @@ export default function Manage() {
     limit: 50,
     includeUnpublished: true,
   });
+  const utils = trpc.useUtils();
+  const notifyPostMutation = useCallback(
+    (result: unknown, successMessage: string) => {
+      void utils.agent.adminKnowledgeStatus.invalidate();
+
+      if (isKnowledgeRefreshStale(result)) {
+        toast.warning(t("manage.toast.knowledgeRefreshStale"));
+        return;
+      }
+
+      toast.success(successMessage);
+    },
+    [t, utils]
+  );
 
   // 删除文章
   const deleteMutation = trpc.posts.delete.useMutation({
-    onSuccess: () => {
-      toast.success(t("manage.toast.deleted"));
+    onSuccess: result => {
+      notifyPostMutation(result, t("manage.toast.deleted"));
       refetch();
       setDeleteId(null);
     },
@@ -138,7 +153,6 @@ export default function Manage() {
   // 获取分类列表
   const { data: categoriesData } = trpc.categories.list.useQuery();
   const categoriesMap = new Map(categoriesData?.map(c => [c.id, c.name]) || []);
-  const utils = trpc.useUtils();
   const { data: tagsData } = trpc.tags.list.useQuery();
   const { data: feedbackData, isLoading: feedbackLoading } =
     trpc.engagement.feedback.list.useQuery({ limit: 20 }, { enabled: isAdmin });
@@ -151,8 +165,8 @@ export default function Manage() {
 
   // 切换发布状态
   const updateMutation = trpc.posts.update.useMutation({
-    onSuccess: () => {
-      toast.success(t("manage.toast.statusUpdated"));
+    onSuccess: result => {
+      notifyPostMutation(result, t("manage.toast.statusUpdated"));
       refetch();
     },
     onError: error => {
@@ -397,10 +411,7 @@ export default function Manage() {
                 {t("agentOps.title")}
               </Link>
             </Button>
-            <Button
-              asChild
-              className="owner-primary-action"
-            >
+            <Button asChild className="owner-primary-action">
               <Link href="/write">
                 <Plus className="mr-2 h-4 w-4" />
                 {t("manage.writeArticle")}
@@ -470,10 +481,7 @@ export default function Manage() {
               {t("manage.noArticles")}
             </h3>
             <p className="mb-4 text-slate-400">{t("manage.noArticlesHint")}</p>
-            <Button
-              asChild
-              className="owner-primary-action"
-            >
+            <Button asChild className="owner-primary-action">
               <Link href="/write">
                 <Plus className="mr-2 h-4 w-4" />
                 {t("manage.writeArticle")}

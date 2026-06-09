@@ -162,7 +162,7 @@ export default function Home() {
       <main className="relative z-10">
         <section className="home-hero-shell container px-4 pb-8 pt-10 sm:px-6 md:pb-10 md:pt-14">
           <div className="home-hero-grid">
-            <div className="home-editorial-hero">
+            <div className="home-editorial-hero motion-reveal">
               <div className="home-kicker" aria-label={t("home.kicker")}>
                 {t("home.kicker")}
               </div>
@@ -189,7 +189,10 @@ export default function Home() {
               )}
             </div>
 
-            <figure className="home-hero-visual" aria-hidden="true">
+            <figure
+              className="home-hero-visual motion-reveal"
+              aria-hidden="true"
+            >
               <img
                 src="/images/research-orbit-hero.jpg"
                 alt=""
@@ -215,7 +218,11 @@ export default function Home() {
                   ? t("home.notesPending")
                   : t("home.publicNotes", { count: publicCount });
                 return (
-                  <Link key={track} href={config.href}>
+                  <Link
+                    key={track}
+                    href={config.href}
+                    className="motion-reveal block min-w-0"
+                  >
                     <article className="track-portal-card home-track-card group">
                       <div className="mb-4 flex items-center justify-between gap-4">
                         <div className="home-track-number">{number}</div>
@@ -337,25 +344,8 @@ export default function Home() {
               </section>
             )}
 
-            <div className="mt-6 flex max-w-3xl flex-wrap gap-2">
-              <Link href="/search" className="article-tag">
-                {t("nav.search")}
-              </Link>
-              <Link href="/archive" className="article-tag">
-                {t("nav.archive")}
-              </Link>
-              <Link href="/categories/ai-algorithms" className="article-tag">
-                {t("home.algorithmsLabel")}
-              </Link>
-              <Link href="/categories/ai-applications" className="article-tag">
-                {t("home.applicationsLabel")}
-              </Link>
-            </div>
-
-            <SubscriptionForm className="mt-6 max-w-3xl" surface="home" />
-
             {hasMeaningfulStats && (
-              <div className="mt-9 grid max-w-3xl gap-3 sm:grid-cols-3">
+              <div className="mt-6 grid max-w-3xl gap-3 sm:grid-cols-3">
                 <StatTile
                   icon={<FileText className="h-5 w-5" />}
                   value={publishedPosts.length}
@@ -373,6 +363,24 @@ export default function Home() {
                 />
               </div>
             )}
+
+            <nav
+              className="home-quick-links mt-5 flex max-w-3xl flex-wrap gap-2"
+              aria-label={t("home.researchIndex")}
+            >
+              <Link href="/search" className="article-tag">
+                {t("nav.search")}
+              </Link>
+              <Link href="/archive" className="article-tag">
+                {t("nav.archive")}
+              </Link>
+              <Link href="/categories/ai-algorithms" className="article-tag">
+                {t("home.algorithmsLabel")}
+              </Link>
+              <Link href="/categories/ai-applications" className="article-tag">
+                {t("home.applicationsLabel")}
+              </Link>
+            </nav>
           </div>
 
           <aside className="grid gap-5 self-start lg:pt-1">
@@ -442,6 +450,11 @@ export default function Home() {
                 )}
               </div>
             </section>
+
+            <SubscriptionForm
+              className="home-subscription-card"
+              surface="home"
+            />
           </aside>
         </section>
 

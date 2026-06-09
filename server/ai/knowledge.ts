@@ -89,9 +89,13 @@ const PUBLIC_INVENTORY_CJK_TERMS = [
   "公开文章",
   "公开笔记",
   "都有哪些",
+  "都有那些",
+  "都有哪",
   "有哪些",
   "哪几篇",
+  "那几篇",
   "几篇",
+  "什么文章",
   "文章目录",
   "文章列表",
   "博客目录",
@@ -175,7 +179,7 @@ const KNOWN_CJK_QUERY_TERMS = [
 ];
 const ISO_STANDARD_PATTERN = /\biso(?:\/iec)?[\s-]*\d{2,}\b/i;
 const PUBLIC_INVENTORY_QUERY_PATTERN =
-  /\b(?:available|all|list|show|catalog|index|map|what)\s+(?:public\s+)?(?:posts?|articles?|notes?)\b|\b(?:posts?|articles?|notes?)\s+(?:available|list|catalog|index|map)\b|都有哪些|有哪些|哪几篇|几篇|文章目录|文章列表|博客目录|站内文章|公开文章|公开笔记|所有文章|全部文章|目录|列表/i;
+  /\b(?:available|all|list|show|catalog|index|map|what)\s+(?:public\s+)?(?:posts?|articles?|notes?)\b|\b(?:posts?|articles?|notes?)\s+(?:available|list|catalog|index|map)\b|都有哪些|都有那些|都有哪|有哪些|哪几篇|那几篇|几篇|什么文章|文章目录|文章列表|博客目录|站内文章|公开文章|公开笔记|所有文章|全部文章|目录|列表/i;
 const CLEARLY_EXTERNAL_QUERY_PATTERN =
   /\b(weather|stock|price|flight|recipe)\b|天气|明天|股票|航班|菜谱/i;
 const UNAVAILABLE_CONTENT_QUERY_PATTERN =
@@ -223,6 +227,10 @@ const QUERY_STOPWORDS = new Set([
   "with",
   "you",
 ]);
+
+export function isUnavailableContentQuery(query: string) {
+  return UNAVAILABLE_CONTENT_QUERY_PATTERN.test(normalizeKnowledgeQuery(query));
+}
 
 export function analyzeKnowledgeQuery(query: string): KnowledgeQueryAnalysis {
   const normalizedQuery = normalizeKnowledgeQuery(query);
@@ -340,6 +348,14 @@ export function searchPublicKnowledgeChunks(
       mergeResults([...siteOverviewContext, ...currentPostContext, ...results])
     )
   ).slice(0, options.limit ?? 8);
+}
+
+export function isPublicInventoryQuery(
+  query: string,
+  scope?: SearchOptions["scope"]
+) {
+  const analysis = analyzeKnowledgeQuery(query);
+  return shouldInjectSiteOverviewContext(query, analysis, scope);
 }
 
 function buildSiteOverviewChunk(
@@ -949,9 +965,13 @@ function expandQueryTerms(
     公开文章: PUBLIC_INVENTORY_TERMS,
     公开笔记: PUBLIC_INVENTORY_TERMS,
     都有哪些: PUBLIC_INVENTORY_TERMS,
+    都有那些: PUBLIC_INVENTORY_TERMS,
+    都有哪: PUBLIC_INVENTORY_TERMS,
     有哪些: PUBLIC_INVENTORY_TERMS,
     哪几篇: PUBLIC_INVENTORY_TERMS,
+    那几篇: PUBLIC_INVENTORY_TERMS,
     几篇: PUBLIC_INVENTORY_TERMS,
+    什么文章: PUBLIC_INVENTORY_TERMS,
     文章目录: PUBLIC_INVENTORY_TERMS,
     文章列表: PUBLIC_INVENTORY_TERMS,
     博客目录: PUBLIC_INVENTORY_TERMS,

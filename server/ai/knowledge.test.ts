@@ -224,6 +224,21 @@ describe("AI public knowledge chunks", () => {
     expect(results[0]?.content).not.toContain("Draft Harness Note");
   });
 
+  it("treats colloquial 那几篇 inventory phrasing as a public article list intent", () => {
+    const chunks = buildPublicKnowledgeChunks(posts);
+    const results = searchPublicKnowledgeChunks(chunks, "都有那几篇文章啊", {
+      limit: 4,
+    });
+
+    expect(results).toHaveLength(1);
+    expect(results[0]).toMatchObject({
+      chunkType: "site_overview_chunk",
+      postSlug: null,
+    });
+    expect(results[0]?.excerpt).toContain("Agent Harness Engine");
+    expect(results[0]?.excerpt).not.toContain("Hidden Harness Note");
+  });
+
   it("creates metadata and body chunks with source metadata", () => {
     const chunks = buildPublicKnowledgeChunks(posts);
     const metadata = chunks.find(

@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-06-06T07:18:07.641Z",
+  "generatedAt": "2026-06-09T14:54:58.385Z",
   "git": {
     "branch": "codex/blog-agent-retrieval-rescue",
-    "commit": "c652c26",
+    "commit": "403f9d2",
     "dirty": true
   },
   "baseUrl": "http://localhost:3000/",
@@ -21,7 +21,7 @@
         "transformer"
       ],
       "publishedAt": "2026-06-06T00:00:00.000Z",
-      "updatedAt": "2026-06-06T07:13:18.556Z",
+      "updatedAt": "2026-06-09T14:53:28.482Z",
       "seriesSlug": "feed-forward-mechanisms",
       "seriesOrder": 1
     },
@@ -40,7 +40,7 @@
         "tool-use"
       ],
       "publishedAt": "2026-05-31T00:40:00.000Z",
-      "updatedAt": "2026-06-06T06:43:59.208Z",
+      "updatedAt": "2026-06-09T14:54:18.072Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 4
     },
@@ -60,7 +60,7 @@
         "tool-use"
       ],
       "publishedAt": "2026-05-31T00:30:00.000Z",
-      "updatedAt": "2026-06-06T06:43:43.099Z",
+      "updatedAt": "2026-06-09T14:54:04.926Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 3
     },
@@ -80,7 +80,7 @@
         "rag"
       ],
       "publishedAt": "2026-05-31T00:20:00.000Z",
-      "updatedAt": "2026-06-06T06:43:26.406Z",
+      "updatedAt": "2026-06-09T14:53:52.304Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 2
     },
@@ -99,7 +99,7 @@
         "tool-use"
       ],
       "publishedAt": "2026-05-31T00:10:00.000Z",
-      "updatedAt": "2026-06-06T06:43:09.653Z",
+      "updatedAt": "2026-06-09T14:53:38.543Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 1
     },
@@ -116,7 +116,7 @@
         "transformer"
       ],
       "publishedAt": "2026-05-31T00:00:00.000Z",
-      "updatedAt": "2026-06-06T06:58:19.945Z",
+      "updatedAt": "2026-06-09T14:53:20.208Z",
       "seriesSlug": "residual-stability",
       "seriesOrder": 1
     }
@@ -191,7 +191,7 @@
   },
   "agentKnowledge": {
     "ok": true,
-    "chunkCount": 90,
+    "chunkCount": 93,
     "publicPostCount": 6,
     "indexedPublicPostCount": 6,
     "hiddenOrDraftExcludedCount": 1,
@@ -206,9 +206,13 @@
       "rag-evidence-packet-context-compiler"
     ],
     "nonPublicIndexedSlugs": [],
-    "lastReindexAt": "2026-06-06T06:44:13.086Z"
+    "lastReindexAt": "2026-06-09T14:54:29.840Z"
   },
-  "dateDrift": null,
+  "dateDrift": {
+    "comparedPublicPosts": 6,
+    "publishedAtChanged": [],
+    "updatedAtChangedWithoutMaterialChange": []
+  },
   "routeChecks": [
     {
       "path": "(all)",

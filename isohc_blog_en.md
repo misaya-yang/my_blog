@@ -24,15 +24,15 @@ IsoHC 试图回答的是一个很窄的问题：
 
 > 多 stream 残差混合能不能既允许 stream 之间互动，又不要破坏残差网络最该保留的几何量？
 
-这篇笔记只讲机制和数学边界，不把它包装成“万能稳定性方案”。
+这篇笔记只讲机制和数学边界，不把它写成“万能稳定性方案”。
 
 ## 1. Motivation
 
-先把直觉说清楚。
+直觉可以从两个极端开始。
 
 如果所有 stream 只是简单平均，模型会很稳定，但 expressivity 会受限；如果所有 stream 都可以自由线性混合，模型会更灵活，但深度方向的谱行为会变得难以控制。
 
-于是我们需要问：混合矩阵 $H$ 至少应该满足什么？
+于是问题变成：混合矩阵 $H$ 至少应该满足什么？
 
 一个自然答案是保留 stream mean。令 $\mathbf{1}$ 表示全 1 向量，stream mean 是：
 
@@ -43,7 +43,7 @@ $$
 
 如果 $H\mathbf{1}=\mathbf{1}$ 且 $\mathbf{1}^{\top}H=\mathbf{1}^{\top}$，那么平均 stream 不会漂移。这就是 doubly stochastic 约束带来的直觉安全感。
 
-但我不太满意这个答案。因为 mean 只是一个方向。真正承载差异的是 mean-zero subspace：
+但这个答案还不够。因为 mean 只是一个方向，真正承载差异的是 mean-zero subspace：
 
 $$
 \left\{v\in\mathbb{R}^{n}:\mathbf{1}^{\top}v=0\right\}.
@@ -68,7 +68,7 @@ $$
 
 换一个更几何的说法：IsoHC 不碰 mean direction，只在 mean-zero subspace 上做旋转或反射。
 
-这和 doubly stochastic 的气质不同。Doubly stochastic 更像“扩散后仍然保持总量”，IsoHC 更像“换一个坐标角度，但不磨损能量”。这也是我觉得它值得单独写出来的原因。
+这和 doubly stochastic 的气质不同。Doubly stochastic 更像“扩散后仍然保持总量”，IsoHC 更像“换一个坐标角度，但不磨损能量”。这就是它值得单独拿出来看的地方。
 
 ## 3. Exact Invariants
 
@@ -131,7 +131,7 @@ $$
 
 这就是固定向量正交分解。$e_0e_0^\top$ 保留平均方向，$UQU^\top$ 在剩下的差异方向上做等距变换。
 
-从工程角度看，这个分解还有一个好处：我们不需要在完整 $n\times n$ 空间里硬投影“既正交又固定 $\mathbf{1}$”的矩阵，而是只需要在 $n-1$ 维子空间里参数化或投影 $Q$。
+从工程角度看，这个分解还有一个好处：实现时不需要在完整 $n\times n$ 空间里硬投影“既正交又固定 $\mathbf{1}$”的矩阵，只需要在 $n-1$ 维子空间里参数化或投影 $Q$。
 
 ## 5. A Small Mental Model
 
@@ -146,7 +146,7 @@ mean preservation: center does not drift
 isometry: relative energy does not leak
 ```
 
-如果你关心的是深层残差路径的稳定性，第二句话往往比第一句话更关键。
+如果关心深层残差路径的稳定性，第二句话往往比第一句话更关键。
 
 ## 6. Why Not Just Identity?
 
@@ -181,7 +181,7 @@ def project_to_isohc(raw_h, basis_u, e0):
 - 如果使用混合精度训练，需要注意投影步骤的数值误差。
 - 当 $n$ 很小时，约束空间很小；当 $n$ 变大时，投影成本和参数化方式需要重新评估。
 
-我更倾向于把 IsoHC 看作一个 projection path，而不是一个纯 prompt-level 概念。只要实现里不能稳定地把矩阵送回 $\mathcal{M}_{\mathrm{iso}}$，上面的数学都只是纸面安全。
+更稳妥的理解是：IsoHC 是一个 projection path，而不是一个纯 prompt-level 概念。只要实现里不能稳定地把矩阵送回 $\mathcal{M}_{\mathrm{iso}}$，上面的数学都只是纸面安全。
 
 ## 8. Precision and Engineering Considerations
 
@@ -194,7 +194,7 @@ def project_to_isohc(raw_h, basis_u, e0):
 3. **频繁投影成本。** 每一步都做昂贵投影可能不划算，需要权衡参数化和训练效率。
 4. **stream 数选择。** $n$ 不是越大越好。stream 越多，混合空间越大，调参和诊断也越复杂。
 
-所以我不建议把 IsoHC 理解成一个随手替换的 trick。它更适合在你已经明确看到 residual stream mixing 稳定性问题时使用。
+所以不该把 IsoHC 理解成一个随手替换的 trick。它更适合在已经明确看到 residual stream mixing 稳定性问题时使用。
 
 ## 9. Relation to Doubly Stochastic Constraints
 
@@ -221,7 +221,7 @@ IsoHC 则放弃非负性，换来正交等距：
 
 这类方法最容易被写坏的地方，是把稳定性机制写成性能宣言。
 
-我更愿意把公开结论放窄：
+公开结论最好放窄：
 
 - IsoHC 是 residual transport 的几何约束。
 - 它精确保留 stream mean 和 Frobenius energy。

@@ -2,6 +2,10 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { systemRouter } from "./_core/systemRouter.js";
 import { publicProcedure, router } from "./_core/trpc.js";
+import {
+  recordKnowledgeReindexFailure,
+  reindexPublicKnowledgeChunks,
+} from "./ai/knowledgeDb.js";
 import { agentRouter } from "./ai/router.js";
 import { authRouter } from "./auth.router.js";
 import { blogAdminProcedure } from "./blogAdminProcedure.js";
@@ -40,6 +44,21 @@ function normalizeDiscoveryPagination(input: {
 
 function normalizeDiscoveryQuery(query: string | undefined) {
   return (query ?? "").trim().replace(/\s+/g, " ");
+}
+
+async function refreshAgentKnowledgeAfterPostMutation(action: string) {
+  try {
+    await reindexPublicKnowledgeChunks();
+    return { status: "fresh" as const };
+  } catch (error) {
+    console.error(`[Knowledge] Failed to refresh chunks after ${action}:`, error);
+    recordKnowledgeReindexFailure(error);
+    return {
+      status: "stale" as const,
+      message:
+        "Post saved, but Agent knowledge refresh failed. Run pnpm ai:reindex before relying on assistant answers.",
+    };
+  }
 }
 
 export const appRouter = router({
@@ -220,7 +239,10 @@ export const appRouter = router({
           },
           tagIds
         );
-        return await db.getPostById(postId);
+        const knowledgeRefresh =
+          await refreshAgentKnowledgeAfterPostMutation("post create");
+        const post = await db.getPostById(postId);
+        return post ? { ...post, knowledgeRefresh } : post;
       }),
 
     update: blogAdminProcedure
@@ -257,12 +279,17 @@ export const appRouter = router({
           },
           tagIds
         );
-        return await db.getPostById(id);
+        const knowledgeRefresh =
+          await refreshAgentKnowledgeAfterPostMutation("post update");
+        const post = await db.getPostById(id);
+        return post ? { ...post, knowledgeRefresh } : post;
       }),
 
     delete: blogAdminProcedure.input(z.number()).mutation(async ({ input }) => {
       await db.deletePostCascade(input);
-      return { success: true };
+      const knowledgeRefresh =
+        await refreshAgentKnowledgeAfterPostMutation("post delete");
+      return { success: true, knowledgeRefresh };
     }),
 
     saveVersion: blogAdminProcedure
@@ -320,7 +347,9 @@ export const appRouter = router({
           title: version.title,
           content: version.content,
         });
-        return { success: true };
+        const knowledgeRefresh =
+          await refreshAgentKnowledgeAfterPostMutation("post version restore");
+        return { success: true, knowledgeRefresh };
       }),
   }),
 

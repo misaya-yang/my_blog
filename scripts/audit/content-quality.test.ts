@@ -1,0 +1,104 @@
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
+import { afterEach, describe, expect, it } from "vitest";
+import {
+  parseSeedPosts,
+  runContentQualityAudit,
+} from "./content-quality";
+
+const tempRoots: string[] = [];
+
+afterEach(async () => {
+  await Promise.all(
+    tempRoots.splice(0).map(root => rm(root, { recursive: true, force: true }))
+  );
+});
+
+async function createTempProject() {
+  const root = await mkdtemp(join(tmpdir(), "content-quality-"));
+  tempRoots.push(root);
+  return root;
+}
+
+describe("content quality audit", () => {
+  it("parses seeded post metadata without executing the seed script", () => {
+    const posts = parseSeedPosts(`
+      const posts = [
+        {
+          title:
+            "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+          slug: "agent-harness-engine-evaluating-tool-using-agents",
+          contentPath: "./agent_harness_engine_blog.md",
+          status: "published",
+          visibility: "public",
+          excerpt:
+            "Traceable agent evaluation.",
+        },
+      ];
+    `);
+
+    expect(posts).toEqual([
+      {
+        title:
+          "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+        slug: "agent-harness-engine-evaluating-tool-using-agents",
+        contentPath: "./agent_harness_engine_blog.md",
+        status: "published",
+        visibility: "public",
+        excerpt: "Traceable agent evaluation.",
+      },
+    ]);
+  });
+
+  it("reports structural failures and style warnings separately", async () => {
+    const root = await createTempProject();
+    await writeFile(
+      join(root, "seed-blog.mjs"),
+      `
+      const posts = [
+        {
+          title: "Draft",
+          slug: "draft-note",
+          contentPath: "./draft.md",
+          status: "draft",
+          visibility: "hidden",
+          excerpt: "Draft note.",
+        },
+        {
+          title: "Broken",
+          slug: "broken-note",
+          contentPath: "./missing.md",
+          status: "published",
+          visibility: "public",
+          excerpt: "",
+        },
+      ];
+      `
+    );
+    await writeFile(
+      join(root, "draft.md"),
+      "# Draft\n\n本文将介绍一个方向，可以看到这里还很模板化。"
+    );
+
+    const report = await runContentQualityAudit(root);
+
+    expect(report.summary.seedPosts).toBe(2);
+    expect(report.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          severity: "failure",
+          code: "seed.missing_excerpt",
+        }),
+        expect.objectContaining({
+          severity: "failure",
+          code: "seed.missing_content_file",
+        }),
+        expect.objectContaining({
+          severity: "warning",
+          code: "content.aiish_phrase",
+        }),
+      ])
+    );
+  });
+});

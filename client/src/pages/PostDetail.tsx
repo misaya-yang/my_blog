@@ -118,7 +118,6 @@ type SeriesContext = {
 
 const articleAgentPromptKeys = [
   "agent.prompts.postAbstraction",
-  "agent.prompts.postImplementation",
   "agent.prompts.nextReading",
 ];
 
@@ -883,9 +882,7 @@ export default function PostDetail() {
             {/* Post Content */}
             <div className="article-prose">
               <Suspense
-                fallback={
-                  <div className="h-24 animate-pulse rounded-lg bg-slate-800/40" />
-                }
+                fallback={<div className="h-24 rounded-lg bg-slate-800/40" />}
               >
                 <MarkdownRenderer
                   content={post.content}
@@ -958,38 +955,39 @@ export default function PostDetail() {
                   </div>
                 )}
 
-              {(postContext?.previous || postContext?.next) && (
-                <div className="grid gap-3 md:grid-cols-2">
-                  {postContext.previous && (
-                    <Link
-                      href={`/post/${postContext.previous.slug}`}
-                      className="rounded-lg border border-white/10 bg-slate-950/35 p-4 transition hover:border-teal-200/35"
-                    >
-                      <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
-                        <ArrowLeft className="h-3.5 w-3.5" />
-                        {t("post.previous")}
-                      </span>
-                      <h3 className="line-clamp-2 text-sm font-semibold leading-6 text-white">
-                        {postContext.previous.title}
-                      </h3>
-                    </Link>
-                  )}
-                  {postContext.next && (
-                    <Link
-                      href={`/post/${postContext.next.slug}`}
-                      className="rounded-lg border border-white/10 bg-slate-950/35 p-4 text-right transition hover:border-teal-200/35"
-                    >
-                      <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
-                        {t("post.next")}
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </span>
-                      <h3 className="line-clamp-2 text-sm font-semibold leading-6 text-white">
-                        {postContext.next.title}
-                      </h3>
-                    </Link>
-                  )}
-                </div>
-              )}
+              {!seriesContext &&
+                (postContext?.previous || postContext?.next) && (
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {postContext.previous && (
+                      <Link
+                        href={`/post/${postContext.previous.slug}`}
+                        className="rounded-lg border border-white/10 bg-slate-950/35 p-4 transition hover:border-teal-200/35"
+                      >
+                        <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
+                          <ArrowLeft className="h-3.5 w-3.5" />
+                          {t("post.previous")}
+                        </span>
+                        <h3 className="line-clamp-2 text-sm font-semibold leading-6 text-white">
+                          {postContext.previous.title}
+                        </h3>
+                      </Link>
+                    )}
+                    {postContext.next && (
+                      <Link
+                        href={`/post/${postContext.next.slug}`}
+                        className="rounded-lg border border-white/10 bg-slate-950/35 p-4 text-right transition hover:border-teal-200/35"
+                      >
+                        <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
+                          {t("post.next")}
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </span>
+                        <h3 className="line-clamp-2 text-sm font-semibold leading-6 text-white">
+                          {postContext.next.title}
+                        </h3>
+                      </Link>
+                    )}
+                  </div>
+                )}
 
               {postContext?.related?.length ? (
                 <div className="mt-8">
