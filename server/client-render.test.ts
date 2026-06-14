@@ -85,6 +85,24 @@ describe("client shell renderability", () => {
     expect(rendered.html).toContain('"@type":"BlogPosting"');
   });
 
+  it("returns a client shell when article snapshot loading is unavailable", async () => {
+    const rendered = await renderClientShellHtml({
+      baseUrl: "https://example.com",
+      rawHtml: baseHtml,
+      urlPath: "/post/slow-article",
+      articleSnapshotTimeoutMs: 1,
+      loadArticle: () =>
+        new Promise(resolve => {
+          setTimeout(() => resolve(article), 50);
+        }),
+    });
+
+    expect(rendered.status).toBe(200);
+    expect(rendered.html).toContain("<title>Slow Article");
+    expect(rendered.html).toContain('<div id="root"></div>');
+    expect(rendered.html).not.toContain("BlogPosting");
+  });
+
   it("returns a 404 shell with noindex metadata for unknown routes", async () => {
     const rendered = await renderClientShellHtml({
       baseUrl: "https://example.com",

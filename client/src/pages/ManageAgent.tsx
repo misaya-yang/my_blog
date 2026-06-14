@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import {
+  AuthRequiredState,
   EmptyState,
   LoadingState,
   MetricTile,
@@ -187,20 +188,14 @@ export default function ManageAgent() {
 
   if (!isAdmin) {
     return (
-      <div className="space-page grid min-h-screen place-items-center px-4">
-        <SpaceBackdrop subtle />
-        <EmptyState
-          icon={<Bot className="h-4 w-4" />}
-          title={t("agentOps.title")}
-          description={t("agentOps.loginRequired")}
-          action={
-            <Button asChild className="owner-primary-action">
-              <Link href="/login">{t("manage.loginBtn")}</Link>
-            </Button>
-          }
-          className="relative z-10 w-full max-w-md"
-        />
-      </div>
+      <AuthRequiredState
+        icon={<Bot className="h-4 w-4" />}
+        title={t("agentOps.title")}
+        description={t("agentOps.loginRequired")}
+        loginLabel={t("manage.loginBtn")}
+        homeLabel={t("nav.home")}
+        backLabel={t("agentOps.back")}
+      />
     );
   }
 
@@ -210,7 +205,7 @@ export default function ManageAgent() {
     <div className="space-page">
       <SpaceBackdrop subtle />
       <SiteHeader
-        active="write"
+        active="agent"
         backHref="/manage"
         backLabel={t("agentOps.back")}
         compact

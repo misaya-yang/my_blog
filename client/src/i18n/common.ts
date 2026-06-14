@@ -17,8 +17,8 @@ const common: TranslationDict = {
   "common.retry": { en: "Retry", zh: "重试" },
   "common.loading": { en: "Loading...", zh: "加载中..." },
   "common.loadingNotes": {
-    en: "Opening the notebook",
-    zh: "正在打开笔记",
+    en: "Loading notes",
+    zh: "正在加载笔记",
   },
   "common.loadingHint": {
     en: "Fetching the latest notes. Search stays available.",

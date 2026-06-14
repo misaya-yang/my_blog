@@ -163,7 +163,9 @@ export default function Search() {
         <Surface className="mt-8">
           <SectionHeader
             title={
-              query
+              isLoading && query
+                ? t("discovery.searchingFor", { query })
+                : query
                 ? t("discovery.resultsFor", { query, count: data?.total ?? 0 })
                 : t("discovery.latestPublic")
             }

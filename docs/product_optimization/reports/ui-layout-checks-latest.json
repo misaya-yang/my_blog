@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T13:37:12.682Z",
+  "generatedAt": "2026-06-14T15:31:50.271Z",
   "baseUrl": "http://localhost:3000",
   "passed": true,
   "results": [
@@ -11,9 +11,9 @@
         "height": 844
       },
       "measurements": {
-        "firstArticleY": 1051.625,
+        "firstArticleY": 487.75,
         "headerHeight": 69,
-        "searchDockY": 415.796875,
+        "searchDockY": 430.953125,
         "bodyScrollWidth": 390,
         "documentScrollWidth": 390,
         "viewportWidth": 390
@@ -33,9 +33,9 @@
         "height": 1000
       },
       "measurements": {
-        "firstArticleY": 265.25,
+        "firstArticleY": 680.15625,
         "headerHeight": 69,
-        "searchDockY": 643.53125,
+        "searchDockY": 623.359375,
         "bodyScrollWidth": 1440,
         "documentScrollWidth": 1440,
         "viewportWidth": 1440
@@ -56,8 +56,8 @@
       },
       "measurements": {
         "headerHeight": 69,
-        "proseY": 874.328125,
-        "entryHeight": 274.96875,
+        "proseY": 807.796875,
+        "entryHeight": 234.796875,
         "bodyScrollWidth": 390,
         "documentScrollWidth": 390,
         "viewportWidth": 390
@@ -78,8 +78,8 @@
       },
       "measurements": {
         "headerHeight": 69,
-        "proseY": 740.5625,
-        "entryHeight": 122.234375,
+        "proseY": 614.171875,
+        "entryHeight": 98.234375,
         "bodyScrollWidth": 1440,
         "documentScrollWidth": 1440,
         "viewportWidth": 1440

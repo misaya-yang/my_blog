@@ -82,7 +82,7 @@ export default function Login() {
       />
 
       <main className="container relative z-10 grid min-h-[calc(100vh-68px)] grid-cols-1 items-start gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_440px] lg:items-center lg:py-12">
-        <section className="page-hero max-w-2xl">
+        <section className="page-hero login-copy max-w-2xl">
           <div className="signal-chip mb-7">
             <Library className="h-3.5 w-3.5" />
             {t("login.chip")}
@@ -111,7 +111,7 @@ export default function Login() {
           </div>
         </section>
 
-        <Surface>
+        <Surface className="login-panel">
           <SectionHeader
             icon={<KeyRound className="h-4 w-4" />}
             title={t("nav.login")}

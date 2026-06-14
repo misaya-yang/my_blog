@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
+  AuthRequiredState,
   EmptyState,
   LoadingState,
   MetricTile,
@@ -414,19 +415,14 @@ export default function Manage() {
   // 未登录提示
   if (!authLoading && !isAdmin) {
     return (
-      <div className="space-page grid min-h-screen place-items-center px-4">
-        <SpaceBackdrop subtle />
-        <EmptyState
-          title={t("manage.pleaseLogin")}
-          description={t("manage.loginRequired")}
-          action={
-            <Button asChild className="owner-primary-action">
-              <a href={"/login"}>{t("manage.loginBtn")}</a>
-            </Button>
-          }
-          className="relative z-10 w-full max-w-md"
-        />
-      </div>
+      <AuthRequiredState
+        icon={<FileText className="h-4 w-4" />}
+        title={t("manage.pleaseLogin")}
+        description={t("manage.loginRequired")}
+        loginLabel={t("manage.loginBtn")}
+        homeLabel={t("nav.home")}
+        backLabel={t("manage.backLabel")}
+      />
     );
   }
 
@@ -448,7 +444,7 @@ export default function Manage() {
     <div className="space-page">
       <SpaceBackdrop subtle />
       <SiteHeader
-        active="write"
+        active="manage"
         backHref="/"
         backLabel={t("manage.backLabel")}
         compact

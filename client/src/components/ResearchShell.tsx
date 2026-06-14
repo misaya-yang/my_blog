@@ -31,6 +31,8 @@ type SiteHeaderProps = {
     | "search"
     | "about"
     | "write"
+    | "manage"
+    | "agent"
     | "login";
   backHref?: string;
   backLabel?: string;
@@ -455,6 +457,47 @@ export function EmptyState({
       </div>
       {action && <div className="state-action">{action}</div>}
     </Surface>
+  );
+}
+
+export function AuthRequiredState({
+  icon,
+  title,
+  description,
+  loginLabel,
+  homeLabel,
+  backLabel,
+}: {
+  icon?: React.ReactNode;
+  title: React.ReactNode;
+  description?: React.ReactNode;
+  loginLabel: string;
+  homeLabel: string;
+  backLabel: string;
+}) {
+  return (
+    <div className="space-page min-h-screen">
+      <SpaceBackdrop subtle />
+      <SiteHeader active="login" backHref="/" backLabel={backLabel} compact />
+      <main className="auth-required-shell container relative z-10 px-4 sm:px-6">
+        <EmptyState
+          icon={icon}
+          title={title}
+          description={description}
+          action={
+            <div className="auth-required-actions">
+              <Button asChild className="owner-primary-action">
+                <Link href="/login">{loginLabel}</Link>
+              </Button>
+              <Button asChild variant="outline" className="glass-button">
+                <Link href="/">{homeLabel}</Link>
+              </Button>
+            </div>
+          }
+          className="auth-required-card"
+        />
+      </main>
+    </div>
   );
 }
 

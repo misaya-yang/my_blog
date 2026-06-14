@@ -66,7 +66,9 @@ export default function Archive() {
           </div>
           <h1 className="page-title">{t("discovery.archiveTitle")}</h1>
           <p className="page-copy mt-5">
-            {t("discovery.archiveSubtitle", { count: total })}
+            {isLoading
+              ? t("discovery.archiveLoading")
+              : t("discovery.archiveSubtitle", { count: total })}
           </p>
         </section>
 

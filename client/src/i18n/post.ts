@@ -56,7 +56,7 @@ const post: TranslationDict = {
   },
   "post.entry.signalCode": { en: "Code sketch", zh: "代码草图" },
   "post.entry.signalTable": { en: "Architecture table", zh: "架构表格" },
-  "post.entry.signalFormula": { en: "Formula / derivation", zh: "公式 / 推导" },
+  "post.entry.signalFormula": { en: "Formula and derivation", zh: "公式与推导" },
   "post.entry.signalArchitecture": {
     en: "Runtime or architecture mapping",
     zh: "运行时或架构映射",
@@ -80,7 +80,7 @@ const post: TranslationDict = {
   "post.series.start": { en: "Start series", zh: "从系列开头读" },
   "post.series.previous": { en: "Previous in series", zh: "系列上一篇" },
   "post.series.next": { en: "Next in series", zh: "系列下一篇" },
-  "post.series.track": { en: "Continue track", zh: "继续技术区" },
+  "post.series.track": { en: "View path", zh: "查看路径" },
   "post.series.continuity": { en: "Series continuity", zh: "系列延续" },
   "post.discoveryTitle": { en: "Continue reading", zh: "继续阅读" },
   "post.previous": { en: "Previous", zh: "上一篇" },

@@ -11,8 +11,8 @@ const home: TranslationDict = {
     zh: "记录模型机制、长上下文行为、Agent 基础设施、RAG 与评测工程。",
   },
   "home.kicker": {
-    en: "notes / thinking / practice",
-    zh: "记录 / 思考 / 实践",
+    en: "Two-track research notebook",
+    zh: "双轨研究笔记",
   },
   "home.chip1": { en: "working notes", zh: "working notes" },
   "home.chip2": { en: "model mechanisms", zh: "模型机制" },
@@ -25,8 +25,8 @@ const home: TranslationDict = {
 
   // Search
   "home.searchPlaceholder": {
-    en: "Search articles, keywords, topics...",
-    zh: "搜索文章、关键词、主题...",
+    en: "Search notes...",
+    zh: "搜索笔记...",
   },
   "home.searchShortcut": { en: "⌘ K", zh: "⌘ K" },
   "home.askAssistant": { en: "Ask assistant", zh: "询问助手" },
@@ -64,6 +64,7 @@ const home: TranslationDict = {
 
   // Articles section
   "home.latestArticles": { en: "Latest notes", zh: "最新笔记" },
+  "home.latestNote": { en: "Latest note", zh: "最新一篇" },
   "home.noArticles": { en: "No articles found", zh: "暂无文章" },
   "home.noArticlesRecovery": {
     en: "Use archive, search, or the reading assistant to continue through public notes.",
@@ -89,15 +90,39 @@ const home: TranslationDict = {
   "home.researchIndex": { en: "Notebook index", zh: "笔记索引" },
   "home.researchIndexKicker": { en: "Index", zh: "索引" },
   "home.activeSeries": { en: "Reading threads", zh: "阅读线索" },
+  "home.trackPathLabel": { en: "Reading path", zh: "阅读路径" },
+  "home.algorithmsPathTitle": {
+    en: "Residual, feed-forward, long-context",
+    zh: "残差、前馈、长上下文",
+  },
+  "home.algorithmsPathSummary": {
+    en: "Mechanism notes that start from model internals and end at implementation constraints.",
+    zh: "从模型内部机制出发，落到实现约束和架构取舍。",
+  },
+  "home.applicationsPathSummary": {
+    en: "Agent runtime notes ordered from controlled evaluation to observable production loops.",
+    zh: "从受控评测读到可观测的生产级 Agent 运行循环。",
+  },
+  "home.enterAlgorithms": { en: "Enter AI Algorithms", zh: "进入 AI 算法" },
+  "home.enterApplications": {
+    en: "Enter AI Applications",
+    zh: "进入 AI 应用",
+  },
+  "home.emptyTrack": {
+    en: "Public notes for this track are still being organized.",
+    zh: "这个方向的公开笔记仍在整理。",
+  },
+  "home.moreNotes": { en: "More notes", zh: "更多笔记" },
+  "home.moreNotesHint": {
+    en: "A compact scan of recent public writing. The full list lives in the archive.",
+    zh: "这里保留少量近期公开文章，完整列表在归档中。",
+  },
+  "home.allNotes": { en: "Open archive", zh: "打开归档" },
   "home.startHere": { en: "Start here", zh: "从这里开始" },
   "home.pathsPending": { en: "Paths loading", zh: "路径整理中" },
   "home.notesPending": { en: "Notes loading", zh: "文章整理中" },
   "home.pathCount": { en: "{count} paths", zh: "{count} 条路径" },
   "home.publicNotes": { en: "{count} public notes", zh: "{count} 篇公开笔记" },
-  "home.indexModels": { en: "Models", zh: "模型" },
-  "home.indexSystems": { en: "Systems", zh: "系统" },
-  "home.indexAgentHarness": { en: "Agent Harness", zh: "Agent Harness" },
-  "home.indexEvaluation": { en: "Evaluation", zh: "评测" },
   // Focus tags (static research topics)
   "home.focusTag1": { en: "Transformer Architecture", zh: "Transformer 架构" },
   "home.focusTag2": {
@@ -113,8 +138,8 @@ const home: TranslationDict = {
 
   // Footer
   "home.footerTagline": {
-    en: "Misaya Yang / Transformer systems / Long-context mechanisms",
-    zh: "Misaya Yang / Transformer systems / Long-context mechanisms",
+    en: "Misaya Yang. Transformer systems and long-context mechanisms.",
+    zh: "Misaya Yang。Transformer systems 与长上下文机制。",
   },
 
   // Archive placeholder
@@ -126,6 +151,10 @@ const home: TranslationDict = {
   "discovery.archiveSubtitle": {
     en: "{count} public notes grouped by month for quick scanning.",
     zh: "{count} 篇公开文章，按月份组织，便于快速回溯。",
+  },
+  "discovery.archiveLoading": {
+    en: "Loading public notes grouped by month.",
+    zh: "正在按月份读取公开文章。",
   },
   "discovery.archiveEmpty": {
     en: "No public articles are archived yet.",
@@ -150,6 +179,10 @@ const home: TranslationDict = {
   "discovery.resultsFor": {
     en: "{count} results for “{query}”",
     zh: "“{query}” 的 {count} 个结果",
+  },
+  "discovery.searchingFor": {
+    en: "Searching for “{query}”",
+    zh: "正在搜索“{query}”",
   },
   "discovery.latestPublic": {
     en: "Latest public articles",
@@ -217,7 +250,7 @@ const home: TranslationDict = {
   "discovery.taxonomyNotFound": { en: "Index not found", zh: "索引未找到" },
 
   // About
-  "about.kicker": { en: "Profile", zh: "个人介绍" },
+  "about.kicker": { en: "Author note", zh: "作者札记" },
   "about.title": { en: "Misaya Yang", zh: "Misaya Yang" },
   "about.subtitle": {
     en: "I write about the mechanics of AI systems: model architecture, long-context behavior, agent infrastructure, retrieval, evaluation, and the engineering constraints behind reliable software.",
@@ -246,17 +279,17 @@ const home: TranslationDict = {
   },
   "about.linksTitle": { en: "Links", zh: "链接" },
   "about.location": {
-    en: "Shanghai / Remote research notes",
-    zh: "上海 / 远程研究笔记",
+    en: "Shanghai, remote research notes",
+    zh: "上海，远程研究笔记",
   },
   // Track pages
-  "track.articles": { en: "Article index", zh: "文章索引" },
+  "track.articles": { en: "All notes", zh: "全部笔记" },
   "track.backHome": { en: "Back to index", zh: "返回索引" },
-  "track.statTopics": { en: "Topics / Technical Map", zh: "专题 / 技术地图" },
-  "track.topicNodes": { en: "Technical Nodes", zh: "技术节点" },
+  "track.statTopics": { en: "Topics", zh: "专题" },
+  "track.topicNodes": { en: "Topic ledger", zh: "专题目录" },
   "track.seriesTitle": { en: "Reading paths", zh: "阅读路径" },
   "track.nextPlanned": { en: "Next planned", zh: "后续计划" },
-  "track.readingOrder": { en: "Reading order", zh: "阅读顺序" },
+  "track.readingOrder": { en: "Path", zh: "路径" },
   "track.readingOrderHint": {
     en: "Read as an ordered path first; use the article index below for scanning and lookup.",
     zh: "先按路径顺序阅读；需要快速查找时，再使用下方文章索引。",

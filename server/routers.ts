@@ -9,8 +9,10 @@ import {
 import { agentRouter } from "./ai/router.js";
 import { authRouter } from "./auth.router.js";
 import { blogAdminProcedure } from "./blogAdminProcedure.js";
+import { ENV } from "./_core/env.js";
 import * as db from "./db.js";
 import { engagementRouter } from "./engagement.router.js";
+import { getPublicSeedArticleBySlug } from "./publicSeedPosts.js";
 import { recordSearchMiss } from "./searchMisses.js";
 import { verifyAdminSession } from "./auth.js";
 
@@ -184,8 +186,15 @@ export const appRouter = router({
     getBySlug: publicProcedure
       .input(z.string())
       .query(async ({ input, ctx }) => {
-        const post = await db.getPostBySlug(input);
+        if (!ENV.isProduction) {
+          const seedArticle = await getPublicSeedArticleBySlug(input);
+          if (seedArticle) return seedArticle;
+        }
+
+        const post = await db.getPostBySlug(input).catch(() => null);
         if (!post) {
+          const seedArticle = await getPublicSeedArticleBySlug(input);
+          if (seedArticle) return seedArticle;
           throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
         }
         const isAdmin = await verifyAdminSession(ctx.req);

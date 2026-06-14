@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
-  EmptyState,
+  AuthRequiredState,
   LoadingState,
   SpaceBackdrop,
 } from "@/components/ResearchShell";
@@ -275,6 +275,19 @@ export default function Editor() {
       }
     }
   }, [existingPost]);
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia("(max-width: 767px)");
+    const preferEditorOnMobile = () => {
+      if (mobileQuery.matches) setShowPreview(false);
+    };
+
+    preferEditorOnMobile();
+    mobileQuery.addEventListener("change", preferEditorOnMobile);
+    return () => {
+      mobileQuery.removeEventListener("change", preferEditorOnMobile);
+    };
+  }, []);
 
   const buildCurationPayload = useCallback(
     () => ({
@@ -731,22 +744,14 @@ export default function Editor() {
 
   if (!isAdmin) {
     return (
-      <div className="space-page grid min-h-screen place-items-center px-4">
-        <SpaceBackdrop subtle />
-        <EmptyState
-          icon={<FileText className="h-4 w-4" />}
-          title={t("editor.authRequired")}
-          description={t("editor.authDescription")}
-          action={
-            <a href={"/login"}>
-              <Button className="owner-primary-action">
-                {t("editor.goToLogin")}
-              </Button>
-            </a>
-          }
-          className="relative z-10 w-full max-w-md"
-        />
-      </div>
+      <AuthRequiredState
+        icon={<FileText className="h-4 w-4" />}
+        title={t("editor.authRequired")}
+        description={t("editor.authDescription")}
+        loginLabel={t("editor.goToLogin")}
+        homeLabel={t("nav.home")}
+        backLabel={t("nav.back")}
+      />
     );
   }
 

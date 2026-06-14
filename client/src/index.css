@@ -3,6 +3,66 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: "Misaya Display";
+  font-style: normal;
+  font-weight: 500 900;
+  font-display: swap;
+  src:
+    local("Avenir Next Condensed Demi Bold"),
+    local("Avenir Next Condensed Medium"),
+    local("Avenir Next Demi Bold"),
+    local("Helvetica Neue Condensed Bold"),
+    local("DIN Condensed Bold"),
+    local("DIN Alternate Bold"),
+    local("Arial Narrow Bold");
+  unicode-range:
+    U+0000-00FF, U+0100-024F, U+1E00-1EFF, U+2000-206F, U+20A0-20CF;
+}
+
+@font-face {
+  font-family: "Misaya Display";
+  font-style: normal;
+  font-weight: 500 900;
+  font-display: swap;
+  src:
+    local("Source Han Serif SC Heavy"),
+    local("Noto Serif CJK SC Black"),
+    local("Songti SC Bold"),
+    local("STSong");
+  unicode-range:
+    U+2E80-2EFF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
+    U+FF00-FFEF;
+}
+
+@font-face {
+  font-family: "Misaya Reading";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src:
+    local("Iowan Old Style"),
+    local("Charter"),
+    local("Source Han Serif SC"),
+    local("Noto Serif CJK SC"),
+    local("Songti SC"),
+    local("STSong");
+}
+
+@font-face {
+  font-family: "Misaya UI";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src:
+    local("SF Pro Text"),
+    local("Segoe UI Variable Text"),
+    local("Aptos"),
+    local("PingFang SC"),
+    local("Source Han Sans SC"),
+    local("Noto Sans CJK SC");
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -41,23 +101,26 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --font-sans:
-    "IBM Plex Sans", "Noto Sans SC", "SF Pro Text", -apple-system,
-    BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
-    system-ui, sans-serif;
+    "Misaya UI", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    "Segoe UI Variable Text", "Aptos", "Helvetica Neue", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
   --font-display:
-    "IBM Plex Serif", "Noto Serif SC", "Iowan Old Style", Charter, "Songti SC",
-    "STSong", "Noto Serif CJK SC", Georgia, serif;
+    "Misaya Display", "Avenir Next Condensed", "DIN Alternate",
+    "Arial Narrow", "Songti SC", "STSong", "Source Han Serif SC",
+    "Noto Serif CJK SC", sans-serif;
   --font-serif:
-    "IBM Plex Serif", "Noto Serif SC", "Iowan Old Style", Charter, "Songti SC",
-    "STSong", "Noto Serif CJK SC", Georgia, serif;
+    "Misaya Reading", "Iowan Old Style", Charter, "Songti SC", "STSong",
+    "Source Han Serif SC", "Noto Serif CJK SC", Georgia, serif;
   --font-reading:
-    "IBM Plex Serif", "Noto Serif SC", Charter, "Iowan Old Style", "Songti SC",
-    "STSong", "Noto Serif CJK SC", Georgia, serif;
+    "Misaya Reading", "Iowan Old Style", Charter, "Songti SC", "STSong",
+    "Source Han Serif SC", "Noto Serif CJK SC", Georgia, serif;
   --font-caption:
-    "IBM Plex Sans", "Noto Sans SC", "SF Pro Text", -apple-system,
-    BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
+    "Misaya UI", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    "Segoe UI Variable Text", "Aptos", "PingFang SC", "Hiragino Sans GB",
+    system-ui, sans-serif;
   --font-mono:
-    "SF Mono", "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+    "SF Mono", "JetBrains Mono", "Cascadia Code", "Fira Code", ui-monospace,
+    monospace;
 }
 
 :root {

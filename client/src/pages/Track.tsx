@@ -71,28 +71,39 @@ function TrackPage({ kind }: { kind: TrackKind }) {
       <SiteHeader active={config.active} />
 
       <main className="relative z-10">
-        <section className="container grid gap-10 px-4 pb-12 pt-14 sm:px-6 md:pt-[4.5rem] lg:grid-cols-[minmax(0,1fr)_360px]">
-          <div className="page-hero min-w-0">
+        <section className="container track-index-page px-4 pb-12 pt-14 sm:px-6 md:pt-[4.5rem]">
+          <div className="page-hero track-index-hero min-w-0">
             <div className="signal-chip mb-6">
               <Network className="h-4 w-4" />
               {t(config.topicTitleKey)}
             </div>
 
-            <h1 className="page-title">{t(config.titleKey)}</h1>
-            <p className="page-copy mt-6">{t(config.subtitleKey)}</p>
+            <h1 className="page-title track-page-title">
+              {t(config.titleKey)}
+            </h1>
+            <p className="page-copy track-page-copy mt-5">
+              {t(config.subtitleKey)}
+            </p>
 
-            <div className="track-map-note mt-7 max-w-4xl">
-              <Network className="h-5 w-5 text-sky-200" />
-              <p>
-                {t(
-                  kind === "algorithms"
-                    ? "track.algorithms.mapNote"
-                    : "track.applications.mapNote"
-                )}
-              </p>
+            <div className="track-context-strip mt-7">
+              <div className="track-map-note">
+                <Network className="h-5 w-5 text-sky-200" />
+                <p>
+                  {t(
+                    kind === "algorithms"
+                      ? "track.algorithms.mapNote"
+                      : "track.applications.mapNote"
+                  )}
+                </p>
+              </div>
+              <div className="track-focus-chips">
+                {config.focusKeys.slice(0, 4).map(key => (
+                  <span key={key}>{t(key)}</span>
+                ))}
+              </div>
             </div>
 
-            <div className="track-stat-grid mt-6 grid max-w-4xl grid-cols-3 gap-2 sm:gap-3">
+            <div className="track-stat-grid track-stat-row mt-6 grid max-w-4xl grid-cols-3 gap-2 sm:gap-3">
               <StatTile
                 icon={<FileText className="h-5 w-5" />}
                 value={
@@ -149,9 +160,9 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                   {publicSeries.map(series => (
                     <section key={series.slug} className="track-series-card">
                       <div className="mb-4 flex items-start justify-between gap-4">
-                        <div>
-                          <span className="series-card-track">
-                            {t("track.readingOrder")}
+                      <div>
+                        <span className="series-card-track">
+                          {t("track.readingOrder")}
                           </span>
                           <h2>{t(series.titleKey)}</h2>
                         </div>
@@ -178,50 +189,19 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                           </Link>
                         ))}
                       </div>
-                      <div className="mt-4 border-t border-white/10 pt-4">
-                        <p className="mb-2 text-xs font-semibold text-slate-500">
-                          {t("track.nextPlanned")}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {series.expectedNextKeys.map(key => (
-                            <span key={key} className="article-tag">
-                              {t(key)}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
                     </section>
                   ))}
                 </div>
               </section>
             )}
           </div>
-
-          <aside className="glass-panel p-5">
-            <div className="flex items-center gap-2 text-white">
-              <Network className="h-5 w-5 text-sky-200" />
-              <h2 className="text-base font-semibold">
-                {t(config.topicTitleKey)}
-              </h2>
-            </div>
-            <p className="mt-3 line-clamp-4 text-sm leading-7 text-slate-300">
-              {t(config.overviewKey)}
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {config.focusKeys.slice(0, 4).map(key => (
-                <span key={key} className="article-tag px-3 py-1.5">
-                  {t(key)}
-                </span>
-              ))}
-            </div>
-          </aside>
         </section>
 
         <section
           id="research-index"
-          className="container research-grid px-4 pb-16 sm:px-6"
+          className="container research-grid track-index-layout px-4 pb-16 sm:px-6"
         >
-          <div className="glass-panel research-section-panel">
+          <div className="glass-panel research-section-panel track-article-ledger">
             <div className="section-heading-row">
               <h2 className="section-title">{t("track.articles")}</h2>
               <Button
@@ -263,7 +243,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
             )}
           </div>
 
-          <aside className="glass-panel research-index-panel">
+          <aside className="glass-panel research-index-panel track-topic-rail">
             <div className="flex items-center gap-2">
               <Boxes className="h-5 w-5 text-sky-200" />
               <h2 className="section-title">{t("track.topicNodes")}</h2>

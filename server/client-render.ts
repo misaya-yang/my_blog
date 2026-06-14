@@ -8,7 +8,9 @@ import {
   type SeoPost,
 } from "../shared/metadata.js";
 import { siteConfig } from "../shared/site.js";
+import { ENV } from "./_core/env.js";
 import * as db from "./db.js";
+import { getPublicSeedArticleBySlug } from "./publicSeedPosts.js";
 import { resolveSiteUrl, type SiteUrlRequest } from "./seo.js";
 
 type ClientRequest = SiteUrlRequest & {
@@ -37,6 +39,7 @@ type RenderClientShellOptions = {
   rawHtml: string;
   urlPath: string;
   loadArticle?: (slug: string) => Promise<SeoPost | null>;
+  articleSnapshotTimeoutMs?: number;
   transformHtml?: (urlPath: string, html: string) => Promise<string>;
 };
 
@@ -61,6 +64,7 @@ const staticClientRoutes = new Set<string>([
 ]);
 
 const slugSegment = "[^/?#]+";
+const DEFAULT_ARTICLE_SNAPSHOT_TIMEOUT_MS = 2500;
 const dynamicKnownRoutePatterns = [
   new RegExp(`^/tags/${slugSegment}$`),
   new RegExp(`^/categories/${slugSegment}$`),
@@ -86,6 +90,7 @@ export async function renderClientShellHtml({
   rawHtml,
   urlPath,
   loadArticle = loadPublicArticleSnapshot,
+  articleSnapshotTimeoutMs = DEFAULT_ARTICLE_SNAPSHOT_TIMEOUT_MS,
   transformHtml,
 }: RenderClientShellOptions): Promise<RenderedClientShell> {
   const pathname = normalizePathname(urlPath);
@@ -107,8 +112,26 @@ export async function renderClientShellHtml({
   }
 
   if (route.kind === "article") {
-    const article = await loadArticle(route.slug);
-    if (!article || article.status !== "published" || article.visibility !== "public") {
+    const snapshot = await loadArticleSnapshot(
+      route.slug,
+      loadArticle,
+      articleSnapshotTimeoutMs
+    );
+
+    if (snapshot.status === "unavailable") {
+      html = injectRouteMetadata(
+        html,
+        buildRouteMetadata(baseUrl, {
+          title: humanizeSlug(route.slug),
+          description: siteConfig.defaultDescription,
+          path: pathname,
+        })
+      );
+    } else if (
+      !snapshot.article ||
+      snapshot.article.status !== "published" ||
+      snapshot.article.visibility !== "public"
+    ) {
       status = 404;
       html = injectRouteMetadata(
         html,
@@ -120,11 +143,18 @@ export async function renderClientShellHtml({
         })
       );
     } else {
-      const metadata = buildArticleMetadata(baseUrl, article);
+      const metadata = buildArticleMetadata(baseUrl, snapshot.article);
       if (metadata) {
-        html = injectRouteMetadata(html, metadata, buildArticleJsonLd(baseUrl, article));
+        html = injectRouteMetadata(
+          html,
+          metadata,
+          buildArticleJsonLd(baseUrl, snapshot.article)
+        );
       }
-      html = injectRootSnapshot(html, renderPublicArticleSnapshotMarkup(article));
+      html = injectRootSnapshot(
+        html,
+        renderPublicArticleSnapshotMarkup(snapshot.article)
+      );
     }
   }
 
@@ -181,6 +211,51 @@ export function createClientRenderMiddleware(options: ClientRenderMiddlewareOpti
   };
 }
 
+async function loadArticleSnapshot(
+  slug: string,
+  loadArticle: (slug: string) => Promise<SeoPost | null>,
+  timeoutMs: number
+): Promise<
+  | { status: "resolved"; article: SeoPost | null }
+  | { status: "unavailable"; reason: "timeout" | "error" }
+> {
+  if (timeoutMs >= DEFAULT_ARTICLE_SNAPSHOT_TIMEOUT_MS) {
+    try {
+      return { status: "resolved", article: await loadArticle(slug) };
+    } catch {
+      return { status: "unavailable", reason: "error" };
+    }
+  }
+
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeout = Math.max(1, timeoutMs);
+  const articleLoad = loadArticle(slug)
+    .then(article => ({ status: "resolved" as const, article }))
+    .catch(() => ({ status: "unavailable" as const, reason: "error" as const }));
+
+  try {
+    return await Promise.race([
+      articleLoad,
+      new Promise<{ status: "unavailable"; reason: "timeout" }>(resolve => {
+        timeoutId = setTimeout(
+          () => resolve({ status: "unavailable", reason: "timeout" }),
+          timeout
+        );
+      }),
+    ]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+}
+
+function humanizeSlug(slug: string) {
+  return slug
+    .split("-")
+    .filter(Boolean)
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 export function registerClientRenderRoutes(app: ClientRouteRegistrar, options: ClientRenderMiddlewareOptions = {}) {
   app.use(createClientRenderMiddleware(options));
 }
@@ -196,8 +271,14 @@ export function shouldBypassClientRender(urlPath: string) {
 }
 
 async function loadPublicArticleSnapshot(slug: string): Promise<SeoPost | null> {
-  const post = await db.getPostBySlug(slug);
-  if (!post || post.status !== "published" || post.visibility !== "public") return null;
+  if (!ENV.isProduction) {
+    const seedArticle = await getPublicSeedArticleBySlug(slug);
+    if (seedArticle) return seedArticle;
+  }
+
+  const post = await db.getPostBySlug(slug).catch(() => null);
+  if (!post) return await getPublicSeedArticleBySlug(slug);
+  if (post.status !== "published" || post.visibility !== "public") return null;
 
   const [category, tags] = await Promise.all([
     post.categoryId ? db.getCategoryById(post.categoryId) : Promise.resolve(null),
