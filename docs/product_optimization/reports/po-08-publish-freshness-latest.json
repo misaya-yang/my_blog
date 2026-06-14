@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-06-09T14:54:58.385Z",
+  "generatedAt": "2026-06-14T13:53:16.983Z",
   "git": {
     "branch": "codex/blog-agent-retrieval-rescue",
-    "commit": "403f9d2",
-    "dirty": true
+    "commit": "ddc66a9",
+    "dirty": false
   },
   "baseUrl": "http://localhost:3000/",
   "publicInventory": [
@@ -21,7 +21,7 @@
         "transformer"
       ],
       "publishedAt": "2026-06-06T00:00:00.000Z",
-      "updatedAt": "2026-06-09T14:53:28.482Z",
+      "updatedAt": "2026-06-14T13:52:05.007Z",
       "seriesSlug": "feed-forward-mechanisms",
       "seriesOrder": 1
     },
@@ -40,7 +40,7 @@
         "tool-use"
       ],
       "publishedAt": "2026-05-31T00:40:00.000Z",
-      "updatedAt": "2026-06-09T14:54:18.072Z",
+      "updatedAt": "2026-06-14T13:52:46.171Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 4
     },
@@ -80,7 +80,7 @@
         "rag"
       ],
       "publishedAt": "2026-05-31T00:20:00.000Z",
-      "updatedAt": "2026-06-09T14:53:52.304Z",
+      "updatedAt": "2026-06-14T13:52:25.434Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 2
     },
@@ -99,7 +99,7 @@
         "tool-use"
       ],
       "publishedAt": "2026-05-31T00:10:00.000Z",
-      "updatedAt": "2026-06-09T14:53:38.543Z",
+      "updatedAt": "2026-06-13T12:10:19.844Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 1
     },
@@ -191,7 +191,7 @@
   },
   "agentKnowledge": {
     "ok": true,
-    "chunkCount": 93,
+    "chunkCount": 94,
     "publicPostCount": 6,
     "indexedPublicPostCount": 6,
     "hiddenOrDraftExcludedCount": 1,
@@ -206,7 +206,7 @@
       "rag-evidence-packet-context-compiler"
     ],
     "nonPublicIndexedSlugs": [],
-    "lastReindexAt": "2026-06-09T14:54:29.840Z"
+    "lastReindexAt": "2026-06-14T13:52:56.638Z"
   },
   "dateDrift": {
     "comparedPublicPosts": 6,
