@@ -46,6 +46,23 @@ const AIISH_PHRASES = [
   "我们将",
 ];
 
+const MALFORMED_MARKDOWN_PATTERNS: Array<{
+  code: string;
+  pattern: RegExp;
+  message: string;
+}> = [
+  {
+    code: "content.malformed_bold_after_pronoun",
+    pattern: /(?:我们|本文|这里|这个|这些)\*\*[\u4e00-\u9fa5A-Za-z0-9]/,
+    message: "Review malformed bold marker attached to prose.",
+  },
+  {
+    code: "content.ai_label_residue",
+    pattern: /\b(?:AI-generated|AI generated|as an AI|由 AI 生成|AI生成)\b/i,
+    message: "Review AI-generation residue in article copy.",
+  },
+];
+
 const LINK_PATTERN = /\[[^\]]+]\(([^)]+)\)/g;
 
 export async function runContentQualityAudit(
@@ -97,14 +114,19 @@ export function parseSeedPosts(seedSource: string): SeedPost[] {
   }));
 }
 
-function auditSeedPosts(root: string, posts: SeedPost[]): ContentQualityIssue[] {
+function auditSeedPosts(
+  root: string,
+  posts: SeedPost[]
+): ContentQualityIssue[] {
   const issues: ContentQualityIssue[] = [];
   const seenSlugs = new Set<string>();
   const seenContentPaths = new Set<string>();
 
   for (const post of posts) {
     if (!post.slug) {
-      issues.push(failure("seed.missing_slug", "seed-blog.mjs", "Missing post slug."));
+      issues.push(
+        failure("seed.missing_slug", "seed-blog.mjs", "Missing post slug.")
+      );
       continue;
     }
     if (seenSlugs.has(post.slug)) {
@@ -120,7 +142,11 @@ function auditSeedPosts(root: string, posts: SeedPost[]): ContentQualityIssue[] 
 
     if (!post.title.trim()) {
       issues.push(
-        failure("seed.missing_title", "seed-blog.mjs", `Missing title for ${post.slug}.`)
+        failure(
+          "seed.missing_title",
+          "seed-blog.mjs",
+          `Missing title for ${post.slug}.`
+        )
       );
     }
     if (!post.excerpt.trim()) {
@@ -214,7 +240,10 @@ function auditMarkdownFile(
 ): ContentQualityIssue[] {
   const issues: ContentQualityIssue[] = [];
   const lines = markdown.split(/\r?\n/);
-  const h1 = lines.find(line => /^#\s+/.test(line))?.replace(/^#\s+/, "").trim();
+  const h1 = lines
+    .find(line => /^#\s+/.test(line))
+    ?.replace(/^#\s+/, "")
+    .trim();
 
   if (post && h1 && h1 !== post.title) {
     issues.push(
@@ -228,9 +257,16 @@ function auditMarkdownFile(
     );
   }
 
-  for (const phrase of AIISH_PHRASES) {
-    lines.forEach((line, index) => {
-      if (!line.includes(phrase)) return;
+  let inCodeFence = false;
+  lines.forEach((line, index) => {
+    if (/^\s*```/.test(line)) {
+      inCodeFence = !inCodeFence;
+      return;
+    }
+    if (inCodeFence) return;
+
+    for (const phrase of AIISH_PHRASES) {
+      if (!line.includes(phrase)) continue;
       issues.push(
         warning(
           "content.aiish_phrase",
@@ -240,8 +276,25 @@ function auditMarkdownFile(
           line.trim()
         )
       );
-    });
-  }
+    }
+
+    for (const { code, pattern, message } of MALFORMED_MARKDOWN_PATTERNS) {
+      if (!pattern.test(line)) continue;
+      issues.push(warning(code, file, message, index + 1, line.trim()));
+    }
+
+    if (hasUnbalancedBoldMarkers(line)) {
+      issues.push(
+        warning(
+          "content.unbalanced_bold_marker",
+          file,
+          "Review possible unbalanced bold marker.",
+          index + 1,
+          line.trim()
+        )
+      );
+    }
+  });
 
   for (const match of Array.from(markdown.matchAll(LINK_PATTERN))) {
     const href = match[1]?.trim() ?? "";
@@ -261,6 +314,11 @@ function auditMarkdownFile(
   }
 
   return issues;
+}
+
+function hasUnbalancedBoldMarkers(line: string) {
+  const markerCount = line.match(/\*\*/g)?.length ?? 0;
+  return markerCount % 2 === 1;
 }
 
 function extractPostsArray(seedSource: string) {

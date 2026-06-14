@@ -1,5 +1,12 @@
 import { ArticleCard } from "@/components/ArticleCard";
-import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
+import {
+  EmptyState,
+  LoadingState,
+  SectionHeader,
+  SiteHeader,
+  SpaceBackdrop,
+  Surface,
+} from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trackConfigs } from "@/lib/tracks";
@@ -61,9 +68,10 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
 
       <main className="container relative z-10 px-4 py-10 sm:px-6 md:py-14">
         {query.isLoading ? (
-          <div className="glass-panel p-8">
-            <div className="article-skeleton h-28" />
-          </div>
+          <LoadingState
+            title={t("common.loadingNotes")}
+            description={t("common.loadingHint")}
+          />
         ) : taxonomy ? (
           <>
             <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -87,13 +95,11 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
                 </p>
               </div>
 
-              <aside className="glass-panel p-5">
-                <div className="flex items-center gap-2 text-white">
-                  <Tags className="h-5 w-5 text-sky-300" />
-                  <h2 className="text-base font-semibold">
-                    {t("discovery.siblingTags")}
-                  </h2>
-                </div>
+              <Surface as="aside">
+                <SectionHeader
+                  icon={<Tags className="h-4 w-4" />}
+                  title={t("discovery.siblingTags")}
+                />
                 <div className="mt-4 flex flex-wrap gap-2">
                   {data.siblingTags?.length ? (
                     data.siblingTags.slice(0, 16).map((tag: any) => (
@@ -114,12 +120,10 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
 
                 {matchingTrack && (
                   <div className="mt-7">
-                    <div className="flex items-center gap-2 text-white">
-                      <Network className="h-5 w-5 text-blue-300" />
-                      <h2 className="text-base font-semibold">
-                        {t(matchingTrack.topicTitleKey)}
-                      </h2>
-                    </div>
+                    <SectionHeader
+                      icon={<Network className="h-4 w-4" />}
+                      title={t(matchingTrack.topicTitleKey)}
+                    />
                     <div className="mt-4 grid gap-2">
                       {matchingTrack.topics.map(topic => (
                         <div
@@ -135,24 +139,26 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
                     </div>
                   </div>
                 )}
-              </aside>
+              </Surface>
             </section>
 
-            <section className="glass-panel mt-9 p-4 sm:p-6">
-              <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                <h2 className="section-title">{t("track.articles")}</h2>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="glass-button"
-                >
-                  <Link href="/archive">{t("nav.archive")}</Link>
-                </Button>
-              </div>
+            <Surface className="mt-9">
+              <SectionHeader
+                title={t("track.articles")}
+                action={
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="glass-button"
+                  >
+                    <Link href="/archive">{t("nav.archive")}</Link>
+                  </Button>
+                }
+              />
 
               {data.posts?.length ? (
-                <div className="grid gap-4">
+                <div className="mt-5 grid gap-4">
                   {data.posts.map((post: any, index: number) => (
                     <ArticleCard
                       key={post.id}
@@ -164,21 +170,23 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
                   ))}
                 </div>
               ) : (
-                <div className="py-14 text-center text-sm text-slate-400">
-                  {t("discovery.noPosts")}
-                </div>
+                <EmptyState
+                  icon={<Folder className="h-4 w-4" />}
+                  title={t("discovery.noPosts")}
+                />
               )}
-            </section>
+            </Surface>
           </>
         ) : (
-          <div className="glass-panel p-8 text-center">
-            <h1 className="text-2xl font-semibold text-white">
-              {t("discovery.taxonomyNotFound")}
-            </h1>
-            <Button asChild variant="outline" className="glass-button mt-5">
-              <Link href="/archive">{t("nav.archive")}</Link>
-            </Button>
-          </div>
+          <EmptyState
+            icon={<Folder className="h-4 w-4" />}
+            title={t("discovery.taxonomyNotFound")}
+            action={
+              <Button asChild variant="outline" className="glass-button">
+                <Link href="/archive">{t("nav.archive")}</Link>
+              </Button>
+            }
+          />
         )}
       </main>
     </div>

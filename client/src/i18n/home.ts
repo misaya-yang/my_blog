@@ -29,6 +29,7 @@ const home: TranslationDict = {
     zh: "搜索文章、关键词、主题...",
   },
   "home.searchShortcut": { en: "⌘ K", zh: "⌘ K" },
+  "home.askAssistant": { en: "Ask assistant", zh: "询问助手" },
 
   // Stats
   "home.statArticles": { en: "Articles", zh: "文章" },
@@ -157,6 +158,14 @@ const home: TranslationDict = {
   "discovery.searchEmpty": {
     en: "No public articles match this search.",
     zh: "没有匹配的公开文章。",
+  },
+  "discovery.searchFailed": {
+    en: "Search is unavailable",
+    zh: "搜索暂时不可用",
+  },
+  "discovery.searchFailedHint": {
+    en: "The request failed. Retry, or browse the archive while it recovers.",
+    zh: "请求没有成功。可以重试，或先浏览归档。",
   },
   "discovery.recoveryTitle": {
     en: "No direct match yet",

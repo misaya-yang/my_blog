@@ -69,6 +69,14 @@ const manage: TranslationDict = {
     en: "Start writing your first article",
     zh: "开始撰写你的第一篇文章吧",
   },
+  "manage.loadFailed": {
+    en: "Could not load articles",
+    zh: "文章列表加载失败",
+  },
+  "manage.loadFailedHint": {
+    en: "Retry the request, then check the server logs if it fails again.",
+    zh: "请先重试；如果仍失败，再检查服务日志。",
+  },
 
   // Table headers
   "manage.table.title": { en: "Title", zh: "标题" },

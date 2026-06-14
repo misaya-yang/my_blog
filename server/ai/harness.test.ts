@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { createMemoryConversationStore } from "./conversations";
 import { createMemoryContextSourceStore } from "./contextSources";
-import { createAgentService } from "./harness";
+import { buildAgentContext, createAgentService } from "./harness";
 import { createMemoryQuotaStore } from "./quota";
 import type { BlogSession } from "../auth";
 import type { AgentContext, AgentModel, AgentStreamEvent } from "./types";
@@ -214,6 +214,39 @@ function createHarness(
 }
 
 describe("AI agent harness", () => {
+  it("assigns anonymous readers a browser-scoped guest identity", async () => {
+    const req: AgentContext["req"] = {
+      headers: {
+        "user-agent": "vitest",
+      },
+      socket: { remoteAddress: "203.0.113.200" },
+    };
+    let setCookieHeader: string | string[] | undefined = [
+      "existing_session=1; Path=/; HttpOnly",
+    ];
+    const res = {
+      getHeader: vi.fn(() => setCookieHeader),
+      setHeader: vi.fn((_name: string, value: string | string[]) => {
+        setCookieHeader = value;
+      }),
+    };
+
+    const firstContext = await buildAgentContext(req, res);
+    expect(firstContext.session.role).toBe("anonymous");
+    expect(res.setHeader).toHaveBeenCalledWith(
+      "Set-Cookie",
+      expect.arrayContaining([
+        "existing_session=1; Path=/; HttpOnly",
+        expect.stringContaining("agent_guest_id="),
+      ])
+    );
+    expect(req.headers?.cookie).toContain("agent_guest_id=");
+
+    const secondRes = { setHeader: vi.fn() };
+    await buildAgentContext(req, secondRes);
+    expect(secondRes.setHeader).not.toHaveBeenCalled();
+  });
+
   it("returns bootstrap quota and contextual prompts without reserving quota", async () => {
     const { service } = createHarness();
 
@@ -444,7 +477,11 @@ describe("AI agent harness", () => {
       }),
     };
     const { service, conversationStore } = createHarness({
-      retrieve: vi.fn(async () => [agentLoopSource, source, siteOverviewSource]),
+      retrieve: vi.fn(async () => [
+        agentLoopSource,
+        source,
+        siteOverviewSource,
+      ]),
       model,
     });
 
@@ -502,8 +539,7 @@ describe("AI agent harness", () => {
         model: "test-model",
         answer: {
           answerType: "explanation",
-          answerMarkdown:
-            "AgentLoop keeps runtime state outside the prompt.",
+          answerMarkdown: "AgentLoop keeps runtime state outside the prompt.",
           sourceIds: [sources[0].sourceId],
           sourceCards: [
             {
@@ -534,7 +570,9 @@ describe("AI agent harness", () => {
     expect(result.status).toBe("completed");
     if (result.status !== "completed") return;
     expect(result.answer.answerType).toBe("explanation");
-    expect(result.answer.answerMarkdown).not.toContain("I found this public note");
+    expect(result.answer.answerMarkdown).not.toContain(
+      "I found this public note"
+    );
   });
 
   it("cites IsoHC when the retrieved public source is IsoHC", async () => {
@@ -1105,6 +1143,65 @@ describe("AI agent harness", () => {
     await expect(
       service.getConversation(other, { conversationId: first.conversationId })
     ).rejects.toThrow("Conversation not found");
+  });
+
+  it("keeps admin public history scoped to the current admin identity", async () => {
+    const { service } = createHarness();
+    const owner = visitorContextWithId("visitor-owner");
+
+    const first = await service.sendMessage(owner, {
+      message: "Explain harness engines",
+      routeContext,
+    });
+    expect(first.status).toBe("completed");
+
+    const adminConversations = await service.listConversations(adminContext());
+    expect(adminConversations).toEqual([]);
+  });
+
+  it("validates an existing conversation before reserving message quota", async () => {
+    const quotaStore = createMemoryQuotaStore();
+    const reserveDailyMessage = vi.spyOn(quotaStore, "reserveDailyMessage");
+    const { service } = createHarness({ quotaStore });
+
+    await expect(
+      service.sendMessage(visitorContextWithId("visitor-missing-conv"), {
+        conversationId: "missing-conversation",
+        message: "Continue the missing conversation",
+        routeContext,
+      })
+    ).rejects.toThrow("Conversation not found");
+    expect(reserveDailyMessage).not.toHaveBeenCalled();
+  });
+
+  it("continues a conversation with its stored scope, not the current page scope", async () => {
+    const { service, retrieve } = createHarness();
+    const ctx = visitorContextWithId("visitor-scope");
+
+    const first = await service.sendMessage(ctx, {
+      message: "Explain harness engines",
+      routeContext,
+    });
+    expect(first.status).toBe("completed");
+    if (first.status !== "completed") return;
+
+    retrieve.mockClear();
+    const continued = await service.sendMessage(ctx, {
+      conversationId: first.conversationId,
+      message: "What should I evaluate next?",
+      routeContext: {
+        path: "/post/isohc-fixed-vector-isometric-residual-mixing",
+        routeType: "post",
+        postSlug: "isohc-fixed-vector-isometric-residual-mixing",
+      },
+    });
+
+    expect(continued.status).toBe("completed");
+    expect(retrieve).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        scope: { type: "track", value: "ai-applications" },
+      })
+    );
   });
 
   it("lets only admins inspect retrieval without model calls", async () => {

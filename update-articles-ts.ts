@@ -12,32 +12,58 @@ if (!DATABASE_URL) {
 const sql = postgres(DATABASE_URL, { prepare: false });
 
 async function updateArticles() {
-  const dfropeContent = readFileSync(path.resolve("dfrope_blog_en.md"), "utf-8");
-  const isohcContent = readFileSync(path.resolve("isohc_blog_en.md"), "utf-8");
+  const dfropeContent = readFileSync(
+    path.resolve("dfrope_blog_post.md"),
+    "utf-8"
+  );
+  const isohcContent = readFileSync(path.resolve("isohc_blog.md"), "utf-8");
 
   await sql`
+    DELETE FROM post_tags
+    WHERE post_id IN (
+      SELECT id FROM posts WHERE slug = ${"dynamic-frequency-rope"}
+    )
+  `;
+  await sql`DELETE FROM posts WHERE slug = ${"dynamic-frequency-rope"}`;
+
+  const evqRows = await sql`
     UPDATE posts
     SET
-      title = ${"Dynamic Frequency RoPE: My Journey to Solving Long-Sequence Transformers"},
+      title = ${"EVQ-Cosh: RoPE as a Finite Spectral Budget"},
       content = ${dfropeContent},
-      excerpt = ${"When I first started working with Transformers on long sequences, I quickly ran into a fundamental problem: how do we help these models understand position in sequences that are much longer than what they were trained on? In this post, I share how I developed Dynamic Frequency RoPE (DF-RoPE)."},
+      excerpt = ${"把 RoPE inverse frequency table 当成有限光谱预算：频率不是默认表，而是一个可以推导、实现和消融的初始化选择。"},
+      status = 'draft',
+      visibility = 'hidden',
       updated_at = now()
-    WHERE slug = ${"dynamic-frequency-rope"}
+    WHERE slug = ${"evq-cosh-frequency-allocation"}
+    RETURNING id
   `;
+  assertUpdated(evqRows, "evq-cosh-frequency-allocation");
 
-  console.log("DFRoPE article updated!");
+  console.log("EVQ-Cosh article updated!");
 
-  await sql`
+  const isohcRows = await sql`
     UPDATE posts
     SET
-      title = ${"IsoHC: How I Solved the Stability Crisis in Hyper-Connections"},
+      title = ${"IsoHC: Fixed-Vector Isometric Residual Mixing"},
       content = ${isohcContent},
-      excerpt = ${"When I first encountered Hyper-Connections, I was excited by its potential. But as I scaled up my experiments, training became unstable at depth. In this post, I share how I developed IsoHC-a new manifold constraint that preserves both global stream mean and l2 energy along residuals."},
+      excerpt = ${"从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？"},
+      status = 'published',
+      visibility = 'public',
       updated_at = now()
-    WHERE slug = ${"isohc-stability-crisis"}
+    WHERE slug = ${"isohc-fixed-vector-isometric-residual-mixing"}
+    RETURNING id
   `;
+  assertUpdated(isohcRows, "isohc-fixed-vector-isometric-residual-mixing");
 
   console.log("IsoHC article updated!");
+}
+
+function assertUpdated(rows: { length: number }, slug: string) {
+  if (rows.length > 0) return;
+  throw new Error(
+    `No post row found for ${slug}. Run pnpm db:seed or pnpm content:publish first.`
+  );
 }
 
 updateArticles()
@@ -46,7 +72,7 @@ updateArticles()
     console.log("Articles updated successfully!");
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error(error);
     process.exit(1);
   });

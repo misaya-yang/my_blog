@@ -4,7 +4,11 @@ import {
   SeriesProgress,
   type SeriesProgressLink,
 } from "@/components/SeriesProgress";
-import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
+import {
+  EmptyState,
+  SiteHeader,
+  SpaceBackdrop,
+} from "@/components/ResearchShell";
 import { SubscriptionForm } from "@/components/SubscriptionForm";
 import { openBlogAgentWithPrompt } from "@/components/agent/routeContext";
 import { Button } from "@/components/ui/button";
@@ -33,7 +37,6 @@ import {
   Twitter,
   Linkedin,
   MessageCircle,
-  Loader2,
 } from "lucide-react";
 import { Link, useParams } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -377,6 +380,89 @@ function truncateText(value: string, maxLength: number) {
     : value;
 }
 
+function stripMatchingMarkdownTitle(content: string, title: string) {
+  const lines = content.split(/\r?\n/);
+  const firstContentIndex = lines.findIndex(line => line.trim().length > 0);
+  if (firstContentIndex < 0) return content;
+
+  const match = /^#\s+(.+?)\s*$/.exec(lines[firstContentIndex]);
+  if (!match) return content;
+
+  const markdownTitle = normalizeText(match[1].replace(/\*\*/g, ""));
+  const pageTitle = normalizeText(title);
+  if (!markdownTitle || markdownTitle !== pageTitle) return content;
+
+  const nextLines = [...lines];
+  nextLines.splice(firstContentIndex, 1);
+  if (nextLines[firstContentIndex]?.trim() === "") {
+    nextLines.splice(firstContentIndex, 1);
+  }
+  return nextLines.join("\n").trimStart();
+}
+
+function MobileToc({
+  headings,
+  t,
+}: {
+  headings: ArticleHeading[];
+  t: Translate;
+}) {
+  if (headings.length === 0) return null;
+
+  return (
+    <details className="mb-7 rounded-lg border border-white/10 bg-slate-950/35 p-4 lg:hidden">
+      <summary className="cursor-pointer text-sm font-semibold text-white">
+        {t("post.toc")}
+      </summary>
+      <nav className="mt-3 grid gap-2">
+        {headings.map(heading => (
+          <a
+            key={heading.id}
+            href={`#${heading.id}`}
+            className="text-sm text-slate-400 hover:text-teal-100"
+            style={{
+              paddingLeft: `${(heading.level - 1) * 0.75}rem`,
+            }}
+          >
+            {heading.text}
+          </a>
+        ))}
+      </nav>
+    </details>
+  );
+}
+
+function ArticleLoadingState({ t }: { t: Translate }) {
+  return (
+    <div className="space-page text-foreground">
+      <SpaceBackdrop subtle />
+      <SiteHeader backHref="/" backLabel={t("nav.back")} compact />
+      <main className="container relative z-10 max-w-7xl px-4 py-8 sm:px-6 md:py-12">
+        <section className="glass-panel reading-surface article-loading-surface">
+          <div className="article-loading-header">
+            <p className="technical-label">{t("post.loadingKicker")}</p>
+            <h1>{t("post.loadingTitle")}</h1>
+            <p>{t("post.loadingBody")}</p>
+          </div>
+          <div className="route-loading-lines" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
+          <div className="article-loading-actions">
+            <Button asChild variant="outline" className="glass-button">
+              <Link href="/">{t("post.backHome")}</Link>
+            </Button>
+            <Button asChild variant="outline" className="glass-button">
+              <Link href="/search">{t("nav.search")}</Link>
+            </Button>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
+
 export default function PostDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { isAdmin } = useAuth();
@@ -413,8 +499,12 @@ export default function PostDetail() {
 
   useEffect(() => {
     if (post?.content) {
+      const articleContent = stripMatchingMarkdownTitle(
+        post.content,
+        post.title
+      );
       const headingRegex = /^(#{1,6})\s+(.+)$/gm;
-      const matches = Array.from(post.content.matchAll(headingRegex));
+      const matches = Array.from(articleContent.matchAll(headingRegex));
       const extractedHeadings = matches.map((match, index) => ({
         id: `heading-${index}`,
         text: match[2].replace(/\*\*/g, ""),
@@ -422,7 +512,7 @@ export default function PostDetail() {
       }));
       setHeadings(extractedHeadings);
     }
-  }, [post?.content]);
+  }, [post?.content, post?.title]);
 
   useEffect(() => {
     if (headings.length === 0 || !window.location.hash) return;
@@ -518,34 +608,36 @@ export default function PostDetail() {
   };
 
   if (isLoading) {
-    return (
-      <div className="space-page flex items-center justify-center">
-        <SpaceBackdrop subtle />
-        <Loader2 className="relative z-10 h-10 w-10 animate-spin text-teal-200" />
-      </div>
-    );
+    return <ArticleLoadingState t={t} />;
   }
 
   if (!post) {
     return (
-      <div className="space-page flex items-center justify-center">
+      <div className="space-page grid min-h-screen place-items-center px-4">
         <SpaceBackdrop subtle />
-        <div className="glass-panel relative z-10 p-8 text-center">
-          <h1 className="mb-4 text-2xl font-bold text-white">
-            {t("post.notFound")}
-          </h1>
-          <Link href="/">
-            <Button variant="outline" className="glass-button">
-              {t("post.backHome")}
-            </Button>
-          </Link>
-        </div>
+        <EmptyState
+          icon={<BookOpen className="h-4 w-4" />}
+          title={t("post.notFound")}
+          action={
+            <Link href="/">
+              <Button variant="outline" className="glass-button">
+                {t("post.backHome")}
+              </Button>
+            </Link>
+          }
+          className="relative z-10 w-full max-w-md"
+        />
       </div>
     );
   }
 
   const articlePost = post as ArticlePostModel;
-  const readingTime = calculateReadingTime(articlePost.content || "");
+  const readableContent = stripMatchingMarkdownTitle(
+    articlePost.content || "",
+    articlePost.title
+  );
+  const articlePostForReading = { ...articlePost, content: readableContent };
+  const readingTime = calculateReadingTime(readableContent);
   const postTags = Array.isArray(articlePost.tags) ? articlePost.tags : [];
   const visibleHeaderTags = postTags.slice(0, 2);
   const remainingHeaderTagCount = Math.max(
@@ -559,7 +651,11 @@ export default function PostDetail() {
     postCategory?.slug === "ai-applications"
       ? t("home.applicationsLabel")
       : t("home.algorithmsLabel");
-  const articleEntryItems = buildArticleEntryItems(articlePost, headings, t);
+  const articleEntryItems = buildArticleEntryItems(
+    articlePostForReading,
+    headings,
+    t
+  );
   const primaryEntryItem =
     articleEntryItems.find(item => item.key === "core") ?? articleEntryItems[0];
   const secondaryEntryItems = articleEntryItems.filter(
@@ -626,10 +722,59 @@ export default function PostDetail() {
 
       <SiteHeader backHref="/" backLabel={t("nav.back")} compact />
 
-      <div className="container relative z-10 max-w-7xl px-4 py-8 sm:px-6 md:py-12">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="paper-reader-container container relative z-10 max-w-7xl px-4 py-8 sm:px-6 md:py-12">
+        <div className="paper-reader-cockpit">
+          <aside className="paper-brief-rail hidden xl:block">
+            <div className="paper-brief-card sticky top-24">
+              <p className="technical-label">{t("post.readerMap")}</p>
+              <h2>{t("post.entry.kicker")}</h2>
+              <dl className="paper-brief-stats">
+                <div>
+                  <dt>{t("post.minRead")}</dt>
+                  <dd>{readingTime}</dd>
+                </div>
+                <div>
+                  <dt>{t("post.reads")}</dt>
+                  <dd>{post.viewCount}</dd>
+                </div>
+              </dl>
+              <div className="paper-brief-route">
+                <span>{t("post.readerRoute")}</span>
+                <Link href={continueTrackHref}>{continueTrackLabel}</Link>
+              </div>
+              {(postCategory || visibleHeaderTags.length > 0) && (
+                <div
+                  className="paper-brief-tags"
+                  aria-label={t("post.readerSignals")}
+                >
+                  {postCategory && (
+                    <Link href={`/categories/${postCategory.slug}`}>
+                      {postCategory.name}
+                    </Link>
+                  )}
+                  {visibleHeaderTags.map((tag: any) => (
+                    <Link key={tag.slug} href={`/tags/${tag.slug}`}>
+                      {tag.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                className="paper-brief-action glass-button"
+                onClick={() =>
+                  openBlogAgentWithPrompt(t("agent.prompts.postAbstraction"))
+                }
+              >
+                <BookOpen className="h-3.5 w-3.5" />
+                {t("post.agentCompanion.title")}
+              </Button>
+            </div>
+          </aside>
+
           {/* Main Content */}
-          <article className="glass-panel reading-surface max-w-4xl p-5 sm:p-8 lg:p-10">
+          <article className="glass-panel reading-surface paper-reader-main p-5 sm:p-8 lg:p-10">
             {/* Post Header */}
             <div className="article-reading-header">
               <h1 className="article-page-title mb-5">{post.title}</h1>
@@ -817,13 +962,15 @@ export default function PostDetail() {
               </div>
             )}
 
+            <MobileToc headings={headings} t={t} />
+
             {/* Post Content */}
             <div className="article-prose">
               <Suspense
                 fallback={<div className="h-24 rounded-lg bg-slate-800/40" />}
               >
                 <MarkdownRenderer
-                  content={post.content}
+                  content={readableContent}
                   headings={headings}
                   copiedCode={copiedCode}
                   copyCodeLabel={t("post.copyCode")}
@@ -831,28 +978,6 @@ export default function PostDetail() {
                 />
               </Suspense>
             </div>
-
-            {headings.length > 0 && (
-              <details className="mt-10 rounded-lg border border-white/10 bg-slate-950/35 p-4 lg:hidden">
-                <summary className="cursor-pointer text-sm font-semibold text-white">
-                  {t("post.toc")}
-                </summary>
-                <nav className="mt-3 grid gap-2">
-                  {headings.map(heading => (
-                    <a
-                      key={heading.id}
-                      href={`#${heading.id}`}
-                      className="text-sm text-slate-400 hover:text-teal-100"
-                      style={{
-                        paddingLeft: `${(heading.level - 1) * 0.75}rem`,
-                      }}
-                    >
-                      {heading.text}
-                    </a>
-                  ))}
-                </nav>
-              </details>
-            )}
 
             <div
               className="article-secondary-actions"
@@ -1060,7 +1185,7 @@ export default function PostDetail() {
           </article>
 
           {/* Table of Contents */}
-          <aside className="hidden lg:block">
+          <aside className="paper-toc-rail hidden lg:block">
             <div className="glass-panel toc-surface sticky top-24 p-5">
               <h3 className="section-title mb-4">{t("post.toc")}</h3>
               <nav className="space-y-2">

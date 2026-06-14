@@ -1,6 +1,14 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
+import {
+  EmptyState,
+  LoadingState,
+  MetricTile,
+  SectionHeader,
+  SiteHeader,
+  SpaceBackdrop,
+  Surface,
+} from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -116,13 +124,18 @@ export default function Manage() {
   const {
     data: postsData,
     isLoading,
+    isError: postsError,
+    error: postsLoadError,
     refetch,
-  } = trpc.posts.list.useQuery({
-    search: search || undefined,
-    categorySlug: categorySlug === "all" ? undefined : categorySlug,
-    limit: 50,
-    includeUnpublished: true,
-  });
+  } = trpc.posts.list.useQuery(
+    {
+      search: search || undefined,
+      categorySlug: categorySlug === "all" ? undefined : categorySlug,
+      limit: 50,
+      includeUnpublished: true,
+    },
+    { enabled: isAdmin }
+  );
   const utils = trpc.useUtils();
   const notifyPostMutation = useCallback(
     (result: unknown, successMessage: string) => {
@@ -205,6 +218,57 @@ export default function Manage() {
     () => getContentHealthSummary((postsData?.posts ?? []) as any[]),
     [postsData?.posts]
   );
+  const healthMetrics: Array<{
+    labelKey: string;
+    value: number;
+    icon: LucideIcon;
+    tone?: "neutral" | "warning";
+  }> = [
+    {
+      labelKey: "manage.health.drafts",
+      value: contentHealth.drafts,
+      icon: FileText,
+    },
+    {
+      labelKey: "manage.health.public",
+      value: contentHealth.publishedPublic,
+      icon: Globe2,
+    },
+    {
+      labelKey: "manage.health.ownerOnly",
+      value: contentHealth.ownerOnlyPreviews,
+      icon: ShieldCheck,
+    },
+    {
+      labelKey: "manage.health.hidden",
+      value: contentHealth.hidden,
+      icon: EyeOff,
+      tone: "warning",
+    },
+    {
+      labelKey: "manage.health.noExcerpt",
+      value: contentHealth.missingExcerpt,
+      icon: MessageSquareText,
+      tone: "warning",
+    },
+    {
+      labelKey: "manage.health.noCategory",
+      value: contentHealth.missingCategory,
+      icon: Folder,
+      tone: "warning",
+    },
+    {
+      labelKey: "manage.health.noTags",
+      value: contentHealth.missingTags,
+      icon: Tags,
+      tone: "warning",
+    },
+    {
+      labelKey: "manage.health.recent",
+      value: contentHealth.updatedRecently,
+      icon: CheckCircle2,
+    },
+  ];
 
   const createCategory = trpc.categories.create.useMutation({
     onSuccess: () => {
@@ -350,17 +414,18 @@ export default function Manage() {
   // 未登录提示
   if (!authLoading && !isAdmin) {
     return (
-      <div className="space-page flex items-center justify-center">
+      <div className="space-page grid min-h-screen place-items-center px-4">
         <SpaceBackdrop subtle />
-        <div className="owner-panel relative z-10 space-y-4 p-8 text-center">
-          <h2 className="text-2xl font-bold text-white">
-            {t("manage.pleaseLogin")}
-          </h2>
-          <p className="text-slate-400">{t("manage.loginRequired")}</p>
-          <Button asChild className="owner-primary-action">
-            <a href={"/login"}>{t("manage.loginBtn")}</a>
-          </Button>
-        </div>
+        <EmptyState
+          title={t("manage.pleaseLogin")}
+          description={t("manage.loginRequired")}
+          action={
+            <Button asChild className="owner-primary-action">
+              <a href={"/login"}>{t("manage.loginBtn")}</a>
+            </Button>
+          }
+          className="relative z-10 w-full max-w-md"
+        />
       </div>
     );
   }
@@ -368,9 +433,13 @@ export default function Manage() {
   // 加载中
   if (authLoading) {
     return (
-      <div className="space-page flex items-center justify-center">
+      <div className="space-page grid min-h-screen place-items-center px-4">
         <SpaceBackdrop subtle />
-        <Loader2 className="relative z-10 h-8 w-8 animate-spin owner-icon-accent" />
+        <LoadingState
+          title={t("common.loadingNotes")}
+          description={t("common.loadingHint")}
+          className="relative z-10 w-full max-w-md"
+        />
       </div>
     );
   }
@@ -385,8 +454,8 @@ export default function Manage() {
         compact
       />
 
-      <main className="container relative z-10 px-4 py-8 sm:px-6">
-        <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <main className="owner-ops-page container relative z-10 px-4 py-8 sm:px-6">
+        <div className="owner-ops-hero mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <div className="signal-chip mb-5">
               <FileText className="h-4 w-4" />
@@ -420,7 +489,7 @@ export default function Manage() {
           </div>
         </div>
 
-        <div className="owner-panel mb-6 flex flex-col gap-4 p-4 lg:flex-row lg:items-center">
+        <Surface as="div" className="owner-command-strip mb-6">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input
@@ -446,50 +515,58 @@ export default function Manage() {
           <div className="text-sm text-slate-400">
             {t("manage.articleCount", { count: postsData?.total || 0 })}
           </div>
-        </div>
+        </Surface>
 
-        <section className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
-          {[
-            ["manage.health.drafts", contentHealth.drafts],
-            ["manage.health.public", contentHealth.publishedPublic],
-            ["manage.health.ownerOnly", contentHealth.ownerOnlyPreviews],
-            ["manage.health.hidden", contentHealth.hidden],
-            ["manage.health.noExcerpt", contentHealth.missingExcerpt],
-            ["manage.health.noCategory", contentHealth.missingCategory],
-            ["manage.health.noTags", contentHealth.missingTags],
-            ["manage.health.recent", contentHealth.updatedRecently],
-          ].map(([labelKey, value]) => (
-            <div
+        <section className="owner-dashboard-kpis owner-ops-kpi-strip mb-6">
+          {healthMetrics.map(({ labelKey, value, icon: Icon, tone }) => (
+            <MetricTile
               key={labelKey}
-              className="rounded-lg border border-primary/10 bg-slate-950/35 p-3"
-            >
-              <p className="text-xs text-slate-500">{t(labelKey as string)}</p>
-              <p className="mt-1 text-2xl font-semibold text-white">{value}</p>
-            </div>
+              icon={<Icon className="h-4 w-4" />}
+              value={value}
+              label={t(labelKey)}
+              tone={tone}
+            />
           ))}
         </section>
 
         {/* 文章列表 */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin owner-icon-accent" />
-          </div>
+          <LoadingState
+            title={t("common.loadingNotes")}
+            description={t("common.loadingHint")}
+          />
+        ) : postsError ? (
+          <EmptyState
+            icon={<FileText className="h-4 w-4" />}
+            title={t("manage.loadFailed")}
+            description={postsLoadError?.message || t("manage.loadFailedHint")}
+            action={
+              <Button
+                type="button"
+                variant="outline"
+                className="owner-button"
+                onClick={() => void refetch()}
+              >
+                {t("common.retry")}
+              </Button>
+            }
+          />
         ) : postsData?.posts.length === 0 ? (
-          <div className="owner-panel py-12 text-center">
-            <FileText className="mx-auto mb-4 h-12 w-12 owner-icon-accent" />
-            <h3 className="mb-2 text-lg font-medium text-white">
-              {t("manage.noArticles")}
-            </h3>
-            <p className="mb-4 text-slate-400">{t("manage.noArticlesHint")}</p>
-            <Button asChild className="owner-primary-action">
-              <Link href="/write">
-                <Plus className="mr-2 h-4 w-4" />
-                {t("manage.writeArticle")}
-              </Link>
-            </Button>
-          </div>
+          <EmptyState
+            icon={<FileText className="h-4 w-4" />}
+            title={t("manage.noArticles")}
+            description={t("manage.noArticlesHint")}
+            action={
+              <Button asChild className="owner-primary-action">
+                <Link href="/write">
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("manage.writeArticle")}
+                </Link>
+              </Button>
+            }
+          />
         ) : (
-          <>
+          <section className="owner-ops-ledger">
             <div className="grid gap-3 md:hidden">
               {postsData?.posts.map(post => (
                 <article key={post.id} className="owner-panel p-4">
@@ -576,7 +653,7 @@ export default function Manage() {
               ))}
             </div>
 
-            <div className="owner-panel hidden overflow-x-auto md:block">
+            <div className="owner-table-wrap hidden md:block">
               <Table className="min-w-[980px]">
                 <TableHeader>
                   <TableRow className="border-primary/10 hover:bg-transparent">
@@ -701,17 +778,15 @@ export default function Manage() {
                 </TableBody>
               </Table>
             </div>
-          </>
+          </section>
         )}
 
-        <section className="mt-8 grid gap-6 xl:grid-cols-2">
-          <div className="owner-panel p-5">
-            <div className="mb-5 flex items-center gap-2 text-white">
-              <Folder className="h-5 w-5 owner-icon-accent" />
-              <h3 className="text-lg font-semibold">
-                {t("manage.taxonomy.categoriesTitle")}
-              </h3>
-            </div>
+        <section className="owner-ops-taxonomy mt-8 grid gap-6 xl:grid-cols-2">
+          <Surface as="div">
+            <SectionHeader
+              icon={<Folder className="h-4 w-4" />}
+              title={t("manage.taxonomy.categoriesTitle")}
+            />
             <div className="mb-4 grid gap-3 md:grid-cols-[1fr_1fr_1.4fr_auto]">
               <Input
                 value={newCategory.name}
@@ -869,15 +944,13 @@ export default function Manage() {
                 </div>
               ))}
             </div>
-          </div>
+          </Surface>
 
-          <div className="owner-panel p-5">
-            <div className="mb-5 flex items-center gap-2 text-white">
-              <Tags className="h-5 w-5 owner-icon-accent" />
-              <h3 className="text-lg font-semibold">
-                {t("manage.taxonomy.tagsTitle")}
-              </h3>
-            </div>
+          <Surface as="div">
+            <SectionHeader
+              icon={<Tags className="h-4 w-4" />}
+              title={t("manage.taxonomy.tagsTitle")}
+            />
             <div className="mb-4 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
               <Input
                 value={newTag.name}
@@ -999,7 +1072,7 @@ export default function Manage() {
                 </div>
               ))}
             </div>
-          </div>
+          </Surface>
         </section>
 
         <ContentRadarPanel
@@ -1007,7 +1080,7 @@ export default function Manage() {
           radar={contentRadarData}
         />
 
-        <section className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
+        <section className="owner-ops-engagement mt-8 grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
           <div className="owner-panel p-5">
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>

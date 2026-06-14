@@ -14,56 +14,60 @@ if (!DATABASE_URL) {
 const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 const sql = postgres(DATABASE_URL, { prepare: false });
 
-const dfropeContent = readFileSync(path.join(projectRoot, "dfrope_blog_en.md"), "utf-8");
-const isohcContent = readFileSync(path.join(projectRoot, "isohc_blog_en.md"), "utf-8");
+const dfropeContent = readFileSync(
+  path.join(projectRoot, "dfrope_blog_post.md"),
+  "utf-8"
+);
+const isohcContent = readFileSync(
+  path.join(projectRoot, "isohc_blog.md"),
+  "utf-8"
+);
 
 try {
   await sql`
+    DELETE FROM post_tags
+    WHERE post_id IN (
+      SELECT id FROM posts WHERE slug = ${"dynamic-frequency-rope"}
+    )
+  `;
+  await sql`DELETE FROM posts WHERE slug = ${"dynamic-frequency-rope"}`;
+
+  const evqRows = await sql`
     UPDATE posts
     SET
-      title = ${"Dynamic Frequency RoPE: My Journey to Solving Long-Sequence Transformers"},
+      title = ${"EVQ-Cosh: RoPE as a Finite Spectral Budget"},
       content = ${dfropeContent},
-      excerpt = ${"When I first started working with Transformers on long sequences, I quickly ran into a fundamental problem: how do we help these models understand position in sequences that are much longer than what they were trained on? In this post, I share how I developed Dynamic Frequency RoPE (DF-RoPE)."},
+      excerpt = ${"把 RoPE inverse frequency table 当成有限光谱预算：频率不是默认表，而是一个可以推导、实现和消融的初始化选择。"},
+      status = 'draft',
+      visibility = 'hidden',
+      updated_at = now()
+    WHERE slug = ${"evq-cosh-frequency-allocation"}
+    RETURNING id
+  `;
+  assertUpdated(evqRows, "evq-cosh-frequency-allocation");
+
+  const isohcRows = await sql`
+    UPDATE posts
+    SET
+      title = ${"IsoHC: Fixed-Vector Isometric Residual Mixing"},
+      content = ${isohcContent},
+      excerpt = ${"从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？"},
+      status = 'published',
       visibility = 'public',
       updated_at = now()
-    WHERE slug = ${"dynamic-frequency-rope"}
+    WHERE slug = ${"isohc-fixed-vector-isometric-residual-mixing"}
+    RETURNING id
   `;
-
-  await sql`
-    INSERT INTO posts (
-      title,
-      slug,
-      content,
-      excerpt,
-      status,
-      visibility,
-      category_id,
-      author_id,
-      published_at
-    )
-    VALUES (
-      ${"IsoHC: How I Solved the Stability Crisis in Hyper-Connections"},
-      ${"isohc-stability-crisis"},
-      ${isohcContent},
-      ${"When I first encountered Hyper-Connections, I was excited by its potential. But as I scaled up my experiments, training became unstable at depth. In this post, I share how I developed IsoHC-a new manifold constraint that preserves both global stream mean and l2 energy along residuals."},
-      'published',
-      'public',
-      1,
-      1,
-      now()
-    )
-    ON CONFLICT (slug) DO UPDATE SET
-      title = EXCLUDED.title,
-      content = EXCLUDED.content,
-      excerpt = EXCLUDED.excerpt,
-      status = EXCLUDED.status,
-      visibility = EXCLUDED.visibility,
-      category_id = EXCLUDED.category_id,
-      author_id = EXCLUDED.author_id,
-      updated_at = now()
-  `;
+  assertUpdated(isohcRows, "isohc-fixed-vector-isometric-residual-mixing");
 
   console.log("Articles updated successfully!");
 } finally {
   await sql.end();
+}
+
+function assertUpdated(rows, slug) {
+  if (rows.length > 0) return;
+  throw new Error(
+    `No post row found for ${slug}. Run pnpm db:seed or pnpm content:publish first.`
+  );
 }

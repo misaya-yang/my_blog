@@ -1,11 +1,11 @@
 import { lazy, Suspense, useEffect } from "react";
-import { Loader2 } from "lucide-react";
 import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import { LanguageProvider } from "./contexts/LanguageContext";
+import { LanguageProvider, useLanguage } from "./contexts/LanguageContext";
 import { trackPageView } from "@/lib/analytics";
 import { BlogAgentRoot } from "@/components/agent/BlogAgentRoot";
+import { BrandMark, SpaceBackdrop } from "@/components/ResearchShell";
 
 const Home = lazy(() => import("./pages/Home"));
 const Toaster = lazy(() =>
@@ -34,9 +34,26 @@ const CategoryPage = lazy(() =>
 );
 
 function RouteLoading() {
+  const { t } = useLanguage();
+
   return (
-    <div className="space-page grid place-items-center">
-      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    <div className="space-page route-loading-page">
+      <SpaceBackdrop subtle />
+      <div className="route-loading-shell">
+        <div className="flex items-center gap-3">
+          <BrandMark />
+          <div>
+            <p className="technical-label">{t("common.loading")}</p>
+            <h1>{t("common.loadingNotes")}</h1>
+          </div>
+        </div>
+        <p>{t("common.loadingHint")}</p>
+        <div className="route-loading-lines" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      </div>
     </div>
   );
 }

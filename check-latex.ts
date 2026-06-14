@@ -12,7 +12,7 @@ const sql = postgres(DATABASE_URL, { prepare: false });
 const result = await sql`
   SELECT content
   FROM posts
-  WHERE slug = ${"dynamic-frequency-rope"}
+  WHERE slug = ${"evq-cosh-frequency-allocation"}
   LIMIT 1
 `;
 

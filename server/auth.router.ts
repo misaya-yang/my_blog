@@ -4,6 +4,7 @@ import { publicProcedure, router } from "./_core/trpc.js";
 import { ENV } from "./_core/env.js";
 import {
   ADMIN_SESSION_COOKIE,
+  AGENT_GUEST_COOKIE,
   VISITOR_SESSION_COOKIE,
   buildClearedCookie,
   buildSessionCookie,
@@ -76,16 +77,16 @@ export const authRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       const session = await createVisitorSession(input.nickname);
-      setHeader(
-        ctx.res,
-        "Set-Cookie",
+      setHeader(ctx.res, "Set-Cookie", [
         buildSessionCookie(
           ctx.req,
           VISITOR_SESSION_COOKIE,
           session.token,
           365 * 24 * 60 * 60
-        )
-      );
+        ),
+        buildClearedCookie(ctx.req, ADMIN_SESSION_COOKIE),
+        buildClearedCookie(ctx.req, AGENT_GUEST_COOKIE),
+      ]);
 
       return {
         success: true,
@@ -118,26 +119,26 @@ export const authRouter = router({
         process.env.OWNER_NAME || "Misaya Yang"
       );
 
-      setHeader(
-        ctx.res,
-        "Set-Cookie",
+      setHeader(ctx.res, "Set-Cookie", [
         buildSessionCookie(
           ctx.req,
           ADMIN_SESSION_COOKIE,
           sessionToken,
           30 * 24 * 60 * 60
-        )
-      );
+        ),
+        buildClearedCookie(ctx.req, VISITOR_SESSION_COOKIE),
+        buildClearedCookie(ctx.req, AGENT_GUEST_COOKIE),
+      ]);
 
       return { success: true };
     }),
 
   adminLogout: publicProcedure.mutation(({ ctx }) => {
-    setHeader(
-      ctx.res,
-      "Set-Cookie",
-      buildClearedCookie(ctx.req, ADMIN_SESSION_COOKIE)
-    );
+    setHeader(ctx.res, "Set-Cookie", [
+      buildClearedCookie(ctx.req, ADMIN_SESSION_COOKIE),
+      buildClearedCookie(ctx.req, VISITOR_SESSION_COOKIE),
+      buildClearedCookie(ctx.req, AGENT_GUEST_COOKIE),
+    ]);
     return { success: true };
   }),
 
@@ -145,6 +146,7 @@ export const authRouter = router({
     setHeader(ctx.res, "Set-Cookie", [
       buildClearedCookie(ctx.req, ADMIN_SESSION_COOKIE),
       buildClearedCookie(ctx.req, VISITOR_SESSION_COOKIE),
+      buildClearedCookie(ctx.req, AGENT_GUEST_COOKIE),
     ]);
     return { success: true };
   }),

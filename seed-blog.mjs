@@ -75,7 +75,7 @@ const posts = [
   {
     title: "IsoHC: Fixed-Vector Isometric Residual Mixing",
     slug: "isohc-fixed-vector-isometric-residual-mixing",
-    contentPath: "./isohc_blog_en.md",
+    contentPath: "./isohc_blog.md",
     categorySlug: "ai-algorithms",
     status: "published",
     visibility: "public",
@@ -235,11 +235,13 @@ function buildPrimarySeriesByPostSlug(series) {
 }
 
 function getPostSeriesMetadata(postSeed) {
-  return primarySeriesByPostSlug.get(postSeed.slug) ?? {
-    seriesSlug: null,
-    seriesTitle: null,
-    seriesOrder: null,
-  };
+  return (
+    primarySeriesByPostSlug.get(postSeed.slug) ?? {
+      seriesSlug: null,
+      seriesTitle: null,
+      seriesOrder: null,
+    }
+  );
 }
 
 function getCanonicalPublishedAt(postSeed) {
@@ -269,36 +271,57 @@ function validateContentSeeds() {
       throw new Error(`Missing tags for ${postSeed.slug}`);
     }
     if (!fs.existsSync(postSeed.contentPath)) {
-      throw new Error(`Missing content file for ${postSeed.slug}: ${postSeed.contentPath}`);
+      throw new Error(
+        `Missing content file for ${postSeed.slug}: ${postSeed.contentPath}`
+      );
     }
 
     if (postSeed.status === "published" && postSeed.visibility === "public") {
       const publishedAt = getCanonicalPublishedAt(postSeed);
       assertValidDate(publishedAt, `publishedAt for ${postSeed.slug}`);
       if (!primarySeriesByPostSlug.has(postSeed.slug)) {
-        throw new Error(`Missing primary series for public post ${postSeed.slug}`);
+        throw new Error(
+          `Missing primary series for public post ${postSeed.slug}`
+        );
       }
     }
   }
 
   for (const seriesSeed of seriesSeeds) {
-    if (!seriesSeed.slug || !seriesSeed.title || !seriesSeed.promise || !seriesSeed.track) {
-      throw new Error(`Incomplete series seed: ${seriesSeed.slug || "(missing slug)"}`);
+    if (
+      !seriesSeed.slug ||
+      !seriesSeed.title ||
+      !seriesSeed.promise ||
+      !seriesSeed.track
+    ) {
+      throw new Error(
+        `Incomplete series seed: ${seriesSeed.slug || "(missing slug)"}`
+      );
     }
 
     for (const postSlug of seriesSeed.orderedPostSlugs ?? []) {
       const postSeed = postsBySlug.get(postSlug);
-      if (!postSeed) throw new Error(`Unknown post slug in series ${seriesSeed.slug}: ${postSlug}`);
+      if (!postSeed)
+        throw new Error(
+          `Unknown post slug in series ${seriesSeed.slug}: ${postSlug}`
+        );
       if (postSeed.status !== "published" || postSeed.visibility !== "public") {
-        throw new Error(`Public series ${seriesSeed.slug} includes non-public post ${postSlug}`);
+        throw new Error(
+          `Public series ${seriesSeed.slug} includes non-public post ${postSlug}`
+        );
       }
     }
 
     for (const postSlug of seriesSeed.privatePostSlugs ?? []) {
       const postSeed = postsBySlug.get(postSlug);
-      if (!postSeed) throw new Error(`Unknown private post slug in series ${seriesSeed.slug}: ${postSlug}`);
+      if (!postSeed)
+        throw new Error(
+          `Unknown private post slug in series ${seriesSeed.slug}: ${postSlug}`
+        );
       if (postSeed.status === "published" && postSeed.visibility === "public") {
-        throw new Error(`Private series association includes public post ${postSlug}`);
+        throw new Error(
+          `Private series association includes public post ${postSlug}`
+        );
       }
     }
   }

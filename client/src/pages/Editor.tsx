@@ -1,6 +1,10 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { SpaceBackdrop } from "@/components/ResearchShell";
+import {
+  EmptyState,
+  LoadingState,
+  SpaceBackdrop,
+} from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -714,29 +718,34 @@ export default function Editor() {
   // 认证检查
   if (authLoading || postLoading) {
     return (
-      <div className="space-page flex items-center justify-center">
+      <div className="space-page grid min-h-screen place-items-center px-4">
         <SpaceBackdrop subtle />
-        <Loader2 className="relative z-10 h-8 w-8 animate-spin owner-icon-accent" />
+        <LoadingState
+          title={t("common.loadingNotes")}
+          description={t("common.loadingHint")}
+          className="relative z-10 w-full max-w-md"
+        />
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="space-page flex items-center justify-center">
+      <div className="space-page grid min-h-screen place-items-center px-4">
         <SpaceBackdrop subtle />
-        <div className="owner-panel relative z-10 space-y-4 p-8 text-center">
-          <FileText className="mx-auto h-16 w-16 owner-icon-accent" />
-          <h2 className="text-xl font-semibold text-white">
-            {t("editor.authRequired")}
-          </h2>
-          <p className="text-slate-400">{t("editor.authDescription")}</p>
-          <a href={"/login"}>
-            <Button className="owner-primary-action">
-              {t("editor.goToLogin")}
-            </Button>
-          </a>
-        </div>
+        <EmptyState
+          icon={<FileText className="h-4 w-4" />}
+          title={t("editor.authRequired")}
+          description={t("editor.authDescription")}
+          action={
+            <a href={"/login"}>
+              <Button className="owner-primary-action">
+                {t("editor.goToLogin")}
+              </Button>
+            </a>
+          }
+          className="relative z-10 w-full max-w-md"
+        />
       </div>
     );
   }
@@ -1189,7 +1198,7 @@ export default function Editor() {
         </div>
 
         {/* 主编辑区域 */}
-        <div className="relative z-10 flex flex-1 overflow-hidden">
+        <div className="owner-writer-workbench relative z-10 flex flex-1 overflow-hidden">
           <aside className="owner-editor-pane hidden w-64 shrink-0 border-r p-4 xl:block">
             <div className="mb-4">
               <p className="text-sm font-semibold text-white">
@@ -1237,7 +1246,7 @@ export default function Editor() {
 
           {/* 编辑器 */}
           <div
-            className={`min-w-0 flex flex-col ${showPreview ? "flex-1 border-r border-primary/10" : "w-full"}`}
+            className={`owner-writer-source min-w-0 flex flex-col ${showPreview ? "flex-1 border-r border-primary/10" : "w-full"}`}
           >
             {/* 标题输入 */}
             <div className="owner-editor-pane border-b p-4">
@@ -1268,15 +1277,15 @@ export default function Editor() {
           {showPreview && (
             <div
               ref={previewRef}
-              className="owner-editor-preview min-w-0 flex-1 overflow-y-auto"
+              className="owner-editor-preview owner-writer-preview min-w-0 flex-1 overflow-y-auto"
             >
               <div className="mx-auto max-w-3xl p-8">
                 {title && (
-                  <h1 className="mb-6 font-serif text-3xl font-semibold leading-tight text-white">
+                  <h1 className="mb-6 text-3xl font-semibold leading-tight text-white">
                     {title}
                   </h1>
                 )}
-                <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:font-serif prose-headings:text-white prose-p:text-slate-300 prose-li:text-slate-300 prose-a:text-primary">
+                <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:font-semibold prose-headings:text-white prose-p:text-slate-300 prose-li:text-slate-300 prose-a:text-primary">
                   <Suspense
                     fallback={
                       <div className="h-24 animate-pulse rounded-lg bg-slate-800/40" />

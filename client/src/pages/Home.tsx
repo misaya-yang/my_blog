@@ -58,6 +58,19 @@ type HomeTag = {
   slug?: string | null;
 };
 
+type AtlasNode = {
+  href: string;
+  positionClass: string;
+  key: string;
+  label: string;
+  meta: string;
+};
+
+type TrackCardNode = AtlasNode & {
+  track: TrackKind;
+  config: (typeof trackConfigs)[TrackKind];
+};
+
 function sumPostViews(posts: ArticleCardPost[]): number {
   return posts.reduce((sum, post) => sum + (post.viewCount || 0), 0);
 }
@@ -126,7 +139,6 @@ export default function Home() {
   const hasMeaningfulStats = Boolean(
     publishedPosts.length > 0 || (categories?.length || 0) > 0 || totalViews > 0
   );
-  const recommendedStartPost = publishedPosts[0];
 
   useEffect(() => {
     if (!isLoading) {
@@ -156,6 +168,47 @@ export default function Home() {
   const visibleTags = filterVisibleTags(
     fetchedTags.length > 0 ? fetchedTags : fallbackTags
   );
+  const featuredPost = publishedPosts[0];
+  const secondaryPosts = publishedPosts.slice(1, 4);
+  const latestPosts = publishedPosts.slice(0, 6);
+  const trackCards: TrackCardNode[] = portalTracks.map(track => {
+    const config = trackConfigs[track];
+    const publicCount = countTrackPosts(publishedPosts, track);
+    const pathCount = publicSeriesByTrack[track].length;
+
+    return {
+      href: config.href,
+      positionClass: "",
+      key: track,
+      track,
+      config,
+      label: t(
+        track === "algorithms"
+          ? "home.algorithmsLabel"
+          : "home.applicationsLabel"
+      ),
+      meta: isLoading
+        ? t("home.pathsPending")
+        : `${t("home.pathCount", { count: pathCount })} / ${t(
+            "home.publicNotes",
+            { count: publicCount }
+          )}`,
+    };
+  });
+  const atlasNodes: AtlasNode[] = trackCards.map((node, index) => ({
+    href: node.href,
+    positionClass: `atlas-node-${index + 1}`,
+    key: node.key,
+    label: node.label,
+    meta: node.meta,
+  }));
+  atlasNodes.push({
+    href: "/tags/harness-engine",
+    positionClass: "atlas-node-3",
+    key: "harness",
+    label: t("home.indexAgentHarness"),
+    meta: t("home.indexEvaluation"),
+  });
 
   function runSearch() {
     const query = searchQuery.trim();
@@ -173,173 +226,211 @@ export default function Home() {
       <SiteHeader active="home" />
 
       <main className="relative z-10">
-        <section className="home-hero-shell container px-4 pb-8 pt-10 sm:px-6 md:pb-10 md:pt-14">
-          <div className="home-hero-grid">
-            <div className="home-editorial-hero motion-reveal">
+        <section className="atlas-hero container px-4 py-8 sm:px-6 lg:py-10">
+          <div className="atlas-hero-grid">
+            <div className="atlas-manifest motion-reveal">
               <div className="home-kicker" aria-label={t("home.kicker")}>
                 {t("home.kicker")}
               </div>
-
-              <h1 className="home-title max-w-5xl text-white">
+              <h1 className="home-title text-white">
                 {renderHeroTitle(language)}
               </h1>
-              <p className="home-subtitle mt-6 max-w-2xl text-slate-300">
+              <p className="home-subtitle mt-5 text-slate-300">
                 {t("home.subtitle")}
               </p>
 
-              {recommendedStartPost && (
-                <Link
-                  href={`/post/${recommendedStartPost.slug}`}
-                  className="home-start-card mt-5"
-                >
-                  <span className="series-card-track">
-                    {t("home.startHere")}
-                  </span>
-                  <strong>{recommendedStartPost.title}</strong>
-                  <span>{recommendedStartPost.excerpt}</span>
-                  <ArrowRight className="h-4 w-4 text-slate-300" />
-                </Link>
-              )}
-            </div>
-
-            <figure
-              className="home-hero-visual motion-reveal"
-              aria-hidden="true"
-            >
-              <img
-                src="/images/research-orbit-hero.jpg"
-                alt=""
-                loading="eager"
-                decoding="async"
-                width={1672}
-                height={941}
-              />
-            </figure>
-          </div>
-
-          <div className="home-hero-lower">
-            <div className="home-track-grid grid gap-4 md:grid-cols-2">
-              {portalTracks.map(track => {
-                const config = trackConfigs[track];
-                const publicCount = countTrackPosts(publishedPosts, track);
-                const pathCount = publicSeriesByTrack[track].length;
-                const number = track === "algorithms" ? "01" : "02";
-                const pathLabel = isLoading
-                  ? t("home.pathsPending")
-                  : t("home.pathCount", { count: pathCount });
-                const publicNotesLabel = isLoading
-                  ? t("home.notesPending")
-                  : t("home.publicNotes", { count: publicCount });
-                return (
-                  <Link
-                    key={track}
-                    href={config.href}
-                    className="motion-reveal block min-w-0"
+              <form
+                onSubmit={submitSearch}
+                className="atlas-search home-search-dock"
+              >
+                <div className="home-search-dock-title">
+                  <BookOpen className="h-5 w-5" />
+                  <span>{t("home.activeSeries")}</span>
+                </div>
+                <label className="sr-only" htmlFor="home-search-query">
+                  {t("home.searchPlaceholder")}
+                </label>
+                <div className="home-search-field">
+                  <Input
+                    id="home-search-query"
+                    type="search"
+                    autoComplete="search"
+                    placeholder={t("home.searchPlaceholder")}
+                    value={searchQuery}
+                    onChange={event => setSearchQuery(event.target.value)}
+                    className="h-11 border-0 bg-transparent px-0 text-base font-medium text-white shadow-none placeholder:text-slate-500 focus-visible:ring-0"
+                  />
+                  <Button
+                    type="submit"
+                    size="icon"
+                    className="home-search-submit"
+                    aria-label={t("discovery.searchButton")}
                   >
-                    <article className="track-portal-card home-track-card group">
-                      <div className="mb-4 flex items-center justify-between gap-4">
-                        <div className="home-track-number">{number}</div>
-                        <div className="home-track-label">
-                          {t(
-                            track === "algorithms"
-                              ? "home.algorithmsLabel"
-                              : "home.applicationsLabel"
-                          )}
-                        </div>
-                        <ArrowRight className="h-5 w-5 text-slate-300 transition-transform group-hover:translate-x-1" />
-                      </div>
-                      <h2 className="home-track-title">{t(config.titleKey)}</h2>
-                      <p className="track-portal-copy mt-3 text-sm leading-6 text-slate-300/85">
-                        {t(config.overviewKey)}
-                      </p>
-                      <div className="track-portal-cta flex flex-wrap items-center gap-2 text-xs font-medium text-slate-300/75">
-                        <span className="inline-flex items-center gap-1.5">
-                          <GitBranch className="h-3.5 w-3.5" />
-                          {pathLabel}
-                        </span>
-                        <span className="inline-flex items-center gap-1.5">
-                          {publicNotesLabel}
-                        </span>
-                        <span className="ml-auto inline-flex items-center gap-1.5 text-slate-100">
-                          {t("home.readMore")}
-                          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                        </span>
-                      </div>
-                    </article>
-                  </Link>
-                );
-              })}
+                    <Search className="h-5 w-5" />
+                  </Button>
+                </div>
+              </form>
+
+              <nav
+                className="atlas-hero-links"
+                aria-label={t("home.researchIndex")}
+              >
+                <Link href="/algorithms">{t("home.algorithmsLabel")}</Link>
+                <Link href="/applications">{t("home.applicationsLabel")}</Link>
+                <button
+                  type="button"
+                  onClick={() =>
+                    openBlogAgentWithPrompt(t("agent.prompts.siteThemes"))
+                  }
+                >
+                  {t("home.askAssistant")}
+                </button>
+              </nav>
             </div>
 
-            <form onSubmit={submitSearch} className="home-search-dock">
-              <div className="home-search-dock-title">
-                <BookOpen className="h-5 w-5" />
-                <span>{t("home.activeSeries")}</span>
+            <section
+              className="atlas-map-panel motion-reveal"
+              aria-label={t("home.researchIndex")}
+            >
+              <div className="atlas-map-header">
+                <div>
+                  <span>{t("home.researchIndexKicker")}</span>
+                  <h2>{t("home.researchIndex")}</h2>
+                </div>
+                <Map className="h-5 w-5" />
               </div>
-              <Link href="#research-index" className="home-search-index">
-                {t("home.researchIndexKicker")}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <label className="sr-only" htmlFor="home-search-query">
-                {t("home.searchPlaceholder")}
-              </label>
-              <div className="home-search-field">
-                <Input
-                  id="home-search-query"
-                  type="search"
-                  autoComplete="search"
-                  placeholder={t("home.searchPlaceholder")}
-                  value={searchQuery}
-                  onChange={event => setSearchQuery(event.target.value)}
-                  onKeyDown={event => {
-                    if (event.key !== "Enter") return;
-                    event.preventDefault();
-                    runSearch();
-                  }}
-                  className="h-11 border-0 bg-transparent px-0 text-base font-medium text-white shadow-none placeholder:text-slate-500 focus-visible:ring-0"
+
+              <div className="atlas-orbit" aria-hidden="true">
+                <img
+                  src="/images/research-orbit-hero.jpg"
+                  alt=""
+                  loading="eager"
+                  decoding="async"
+                  width={1672}
+                  height={941}
                 />
-                <Button
-                  type="submit"
-                  size="icon"
-                  className="home-search-submit"
-                  aria-label={t("discovery.searchButton")}
-                >
-                  <Search className="h-5 w-5" />
-                </Button>
+                <span className="atlas-orbit-line atlas-orbit-line-a" />
+                <span className="atlas-orbit-line atlas-orbit-line-b" />
               </div>
-            </form>
+
+              <div className="atlas-node-stack">
+                {atlasNodes.map(node => (
+                  <Link
+                    key={node.key}
+                    href={node.href}
+                    className={`atlas-node ${node.positionClass}`}
+                  >
+                    <span>{node.label}</span>
+                    <strong>{node.meta}</strong>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            <aside className="atlas-brief-panel motion-reveal">
+              <div className="atlas-brief-head">
+                <span>{t("home.latestArticles")}</span>
+                {isAdmin && (
+                  <Link href="/manage">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="glass-button h-9 w-9"
+                      aria-label={t("nav.manageArticles")}
+                      title={t("nav.manageArticles")}
+                    >
+                      <Settings2 className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                )}
+              </div>
+
+              {isLoading ? (
+                <div className="grid gap-4" aria-busy="true">
+                  <p className="article-loading-copy">
+                    {showSlowLoading
+                      ? t("home.loadingArticlesSlow")
+                      : t("home.loadingArticles")}
+                  </p>
+                  <div className="article-skeleton">
+                    <span />
+                    <strong />
+                    <em />
+                    <i />
+                  </div>
+                </div>
+              ) : featuredPost ? (
+                <div className="atlas-featured-note article-card">
+                  <Link href={`/post/${featuredPost.slug}`}>
+                    <h2>{featuredPost.title}</h2>
+                  </Link>
+                  <p>{featuredPost.excerpt}</p>
+                  <Link href={`/post/${featuredPost.slug}`}>
+                    {t("home.readMore")}
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              ) : (
+                <div className="article-empty-state">
+                  <h3>{t("home.noArticles")}</h3>
+                  <p>{t("home.noArticlesRecovery")}</p>
+                </div>
+              )}
+
+              {secondaryPosts.length > 0 && (
+                <div className="atlas-mini-list">
+                  {secondaryPosts.map(post => (
+                    <Link key={post.id} href={`/post/${post.slug}`}>
+                      <span>
+                        {post.category?.name ?? t("home.tagResearch")}
+                      </span>
+                      <strong>{post.title}</strong>
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {hasMeaningfulStats && (
+                <div className="atlas-metric-row">
+                  <StatTile
+                    icon={<FileText className="h-5 w-5" />}
+                    value={publishedPosts.length}
+                    label={t("home.statArticles")}
+                  />
+                  <StatTile
+                    icon={<Folder className="h-5 w-5" />}
+                    value={categories?.length || 0}
+                    label={t("home.statCategories")}
+                  />
+                  <StatTile
+                    icon={<Eye className="h-5 w-5" />}
+                    value={totalViews}
+                    label={t("home.statViews")}
+                  />
+                </div>
+              )}
+            </aside>
           </div>
         </section>
 
         <section
           id="research-index"
-          className="container research-grid px-4 pb-16 sm:px-6"
+          className="container atlas-workbench px-4 pb-16 sm:px-6"
         >
-          <div className="glass-panel research-section-panel">
+          <section className="atlas-latest-panel">
             <div className="section-heading-row">
               <h2 className="section-title">{t("home.latestArticles")}</h2>
-              {isAdmin && (
-                <Link href="/manage">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="glass-button h-9 w-9"
-                    aria-label={t("nav.manageArticles")}
-                    title={t("nav.manageArticles")}
-                  >
-                    <Settings2 className="h-4 w-4" />
-                  </Button>
-                </Link>
-              )}
+              <Link
+                href="/archive"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white"
+              >
+                {t("nav.archive")}
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
 
             {isLoading ? (
               <div className="grid gap-4" aria-busy="true">
-                <p className="article-loading-copy">
-                  {showSlowLoading
-                    ? t("home.loadingArticlesSlow")
-                    : t("home.loadingArticles")}
-                </p>
                 {[1, 2].map(item => (
                   <div key={item} className="article-skeleton">
                     <span />
@@ -349,9 +440,9 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-            ) : posts?.posts?.length ? (
-              <div className="grid gap-4">
-                {publishedPosts.map((post: any, index: number) => (
+            ) : latestPosts.length ? (
+              <div className="atlas-article-stack">
+                {latestPosts.map((post: any, index: number) => (
                   <ArticleCard
                     key={post.id}
                     post={post}
@@ -359,7 +450,7 @@ export default function Home() {
                     language={language}
                     t={t}
                     track={getArticleTrack(post)}
-                    featured={index < 2}
+                    featured={index === 0}
                   />
                 ))}
               </div>
@@ -374,126 +465,75 @@ export default function Home() {
                   <Link href="/search" className="article-tag">
                     {t("nav.search")}
                   </Link>
-                  <button
-                    type="button"
-                    className="article-tag"
-                    onClick={() =>
-                      openBlogAgentWithPrompt(t("agent.prompts.siteThemes"))
-                    }
-                  >
-                    {t("discovery.recoveryAskAgent")}
-                  </button>
                 </div>
               </div>
             )}
-          </div>
+          </section>
 
-          <aside className="glass-panel research-index-panel">
-            <h2 className="section-title">{t("home.researchIndex")}</h2>
-            <div className="research-index-list">
-              <Link href="/algorithms" className="research-index-row">
-                <span>{t("home.algorithmsLabel")}</span>
-                <span className="text-slate-400">{t("home.indexModels")}</span>
-              </Link>
-              <Link href="/applications" className="research-index-row">
-                <span>{t("home.applicationsLabel")}</span>
-                <span className="text-slate-400">{t("home.indexSystems")}</span>
-              </Link>
-              <Link href="/tags/harness-engine" className="research-index-row">
-                <span>{t("home.indexAgentHarness")}</span>
-                <span className="text-slate-400">
-                  {t("home.indexEvaluation")}
-                </span>
-              </Link>
+          <section className="atlas-thread-panel">
+            <div className="atlas-panel-title">
+              <GitBranch className="h-5 w-5" />
+              <h2>{t("home.activeSeries")}</h2>
             </div>
-          </aside>
-        </section>
 
-        <section className="container home-discovery-grid px-4 pb-14 sm:px-6">
-          <div className="min-w-0">
-            {activeSeries.length > 0 && (
-              <section className="research-map-strip max-w-5xl">
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 text-white">
-                    <Map className="h-5 w-5 text-slate-400" />
-                    <h2 className="text-base font-semibold">
-                      {t("home.activeSeries")}
-                    </h2>
+            <div className="atlas-track-tiles">
+              {trackCards.map(node => (
+                <Link
+                  key={node.track}
+                  href={node.config.href}
+                  className="track-portal-card home-track-card group"
+                >
+                  <div className="mb-4 flex items-center justify-between gap-4">
+                    <div className="home-track-label">{node.label}</div>
+                    <ArrowRight className="h-5 w-5 text-slate-300 transition-transform group-hover:translate-x-1" />
                   </div>
-                  <Link
-                    href="/archive"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white"
-                  >
-                    {t("nav.archive")}
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                </div>
-                <div className="research-series-grid">
-                  {activeSeries.map(({ track, series }) => (
-                    <SeriesProgress
-                      key={series.slug}
-                      variant="card"
-                      label={t(
-                        track === "algorithms"
-                          ? "home.algorithmsLabel"
-                          : "home.applicationsLabel"
-                      )}
-                      title={t(series.titleKey)}
-                      promise={t(series.promiseKey)}
-                      links={[
-                        {
-                          href: trackConfigs[track].href,
-                          label: t("post.series.track"),
-                          direction: "track",
-                        },
-                      ]}
-                    />
-                  ))}
-                </div>
-              </section>
-            )}
+                  <h3 className="home-track-title">
+                    {t(node.config.titleKey)}
+                  </h3>
+                  <p className="track-portal-copy mt-3 text-sm leading-6 text-slate-300/85">
+                    {t(node.config.overviewKey)}
+                  </p>
+                  <div className="track-portal-cta flex flex-wrap items-center gap-2 text-xs font-medium text-slate-300/75">
+                    <span className="inline-flex items-center gap-1.5">
+                      <GitBranch className="h-3.5 w-3.5" />
+                      {node.meta}
+                    </span>
+                    <span className="ml-auto inline-flex items-center gap-1.5 text-slate-100">
+                      {t("home.readMore")}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
 
-            {hasMeaningfulStats && (
-              <div className="mt-6 grid max-w-3xl gap-3 sm:grid-cols-3">
-                <StatTile
-                  icon={<FileText className="h-5 w-5" />}
-                  value={publishedPosts.length}
-                  label={t("home.statArticles")}
-                />
-                <StatTile
-                  icon={<Folder className="h-5 w-5" />}
-                  value={categories?.length || 0}
-                  label={t("home.statCategories")}
-                />
-                <StatTile
-                  icon={<Eye className="h-5 w-5" />}
-                  value={totalViews}
-                  label={t("home.statViews")}
-                />
+            {activeSeries.length > 0 && (
+              <div className="research-series-grid">
+                {activeSeries.map(({ track, series }) => (
+                  <SeriesProgress
+                    key={series.slug}
+                    variant="card"
+                    label={t(
+                      track === "algorithms"
+                        ? "home.algorithmsLabel"
+                        : "home.applicationsLabel"
+                    )}
+                    title={t(series.titleKey)}
+                    promise={t(series.promiseKey)}
+                    links={[
+                      {
+                        href: trackConfigs[track].href,
+                        label: t("post.series.track"),
+                        direction: "track",
+                      },
+                    ]}
+                  />
+                ))}
               </div>
             )}
+          </section>
 
-            <nav
-              className="home-quick-links mt-5 flex max-w-3xl flex-wrap gap-2"
-              aria-label={t("home.researchIndex")}
-            >
-              <Link href="/search" className="article-tag">
-                {t("nav.search")}
-              </Link>
-              <Link href="/archive" className="article-tag">
-                {t("nav.archive")}
-              </Link>
-              <Link href="/categories/ai-algorithms" className="article-tag">
-                {t("home.algorithmsLabel")}
-              </Link>
-              <Link href="/categories/ai-applications" className="article-tag">
-                {t("home.applicationsLabel")}
-              </Link>
-            </nav>
-          </div>
-
-          <aside className="grid gap-5 self-start lg:pt-1">
-            <section className="glass-panel home-sidebar-panel p-5 sm:p-6">
+          <aside className="atlas-side-panel">
+            <section className="atlas-profile-panel">
               <div className="mb-4 flex items-center gap-2 text-white">
                 <UserRound className="h-5 w-5 text-slate-400" />
                 <h2 className="text-lg font-semibold">
@@ -503,23 +543,6 @@ export default function Home() {
               <p className="text-sm leading-7 text-slate-300">
                 {t("home.aboutDescription")}
               </p>
-
-              <div className="mt-7 flex items-center gap-2 text-white">
-                <GitBranch className="h-5 w-5 text-slate-400" />
-                <h3 className="text-sm font-semibold">
-                  {t("home.researchDirection")}
-                </h3>
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {focusTagKeys.slice(0, 4).map(key => (
-                  <span
-                    key={key}
-                    className="home-sidebar-chip rounded-lg border px-3 py-1.5 text-xs text-slate-200"
-                  >
-                    {t(key)}
-                  </span>
-                ))}
-              </div>
 
               <div className="mt-7 flex items-center gap-2 text-white">
                 <BookOpen className="h-5 w-5 text-slate-400" />
@@ -533,25 +556,25 @@ export default function Home() {
               </ul>
             </section>
 
-            <section className="glass-panel p-5">
+            <section className="atlas-tags-panel">
               <div className="mb-4 flex items-center gap-2 text-white">
                 <Tags className="h-5 w-5 text-slate-400" />
                 <h2 className="text-base font-semibold">{t("home.hotTags")}</h2>
               </div>
               <div className="flex flex-wrap gap-2">
-                {visibleTags.slice(0, 8).map(tag =>
+                {visibleTags.slice(0, 10).map(tag =>
                   tag.slug ? (
                     <Link
                       key={tag.id ?? tag.name}
                       href={`/tags/${tag.slug}`}
-                      className="rounded-lg border border-slate-600/50 bg-slate-900/55 px-3 py-1.5 text-xs text-slate-300 hover:border-slate-500 hover:text-white"
+                      className="home-sidebar-chip rounded-lg border px-3 py-1.5 text-xs text-slate-200"
                     >
                       {tag.name}
                     </Link>
                   ) : (
                     <span
                       key={tag.id ?? tag.name}
-                      className="rounded-lg border border-slate-600/50 bg-slate-900/55 px-3 py-1.5 text-xs text-slate-300"
+                      className="home-sidebar-chip rounded-lg border px-3 py-1.5 text-xs text-slate-200"
                     >
                       {tag.name}
                     </span>

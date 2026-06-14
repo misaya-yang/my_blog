@@ -10,7 +10,15 @@ import {
 } from "@/components/ui/sheet";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, Edit, LogOut, Menu, Search, UserRound } from "lucide-react";
+import {
+  ArrowLeft,
+  Edit,
+  FileText,
+  LogOut,
+  Menu,
+  Search,
+  UserRound,
+} from "lucide-react";
 import { Link } from "wouter";
 import type React from "react";
 
@@ -316,6 +324,137 @@ export function ResearchWaveVisual({
         ))}
       </svg>
     </div>
+  );
+}
+
+export function Surface({
+  as: Component = "section",
+  className,
+  density = "normal",
+  children,
+}: {
+  as?: "section" | "article" | "aside" | "div";
+  className?: string;
+  density?: "normal" | "compact";
+  children: React.ReactNode;
+}) {
+  return (
+    <Component
+      className={cn(
+        "research-surface",
+        density === "compact" && "research-surface-compact",
+        className
+      )}
+    >
+      {children}
+    </Component>
+  );
+}
+
+export function SectionHeader({
+  icon,
+  title,
+  description,
+  action,
+  className,
+}: {
+  icon?: React.ReactNode;
+  title: React.ReactNode;
+  description?: React.ReactNode;
+  action?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("section-header", className)}>
+      <div className="min-w-0">
+        <div className="section-heading-row">
+          {icon && <span className="section-heading-icon">{icon}</span>}
+          <h2 className="section-heading-title">{title}</h2>
+        </div>
+        {description && <p className="section-heading-copy">{description}</p>}
+      </div>
+      {action && <div className="section-heading-action">{action}</div>}
+    </div>
+  );
+}
+
+export function MetricTile({
+  icon,
+  value,
+  label,
+  tone = "neutral",
+}: {
+  icon?: React.ReactNode;
+  value: React.ReactNode;
+  label: string;
+  tone?: "neutral" | "accent" | "warning";
+}) {
+  return (
+    <div
+      className={cn(
+        "metric-tile",
+        `metric-tile-${tone}`,
+        !icon && "metric-tile-plain"
+      )}
+    >
+      {icon && <span className="metric-icon">{icon}</span>}
+      <span className="metric-value">{value}</span>
+      <span className="metric-label">{label}</span>
+    </div>
+  );
+}
+
+export function LoadingState({
+  title,
+  description,
+  className,
+}: {
+  title: string;
+  description?: string;
+  className?: string;
+}) {
+  return (
+    <Surface as="div" className={cn("state-surface", className)}>
+      <div className="state-icon" aria-hidden="true">
+        <FileText className="h-4 w-4" />
+      </div>
+      <div className="state-copy">
+        <p className="state-title">{title}</p>
+        {description && <p className="state-description">{description}</p>}
+      </div>
+      <div className="route-loading-lines" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+    </Surface>
+  );
+}
+
+export function EmptyState({
+  icon,
+  title,
+  description,
+  action,
+  className,
+}: {
+  icon?: React.ReactNode;
+  title: React.ReactNode;
+  description?: React.ReactNode;
+  action?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <Surface as="div" className={cn("state-surface", className)}>
+      <div className="state-icon" aria-hidden="true">
+        {icon ?? <FileText className="h-4 w-4" />}
+      </div>
+      <div className="state-copy">
+        <p className="state-title">{title}</p>
+        {description && <p className="state-description">{description}</p>}
+      </div>
+      {action && <div className="state-action">{action}</div>}
+    </Surface>
   );
 }
 

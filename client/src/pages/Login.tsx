@@ -1,6 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
+import {
+  SectionHeader,
+  SiteHeader,
+  SpaceBackdrop,
+  Surface,
+} from "@/components/ResearchShell";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { trpc } from "@/lib/trpc";
 import {
@@ -85,7 +90,7 @@ export default function Login() {
           <h1 className="page-title max-w-xl">{t("login.title")}</h1>
           <p className="page-copy mt-5 max-w-xl">{t("login.subtitle")}</p>
           <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-2">
-            <div className="glass-panel p-4">
+            <Surface as="div" density="compact">
               <Network className="mb-3 h-5 w-5 text-sky-300" />
               <p className="text-sm font-medium text-white">
                 {t("login.visitorCardTitle")}
@@ -93,8 +98,8 @@ export default function Login() {
               <p className="mt-2 text-xs leading-5 text-slate-400">
                 {t("login.visitorCardDesc")}
               </p>
-            </div>
-            <div className="glass-panel p-4">
+            </Surface>
+            <Surface as="div" density="compact">
               <LockKeyhole className="mb-3 h-5 w-5 text-blue-300" />
               <p className="text-sm font-medium text-white">
                 {t("login.ownerCardTitle")}
@@ -102,13 +107,17 @@ export default function Login() {
               <p className="mt-2 text-xs leading-5 text-slate-400">
                 {t("login.ownerCardDesc")}
               </p>
-            </div>
+            </Surface>
           </div>
         </section>
 
-        <section className="glass-panel p-5">
+        <Surface>
+          <SectionHeader
+            icon={<KeyRound className="h-4 w-4" />}
+            title={t("nav.login")}
+          />
           <Tabs defaultValue="visitor" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 border border-sky-200/10 bg-slate-950/45">
+            <TabsList className="mt-5 grid w-full grid-cols-2 border border-sky-200/10 bg-slate-950/45">
               <TabsTrigger value="visitor" className="gap-2">
                 <UserRound className="h-4 w-4" />
                 {t("login.tabVisitor")}
@@ -145,7 +154,7 @@ export default function Login() {
                 />
                 <Button
                   type="submit"
-                  className="w-full bg-blue-500 text-white hover:bg-blue-400"
+                  className="owner-primary-action w-full"
                   disabled={visitorLogin.isPending}
                 >
                   {visitorLogin.isPending
@@ -181,7 +190,7 @@ export default function Login() {
                 />
                 <Button
                   type="submit"
-                  className="w-full bg-blue-500 text-white hover:bg-blue-400"
+                  className="owner-primary-action w-full"
                   disabled={adminLogin.isPending}
                 >
                   {adminLogin.isPending
@@ -191,7 +200,7 @@ export default function Login() {
               </form>
             </TabsContent>
           </Tabs>
-        </section>
+        </Surface>
       </main>
     </div>
   );

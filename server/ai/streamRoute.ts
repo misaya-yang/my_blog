@@ -28,7 +28,7 @@ type StreamResponse = {
 export function registerAgentStreamRoute(app: RouteRegistrar) {
   app.post("/api/agent/stream", async (...args: unknown[]) => {
     const [req, res] = args as [StreamRequest, StreamResponse];
-    prepareSseResponse(res);
+    let responsePrepared = false;
 
     let closed = false;
     const streamAbortController = new AbortController();
@@ -43,6 +43,10 @@ export function registerAgentStreamRoute(app: RouteRegistrar) {
 
     const emit = (event: AgentStreamEvent) => {
       if (closed) return;
+      if (!responsePrepared) {
+        prepareSseResponse(res);
+        responsePrepared = true;
+      }
       res.write(`event: ${event.type}\n`);
       res.write(`data: ${JSON.stringify(event)}\n\n`);
     };
@@ -51,7 +55,9 @@ export function registerAgentStreamRoute(app: RouteRegistrar) {
       const input = agentSendMessageInput.parse(
         req.body
       ) as AgentSendMessageInput;
-      const ctx = await buildAgentContext(req);
+      const ctx = await buildAgentContext(req, res);
+      prepareSseResponse(res);
+      responsePrepared = true;
       await defaultAgentService.streamMessage(ctx, input, emit, {
         signal: streamAbortController.signal,
       });

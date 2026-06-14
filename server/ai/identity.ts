@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { BlogSession } from "../auth.js";
+import { AGENT_GUEST_COOKIE, readCookie, type BlogSession } from "../auth.js";
 import type { AgentIdentity, RequestLike } from "./types.js";
 
 const DEFAULT_SALT = "local-ai-agent-identity-salt";
@@ -50,7 +50,7 @@ export function resolveAgentIdentity(
   return {
     type: "anonymous",
     tier: "anonymous",
-    key: stableHash(`${getRequestIp(req)}|${getUserAgentBucket(req)}|${salt}`),
+    key: stableHash(getAnonymousIdentitySeed(req, salt)),
     displayName: null,
   };
 }
@@ -76,6 +76,12 @@ function getRequestIp(req: RequestLike): string {
     req.socket?.remoteAddress ||
     "unknown"
   );
+}
+
+function getAnonymousIdentitySeed(req: RequestLike, salt: string) {
+  const guestId = readCookie(req, AGENT_GUEST_COOKIE);
+  if (guestId) return `agent_guest|${guestId}|${salt}`;
+  return `${getRequestIp(req)}|${getUserAgentBucket(req)}|${salt}`;
 }
 
 function getUserAgentBucket(req: RequestLike): string {

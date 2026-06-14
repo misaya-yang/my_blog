@@ -93,12 +93,12 @@ $$
 
 几种常见变体可以放在一张表里：
 
-| Variant | Gate Function | Form |
-| --- | --- | --- |
-| GLU | $\sigma(z)$ | $\sigma(W_gx)\odot W_ux$ |
-| ReGLU | $\mathrm{ReLU}(z)$ | $\mathrm{ReLU}(W_gx)\odot W_ux$ |
-| GEGLU | $\mathrm{GELU}(z)$ | $\mathrm{GELU}(W_gx)\odot W_ux$ |
-| SwiGLU | $\mathrm{Swish}(z)=z\sigma(z)$ | $\mathrm{Swish}(W_gx)\odot W_ux$ |
+| Variant | Gate Function                  | Form                             |
+| ------- | ------------------------------ | -------------------------------- |
+| GLU     | $\sigma(z)$                    | $\sigma(W_gx)\odot W_ux$         |
+| ReGLU   | $\mathrm{ReLU}(z)$             | $\mathrm{ReLU}(W_gx)\odot W_ux$  |
+| GEGLU   | $\mathrm{GELU}(z)$             | $\mathrm{GELU}(W_gx)\odot W_ux$  |
+| SwiGLU  | $\mathrm{Swish}(z)=z\sigma(z)$ | $\mathrm{Swish}(W_gx)\odot W_ux$ |
 
 Shazeer 的 GLU variants 论文对这些变体做过系统比较，PaLM 和 LLaMA 系列也都采用了 SwiGLU 风格的 FFN。真正值得抓住的不是哪个名字更流行，而是门控乘法让 FFN 多了一种输入依赖的控制机制。
 
@@ -236,7 +236,7 @@ $$
 - 梯度更平滑。
 - 乘法分支仍然保留符号信息。
 
-这也是现代大模型里常看到 SwiGLU 的原因：实现足够简单，经验上又经常比 ReLU/GELU FFN 更强。
+这也是不少现代大模型采用 SwiGLU 的原因之一：实现简单，在许多公开架构和实验设置里也常优于 ReLU/GELU FFN。
 
 ## 8. 它和 MoE gate 不是一回事
 
@@ -291,13 +291,13 @@ $$
 
 工程上选择 FFN 结构时，几个问题比架构名更重要：
 
-| Question | Why it matters |
-| --- | --- |
-| 参数预算是否固定？ | Gated FFN 需要调小 hidden_dim 才公平。 |
-| 激活分布是否稳定？ | gate 饱和会让部分通道长期关闭或梯度变弱。 |
-| 是否使用 bias？ | 很多 LLM FFN 省略 bias，但小模型未必总是最优。 |
-| 混合精度是否稳定？ | 乘法分支会放大数值尺度问题。 |
-| 是否需要可解释诊断？ | gate activation 可以作为通道选择信号观察。 |
+| Question             | Why it matters                                 |
+| -------------------- | ---------------------------------------------- |
+| 参数预算是否固定？   | Gated FFN 需要调小 hidden_dim 才公平。         |
+| 激活分布是否稳定？   | gate 饱和会让部分通道长期关闭或梯度变弱。      |
+| 是否使用 bias？      | 很多 LLM FFN 省略 bias，但小模型未必总是最优。 |
+| 混合精度是否稳定？   | 乘法分支会放大数值尺度问题。                   |
+| 是否需要可解释诊断？ | gate activation 可以作为通道选择信号观察。     |
 
 门控 FFN 很强，但它不是免费的。多一条分支意味着更多矩阵乘、更多激活存储，以及更复杂的初始化/尺度问题。
 

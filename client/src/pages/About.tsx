@@ -1,4 +1,9 @@
-import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
+import {
+  SectionHeader,
+  SiteHeader,
+  SpaceBackdrop,
+  Surface,
+} from "@/components/ResearchShell";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
 import { buildRouteMetadata } from "@shared/metadata";
@@ -31,8 +36,11 @@ export default function About() {
         </section>
 
         <section className="mt-10 grid gap-5 lg:grid-cols-3">
-          <article className="glass-panel p-6 lg:col-span-2">
-            <h2 className="section-title">{t("about.focusTitle")}</h2>
+          <Surface as="article" className="lg:col-span-2">
+            <SectionHeader
+              icon={<Network className="h-4 w-4" />}
+              title={t("about.focusTitle")}
+            />
             <p className="mt-5 text-sm leading-8 text-slate-300">
               {t("about.focusBody")}
             </p>
@@ -51,10 +59,13 @@ export default function About() {
                 </div>
               ))}
             </div>
-          </article>
+          </Surface>
 
-          <aside className="glass-panel p-6">
-            <h2 className="section-title">{t("about.linksTitle")}</h2>
+          <Surface as="aside">
+            <SectionHeader
+              icon={<BookOpen className="h-4 w-4" />}
+              title={t("about.linksTitle")}
+            />
             <div className="mt-5 grid gap-3">
               <a
                 href="https://scholar.google.com/citations?user=6X9HlDAAAAAJ"
@@ -77,7 +88,7 @@ export default function About() {
                 {t("about.location")}
               </div>
             </div>
-          </aside>
+          </Surface>
         </section>
       </main>
     </div>

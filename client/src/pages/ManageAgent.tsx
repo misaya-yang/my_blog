@@ -15,7 +15,14 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
+import {
+  EmptyState,
+  LoadingState,
+  MetricTile,
+  SectionHeader,
+  SiteHeader,
+  SpaceBackdrop,
+} from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -167,32 +174,32 @@ export default function ManageAgent() {
 
   if (authLoading) {
     return (
-      <div className="space-page grid place-items-center">
+      <div className="space-page grid min-h-screen place-items-center px-4">
         <SpaceBackdrop subtle />
-        <Loader2 className="relative z-10 h-8 w-8 animate-spin text-sky-300" />
+        <LoadingState
+          title={t("common.loadingNotes")}
+          description={t("common.loadingHint")}
+          className="relative z-10 w-full max-w-md"
+        />
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="space-page grid place-items-center">
+      <div className="space-page grid min-h-screen place-items-center px-4">
         <SpaceBackdrop subtle />
-        <div className="glass-panel relative z-10 max-w-md p-8 text-center">
-          <Bot className="mx-auto mb-4 h-8 w-8 text-sky-300" />
-          <h1 className="text-2xl font-semibold text-white">
-            {t("agentOps.title")}
-          </h1>
-          <p className="mt-3 text-sm leading-6 text-slate-400">
-            {t("agentOps.loginRequired")}
-          </p>
-          <Button
-            asChild
-            className="mt-5 bg-blue-500 text-white hover:bg-blue-400"
-          >
-            <Link href="/login">{t("manage.loginBtn")}</Link>
-          </Button>
-        </div>
+        <EmptyState
+          icon={<Bot className="h-4 w-4" />}
+          title={t("agentOps.title")}
+          description={t("agentOps.loginRequired")}
+          action={
+            <Button asChild className="owner-primary-action">
+              <Link href="/login">{t("manage.loginBtn")}</Link>
+            </Button>
+          }
+          className="relative z-10 w-full max-w-md"
+        />
       </div>
     );
   }
@@ -235,8 +242,8 @@ export default function ManageAgent() {
           </Button>
         </div>
 
-        <Tabs defaultValue="index" className="space-y-5">
-          <TabsList className="grid w-full grid-cols-5 border border-sky-200/15 bg-slate-950/60 lg:w-[860px]">
+        <Tabs defaultValue="index" className="agent-console-tabs">
+          <TabsList className="w-full border border-sky-200/15 bg-slate-950/60">
             <TabsTrigger value="index">
               <Database className="mr-2 h-4 w-4" />
               {t("agentOps.index.title")}
@@ -259,7 +266,7 @@ export default function ManageAgent() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="index" className="glass-panel p-5">
+          <TabsContent value="index" className="research-surface">
             <IndexStatusPanel
               loading={indexStatus.isLoading}
               error={indexStatus.isError}
@@ -267,8 +274,12 @@ export default function ManageAgent() {
             />
           </TabsContent>
 
-          <TabsContent value="debug" className="glass-panel p-5">
-            <div className="flex flex-col gap-3 lg:flex-row">
+          <TabsContent value="debug" className="research-surface">
+            <SectionHeader
+              icon={<FileSearch className="h-4 w-4" />}
+              title={t("agentOps.debug.title")}
+            />
+            <div className="mt-5 flex flex-col gap-3 lg:flex-row">
               <Input
                 value={debugQuery}
                 onChange={event => setDebugQuery(event.target.value)}
@@ -296,12 +307,16 @@ export default function ManageAgent() {
             )}
           </TabsContent>
 
-          <TabsContent value="evals" className="glass-panel p-5">
+          <TabsContent value="evals" className="research-surface">
+            <SectionHeader
+              icon={<Play className="h-4 w-4" />}
+              title={t("agentOps.evals.title")}
+            />
             <Textarea
               value={evalQuestions}
               onChange={event => setEvalQuestions(event.target.value)}
               placeholder={t("agentOps.evals.questions")}
-              className="min-h-32 border-sky-200/15 bg-slate-950/50 text-white"
+              className="mt-5 min-h-32 border-sky-200/15 bg-slate-950/50 text-white"
             />
             <Button
               className="mt-3"
@@ -372,25 +387,28 @@ export default function ManageAgent() {
             </div>
           </TabsContent>
 
-          <TabsContent value="traces" className="glass-panel p-5">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold text-white">
-                {t("agentOps.traces.title")}
-              </h2>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => runs.refetch()}
-              >
-                <RefreshCw className="mr-2 h-4 w-4" />
-                {t("agentOps.traces.refresh")}
-              </Button>
-            </div>
-            <div className="grid gap-2">
+          <TabsContent value="traces" className="research-surface">
+            <SectionHeader
+              icon={<Route className="h-4 w-4" />}
+              title={t("agentOps.traces.title")}
+              action={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="glass-button"
+                  onClick={() => runs.refetch()}
+                >
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  {t("agentOps.traces.refresh")}
+                </Button>
+              }
+            />
+            <div className="mt-5 grid gap-2">
               {(runs.data ?? []).length === 0 && (
-                <p className="text-sm text-slate-500">
-                  {t("agentOps.traces.empty")}
-                </p>
+                <EmptyState
+                  icon={<Route className="h-4 w-4" />}
+                  title={t("agentOps.traces.empty")}
+                />
               )}
               {(runs.data ?? []).map(run => (
                 <div
@@ -431,7 +449,7 @@ export default function ManageAgent() {
             </div>
           </TabsContent>
 
-          <TabsContent value="ideas" className="glass-panel p-5">
+          <TabsContent value="ideas" className="research-surface">
             <QuestionRadarPanel
               loading={questionRadar.isLoading}
               error={questionRadar.isError}
@@ -515,19 +533,19 @@ function IndexStatusPanel({
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 text-sm text-slate-400">
-        <Loader2 className="h-4 w-4 animate-spin text-sky-300" />
-        {t("agentOps.index.loading")}
-      </div>
+      <LoadingState
+        title={t("agentOps.index.loading")}
+        description={t("common.loadingHint")}
+      />
     );
   }
 
   if (error || !status) {
     return (
-      <div className="rounded-lg border border-amber-300/20 bg-amber-950/20 p-4 text-sm leading-6 text-amber-100">
-        <AlertTriangle className="mb-2 h-4 w-4" />
-        {t("agentOps.index.error")}
-      </div>
+      <EmptyState
+        icon={<AlertTriangle className="h-4 w-4" />}
+        title={t("agentOps.index.error")}
+      />
     );
   }
 
@@ -650,19 +668,19 @@ function QuestionRadarPanel({
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 text-sm text-slate-400">
-        <Loader2 className="h-4 w-4 animate-spin text-sky-300" />
-        {t("agentOps.radar.loading")}
-      </div>
+      <LoadingState
+        title={t("agentOps.radar.loading")}
+        description={t("common.loadingHint")}
+      />
     );
   }
 
   if (error || !radar) {
     return (
-      <div className="rounded-lg border border-amber-300/20 bg-amber-950/20 p-4 text-sm leading-6 text-amber-100">
-        <AlertTriangle className="mb-2 h-4 w-4" />
-        {t("agentOps.radar.error")}
-      </div>
+      <EmptyState
+        icon={<AlertTriangle className="h-4 w-4" />}
+        title={t("agentOps.radar.error")}
+      />
     );
   }
 
@@ -708,9 +726,10 @@ function QuestionRadarPanel({
             {t("agentOps.radar.questions")}
           </h3>
           {questions.length === 0 ? (
-            <p className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-4 text-sm text-slate-500">
-              {t("agentOps.radar.empty")}
-            </p>
+            <EmptyState
+              icon={<FileSearch className="h-4 w-4" />}
+              title={t("agentOps.radar.empty")}
+            />
           ) : (
             questions.map((item: any) => (
               <article
@@ -749,9 +768,10 @@ function QuestionRadarPanel({
             {t("agentOps.radar.ideas")}
           </h3>
           {ideas.length === 0 ? (
-            <p className="rounded-lg border border-sky-200/10 bg-slate-950/30 p-4 text-sm text-slate-500">
-              {t("agentOps.radar.noIdeas")}
-            </p>
+            <EmptyState
+              icon={<Lightbulb className="h-4 w-4" />}
+              title={t("agentOps.radar.noIdeas")}
+            />
           ) : (
             ideas.map((idea: any) => {
               const status = ideaStatuses[idea.ideaId] ?? idea.status ?? "new";
@@ -957,12 +977,7 @@ function EvalSummary({ summary }: { summary: EvalSummaryData }) {
 }
 
 function MetricCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-3">
-      <p className="text-[0.72rem] font-semibold text-slate-500">{label}</p>
-      <p className="mt-1 text-lg font-semibold text-white">{value}</p>
-    </div>
-  );
+  return <MetricTile value={value} label={label} />;
 }
 
 function SourceList({
@@ -974,7 +989,13 @@ function SourceList({
 }) {
   const { t } = useLanguage();
   if (sources.length === 0)
-    return <p className="mt-5 text-sm text-slate-500">{empty}</p>;
+    return (
+      <EmptyState
+        icon={<FileSearch className="h-4 w-4" />}
+        title={empty}
+        className="mt-5"
+      />
+    );
 
   return (
     <div className="mt-5 grid gap-3 md:grid-cols-2">

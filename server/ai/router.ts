@@ -17,14 +17,14 @@ export const agentRouter = router({
     )
     .query(async ({ ctx, input }) => {
       return defaultAgentService.bootstrap(
-        await buildAgentContext(ctx.req),
+        await buildAgentContext(ctx.req, ctx.res),
         input
       );
     }),
 
   listConversations: publicProcedure.query(async ({ ctx }) => {
     return defaultAgentService.listConversations(
-      await buildAgentContext(ctx.req)
+      await buildAgentContext(ctx.req, ctx.res)
     );
   }),
 
@@ -36,7 +36,7 @@ export const agentRouter = router({
     )
     .query(async ({ ctx, input }) => {
       return defaultAgentService.getConversation(
-        await buildAgentContext(ctx.req),
+        await buildAgentContext(ctx.req, ctx.res),
         input
       );
     }),
@@ -55,7 +55,7 @@ export const agentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       return defaultAgentService.addContext(
-        await buildAgentContext(ctx.req),
+        await buildAgentContext(ctx.req, ctx.res),
         input
       );
     }),
@@ -71,7 +71,7 @@ export const agentRouter = router({
     )
     .query(async ({ ctx, input }) => {
       return defaultAgentService.adminDebugRetrieval(
-        await buildAgentContext(ctx.req),
+        await buildAgentContext(ctx.req, ctx.res),
         input
       );
     }),
@@ -89,14 +89,14 @@ export const agentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       return defaultAgentService.adminRunEvals(
-        await buildAgentContext(ctx.req),
+        await buildAgentContext(ctx.req, ctx.res),
         input
       );
     }),
 
   adminKnowledgeStatus: publicProcedure.query(async ({ ctx }) => {
     return defaultAgentService.adminKnowledgeStatus(
-      await buildAgentContext(ctx.req)
+      await buildAgentContext(ctx.req, ctx.res)
     );
   }),
 
@@ -108,7 +108,7 @@ export const agentRouter = router({
     )
     .query(async ({ ctx, input }) => {
       return defaultAgentService.adminExtractArticleIdeas(
-        await buildAgentContext(ctx.req),
+        await buildAgentContext(ctx.req, ctx.res),
         input
       );
     }),
@@ -121,7 +121,7 @@ export const agentRouter = router({
     )
     .query(async ({ ctx, input }) => {
       return defaultAgentService.adminQuestionRadar(
-        await buildAgentContext(ctx.req),
+        await buildAgentContext(ctx.req, ctx.res),
         input
       );
     }),
@@ -134,7 +134,7 @@ export const agentRouter = router({
     )
     .query(async ({ ctx, input }) => {
       return defaultAgentService.adminListRuns(
-        await buildAgentContext(ctx.req),
+        await buildAgentContext(ctx.req, ctx.res),
         input
       );
     }),
@@ -143,7 +143,7 @@ export const agentRouter = router({
     .input(agentSendMessageInput)
     .mutation(async ({ ctx, input }) => {
       return defaultAgentService.sendMessage(
-        await buildAgentContext(ctx.req),
+        await buildAgentContext(ctx.req, ctx.res),
         input
       );
     }),

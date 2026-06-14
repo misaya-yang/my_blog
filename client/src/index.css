@@ -41,21 +41,21 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --font-sans:
-    "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
-    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", system-ui,
-    sans-serif;
+    "IBM Plex Sans", "Noto Sans SC", "SF Pro Text", -apple-system,
+    BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    system-ui, sans-serif;
   --font-display:
-    "Iowan Old Style", "New York", "Songti SC", "STSong", "Noto Serif CJK SC",
-    "Source Han Serif SC", Georgia, serif;
+    "IBM Plex Serif", "Noto Serif SC", "Iowan Old Style", Charter, "Songti SC",
+    "STSong", "Noto Serif CJK SC", Georgia, serif;
   --font-serif:
-    "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC", Georgia,
-    "Times New Roman", serif;
+    "IBM Plex Serif", "Noto Serif SC", "Iowan Old Style", Charter, "Songti SC",
+    "STSong", "Noto Serif CJK SC", Georgia, serif;
   --font-reading:
-    "Iowan Old Style", "Songti SC", "STSong", "Noto Serif CJK SC",
-    "Source Han Serif SC", Georgia, serif;
+    "IBM Plex Serif", "Noto Serif SC", Charter, "Iowan Old Style", "Songti SC",
+    "STSong", "Noto Serif CJK SC", Georgia, serif;
   --font-caption:
-    "Avenir Next", "SF Pro Text", "PingFang SC", "Hiragino Sans GB",
-    "Microsoft YaHei", system-ui, sans-serif;
+    "IBM Plex Sans", "Noto Sans SC", "SF Pro Text", -apple-system,
+    BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
   --font-mono:
     "SF Mono", "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
 }

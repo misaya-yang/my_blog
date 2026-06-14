@@ -3,6 +3,12 @@ import type { TranslationDict } from "./types";
 const post: TranslationDict = {
   "post.notFound": { en: "Post not found", zh: "文章未找到" },
   "post.backHome": { en: "Back to Home", zh: "返回首页" },
+  "post.loadingKicker": { en: "Article", zh: "文章" },
+  "post.loadingTitle": { en: "Opening the article", zh: "正在打开文章" },
+  "post.loadingBody": {
+    en: "If this keeps loading, return to the index or search for the topic.",
+    zh: "如果加载持续较久，可以先返回索引，或搜索相关主题。",
+  },
   "post.reads": { en: "reads", zh: "次阅读" },
   "post.toc": { en: "Table of Contents", zh: "目录" },
   "post.share": { en: "Share", zh: "分享" },
@@ -45,8 +51,8 @@ const post: TranslationDict = {
   "post.entry.implementation": { en: "Implementation mapping", zh: "实现映射" },
   "post.entry.limitations": { en: "Limitations", zh: "边界与限制" },
   "post.entry.limitationsFallback": {
-    en: "No explicit limitation block is available in the article metadata; use the body sections as the source of truth.",
-    zh: "文章元数据中没有单独的限制说明；以正文中的边界与证据小节为准。",
+    en: "Check the evidence and boundary sections before generalizing.",
+    zh: "先看证据与边界小节，再做外推。",
   },
   "post.entry.signalCode": { en: "Code sketch", zh: "代码草图" },
   "post.entry.signalTable": { en: "Architecture table", zh: "架构表格" },
@@ -63,6 +69,9 @@ const post: TranslationDict = {
     en: "Article reader",
     zh: "文章伴读",
   },
+  "post.readerMap": { en: "Reader map", zh: "阅读地图" },
+  "post.readerSignals": { en: "Signals", zh: "信号" },
+  "post.readerRoute": { en: "Route", zh: "路径" },
   "post.series.label": { en: "Series position", zh: "系列位置" },
   "post.series.position": {
     en: "Part {current} of {total}",

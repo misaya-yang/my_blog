@@ -2,32 +2,31 @@
 
 @layer components {
   .owner-panel {
-    border: 1px solid var(--glass-border);
-    border-radius: 0.95rem;
+    border: 1px solid var(--ui-border, var(--glass-border));
+    border-radius: var(--ui-radius, 0.75rem);
     background:
       linear-gradient(
         145deg,
-        oklch(0.12 0.026 248 / 92%),
-        oklch(0.06 0.018 252 / 94%)
+        var(--ui-surface-strong, oklch(0.12 0.026 248 / 92%)),
+        var(--ui-surface-muted, oklch(0.06 0.018 252 / 94%))
       ),
       var(--surface-secondary);
-    box-shadow:
-      inset 0 1px 0 oklch(0.98 0.012 235 / 7%),
-      0 6px 8px oklch(0.018 0.018 255 / 16%);
+    box-shadow: var(--ui-shadow, inset 0 1px 0 oklch(0.98 0.012 235 / 7%));
   }
 
   .owner-toolbar {
-    border-color: oklch(0.84 0.08 235 / 14%);
-    background: oklch(0.075 0.02 252 / 82%);
+    border-color: var(--ui-border, oklch(0.84 0.08 235 / 14%));
+    background: oklch(0.055 0.012 252 / 90%);
     box-shadow: inset 0 -1px 0 oklch(0.84 0.08 235 / 5%);
     backdrop-filter: blur(10px) saturate(118%);
     -webkit-backdrop-filter: blur(10px) saturate(118%);
   }
 
   .owner-input {
-    border-color: oklch(0.84 0.08 235 / 16%);
-    background: oklch(0.055 0.018 252 / 58%);
-    color: oklch(0.93 0.012 235);
+    border-color: var(--ui-border, oklch(0.84 0.08 235 / 16%));
+    border-radius: var(--ui-radius-sm, 0.56rem);
+    background: oklch(0.055 0.012 252 / 66%);
+    color: var(--ui-text, oklch(0.93 0.012 235));
   }
 
   .owner-input::placeholder {
@@ -35,35 +34,27 @@
   }
 
   .owner-button {
-    border-color: oklch(0.84 0.08 235 / 22%);
-    background: oklch(0.12 0.03 248 / 68%);
-    color: oklch(0.88 0.025 235);
+    border-color: var(--ui-border, oklch(0.84 0.08 235 / 22%));
+    border-radius: var(--ui-radius-sm, 0.56rem);
+    background: oklch(0.09 0.014 252 / 68%);
+    color: var(--ui-text, oklch(0.88 0.025 235));
   }
 
   .owner-button:hover {
-    border-color: oklch(0.78 0.16 235 / 42%);
-    background: oklch(0.16 0.042 248 / 72%);
+    border-color: var(--ui-border-strong, oklch(0.78 0.16 235 / 42%));
+    background: oklch(0.13 0.018 248 / 72%);
   }
 
   .owner-primary-action {
-    border-color: oklch(0.78 0.16 235 / 38%);
-    background: linear-gradient(
-      135deg,
-      oklch(0.76 0.16 225),
-      oklch(0.64 0.18 258)
-    );
-    color: oklch(0.985 0.012 235);
-    box-shadow:
-      inset 0 1px 0 oklch(0.98 0.012 235 / 16%),
-      0 6px 8px oklch(0.56 0.17 245 / 16%);
+    border-color: var(--ui-border-strong, oklch(0.78 0.16 235 / 38%));
+    border-radius: var(--ui-radius-sm, 0.56rem);
+    background: var(--ui-accent, oklch(0.76 0.16 225));
+    color: oklch(0.055 0.012 252);
+    box-shadow: none;
   }
 
   .owner-primary-action:hover {
-    background: linear-gradient(
-      135deg,
-      oklch(0.82 0.14 220),
-      oklch(0.7 0.18 255)
-    );
+    background: oklch(0.82 0.12 226);
   }
 
   .owner-segmented {
@@ -119,7 +110,7 @@
 
   .owner-editor-title-input {
     color: white;
-    font-family: var(--font-display);
+    font-family: var(--font-sans);
     letter-spacing: 0;
   }
 

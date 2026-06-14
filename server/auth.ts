@@ -6,6 +6,7 @@ import { ENV } from "./_core/env.js";
 
 export const ADMIN_SESSION_COOKIE = "admin_session";
 export const VISITOR_SESSION_COOKIE = "visitor_session";
+export const AGENT_GUEST_COOKIE = "agent_guest_id";
 
 type AuthRequest = {
   protocol?: string;
@@ -67,6 +68,14 @@ function getCookie(req: AuthRequest, name: string) {
   return parseCookieHeader(cookieHeader)[name];
 }
 
+export function readCookie(req: AuthRequest, name: string) {
+  return getCookie(req, name);
+}
+
+export function createAgentGuestId() {
+  return randomUUID();
+}
+
 async function signPayload(
   payload: AdminPayload | VisitorPayload,
   maxAgeSeconds: number
@@ -97,7 +106,10 @@ export async function signAdminSession(displayName = "Misaya Yang") {
 
 export async function signVisitorSession(displayName: string) {
   const visitorId = randomUUID();
-  return signPayload({ role: "visitor", displayName, visitorId }, ONE_YEAR_SECONDS);
+  return signPayload(
+    { role: "visitor", displayName, visitorId },
+    ONE_YEAR_SECONDS
+  );
 }
 
 export async function createVisitorSession(displayName: string) {
@@ -130,8 +142,12 @@ export async function verifyVisitorSession(req: AuthRequest) {
   };
 }
 
-export async function resolveBlogSession(req: AuthRequest): Promise<BlogSession> {
-  const adminPayload = await verifyPayload(getCookie(req, ADMIN_SESSION_COOKIE));
+export async function resolveBlogSession(
+  req: AuthRequest
+): Promise<BlogSession> {
+  const adminPayload = await verifyPayload(
+    getCookie(req, ADMIN_SESSION_COOKIE)
+  );
   if (adminPayload?.role === "admin") {
     return {
       isAuthenticated: true,
@@ -182,6 +198,10 @@ export function buildClearedCookie(req: AuthRequest, name: string) {
   });
 }
 
+export function buildAgentGuestCookie(req: AuthRequest, guestId: string) {
+  return buildSessionCookie(req, AGENT_GUEST_COOKIE, guestId, ONE_YEAR_SECONDS);
+}
+
 function serializeSessionCookie(
   name: string,
   value: string,
@@ -194,8 +214,15 @@ function serializeSessionCookie(
   if (options.httpOnly) parts.push("HttpOnly");
   if (options.secure) parts.push("Secure");
   if (options.sameSite) {
-    const sameSite = options.sameSite === "none" ? "None" : options.sameSite === "lax" ? "Lax" : "Strict";
-    parts.push(`SameSite=${sameSite}`);
+    parts.push(`SameSite=${formatSameSite(options.sameSite)}`);
   }
   return parts.join("; ");
+}
+
+function formatSameSite(
+  value: NonNullable<ReturnType<typeof getSessionCookieOptions>["sameSite"]>
+) {
+  if (value === "none") return "None";
+  if (value === "lax") return "Lax";
+  return "Strict";
 }

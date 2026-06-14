@@ -48,6 +48,7 @@ export type SourceCard = {
 
 export type ConversationItem = {
   id: string;
+  ownerType?: "anonymous" | "visitor" | "admin";
   title: string | null;
   scopeType: string;
   scopeValue: string | null;

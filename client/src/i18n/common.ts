@@ -14,7 +14,16 @@ const common: TranslationDict = {
   "common.close": { en: "Close", zh: "关闭" },
   "common.copy": { en: "Copy", zh: "复制" },
   "common.copied": { en: "Copied", zh: "已复制" },
+  "common.retry": { en: "Retry", zh: "重试" },
   "common.loading": { en: "Loading...", zh: "加载中..." },
+  "common.loadingNotes": {
+    en: "Opening the notebook",
+    zh: "正在打开笔记",
+  },
+  "common.loadingHint": {
+    en: "Fetching the latest notes. Search stays available.",
+    zh: "正在读取最新笔记；搜索仍可使用。",
+  },
   "common.saving": { en: "Saving...", zh: "保存中..." },
   "common.publishing": { en: "Publishing...", zh: "发布中..." },
   "common.login": { en: "Login", zh: "登录" },
@@ -82,7 +91,10 @@ const common: TranslationDict = {
   "common.ui.loading": { en: "Loading", zh: "加载中" },
 
   // Engagement
-  "engagement.subscribe.title": { en: "Save reading preferences", zh: "保存阅读偏好" },
+  "engagement.subscribe.title": {
+    en: "Save reading preferences",
+    zh: "保存阅读偏好",
+  },
   "engagement.subscribe.articleTitle": {
     en: "Save interest in future notes",
     zh: "保存后续阅读兴趣",
@@ -114,7 +126,10 @@ const common: TranslationDict = {
     en: "Reading preference updated",
     zh: "阅读偏好已更新",
   },
-  "engagement.subscribe.error": { en: "Preference could not be saved", zh: "偏好保存失败" },
+  "engagement.subscribe.error": {
+    en: "Preference could not be saved",
+    zh: "偏好保存失败",
+  },
   "engagement.subscribe.rateLimited": {
     en: "Too many attempts. Please try again later.",
     zh: "提交过于频繁，请稍后再试。",

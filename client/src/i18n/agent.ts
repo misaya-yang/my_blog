@@ -41,6 +41,18 @@ const agent: TranslationDict = {
     en: "No time",
     zh: "无时间",
   },
+  "agent.history.owner.admin": {
+    en: "owner",
+    zh: "作者",
+  },
+  "agent.history.owner.visitor": {
+    en: "visitor",
+    zh: "访客",
+  },
+  "agent.history.owner.anonymous": {
+    en: "anonymous",
+    zh: "匿名",
+  },
   "agent.scope.site": {
     en: "All notes",
     zh: "全站笔记",
@@ -52,6 +64,10 @@ const agent: TranslationDict = {
   "agent.scope.postContextReady": {
     en: "Current article context connected",
     zh: "当前文章上下文已接入",
+  },
+  "agent.scope.postScope": {
+    en: "Article scope",
+    zh: "文章范围",
   },
   "agent.scope.category": {
     en: "Category",
@@ -294,8 +310,8 @@ const agent: TranslationDict = {
     zh: "当前页",
   },
   "agent.sources.reason": {
-    en: "Why this source",
-    zh: "引用原因",
+    en: "Match basis",
+    zh: "相关依据",
   },
   "agent.sources.section": {
     en: "Section",
@@ -404,6 +420,10 @@ const agent: TranslationDict = {
   "agent.error.cancelled": {
     en: "Generation stopped. Your draft is preserved.",
     zh: "已停止生成，草稿已保留。",
+  },
+  "agent.error.timeout": {
+    en: "The answer took too long and stopped. Your draft is preserved.",
+    zh: "回答耗时过长已停止，草稿已保留。",
   },
   "agent.error.history": {
     en: "This conversation could not be loaded.",

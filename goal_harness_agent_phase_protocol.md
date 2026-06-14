@@ -2,9 +2,9 @@
 
 有一类 Coding Agent 失败很迷惑：它不是完全没做，也不是代码不能运行，而是“看起来到处都做了，真正用户路径还是断的”。
 
-最近一次博客 Agent 改造就踩过这个坑。PRD 写得很完整，Codex 也“跑完了”，仓库里出现了 schema、router、UI、测试名、后台页和一堆看似正确的文案。但打开博客 Agent 一问当前文章，它并不知道当前页面；问一个口语问题，检索打偏；source card 看起来有来源，却不一定能定位到读者正在看的内容。
+一次博客 Agent 改造就踩过这个坑。PRD 写得很完整，任务也“跑完了”，仓库里出现了 schema、router、UI、测试名、后台页和一堆看似正确的文案。但打开博客 Agent 一问当前文章，它并不知道当前页面；问一个口语问题，检索打偏；source card 看起来有来源，却不一定能定位到读者正在看的内容。
 
-把这个问题归因成“模型能力不够”太粗了。更根本的原因是：长期目标被交给了 Agent，却没有配套一个能持续工作的运行协议。PRD 说明了产品想要什么，但没有把工作切成可冷启动、可验证、可回归、可交接的执行单元。于是 Agent 很容易做出一堆看起来像完成的改动：有表、有路由、有 UI、有测试名，但核心体验没有闭环，隐藏内容边界可能没被完整验证，quota、retrieval、source cards、mobile sheet、eval 和 admin trace 之间也没有被逐个锁住。
+把这个问题归因成“模型能力不够”太粗了。更根本的原因是：长期目标被交给了 Agent，却没有配套一个能持续工作的运行协议。PRD 说明了产品想要什么，但没有把工作切成可冷启动、可验证、可回归、可交接的执行单元。于是 Agent 很容易做出一堆看起来像完成的改动：有表、有路由、有 UI、有测试名，但核心体验没有闭环，内容边界、quota、retrieval、source cards、mobile sheet、eval 和 admin trace 也没有被逐个锁住。
 
 这里讨论一个更实用的抽象：**Goal Harness**。
 
@@ -53,7 +53,7 @@ Initializer Agent 只做准备，不追求马上把功能写完。它应该把�
 - 写一个 `init.sh`，让后续 session 可以一键安装依赖、启动开发服务器、跑基础检查。
 - 建一个 `claude-progress.txt` 或等价进度日志，记录当前阶段、已完成项、失败项、下次入口。
 - 做一次初始 git commit，给后续增量修改一个干净基线。
-- 把用户的一句话需求展开成详尽 feature list。Anthropic 的示例里，`claude.ai clone` 这类需求会被拆成两百多个功能点。
+- 把用户的一句话需求展开成详尽 feature list。Anthropic 的示例里，`claude.ai clone` 这类需求会被拆成大量可验收功能点。
 - 每个功能点初始标记为 `failing`，直到真实代码、测试、浏览器检查或人工验收把它翻成 `passing`。
 
 Coding Agent 的职责刚好相反：它不重新发明全局计划，只在既有 harness 里做一小段增量。每个 session 读取进度日志和当前 failing feature，完成一组有限任务，跑验证，然后把结构化结果写回日志。完成之后留下的不是一句“已完成”，而是：改了什么、跑了什么、哪些 feature 从 failing 变成 passing、哪些 blocker 仍然存在、下一个 session 从哪里继续。
@@ -103,13 +103,13 @@ Goal Harness 必须回答的是：
 
 这次博客 Agent 的失败可以拆成更具体的 failure anatomy：
 
-| Missing Layer | Symptom | Better Harness Behavior |
-| --- | --- | --- |
-| Baseline Evidence | Agent 开始写代码前没有固定当前 schema、route、test、UI 和检索边界。 | Phase 00 先产出 baseline report，再允许实现 phase 解锁。 |
-| Feature Oracle | “能回答博客问题”太软，成功题、拒答题、quota 题没有被枚举。 | 把 public QA、hidden refusal、quota-before-model、source card 都写成验收案例。 |
-| Phase Boundary | schema、router、retrieval、UI、admin、eval 混在同一轮 goal 里。 | 按风险拆 phase，每个 phase 只允许有限 edit paths。 |
-| Regression Bank | 新测试可能过了，但旧的阅读路径、移动端、隐藏内容边界没有被完整回归。 | 每个 phase 声明触碰哪部分 regression bank，release phase 跑完整银行。 |
-| Evidence Report | “完成”只存在于聊天总结里，下一轮 Agent 不知道哪些检查真的跑过。 | 每个 phase 写 report，记录命令、截图、eval、waiver、blocker 和 handoff。 |
+| Missing Layer     | Symptom                                                              | Better Harness Behavior                                                        |
+| ----------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Baseline Evidence | Agent 开始写代码前没有固定当前 schema、route、test、UI 和检索边界。  | Phase 00 先产出 baseline report，再允许实现 phase 解锁。                       |
+| Feature Oracle    | “能回答博客问题”太软，成功题、拒答题、quota 题没有被枚举。           | 把 public QA、hidden refusal、quota-before-model、source card 都写成验收案例。 |
+| Phase Boundary    | schema、router、retrieval、UI、admin、eval 混在同一轮 goal 里。      | 按风险拆 phase，每个 phase 只允许有限 edit paths。                             |
+| Regression Bank   | 新测试可能过了，但旧的阅读路径、移动端、隐藏内容边界没有被完整回归。 | 每个 phase 声明触碰哪部分 regression bank，release phase 跑完整银行。          |
+| Evidence Report   | “完成”只存在于聊天总结里，下一轮 Agent 不知道哪些检查真的跑过。      | 每个 phase 写 report，记录命令、截图、eval、waiver、blocker 和 handoff。       |
 
 这张表比“模型没做好”更有用，因为它把失败从模型性格问题还原成工程接口问题。
 
@@ -121,15 +121,15 @@ Goal Harness 必须回答的是：
 
 Source Packet 应该记录：
 
-| Field | Purpose |
-| --- | --- |
-| Request Summary | 用户真正想完成的产品/工程目标。 |
-| Source Inventory | PRD、Figma、截图、现有代码、外部文档分别来自哪里。 |
-| Trust Level | 哪些是 repo fact，哪些是 untrusted user/design/web source。 |
-| Current System Shape | 当前路由、schema、测试、脚本、部署、已有模块。 |
-| Assumptions | 不问也能安全推进的假设。 |
-| Unknowns | 需要 stop 或 approval 的未知。 |
-| Risk Tags | UI、auth、payment、database、migration、AI/eval、external service、release。 |
+| Field                | Purpose                                                                      |
+| -------------------- | ---------------------------------------------------------------------------- |
+| Request Summary      | 用户真正想完成的产品/工程目标。                                              |
+| Source Inventory     | PRD、Figma、截图、现有代码、外部文档分别来自哪里。                           |
+| Trust Level          | 哪些是 repo fact，哪些是 untrusted user/design/web source。                  |
+| Current System Shape | 当前路由、schema、测试、脚本、部署、已有模块。                               |
+| Assumptions          | 不问也能安全推进的假设。                                                     |
+| Unknowns             | 需要 stop 或 approval 的未知。                                               |
+| Risk Tags            | UI、auth、payment、database、migration、AI/eval、external service、release。 |
 
 这一步的价值是把“聊天里的理解”落到文件里。后续任何 Agent 都不需要猜上一轮在想什么。
 
@@ -224,16 +224,16 @@ Feature Oracle 有两个效果。
 
 很多 PRD 拆解失败，是因为按“前端 / 后端 / 数据库”机械切分。真实交付更适合按风险切：
 
-| Phase | Dominant Risk | Completion Evidence |
-| --- | --- | --- |
-| Baseline Audit | 不知道当前系统真实状态 | route/test/schema/report baseline |
-| Knowledge Index | public/hidden 内容边界 | chunk tests + reindex report |
-| Quota Router | 费用和滥用控制 | quota-before-model tests |
-| Assistant Shell | 真实用户路径是否可用 | desktop/mobile browser screenshots |
-| Answer Quality | 来源 grounding 和拒答 | golden questions + trace |
-| History / Files | ownership、retention、scope | auth tests + cleanup checks |
-| Admin Ops | 可观测和可运维 | retrieval debugger + eval dashboard |
-| Release Gate | 完整回归和部署风险 | full build/test/browser/eval report |
+| Phase           | Dominant Risk               | Completion Evidence                 |
+| --------------- | --------------------------- | ----------------------------------- |
+| Baseline Audit  | 不知道当前系统真实状态      | route/test/schema/report baseline   |
+| Knowledge Index | public/hidden 内容边界      | chunk tests + reindex report        |
+| Quota Router    | 费用和滥用控制              | quota-before-model tests            |
+| Assistant Shell | 真实用户路径是否可用        | desktop/mobile browser screenshots  |
+| Answer Quality  | 来源 grounding 和拒答       | golden questions + trace            |
+| History / Files | ownership、retention、scope | auth tests + cleanup checks         |
+| Admin Ops       | 可观测和可运维              | retrieval debugger + eval dashboard |
+| Release Gate    | 完整回归和部署风险          | full build/test/browser/eval report |
 
 每个 phase 只承担一个主风险。这样 Agent 才能逐个打穿，而不是一次性把所有复杂度摊开。
 

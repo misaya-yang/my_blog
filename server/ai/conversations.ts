@@ -22,6 +22,7 @@ export type ConversationStore = {
     identity: AgentIdentity;
     scope: AgentScope;
     title: string;
+    allowAdminGlobal?: boolean;
   }): Promise<AgentConversationRecord>;
   listConversations(
     identity: AgentIdentity
@@ -29,10 +30,12 @@ export type ConversationStore = {
   getConversation(input: {
     conversationId: string;
     identity: AgentIdentity;
+    allowAdminGlobal?: boolean;
   }): Promise<AgentConversationRecord>;
   getMessages(input: {
     conversationId: string;
     identity: AgentIdentity;
+    allowAdminGlobal?: boolean;
   }): Promise<AgentMessageRecord[]>;
   addMessage(input: {
     conversationId: string;
@@ -72,16 +75,19 @@ export class PostgresConversationStore implements ConversationStore {
     identity: AgentIdentity;
     scope: AgentScope;
     title: string;
+    allowAdminGlobal?: boolean;
   }): Promise<AgentConversationRecord> {
     const db = await getDb();
     if (!db) throw new Error("Database not available");
 
     if (input.conversationId) {
+      const allowGlobal =
+        input.allowAdminGlobal === true && input.identity.type === "admin";
       const existing = await db
         .select()
         .from(aiConversations)
         .where(
-          input.identity.type === "admin"
+          allowGlobal
             ? eq(aiConversations.id, input.conversationId)
             : and(
                 eq(aiConversations.id, input.conversationId),
@@ -119,12 +125,11 @@ export class PostgresConversationStore implements ConversationStore {
       .select()
       .from(aiConversations)
       .where(
-        identity.type === "admin"
-          ? eq(aiConversations.status, "active")
-          : and(
-              eq(aiConversations.ownerType, identity.type),
-              eq(aiConversations.ownerKey, identity.key)
-            )
+        and(
+          eq(aiConversations.ownerType, identity.type),
+          eq(aiConversations.ownerKey, identity.key),
+          eq(aiConversations.status, "active")
+        )
       )
       .orderBy(desc(aiConversations.updatedAt))
       .limit(20);
@@ -135,12 +140,14 @@ export class PostgresConversationStore implements ConversationStore {
   async getConversation(input: {
     conversationId: string;
     identity: AgentIdentity;
+    allowAdminGlobal?: boolean;
   }): Promise<AgentConversationRecord> {
     const conversation = await this.createOrLoadConversation({
       conversationId: input.conversationId,
       identity: input.identity,
       scope: { type: "site" },
       title: "",
+      allowAdminGlobal: input.allowAdminGlobal,
     });
     return conversation;
   }
@@ -148,6 +155,7 @@ export class PostgresConversationStore implements ConversationStore {
   async getMessages(input: {
     conversationId: string;
     identity: AgentIdentity;
+    allowAdminGlobal?: boolean;
   }): Promise<AgentMessageRecord[]> {
     const db = await getDb();
     if (!db) return [];
@@ -298,9 +306,11 @@ export function createMemoryConversationStore(): ConversationStore & {
     async createOrLoadConversation(input) {
       if (input.conversationId) {
         const existing = conversations.get(input.conversationId);
+        const allowGlobal =
+          input.allowAdminGlobal === true && input.identity.type === "admin";
         if (
           existing &&
-          (input.identity.type === "admin" ||
+          (allowGlobal ||
             (existing.ownerType === input.identity.type &&
               existing.ownerKey === input.identity.key))
         ) {
@@ -324,16 +334,17 @@ export function createMemoryConversationStore(): ConversationStore & {
     async listConversations(identity) {
       return Array.from(conversations.values()).filter(
         conversation =>
-          identity.type === "admin" ||
-          (conversation.ownerType === identity.type &&
-            conversation.ownerKey === identity.key)
+          conversation.ownerType === identity.type &&
+          conversation.ownerKey === identity.key
       );
     },
     async getConversation(input) {
       const existing = conversations.get(input.conversationId);
+      const allowGlobal =
+        input.allowAdminGlobal === true && input.identity.type === "admin";
       if (
         existing &&
-        (input.identity.type === "admin" ||
+        (allowGlobal ||
           (existing.ownerType === input.identity.type &&
             existing.ownerKey === input.identity.key))
       ) {

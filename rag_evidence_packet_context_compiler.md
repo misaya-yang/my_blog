@@ -111,7 +111,7 @@ type EvidenceItem = {
 
 ## 3. Technical Direction
 
-这类系统值得强调的技术方向不是“做一个企业聊天机器人”，而是 **Agentic RAG Infrastructure**：为通用 AI Assistant 构建一条可治理的上下文生产线。
+这类系统值得强调的不是“再做一个聊天框”，而是把 RAG 做成可检查的上下文生产过程：证据从哪里来、为什么进入窗口、被裁掉了什么，都应该能追踪。
 
 这条线有三个原则。
 
@@ -136,14 +136,14 @@ Document Layer
   -> AgentLoop Execution
 ```
 
-| Layer                     | Responsibility                     | Example Components                                                                 |
-| ------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------- |
-| Document Layer            | 接收博客文章、文档、网页和附件     | Postgres metadata, object storage, document and segment records                    |
-| Chunk & Metadata Layer    | 把原始材料切成可追溯知识单元       | token-aware chunking, section extraction, metadata extraction, source visibility   |
-| Retrieval & Ranking Layer | 生成候选、融合排序、控制重复       | dense retrieval, BM25, hybrid search, RRF, rerank, MMR, metadata filters           |
-| Evidence Layer            | 统一证据、来源、分数、权限和 trace | Evidence Packet, source hydration, citation metadata, retrieval provenance         |
-| Context Runtime           | 把 evidence 编译成模型上下文       | context builder, budget manager, compressor, permission filter, session memory     |
-| Agent Execution           | 基于上下文执行推理和工具调用       | model runtime, tool registry, streaming events, quota checks, trace/eval hooks     |
+| Layer                     | Responsibility                     | Example Components                                                               |
+| ------------------------- | ---------------------------------- | -------------------------------------------------------------------------------- |
+| Document Layer            | 接收博客文章、文档、网页和附件     | Postgres metadata, object storage, document and segment records                  |
+| Chunk & Metadata Layer    | 把原始材料切成可追溯知识单元       | token-aware chunking, section extraction, metadata extraction, source visibility |
+| Retrieval & Ranking Layer | 生成候选、融合排序、控制重复       | dense retrieval, BM25, hybrid search, RRF, rerank, MMR, metadata filters         |
+| Evidence Layer            | 统一证据、来源、分数、权限和 trace | Evidence Packet, source hydration, citation metadata, retrieval provenance       |
+| Context Runtime           | 把 evidence 编译成模型上下文       | context builder, budget manager, compressor, permission filter, session memory   |
+| Agent Execution           | 基于上下文执行推理和工具调用       | model runtime, tool registry, streaming events, quota checks, trace/eval hooks   |
 
 这张栈图更适合表达系统定位：它关注的不是单点 RAG demo，而是围绕 Agent 上下文生产建立的一套可迭代基础设施。
 
@@ -237,17 +237,17 @@ Evidence Packet 不是新的向量数据库，也不是替代 reranker 的模型
 - 如果多模态处理依赖外部 VLM，成本、延迟和稳定性要单独纳入预算。
 - 如果上传文件默认进入公共索引，隐私和权限风险会高于检索收益；文件 evidence 应默认绑定到会话或用户。
 
-它适合的场景是通用 Assistant：任务类型多、知识源复杂、需要引用、需要审计，并且上下文策略会长期迭代。
+它适合任务类型多、知识源复杂、需要引用和审计，并且上下文策略会长期迭代的 Assistant。
 
 ## 10. Core Takeaway
 
-Agentic RAG 的技术方向不应停留在“把向量库接到聊天框”。更有价值的抽象是把 KB 建成 Agent 的上下文编译器：
+Agentic RAG 不应停留在“把向量库接到聊天框”。更可靠的做法是让 KB 输出一份可调试的上下文包：
 
 ```text
 Evidence Packet = retrieval signals + source metadata + budget policy + traceable context
 ```
 
-这个抽象把 KB 服务和 Assistant runtime 解耦。底层可以替换 Qdrant、embedding、BM25、reranker 或 chunking 策略；上层 Agent 仍然消费同一种证据接口。系统因此获得可调试性、可预算性、可引用性和可评测性。
+这个接口把 KB 服务和 Assistant runtime 解耦。底层可以替换 Qdrant、embedding、BM25、reranker 或 chunking 策略；上层 Agent 仍然消费同一种证据结构。系统因此获得可调试性、可预算性、可引用性和可评测性。
 
 真正值得突出的不是“支持 RAG”，而是：
 

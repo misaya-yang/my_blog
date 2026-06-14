@@ -7,7 +7,11 @@ import {
   inferClientScope,
   openBlogAgentWithPrompt,
 } from "./routeContext";
-import { streamAgentMessage } from "./streamClient";
+import {
+  isAbortError,
+  isTimeoutError,
+  streamAgentMessage,
+} from "./streamClient";
 
 describe("BlogAgent route context", () => {
   it("infers post scope from article routes", () => {
@@ -192,5 +196,52 @@ describe("BlogAgent route context", () => {
     );
 
     vi.unstubAllGlobals();
+  });
+
+  it("rejects incomplete streams that close before a final event", async () => {
+    const encoder = new TextEncoder();
+    const body = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          encoder.encode(
+            ['data: {"type":"answer_delta","delta":"Partial answer"}', ""].join(
+              "\n"
+            )
+          )
+        );
+        controller.close();
+      },
+    });
+    vi.stubGlobal("window", {
+      setTimeout,
+      clearTimeout,
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(body, { status: 200 }))
+    );
+
+    await expect(
+      streamAgentMessage({
+        message: "Explain AgentLoop",
+        routeContext: buildRouteContext("/", "en"),
+        onStatus: vi.fn(),
+        onReasoningDelta: vi.fn(),
+        onAnswerDelta: vi.fn(),
+        onFinal: vi.fn(),
+      })
+    ).rejects.toThrow("agent_stream_incomplete");
+
+    vi.unstubAllGlobals();
+  });
+
+  it("distinguishes user cancellation from timeout cancellation", () => {
+    expect(isAbortError(new DOMException("Aborted", "AbortError"))).toBe(true);
+    expect(isTimeoutError(new DOMException("Timed out", "TimeoutError"))).toBe(
+      true
+    );
+    expect(isAbortError(new DOMException("Timed out", "TimeoutError"))).toBe(
+      false
+    );
   });
 });

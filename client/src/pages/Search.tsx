@@ -1,4 +1,11 @@
-import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
+import {
+  EmptyState,
+  LoadingState,
+  SectionHeader,
+  SiteHeader,
+  SpaceBackdrop,
+  Surface,
+} from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -62,7 +69,13 @@ export default function Search() {
     [search]
   );
   const [input, setInput] = useState(query);
-  const { data, isLoading } = trpc.discovery.search.useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    error: searchError,
+    refetch,
+  } = trpc.discovery.search.useQuery({
     query,
     limit: 20,
     offset: 0,
@@ -84,10 +97,10 @@ export default function Search() {
   }, [query]);
 
   useEffect(() => {
-    if (!isLoading && query && data?.total === 0) {
+    if (!isLoading && !isError && query && data?.total === 0) {
       trackAnalyticsEvent("search_zero_results", { query });
     }
-  }, [data?.total, isLoading, query]);
+  }, [data?.total, isError, isLoading, query]);
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -147,26 +160,47 @@ export default function Search() {
           </div>
         </form>
 
-        <section className="glass-panel mt-8 p-4 sm:p-6">
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="section-title">
-              {query
+        <Surface className="mt-8">
+          <SectionHeader
+            title={
+              query
                 ? t("discovery.resultsFor", { query, count: data?.total ?? 0 })
-                : t("discovery.latestPublic")}
-            </h2>
-            <Link href="/archive" className="nav-ink">
-              {t("nav.archive")}
-            </Link>
-          </div>
+                : t("discovery.latestPublic")
+            }
+            action={
+              <Link href="/archive" className="nav-ink">
+                {t("nav.archive")}
+              </Link>
+            }
+          />
 
           {isLoading ? (
-            <div className="grid gap-3">
-              {[1, 2, 3].map(item => (
-                <div key={item} className="article-skeleton h-28" />
-              ))}
-            </div>
+            <LoadingState
+              title={t("common.loadingNotes")}
+              description={t("common.loadingHint")}
+              className="mt-5"
+            />
+          ) : isError ? (
+            <EmptyState
+              icon={<SearchIcon className="h-4 w-4" />}
+              title={t("discovery.searchFailed")}
+              description={
+                searchError?.message || t("discovery.searchFailedHint")
+              }
+              className="mt-5"
+              action={
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="glass-button"
+                  onClick={() => void refetch()}
+                >
+                  {t("common.retry")}
+                </Button>
+              }
+            />
           ) : data?.results?.length ? (
-            <div className="divide-y divide-sky-200/10">
+            <div className="mt-5 divide-y divide-sky-200/10">
               {data.results.map((post: any) => (
                 <article key={post.id} className="py-5">
                   <Link
@@ -225,11 +259,13 @@ export default function Search() {
               onAskAgent={askAgent}
             />
           ) : (
-            <div className="py-14 text-center text-sm text-slate-400">
-              {t("discovery.searchEmpty")}
-            </div>
+            <EmptyState
+              icon={<SearchIcon className="h-4 w-4" />}
+              title={t("discovery.searchEmpty")}
+              className="mt-5"
+            />
           )}
-        </section>
+        </Surface>
       </main>
     </div>
   );

@@ -1,5 +1,12 @@
 import { TRPCError } from "@trpc/server";
-import { resolveBlogSession } from "../auth.js";
+import {
+  AGENT_GUEST_COOKIE,
+  buildAgentGuestCookie,
+  createAgentGuestId,
+  readCookie,
+  resolveBlogSession,
+} from "../auth.js";
+import { appendSetCookieHeader } from "../httpRequest.js";
 import {
   normalizeContextSourceInput,
   PostgresContextSourceStore,
@@ -387,18 +394,24 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
 
     async adminExtractArticleIdeas(ctx, input) {
       assertAdminContext(ctx);
-      const detail = await this.getConversation(ctx, {
+      const identity = resolveAgentIdentity(ctx.session, ctx.req);
+      const conversation = await deps.conversationStore.getConversation({
         conversationId: input.conversationId,
+        identity,
+        allowAdminGlobal: true,
       });
-      const userMessages = detail.messages.filter(
-        message => message.role === "user"
-      );
+      const messages = await deps.conversationStore.getMessages({
+        conversationId: input.conversationId,
+        identity,
+        allowAdminGlobal: true,
+      });
+      const userMessages = messages.filter(message => message.role === "user");
       const seedQuestions = userMessages
         .map(message => message.content)
         .slice(-4);
       const primary =
         seedQuestions[seedQuestions.length - 1] ||
-        detail.conversation.title ||
+        conversation.title ||
         "Blog agent conversation";
 
       return {
@@ -431,6 +444,18 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
 
     async sendMessage(ctx, input) {
       const identity = resolveAgentIdentity(ctx.session, ctx.req);
+      const requestedScope = input.scope ?? inferScope(input.routeContext);
+      const existingConversation = input.conversationId
+        ? await deps.conversationStore.createOrLoadConversation({
+            conversationId: input.conversationId,
+            identity,
+            scope: requestedScope,
+            title: buildConversationTitle(input.message),
+          })
+        : null;
+      const scope = existingConversation
+        ? scopeFromConversation(existingConversation)
+        : requestedScope;
       const limit = getQuotaLimit(identity.type);
       const quota = await deps.quotaStore.reserveDailyMessage(
         identity,
@@ -446,14 +471,13 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         };
       }
 
-      const scope = input.scope ?? inferScope(input.routeContext);
       const conversation =
-        await deps.conversationStore.createOrLoadConversation({
-          conversationId: input.conversationId,
+        existingConversation ??
+        (await deps.conversationStore.createOrLoadConversation({
           identity,
           scope,
           title: buildConversationTitle(input.message),
-        });
+        }));
       const userMessage = await deps.conversationStore.addMessage({
         conversationId: conversation.id,
         role: "user",
@@ -685,6 +709,18 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
       const startedAt = now();
       const elapsedMs = () => now().getTime() - startedAt.getTime();
       const identity = resolveAgentIdentity(ctx.session, ctx.req);
+      const requestedScope = input.scope ?? inferScope(input.routeContext);
+      const existingConversation = input.conversationId
+        ? await deps.conversationStore.createOrLoadConversation({
+            conversationId: input.conversationId,
+            identity,
+            scope: requestedScope,
+            title: buildConversationTitle(input.message),
+          })
+        : null;
+      const scope = existingConversation
+        ? scopeFromConversation(existingConversation)
+        : requestedScope;
       const limit = getQuotaLimit(identity.type);
       const quota = await deps.quotaStore.reserveDailyMessage(
         identity,
@@ -704,14 +740,13 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
 
       emit({ type: "status", stage: "understanding", elapsedMs: elapsedMs() });
 
-      const scope = input.scope ?? inferScope(input.routeContext);
       const conversation =
-        await deps.conversationStore.createOrLoadConversation({
-          conversationId: input.conversationId,
+        existingConversation ??
+        (await deps.conversationStore.createOrLoadConversation({
           identity,
           scope,
           title: buildConversationTitle(input.message),
-        });
+        }));
       const userMessage = await deps.conversationStore.addMessage({
         conversationId: conversation.id,
         role: "user",
@@ -1071,12 +1106,39 @@ export const defaultAgentService = createAgentService({
 });
 
 export async function buildAgentContext(
-  req: AgentContext["req"]
+  req: AgentContext["req"],
+  res?: unknown
 ): Promise<AgentContext> {
+  const session = await resolveBlogSession(req);
+  if (session.role === "anonymous") ensureAgentGuestCookie(req, res);
+
   return {
     req,
-    session: await resolveBlogSession(req),
+    session,
   };
+}
+
+function ensureAgentGuestCookie(req: AgentContext["req"], res?: unknown) {
+  if (readCookie(req, AGENT_GUEST_COOKIE)) return;
+
+  const guestId = createAgentGuestId();
+  appendRequestCookie(req, AGENT_GUEST_COOKIE, guestId);
+  if (res) appendSetCookieHeader(res, buildAgentGuestCookie(req, guestId));
+}
+
+function appendRequestCookie(
+  req: AgentContext["req"],
+  name: string,
+  value: string
+) {
+  const headerValue = `${name}=${encodeURIComponent(value)}`;
+  req.headers ??= {};
+  const current = req.headers.cookie;
+  if (Array.isArray(current)) {
+    req.headers.cookie = [...current, headerValue];
+    return;
+  }
+  req.headers.cookie = current ? `${current}; ${headerValue}` : headerValue;
 }
 
 export function inferScope(
@@ -1090,6 +1152,14 @@ export function inferScope(
   if (routeContext.trackSlug)
     return { type: "track", value: routeContext.trackSlug };
   return { type: "site" };
+}
+
+function scopeFromConversation(
+  conversation: AgentConversationRecord
+): AgentScope {
+  return conversation.scopeValue
+    ? { type: conversation.scopeType, value: conversation.scopeValue }
+    : { type: conversation.scopeType };
 }
 
 function buildConversationTitle(message: string) {

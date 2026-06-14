@@ -9,7 +9,10 @@ type CookieCall = {
 
 type AuthenticatedUser = NonNullable<TrpcContext["user"]>;
 
-function createAuthContext(): { ctx: TrpcContext; clearedCookies: CookieCall[] } {
+function createAuthContext(): {
+  ctx: TrpcContext;
+  clearedCookies: CookieCall[];
+} {
   const clearedCookies: CookieCall[] = [];
 
   const user: AuthenticatedUser = {
@@ -35,7 +38,7 @@ function createAuthContext(): { ctx: TrpcContext; clearedCookies: CookieCall[] }
       setHeader: (name: string, value: string | string[]) => {
         if (name.toLowerCase() !== "set-cookie") return;
         const values = Array.isArray(value) ? value : [value];
-        values.forEach((cookie) => {
+        values.forEach(cookie => {
           const [pair] = cookie.split(";");
           const [cookieName, cookieValue] = pair.split("=");
           clearedCookies.push({ name: cookieName, value: cookieValue });
@@ -47,6 +50,48 @@ function createAuthContext(): { ctx: TrpcContext; clearedCookies: CookieCall[] }
   return { ctx, clearedCookies };
 }
 
+describe("auth cookie switching", () => {
+  it("clears visitor identity when admin login succeeds", async () => {
+    const { ctx, clearedCookies } = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.auth.adminLogin({
+      password: process.env.ADMIN_PASSWORD || "admin123",
+    });
+
+    expect(result).toEqual({ success: true });
+    expect(clearedCookies).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: "admin_session" }),
+        { name: "visitor_session", value: "" },
+        { name: "agent_guest_id", value: "" },
+      ])
+    );
+  });
+
+  it("clears admin identity when visitor login succeeds", async () => {
+    const { ctx, clearedCookies } = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.auth.visitorLogin({ nickname: "Reader Two" });
+
+    expect(result).toMatchObject({
+      success: true,
+      session: {
+        role: "visitor",
+        displayName: "Reader Two",
+      },
+    });
+    expect(clearedCookies).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: "visitor_session" }),
+        { name: "admin_session", value: "" },
+        { name: "agent_guest_id", value: "" },
+      ])
+    );
+  });
+});
+
 describe("auth.adminLogout", () => {
   it("clears the session cookie and reports success", async () => {
     const { ctx, clearedCookies } = createAuthContext();
@@ -56,6 +101,14 @@ describe("auth.adminLogout", () => {
 
     expect(result).toEqual({ success: true });
     expect(clearedCookies).toContainEqual({ name: "admin_session", value: "" });
+    expect(clearedCookies).toContainEqual({
+      name: "visitor_session",
+      value: "",
+    });
+    expect(clearedCookies).toContainEqual({
+      name: "agent_guest_id",
+      value: "",
+    });
   });
 
   it("clears both admin and visitor cookies from unified logout", async () => {
@@ -69,6 +122,7 @@ describe("auth.adminLogout", () => {
       expect.arrayContaining([
         { name: "admin_session", value: "" },
         { name: "visitor_session", value: "" },
+        { name: "agent_guest_id", value: "" },
       ])
     );
   });

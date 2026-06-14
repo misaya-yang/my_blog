@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useIsMobile } from "@/hooks/useMobile";
 import { cn } from "@/lib/utils";
@@ -43,7 +44,11 @@ import {
   type AgentRouteContext,
 } from "./routeContext";
 import { toChatMessage, upsertTraceEntry } from "./messageState";
-import { isAbortError, streamAgentMessage } from "./streamClient";
+import {
+  isAbortError,
+  isTimeoutError,
+  streamAgentMessage,
+} from "./streamClient";
 import type {
   AgentTraceEntry,
   ChatMessage,
@@ -58,6 +63,7 @@ const AgentMarkdown = lazy(() =>
 
 export function BlogAgentRoot() {
   const [location] = useLocation();
+  const { session } = useAuth();
   const { language, t } = useLanguage();
   const isMobile = useIsMobile();
   const routeContext = useMemo(
@@ -79,11 +85,14 @@ export function BlogAgentRoot() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [streaming, setStreaming] = useState(false);
   const [quota, setQuota] = useState<QuotaInfo | null>(null);
+  const [composerFocusToken, setComposerFocusToken] = useState(0);
   const launcherRef = useRef<HTMLButtonElement | null>(null);
   const panelRef = useRef<HTMLElement | null>(null);
+  const draftInputRef = useRef<HTMLTextAreaElement | null>(null);
   const messageEndRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const streamAbortRef = useRef<AbortController | null>(null);
+  const previousIdentityKeyRef = useRef<string | null>(null);
   const utils = trpc.useUtils();
   const panelId = "blog-agent-panel";
   const panelTitleId = "blog-agent-title";
@@ -111,10 +120,34 @@ export function BlogAgentRoot() {
   );
   const sendMessage = trpc.agent.sendMessage.useMutation();
   const addContext = trpc.agent.addContext.useMutation();
+  const identityKey = getAgentSessionKey(session);
 
   useEffect(() => {
     if (bootstrap.data?.quota) setQuota(bootstrap.data.quota);
   }, [bootstrap.data?.quota]);
+
+  useEffect(() => {
+    if (previousIdentityKeyRef.current === null) {
+      previousIdentityKeyRef.current = identityKey;
+      return;
+    }
+    if (previousIdentityKeyRef.current === identityKey) return;
+
+    previousIdentityKeyRef.current = identityKey;
+    streamAbortRef.current?.abort();
+    setDraft("");
+    setMessages([]);
+    setConversationId(undefined);
+    setSelectedConversationId(undefined);
+    setNotice(null);
+    setContextDraft("");
+    setContextOpen(false);
+    setAttachedContextCount(0);
+    setHistoryOpen(false);
+    setStreaming(false);
+    setQuota(null);
+    void utils.agent.listConversations.invalidate();
+  }, [identityKey, utils.agent.listConversations]);
 
   useEffect(() => {
     if (!conversationDetail.data) return;
@@ -137,17 +170,26 @@ export function BlogAgentRoot() {
   useEffect(() => {
     if (!open) return;
     const frame = window.requestAnimationFrame(() => {
+      if (composerFocusToken > 0) {
+        draftInputRef.current?.focus({ preventScroll: true });
+        setComposerFocusToken(0);
+        return;
+      }
+
       panelRef.current?.focus({ preventScroll: true });
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [open, isMobile]);
+  }, [composerFocusToken, open, isMobile]);
 
   useEffect(() => {
     function handleExternalOpen(event: Event) {
       const detail = (event as CustomEvent<BlogAgentOpenDetail>).detail;
       setOpen(true);
       setNotice(null);
-      if (detail?.prompt) setDraft(detail.prompt);
+      if (detail?.prompt) {
+        setDraft(detail.prompt);
+        setComposerFocusToken(token => token + 1);
+      }
     }
 
     window.addEventListener(BLOG_AGENT_OPEN_EVENT, handleExternalOpen);
@@ -166,10 +208,18 @@ export function BlogAgentRoot() {
   const currentScope =
     bootstrap.data?.currentScope ?? inferClientScope(routeContext);
   const lowQuota = quota ? quota.remaining <= 1 : false;
+  const conversationSwitching =
+    Boolean(selectedConversationId) &&
+    (conversationDetail.isFetching ||
+      conversationId !== selectedConversationId);
+  const currentPageContextReady = messages.some(message =>
+    message.traceEntries?.some(entry => entry.currentPageContextInjected)
+  );
 
   async function handleSubmit(message: string) {
     const trimmed = message.trim();
-    if (!trimmed || sendMessage.isPending || streaming) return;
+    if (!trimmed || sendMessage.isPending || streaming || conversationSwitching)
+      return;
 
     const timestamp = Date.now();
     const userMessage: ChatMessage = {
@@ -300,9 +350,15 @@ export function BlogAgentRoot() {
         )
       );
       setDraft(trimmed);
-      setNotice(
-        isAbortError(error) ? t("agent.error.cancelled") : t("agent.error.send")
-      );
+      if (isTimeoutError(error)) {
+        setNotice(t("agent.error.timeout"));
+      } else {
+        setNotice(
+          isAbortError(error)
+            ? t("agent.error.cancelled")
+            : t("agent.error.send")
+        );
+      }
     } finally {
       if (streamAbortRef.current === controller) {
         streamAbortRef.current = null;
@@ -451,6 +507,7 @@ export function BlogAgentRoot() {
             panelId={panelId}
             titleId={panelTitleId}
             panelRef={panelRef}
+            draftInputRef={draftInputRef}
             bootstrapping={bootstrap.isLoading}
             bootstrapError={bootstrap.isError}
             currentScope={currentScope}
@@ -467,7 +524,9 @@ export function BlogAgentRoot() {
             historyLoading={
               conversations.isLoading || conversationDetail.isFetching
             }
+            conversationSwitching={conversationSwitching}
             activeConversationId={conversationId}
+            currentPageContextReady={currentPageContextReady}
             suggestedPrompts={suggestedPrompts}
             welcomeTitle={welcomeCopy.title}
             welcomeBody={welcomeCopy.body}
@@ -575,6 +634,7 @@ export function AgentPanel({
   panelId,
   titleId,
   panelRef,
+  draftInputRef,
   bootstrapping,
   bootstrapError,
   currentScope,
@@ -589,7 +649,9 @@ export function AgentPanel({
   historyOpen,
   conversations,
   historyLoading,
+  conversationSwitching,
   activeConversationId,
+  currentPageContextReady,
   suggestedPrompts,
   welcomeTitle,
   welcomeBody,
@@ -612,6 +674,7 @@ export function AgentPanel({
   panelId: string;
   titleId: string;
   panelRef: RefObject<HTMLElement | null>;
+  draftInputRef: RefObject<HTMLTextAreaElement | null>;
   bootstrapping: boolean;
   bootstrapError: boolean;
   currentScope: AgentScope;
@@ -631,7 +694,9 @@ export function AgentPanel({
   historyOpen: boolean;
   conversations: ConversationItem[];
   historyLoading: boolean;
+  conversationSwitching: boolean;
   activeConversationId?: string;
+  currentPageContextReady: boolean;
   suggestedPrompts: string[];
   welcomeTitle: string;
   welcomeBody: string;
@@ -654,9 +719,11 @@ export function AgentPanel({
   const hasStreamingAssistant = messages.some(
     message => message.role === "assistant" && message.streaming
   );
+  const inputDisabled = bootstrapping || conversationSwitching;
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (inputDisabled) return;
     onSubmit(draft);
   }
 
@@ -706,7 +773,11 @@ export function AgentPanel({
             {currentScope.type === "post" && (
               <span className="inline-flex items-center gap-1.5 rounded-md border border-slate-600/45 bg-slate-900/55 px-2.5 py-1 text-slate-300">
                 <Check className="h-3.5 w-3.5" />
-                {t("agent.scope.postContextReady")}
+                {t(
+                  currentPageContextReady
+                    ? "agent.scope.postContextReady"
+                    : "agent.scope.postScope"
+                )}
               </span>
             )}
           </div>
@@ -769,7 +840,7 @@ export function AgentPanel({
                 <button
                   key={prompt}
                   type="button"
-                  disabled={sending}
+                  disabled={sending || inputDisabled}
                   onClick={() => onPrompt(prompt)}
                   className="min-h-11 rounded-md border border-slate-700 bg-slate-950/45 px-3 py-2 text-left text-sm font-medium leading-6 text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 disabled:opacity-60"
                 >
@@ -864,6 +935,7 @@ export function AgentPanel({
         value={contextDraft}
         count={attachedContextCount}
         attaching={attachingContext}
+        disabled={inputDisabled}
         onChange={onContextDraftChange}
         onToggle={onToggleContext}
         onAttach={onAttachPastedContext}
@@ -876,6 +948,7 @@ export function AgentPanel({
             type="button"
             size="icon"
             onClick={onToggleContext}
+            disabled={inputDisabled}
             aria-label={t("agent.context.toggle")}
             className={cn(
               "h-11 w-11 shrink-0 rounded-md border border-slate-700 bg-white/[0.025] text-slate-400 hover:bg-slate-900 hover:text-slate-100 sm:h-10 sm:w-10",
@@ -885,7 +958,9 @@ export function AgentPanel({
             <Paperclip className="h-4 w-4" />
           </Button>
           <Textarea
+            ref={draftInputRef}
             value={draft}
+            disabled={inputDisabled}
             onChange={event => onDraftChange(event.target.value)}
             onKeyDown={event => {
               if (
@@ -905,7 +980,7 @@ export function AgentPanel({
             type={sending ? "button" : "submit"}
             size="icon"
             onClick={sending ? onCancel : undefined}
-            disabled={(!draft.trim() && !sending) || bootstrapping}
+            disabled={(!draft.trim() && !sending) || inputDisabled}
             aria-label={
               sending ? t("agent.input.cancel") : t("agent.input.send")
             }
@@ -929,6 +1004,7 @@ function AgentContextDock({
   value,
   count,
   attaching,
+  disabled,
   onChange,
   onToggle,
   onAttach,
@@ -938,6 +1014,7 @@ function AgentContextDock({
   value: string;
   count: number;
   attaching: boolean;
+  disabled: boolean;
   onChange: (value: string) => void;
   onToggle: () => void;
   onAttach: () => void;
@@ -951,6 +1028,7 @@ function AgentContextDock({
         <button
           type="button"
           onClick={onToggle}
+          disabled={disabled}
           className="inline-flex min-h-11 min-w-0 items-center gap-2 rounded-md px-2 py-2 text-xs font-medium text-slate-400 transition hover:text-slate-100 sm:min-h-0 sm:px-1.5 sm:py-1"
         >
           <Paperclip className="h-3.5 w-3.5 text-slate-400" />
@@ -977,6 +1055,7 @@ function AgentContextDock({
           <Textarea
             value={value}
             onChange={event => onChange(event.target.value)}
+            disabled={disabled}
             placeholder={t("agent.context.placeholder")}
             rows={3}
             className="max-h-28 min-h-20 resize-none border-0 bg-transparent text-xs leading-5 text-slate-100 shadow-none placeholder:text-slate-500 focus-visible:ring-0"
@@ -985,7 +1064,7 @@ function AgentContextDock({
             <button
               type="button"
               onClick={onPickFile}
-              disabled={attaching}
+              disabled={attaching || disabled}
               className="inline-flex min-h-11 items-center gap-1.5 rounded-md border border-slate-700 bg-white/[0.025] px-3 py-2 text-xs text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 hover:text-slate-100 disabled:opacity-50 sm:min-h-0 sm:px-2.5 sm:py-1.5"
             >
               <FileText className="h-3.5 w-3.5" />
@@ -994,7 +1073,7 @@ function AgentContextDock({
             <Button
               type="button"
               size="sm"
-              disabled={!value.trim() || attaching}
+              disabled={!value.trim() || attaching || disabled}
               onClick={onAttach}
               className="h-11 rounded-md bg-slate-100 px-3 text-xs text-slate-950 hover:bg-white sm:h-8"
             >
@@ -1042,6 +1121,7 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
           const section =
             source.sectionTitle ?? getSourceSectionLabel(source, t);
           const excerpt = formatSourceExcerpt(source);
+          const relevanceReason = getDisplayRelevanceReason(source, t);
           const href = hasBlogLink ? getSourceHref(source) : undefined;
           const card = (
             <span className="agent-source-card block rounded-md border border-slate-700/80 bg-slate-950/30 px-2.5 py-2 transition hover:border-slate-500 hover:bg-slate-900/55">
@@ -1075,6 +1155,11 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
               {excerpt && (
                 <span className="mt-1 block line-clamp-1 text-xs leading-5 text-slate-500">
                   {excerpt}
+                </span>
+              )}
+              {relevanceReason && (
+                <span className="mt-1 block line-clamp-1 text-[0.7rem] leading-5 text-slate-500">
+                  {t("agent.sources.reason")}: {relevanceReason}
                 </span>
               )}
             </span>
@@ -1436,6 +1521,9 @@ function AgentHistoryPanel({
                   </span>
                   <span className="block truncate text-slate-500">
                     {conversation.scopeValue || conversation.scopeType}
+                    {conversation.ownerType
+                      ? ` · ${getConversationOwnerLabel(conversation.ownerType, t)}`
+                      : ""}
                   </span>
                 </span>
                 <span className="shrink-0 text-right text-[0.68rem] leading-4 text-slate-500">
@@ -1468,6 +1556,15 @@ function formatConversationTime(
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
+}
+
+function getConversationOwnerLabel(
+  ownerType: ConversationItem["ownerType"],
+  t: (key: string) => string
+) {
+  if (ownerType === "admin") return t("agent.history.owner.admin");
+  if (ownerType === "visitor") return t("agent.history.owner.visitor");
+  return t("agent.history.owner.anonymous");
 }
 
 function AgentQuotaBadge({
@@ -1548,6 +1645,17 @@ function getAgentFailureNotice(errorCode: string, t: (key: string) => string) {
   return errorCode === "model_not_configured"
     ? t("agent.error.modelNotConfigured")
     : t("agent.error.send");
+}
+
+function getAgentSessionKey(session: ReturnType<typeof useAuth>["session"]) {
+  if (!session) return "loading";
+  if (session.role === "admin") {
+    return `admin:${session.displayName ?? "owner"}`;
+  }
+  if (session.role === "visitor") {
+    return `visitor:${session.visitorId}`;
+  }
+  return "anonymous";
 }
 
 function getContextFileKind(

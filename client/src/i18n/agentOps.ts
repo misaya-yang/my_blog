@@ -3,8 +3,8 @@ import type { TranslationDict } from "./types";
 const agentOps: TranslationDict = {
   "agentOps.title": { en: "Agent Operations", zh: "Agent 运维" },
   "agentOps.subtitle": {
-    en: "Inspect retrieval, traces, evals, and article ideas without giving the model write access.",
-    zh: "调试检索、查看 trace、运行 eval，并从对话提炼文章选题；不授予模型写入权限。",
+    en: "Check index freshness, retrieval misses, evals, traces, and reader questions from one console.",
+    zh: "在一个控制台检查索引新鲜度、检索缺口、eval、trace 和读者问题。",
   },
   "agentOps.loginRequired": {
     en: "Admin login is required to inspect agent operations.",

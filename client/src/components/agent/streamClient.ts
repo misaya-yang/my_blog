@@ -132,7 +132,7 @@ export async function streamAgentMessage({
     const trailingEvent = parseSseFrame(buffer);
     if (trailingEvent) handleEvent(trailingEvent);
 
-    if (!finalSeen && streamError) throw new Error(streamError);
+    if (!finalSeen) throw new Error(streamError ?? "agent_stream_incomplete");
   } finally {
     window.clearTimeout(timeoutId);
   }
@@ -140,10 +140,20 @@ export async function streamAgentMessage({
 
 export function isAbortError(error: unknown) {
   if (error instanceof DOMException) {
-    return error.name === "AbortError" || error.name === "TimeoutError";
+    return error.name === "AbortError";
   }
   if (error instanceof Error) {
-    return error.name === "AbortError" || error.name === "TimeoutError";
+    return error.name === "AbortError";
+  }
+  return false;
+}
+
+export function isTimeoutError(error: unknown) {
+  if (error instanceof DOMException) {
+    return error.name === "TimeoutError";
+  }
+  if (error instanceof Error) {
+    return error.name === "TimeoutError";
   }
   return false;
 }

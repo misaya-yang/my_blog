@@ -10,6 +10,19 @@ export function setHeader(
   ).setHeader(name, value);
 }
 
+export function appendSetCookieHeader(res: unknown, value: string | string[]) {
+  const response = res as {
+    getHeader?: (headerName: string) => string | string[] | number | undefined;
+    setHeader(headerName: string, headerValue: string | string[]): void;
+  };
+  const existing = response.getHeader?.("Set-Cookie");
+  const nextValues = [
+    ...normalizeHeaderValues(existing),
+    ...normalizeHeaderValues(value),
+  ];
+  response.setHeader("Set-Cookie", nextValues);
+}
+
 export function getRequestSource(req: {
   headers?: Record<string, string | string[] | undefined>;
   socket?: { remoteAddress?: string };
@@ -21,6 +34,12 @@ export function getRequestSource(req: {
 
 function getHeaderValue(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
+}
+
+function normalizeHeaderValues(value: string | string[] | number | undefined) {
+  if (value === undefined) return [];
+  if (Array.isArray(value)) return value.map(String);
+  return [String(value)];
 }
 
 export function getRequestHeader(req: unknown, name: string) {

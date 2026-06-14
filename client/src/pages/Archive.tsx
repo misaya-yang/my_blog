@@ -1,4 +1,11 @@
-import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
+import {
+  EmptyState,
+  LoadingState,
+  SectionHeader,
+  SiteHeader,
+  SpaceBackdrop,
+  Surface,
+} from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
@@ -63,27 +70,26 @@ export default function Archive() {
           </p>
         </section>
 
-        <section className="glass-panel mt-10 p-4 sm:p-6">
+        <Surface className="mt-10">
           {isLoading ? (
-            <div className="grid gap-3">
-              {[1, 2, 3].map(item => (
-                <div key={item} className="article-skeleton h-20" />
-              ))}
-            </div>
+            <LoadingState
+              title={t("common.loadingNotes")}
+              description={t("common.loadingHint")}
+            />
           ) : groups?.length ? (
             <div className="grid gap-8">
               {groups.map((group: any) => (
                 <section key={group.key} className="grid gap-3">
-                  <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-sky-200/10 pb-3">
-                    <h2 className="section-title">
-                      {formatMonth(group.year, group.month, locale)}
-                    </h2>
-                    <span className="text-sm text-slate-400">
+                  <SectionHeader
+                    title={formatMonth(group.year, group.month, locale)}
+                    action={
+                      <span className="text-sm text-slate-400">
                       {t("discovery.articlesCount", {
                         count: group.posts.length,
                       })}
-                    </span>
-                  </div>
+                      </span>
+                    }
+                  />
 
                   <div className="divide-y divide-sky-200/10">
                     {group.posts.map((post: any) => (
@@ -143,16 +149,17 @@ export default function Archive() {
               ))}
             </div>
           ) : (
-            <div className="py-14 text-center">
-              <p className="text-sm text-slate-400">
-                {t("discovery.archiveEmpty")}
-              </p>
-              <Button asChild variant="outline" className="glass-button mt-5">
-                <Link href="/">{t("nav.backToHome")}</Link>
-              </Button>
-            </div>
+            <EmptyState
+              icon={<CalendarDays className="h-4 w-4" />}
+              title={t("discovery.archiveEmpty")}
+              action={
+                <Button asChild variant="outline" className="glass-button">
+                  <Link href="/">{t("nav.backToHome")}</Link>
+                </Button>
+              }
+            />
           )}
-        </section>
+        </Surface>
       </main>
     </div>
   );
