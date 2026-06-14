@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
   type FormEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent,
   type ReactNode,
   type RefObject,
@@ -78,10 +79,14 @@ export function BlogAgentRoot() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [streaming, setStreaming] = useState(false);
   const [quota, setQuota] = useState<QuotaInfo | null>(null);
+  const launcherRef = useRef<HTMLButtonElement | null>(null);
+  const panelRef = useRef<HTMLElement | null>(null);
   const messageEndRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const streamAbortRef = useRef<AbortController | null>(null);
   const utils = trpc.useUtils();
+  const panelId = "blog-agent-panel";
+  const panelTitleId = "blog-agent-title";
 
   const bootstrap = trpc.agent.bootstrap.useQuery(
     { routeContext },
@@ -128,6 +133,14 @@ export function BlogAgentRoot() {
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ block: "end" });
   }, [messages, sendMessage.isPending, streaming, notice]);
+
+  useEffect(() => {
+    if (!open) return;
+    const frame = window.requestAnimationFrame(() => {
+      panelRef.current?.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [open, isMobile]);
 
   useEffect(() => {
     function handleExternalOpen(event: Event) {
@@ -302,6 +315,57 @@ export function BlogAgentRoot() {
     streamAbortRef.current?.abort();
   }
 
+  function closeAgent() {
+    setOpen(false);
+    window.requestAnimationFrame(() => {
+      launcherRef.current?.focus({ preventScroll: true });
+    });
+  }
+
+  function toggleAgent() {
+    setOpen(value => {
+      const next = !value;
+      if (!next) {
+        window.requestAnimationFrame(() => {
+          launcherRef.current?.focus({ preventScroll: true });
+        });
+      }
+      return next;
+    });
+  }
+
+  function handlePanelKeyDown(event: ReactKeyboardEvent<HTMLElement>) {
+    const nativeEvent = event.nativeEvent as KeyboardEvent & {
+      isComposing?: boolean;
+    };
+    if (event.key === "Escape" && !nativeEvent.isComposing) {
+      event.preventDefault();
+      closeAgent();
+      return;
+    }
+
+    if (!isMobile || event.key !== "Tab" || !panelRef.current) return;
+
+    const focusable = getFocusableElements(panelRef.current);
+    if (focusable.length === 0) {
+      event.preventDefault();
+      panelRef.current.focus({ preventScroll: true });
+      return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
   async function handleAttachContext(input: {
     kind: "pasted_text" | "text_file" | "markdown_file";
     content: string;
@@ -371,16 +435,22 @@ export function BlogAgentRoot() {
   return (
     <>
       <AgentLauncher
+        buttonRef={launcherRef}
         open={open}
         lowQuota={lowQuota}
         label={t("agent.launcher.label")}
         tooltip={t("agent.launcher.tooltip")}
-        onClick={() => setOpen(value => !value)}
+        controls={panelId}
+        onClick={toggleAgent}
       />
 
       {open && (
         <AgentMobileSheet isMobile={isMobile}>
           <AgentPanel
+            isMobile={isMobile}
+            panelId={panelId}
+            titleId={panelTitleId}
+            panelRef={panelRef}
             bootstrapping={bootstrap.isLoading}
             bootstrapError={bootstrap.isError}
             currentScope={currentScope}
@@ -402,7 +472,8 @@ export function BlogAgentRoot() {
             welcomeTitle={welcomeCopy.title}
             welcomeBody={welcomeCopy.body}
             sending={sendMessage.isPending || streaming}
-            onClose={() => setOpen(false)}
+            onClose={closeAgent}
+            onPanelKeyDown={handlePanelKeyDown}
             onDraftChange={setDraft}
             onContextDraftChange={setContextDraft}
             onToggleContext={() => setContextOpen(value => !value)}
@@ -437,22 +508,28 @@ export function BlogAgentRoot() {
 }
 
 export function AgentLauncher({
+  buttonRef,
   open,
   lowQuota,
   label,
   tooltip,
+  controls,
   onClick,
 }: {
+  buttonRef: RefObject<HTMLButtonElement | null>;
   open: boolean;
   lowQuota: boolean;
   label: string;
   tooltip: string;
+  controls: string;
   onClick: () => void;
 }) {
   return (
     <button
+      ref={buttonRef}
       type="button"
       aria-expanded={open}
+      aria-controls={controls}
       aria-label={label}
       title={tooltip}
       onClick={onClick}
@@ -494,6 +571,10 @@ export function AgentMobileSheet({
 }
 
 export function AgentPanel({
+  isMobile,
+  panelId,
+  titleId,
+  panelRef,
   bootstrapping,
   bootstrapError,
   currentScope,
@@ -514,6 +595,7 @@ export function AgentPanel({
   welcomeBody,
   sending,
   onClose,
+  onPanelKeyDown,
   onDraftChange,
   onContextDraftChange,
   onToggleContext,
@@ -526,6 +608,10 @@ export function AgentPanel({
   onCancel,
   messageEndRef,
 }: {
+  isMobile: boolean;
+  panelId: string;
+  titleId: string;
+  panelRef: RefObject<HTMLElement | null>;
   bootstrapping: boolean;
   bootstrapError: boolean;
   currentScope: AgentScope;
@@ -551,6 +637,7 @@ export function AgentPanel({
   welcomeBody: string;
   sending: boolean;
   onClose: () => void;
+  onPanelKeyDown: (event: ReactKeyboardEvent<HTMLElement>) => void;
   onDraftChange: (value: string) => void;
   onContextDraftChange: (value: string) => void;
   onToggleContext: () => void;
@@ -574,14 +661,23 @@ export function AgentPanel({
   }
 
   return (
-    <section className="agent-liquid-panel flex h-full min-h-[420px] flex-col overflow-hidden rounded-md border text-slate-100">
+    <section
+      ref={panelRef}
+      id={panelId}
+      role={isMobile ? "dialog" : "complementary"}
+      aria-modal={isMobile ? "true" : undefined}
+      aria-labelledby={titleId}
+      tabIndex={-1}
+      onKeyDown={onPanelKeyDown}
+      className="agent-liquid-panel flex h-full min-h-[420px] flex-col overflow-hidden rounded-md border text-slate-100"
+    >
       <header className="flex items-start justify-between gap-4 border-b border-slate-700/50 px-4 py-3.5">
         <div className="flex min-w-0 items-start gap-3">
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-slate-600/45 bg-slate-900/70 text-slate-200">
             <BookOpen className="h-4 w-4" />
           </span>
           <div className="min-w-0">
-            <h2 className="text-sm font-semibold text-white">
+            <h2 id={titleId} className="text-sm font-semibold text-white">
               {t("agent.header.title")}
             </h2>
             <p className="mt-0.5 truncate text-xs text-slate-400">
@@ -1465,6 +1561,24 @@ function getContextFileKind(
 
 function getFallbackMimeType(kind: "markdown_file" | "text_file") {
   return kind === "markdown_file" ? "text/markdown" : "text/plain";
+}
+
+function getFocusableElements(container: HTMLElement) {
+  const selectors = [
+    "a[href]",
+    "button:not([disabled])",
+    "textarea:not([disabled])",
+    "input:not([disabled])",
+    "select:not([disabled])",
+    "[tabindex]:not([tabindex='-1'])",
+  ].join(",");
+
+  return Array.from(container.querySelectorAll<HTMLElement>(selectors)).filter(
+    element =>
+      !element.hasAttribute("disabled") &&
+      element.getAttribute("aria-hidden") !== "true" &&
+      element.offsetParent !== null
+  );
 }
 
 function buildCompanionPrompts(

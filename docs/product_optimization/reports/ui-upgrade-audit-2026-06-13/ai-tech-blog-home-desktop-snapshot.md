@@ -1,0 +1,14 @@
+- generic [ref=e2] [box=0,0,1434,3775]:
+  - region "Notifications alt+T" [box=0,0,1434,0]
+  - generic [ref=e3] [box=0,0,1434,3775]:
+    - banner [ref=e4] [box=0,0,1434,72]:
+      - generic [ref=e5] [box=77,0,1280,68]
+    - main [ref=e22] [box=0,72,1434,3618]:
+      - generic [ref=e23] [box=77,72,1280,882]
+      - generic [ref=e82] [box=77,954,1280,1001]
+      - generic [ref=e156] [box=77,1955,1280,1735]
+    - contentinfo [ref=e175] [box=0,3690,1434,85]:
+      - generic [ref=e176] [box=77,3691,1280,84]
+  - button "阅读助手" [ref=e179] [cursor=pointer] [box=1278,932,132,44]:
+    - img [ref=e181] [box=1303,946,16,16]
+    - generic [ref=e183] [box=1337,944,56,20]: 阅读助手

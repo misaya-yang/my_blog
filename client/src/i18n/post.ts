@@ -34,6 +34,10 @@ const post: TranslationDict = {
   "post.googleScholar": { en: "Google Scholar", zh: "Google Scholar" },
   "post.entry.kicker": { en: "Reading guide", zh: "阅读入口" },
   "post.entry.title": { en: "How to read this article", zh: "这篇文章怎么读" },
+  "post.entry.more": {
+    en: "Background, mapping, and limits",
+    zh: "背景、映射与限制",
+  },
   "post.entry.coreClaim": { en: "Core claim", zh: "核心主张" },
   "post.entry.background": { en: "Required background", zh: "前置背景" },
   "post.entry.problemBoundary": { en: "Problem boundary", zh: "问题边界" },

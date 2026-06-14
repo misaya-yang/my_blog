@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-06-09T14:56:23.608Z",
+  "generatedAt": "2026-06-14T03:25:31.477Z",
   "git": {
     "branch": "codex/blog-agent-retrieval-rescue",
-    "commit": "403f9d2",
+    "commit": "506c311",
     "dirty": true
   },
   "commands": [],
@@ -320,12 +320,33 @@
       "expectedContent": "public seeded algorithm article",
       "requiresSeededDatabase": true,
       "statusResult": {
-        "state": "error",
-        "status": null,
-        "ok": false,
-        "contentType": null,
-        "metadata": null,
-        "error": "The operation was aborted due to timeout"
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "IsoHC: Fixed-Vector Isometric Residual Mixing · Misaya Notes",
+          "description": "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
+          "canonical": "http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing",
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+            "description": "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
+            "image": "http://localhost:3000/og-default.svg",
+            "type": "article",
+            "url": "http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing"
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+            "description": "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
+            "image": "http://localhost:3000/og-default.svg"
+          },
+          "jsonLdTypes": [
+            "BlogPosting"
+          ]
+        },
+        "error": null
       }
     },
     {
@@ -335,33 +356,12 @@
       "expectedContent": "public seeded application article",
       "requiresSeededDatabase": true,
       "statusResult": {
-        "state": "checked",
-        "status": 200,
-        "ok": true,
-        "contentType": "text/html; charset=utf-8",
-        "metadata": {
-          "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context · Misaya Notes",
-          "description": "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 与 evaluator。",
-          "canonical": "http://localhost:3000/post/agent-harness-engine-evaluating-tool-using-agents",
-          "htmlLang": "en",
-          "openGraph": {
-            "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
-            "description": "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 与 evaluator。",
-            "image": "http://localhost:3000/og-default.svg",
-            "type": "article",
-            "url": "http://localhost:3000/post/agent-harness-engine-evaluating-tool-using-agents"
-          },
-          "twitter": {
-            "card": "summary_large_image",
-            "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
-            "description": "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 与 evaluator。",
-            "image": "http://localhost:3000/og-default.svg"
-          },
-          "jsonLdTypes": [
-            "BlogPosting"
-          ]
-        },
-        "error": null
+        "state": "error",
+        "status": null,
+        "ok": false,
+        "contentType": null,
+        "metadata": null,
+        "error": "The operation was aborted due to timeout"
       }
     },
     {
@@ -414,7 +414,7 @@
     "html": {
       "file": "index.html",
       "rawBytes": 2703,
-      "gzipBytes": 810
+      "gzipBytes": 814
     },
     "javascript": [
       {
@@ -428,29 +428,29 @@
         "gzipBytes": 90823
       },
       {
-        "file": "assets/index-DcMpl5nf.js",
-        "rawBytes": 185467,
-        "gzipBytes": 59958
+        "file": "assets/index-DvjtW10K.js",
+        "rawBytes": 187749,
+        "gzipBytes": 60722
       },
       {
-        "file": "assets/MarkdownRenderer-XpBert_i.js",
+        "file": "assets/MarkdownRenderer-DpEWPD_S.js",
         "rawBytes": 175957,
-        "gzipBytes": 53916
+        "gzipBytes": 53917
       },
       {
-        "file": "assets/knowledgeRefresh-MwE1Tmye.js",
+        "file": "assets/knowledgeRefresh-Bp9Q9NeZ.js",
         "rawBytes": 50703,
-        "gzipBytes": 18035
+        "gzipBytes": 18034
       },
       {
-        "file": "assets/Manage-CatP8ruU.js",
+        "file": "assets/Manage-CxPva2jm.js",
         "rawBytes": 55780,
         "gzipBytes": 13981
       },
       {
-        "file": "assets/Editor-CUnQT55f.js",
+        "file": "assets/Editor-CSwbGufB.js",
         "rawBytes": 40475,
-        "gzipBytes": 11216
+        "gzipBytes": 11218
       },
       {
         "file": "assets/index-CczHSCOW.js",
@@ -458,12 +458,12 @@
         "gzipBytes": 9549
       },
       {
-        "file": "assets/PostDetail-psa7vqFm.js",
-        "rawBytes": 25680,
-        "gzipBytes": 7691
+        "file": "assets/PostDetail-CF9i3dOv.js",
+        "rawBytes": 24779,
+        "gzipBytes": 7624
       },
       {
-        "file": "assets/ManageAgent-C1SxUiWu.js",
+        "file": "assets/ManageAgent-ZwP1drtt.js",
         "rawBytes": 25189,
         "gzipBytes": 6333
       },
@@ -473,34 +473,34 @@
         "gzipBytes": 5705
       },
       {
-        "file": "assets/metadata-CY8C_JmJ.js",
-        "rawBytes": 15872,
-        "gzipBytes": 5396
+        "file": "assets/metadata-DMl1xhDu.js",
+        "rawBytes": 14705,
+        "gzipBytes": 4831
       },
       {
-        "file": "assets/Home-D-zYXeHl.js",
-        "rawBytes": 12417,
-        "gzipBytes": 3770
+        "file": "assets/Home-CyIcBRXS.js",
+        "rawBytes": 12930,
+        "gzipBytes": 3957
       },
       {
-        "file": "assets/Search-BabToFbd.js",
-        "rawBytes": 8644,
-        "gzipBytes": 3227
+        "file": "assets/Search-j-57WEM5.js",
+        "rawBytes": 8320,
+        "gzipBytes": 3162
       },
       {
-        "file": "assets/Track-DHfEzbUE.js",
-        "rawBytes": 7036,
-        "gzipBytes": 2454
+        "file": "assets/Track-CF-_FDBK.js",
+        "rawBytes": 7214,
+        "gzipBytes": 2498
       },
       {
-        "file": "assets/Login-DgxUwgTn.js",
+        "file": "assets/SubscriptionForm-DGEu8BYz.js",
+        "rawBytes": 5840,
+        "gzipBytes": 2175
+      },
+      {
+        "file": "assets/Login-Bu0XAA54.js",
         "rawBytes": 5981,
-        "gzipBytes": 1967
-      },
-      {
-        "file": "assets/SubscriptionForm-C9HtMOFX.js",
-        "rawBytes": 4868,
-        "gzipBytes": 1850
+        "gzipBytes": 1966
       },
       {
         "file": "assets/tracks-Bzk0nB2x.js",
@@ -508,39 +508,39 @@
         "gzipBytes": 1706
       },
       {
-        "file": "assets/Archive-DyyywsqK.js",
+        "file": "assets/Archive-ao4afIhj.js",
         "rawBytes": 4249,
-        "gzipBytes": 1680
+        "gzipBytes": 1679
       },
       {
-        "file": "assets/index-DfP5SfOc.js",
+        "file": "assets/ArticleCard-B4hXqyVL.js",
+        "rawBytes": 3947,
+        "gzipBytes": 1606
+      },
+      {
+        "file": "assets/index-gQPt_-Jm.js",
         "rawBytes": 3524,
-        "gzipBytes": 1602
+        "gzipBytes": 1599
       },
       {
-        "file": "assets/TaxonomyPage-CUy-kbD_.js",
+        "file": "assets/TaxonomyPage-CFmQifOX.js",
         "rawBytes": 4177,
-        "gzipBytes": 1541
+        "gzipBytes": 1542
       },
       {
-        "file": "assets/tabs-DOVxwcN9.js",
+        "file": "assets/tabs-DM242OOl.js",
         "rawBytes": 3533,
-        "gzipBytes": 1513
+        "gzipBytes": 1512
       },
       {
-        "file": "assets/ArticleCard-LnEk13uD.js",
-        "rawBytes": 2845,
-        "gzipBytes": 1162
-      },
-      {
-        "file": "assets/NotFound-D8Dn5-F5.js",
+        "file": "assets/NotFound-CkDu7tXG.js",
         "rawBytes": 2234,
-        "gzipBytes": 995
+        "gzipBytes": 993
       },
       {
-        "file": "assets/About-CzhAAx4G.js",
+        "file": "assets/About-C5_5Gf2n.js",
         "rawBytes": 2129,
-        "gzipBytes": 833
+        "gzipBytes": 831
       },
       {
         "file": "assets/sonner-Bx36vPOY.js",
@@ -548,19 +548,19 @@
         "gzipBytes": 809
       },
       {
-        "file": "assets/index-EZ3zWFAq.js",
+        "file": "assets/index-CWuPiRxC.js",
         "rawBytes": 1310,
-        "gzipBytes": 661
+        "gzipBytes": 662
       },
       {
-        "file": "assets/input-BiM7wSdn.js",
+        "file": "assets/input-Bcx9XIAw.js",
         "rawBytes": 1268,
-        "gzipBytes": 637
+        "gzipBytes": 638
       },
       {
-        "file": "assets/badge-CichiZKE.js",
+        "file": "assets/badge-CJmJICOd.js",
         "rawBytes": 1183,
-        "gzipBytes": 578
+        "gzipBytes": 580
       },
       {
         "file": "assets/publicArticles-CtlvjvmJ.js",
@@ -568,19 +568,19 @@
         "gzipBytes": 499
       },
       {
-        "file": "assets/shield-check-xUPTHWmV.js",
+        "file": "assets/shield-check-BmzzqML2.js",
         "rawBytes": 936,
-        "gzipBytes": 473
+        "gzipBytes": 474
       },
       {
-        "file": "assets/tags-BX4z4LTk.js",
+        "file": "assets/tags-Bk35OvqB.js",
         "rawBytes": 909,
-        "gzipBytes": 463
+        "gzipBytes": 464
       },
       {
-        "file": "assets/mail-UW5qIKxn.js",
+        "file": "assets/mail-BDgYbH4J.js",
         "rawBytes": 835,
-        "gzipBytes": 438
+        "gzipBytes": 440
       },
       {
         "file": "assets/AgentMarkdown-Du5qF4_C.js",
@@ -588,46 +588,46 @@
         "gzipBytes": 430
       },
       {
-        "file": "assets/map-D4fUMn5W.js",
+        "file": "assets/map-CKg6DW9e.js",
         "rawBytes": 594,
-        "gzipBytes": 373
+        "gzipBytes": 377
       },
       {
-        "file": "assets/calendar-DtNNjAlH.js",
+        "file": "assets/calendar-BCPj8Du_.js",
         "rawBytes": 710,
-        "gzipBytes": 358
+        "gzipBytes": 359
       },
       {
-        "file": "assets/network-BHrGK8Dk.js",
+        "file": "assets/network-8OvT7Jlv.js",
         "rawBytes": 553,
-        "gzipBytes": 335
+        "gzipBytes": 336
       },
       {
-        "file": "assets/git-branch-CmjniLiF.js",
+        "file": "assets/git-branch-D9aiJswe.js",
         "rawBytes": 443,
-        "gzipBytes": 318
+        "gzipBytes": 320
       },
       {
-        "file": "assets/copy-CnkjVe8L.js",
+        "file": "assets/copy-DWFrwY5j.js",
         "rawBytes": 400,
-        "gzipBytes": 307
+        "gzipBytes": 309
       },
       {
-        "file": "assets/eye-BZKzm87Z.js",
+        "file": "assets/eye-CzPHnIjb.js",
         "rawBytes": 420,
-        "gzipBytes": 300
+        "gzipBytes": 302
       },
       {
-        "file": "assets/hash-uQU1SVaF.js",
+        "file": "assets/hash-CLSXUmIu.js",
         "rawBytes": 465,
-        "gzipBytes": 296
+        "gzipBytes": 298
       }
     ],
     "css": [
       {
-        "file": "assets/index-Db0MQbgp.css",
-        "rawBytes": 197121,
-        "gzipBytes": 34018
+        "file": "assets/index-BDRZP2yf.css",
+        "rawBytes": 208950,
+        "gzipBytes": 36211
       },
       {
         "file": "assets/katex-DvXFAOB1.css",

@@ -1,0 +1,137 @@
+- generic [ref=e2] [box=0,0,1440,16891]:
+  - region "Notifications alt+T" [box=0,0,1440,0]
+  - generic [ref=e11] [box=0,0,1440,16891]:
+    - banner [ref=e12] [box=0,0,1440,72]:
+      - generic [ref=e13] [box=80,0,1280,68]:
+        - link "返回" [ref=e15] [cursor=pointer] [box=104,12,85,44]:
+          - /url: /
+          - img [ref=e16] [box=120,26,16,16]
+          - generic [ref=e18] [box=144,23,29,21]: 返回
+        - navigation [ref=e19] [box=1212,12,124,44]:
+          - button "EN" [ref=e21] [cursor=pointer] [box=1229,12,45,44]
+          - link "登录" [ref=e22] [cursor=pointer] [box=1282,18,54,32]:
+            - /url: /login
+    - generic [ref=e25] [box=104,120,1232,16723]:
+      - article [ref=e26] [box=104,120,896,16723]:
+        - generic [ref=e27] [box=145,161,814,1220]:
+          - 'heading "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议" [level=1] [ref=e28] [box=145,161,814,218]'
+          - generic [ref=e29] [box=145,399,814,41]
+          - generic [ref=e44] [box=145,460,814,20]
+          - generic [ref=e55] [box=145,504,814,25]
+          - region "这篇文章怎么读" [ref=e80] [box=145,556,814,592]
+          - generic "分享" [ref=e117] [box=145,1171,814,32]
+          - img [ref=e126] [box=146,1232,812,220]
+        - generic [ref=e168] [box=219,1429,666,14150]:
+          - 'heading "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议" [level=1] [ref=e169] [box=219,1429,666,72]'
+          - paragraph [ref=e170] [box=219,1521,666,66]: 有一类 Coding Agent 失败很迷惑：它不是完全没做，也不是代码不能运行，而是“看起来到处都做了，真正用户路径还是断的”。
+          - paragraph [ref=e171] [box=219,1606,666,132]: 最近一次博客 Agent 改造就踩过这个坑。PRD 写得很完整，Codex 也“跑完了”，仓库里出现了 schema、router、UI、测试名、后台页和一堆看似正确的文案。但打开博客 Agent 一问当前文章，它并不知道当前页面；问一个口语问题，检索打偏；source card 看起来有来源，却不一定能定位到读者正在看的内容。
+          - paragraph [ref=e172] [box=219,1757,666,198]: 把这个问题归因成“模型能力不够”太粗了。更根本的原因是：长期目标被交给了 Agent，却没有配套一个能持续工作的运行协议。PRD 说明了产品想要什么，但没有把工作切成可冷启动、可验证、可回归、可交接的执行单元。于是 Agent 很容易做出一堆看起来像完成的改动：有表、有路由、有 UI、有测试名，但核心体验没有闭环，隐藏内容边界可能没被完整验证，quota、retrieval、source cards、mobile sheet、eval 和 admin trace 之间也没有被逐个锁住。
+          - paragraph [ref=e173] [box=219,1974,666,33]
+          - paragraph [ref=e175] [box=219,2026,666,99]: Goal Harness 不靠新的框架，也不靠把 prompt 写得更长。它更像一套仓库内执行协议：把 PRD、Figma、代码库事实和测试要求编译成一个 phase folder，让新 Agent 可以在干净上下文里接手一个 phase，完成它，验证它，留下证据，再解锁下一个 phase。
+          - generic [ref=e176] [box=219,2149,666,264]
+          - paragraph [ref=e183] [box=219,2437,666,33]: 核心目标只有一个：把“看起来跑完了”变成“可以交付、可以回放、可以继续”。
+          - heading "Design Boundary" [level=2] [ref=e184] [box=219,2510,666,41]
+          - paragraph [ref=e185] [box=219,2570,666,99]
+          - paragraph [ref=e187] [box=219,2688,666,165]
+          - paragraph [ref=e189] [box=219,2872,666,132]
+          - paragraph [ref=e197] [box=219,3023,666,33]: 它更接近一种 repo 内协议：
+          - list [ref=e198] [box=219,3075,666,229]
+          - paragraph [ref=e205] [box=219,3323,666,132]
+          - heading "0. Anthropic 的两段式解法" [level=2] [ref=e210] [box=219,3495,666,41]
+          - paragraph [ref=e211] [box=219,3555,666,132]
+          - heading "关键细节" [level=3] [ref=e214] [box=219,3719,666,28]
+          - paragraph [ref=e215] [box=219,3766,666,66]: Initializer Agent 只做准备，不追求马上把功能写完。它应该把仓库变成可连续工作的状态：
+          - list [ref=e216] [box=219,3851,666,281]
+          - paragraph [ref=e227] [box=219,4152,666,165]: Coding Agent 的职责刚好相反：它不重新发明全局计划，只在既有 harness 里做一小段增量。每个 session 读取进度日志和当前 failing feature，完成一组有限任务，跑验证，然后把结构化结果写回日志。完成之后留下的不是一句“已完成”，而是：改了什么、跑了什么、哪些 feature 从 failing 变成 passing、哪些 blocker 仍然存在、下一个 session 从哪里继续。
+          - heading "面试加分点" [level=3] [ref=e228] [box=219,4348,666,28]
+          - paragraph [ref=e229] [box=219,4396,666,66]: 这个模式的亮点不在“用了多 Agent”，而在把长任务从聊天流搬进仓库状态。面试里如果只说“让 Claude Code 先规划再编码”，信息量不够；更有区分度的说法是：
+          - list [ref=e230] [box=219,4481,666,343]
+          - paragraph [ref=e238] [box=219,4843,666,66]: 所以这个抽象的重点不是“把 prompt 写得更长”，而是让 Agent 的工作环境本身带状态、带闸门、带恢复点。
+          - heading "1. PRD 不是执行协议" [level=2] [ref=e239] [box=219,4949,666,41]
+          - paragraph [ref=e240] [box=219,5009,666,33]
+          - list [ref=e242] [box=219,5061,666,229]
+          - paragraph [ref=e251] [box=219,5309,666,33]
+          - paragraph [ref=e253] [box=219,5361,666,132]: 一个 Coding Agent 读到“实现 Blog Agent MVP”时，很容易把所有层同时展开：schema、router、quota、retrieval、prompt、UI、source card、history、admin、eval。每个局部都能写一点，但没有一个阶段被完整锁死。最后最危险的状态是：仓库里出现了许多“像已经完成”的文件，而真实用户路径仍然断裂。
+          - paragraph [ref=e254] [box=219,5512,666,33]: PRD 回答的是：
+          - generic [ref=e255] [box=219,5569,666,88]
+          - paragraph [ref=e262] [box=219,5681,666,33]: Goal Harness 必须回答的是：
+          - generic [ref=e263] [box=219,5738,666,138]
+          - paragraph [ref=e270] [box=219,5900,666,33]: 这三个问题没有答案，goal mode 就会退化成一次很长的 vibe coding。
+          - paragraph [ref=e271] [box=219,5952,666,33]: 这次博客 Agent 的失败可以拆成更具体的 failure anatomy：
+          - region "Scrollable table" [ref=e272] [box=219,6009,666,619]
+          - paragraph [ref=e300] [box=219,6653,666,33]: 这张表比“模型没做好”更有用，因为它把失败从模型性格问题还原成工程接口问题。
+          - 'heading "2. Source Packet: 先把上下文变成证据" [level=2] [ref=e301] [box=219,6725,666,41]'
+          - paragraph [ref=e302] [box=219,6786,666,99]
+          - paragraph [ref=e304] [box=219,6904,666,33]: 所以 Goal Harness 的第一步不是写 phase，而是写 Source Packet。
+          - paragraph [ref=e305] [box=219,6956,666,33]: Source Packet 应该记录：
+          - region "Scrollable table" [ref=e306] [box=219,7013,666,487]
+          - paragraph [ref=e334] [box=219,7524,666,66]: 这一步的价值是把“聊天里的理解”落到文件里。后续任何 Agent 都不需要猜上一轮在想什么。
+          - 'heading "3. Feature Oracle: 让“完成”变成可枚举对象" [level=2] [ref=e335] [box=219,7630,666,41]'
+          - paragraph [ref=e336] [box=219,7690,666,66]: PRD 里最容易出问题的是验收条件。比如“Agent 可以回答博客问题”太软了。它应该被拆成 feature oracle：
+          - generic [ref=e337] [box=219,7780,666,567]
+          - paragraph [ref=e344] [box=219,8371,666,33]: Feature Oracle 有两个效果。
+          - paragraph [ref=e345] [box=219,8423,666,99]: 第一，它阻止 Agent 自己发明完成标准。第二，它让回归测试有了产品语义：不是“测试通过了吗”，而是“公开检索、隐藏内容边界、quota、source card、mobile sheet、trace review 这些用户可感知能力是否仍然成立”。
+          - 'heading "4. Phase Contract: 每个 phase 都是冷启动任务" [level=2] [ref=e346] [box=219,8562,666,41]'
+          - paragraph [ref=e347] [box=219,8622,666,66]: 一个 phase 文件不能只是 Markdown 说明。它应该有机器可解析的 contract，让 Agent 和 validator 都能读。
+          - paragraph [ref=e348] [box=219,8707,666,33]: 最小结构可以是：
+          - generic [ref=e349] [box=219,8764,666,1197]
+          - paragraph [ref=e358] [box=219,9984,666,99]: 这不是为了“格式洁癖”。它解决的是 goal-mode Agent 的冷启动问题：新 Agent 不需要重新读完整 PRD，不需要猜当前该做什么，也不能轻易把 UI、retrieval 和 admin ops 混在同一个 phase 里。
+          - heading "5. 拆 phase 要按风险，不按文件夹" [level=2] [ref=e359] [box=219,10123,666,41]
+          - paragraph [ref=e360] [box=219,10183,666,66]: 很多 PRD 拆解失败，是因为按“前端 / 后端 / 数据库”机械切分。真实交付更适合按风险切：
+          - region "Scrollable table" [ref=e361] [box=219,10273,666,481]
+          - paragraph [ref=e401] [box=219,10778,666,66]: 每个 phase 只承担一个主风险。这样 Agent 才能逐个打穿，而不是一次性把所有复杂度摊开。
+          - heading "6. 回归不是最后一步，是每个 phase 的出口" [level=2] [ref=e402] [box=219,10884,666,41]
+          - paragraph [ref=e403] [box=219,10944,666,33]: Agent Coding 最大的幻觉之一，是把“当前 phase 的新测试通过”当成“产品可用”。
+          - paragraph [ref=e404] [box=219,10996,666,33]: 真正的 phase exit 至少要有四层：
+          - generic [ref=e405] [box=219,11053,666,164]
+          - paragraph [ref=e412] [box=219,11241,666,33]: 对博客 Agent 来说，每次相关改动都应该至少问：
+          - list [ref=e413] [box=219,11293,666,229]
+          - paragraph [ref=e421] [box=219,11541,666,33]: 这些问题必须写进 phase contract，而不是靠 Agent 自觉记住。
+          - paragraph [ref=e422] [box=219,11593,666,99]: Anthropic 的 agent eval 文章也强调，Agent 评估不能只看最终文本，还要看 transcript/trajectory 和最终环境状态。对 coding agent 来说，phase report 就是这种可回放轨迹的轻量版本：命令、失败、截图、trace、waiver、handoff 都应该存下来。
+          - heading "7. 完整回归要有 Regression Bank" [level=2] [ref=e423] [box=219,11732,666,41]
+          - paragraph [ref=e424] [box=219,11792,666,33]: 逐 phase 回归解决的是局部质量；完整回归解决的是产品整体仍然成立。
+          - paragraph [ref=e425] [box=219,11844,666,33]: 一个 AI 应用的 Regression Bank 应该混合几类检查：
+          - list [ref=e426] [box=219,11896,666,259]
+          - paragraph [ref=e440] [box=219,12175,666,66]: 更重要的是，每个 phase 要声明自己触碰了 Regression Bank 的哪一部分。最后 release phase 再跑完整银行。
+          - paragraph [ref=e441] [box=219,12260,666,132]: Anthropic 在 agent eval 里把 capability eval 和 regression eval 分开：前者衡量 Agent 能不能爬上新的能力坡，后者保护已经能做的事不要倒退。Goal Harness 里的 Regression Bank 更接近后者。它不是为了证明 Agent 有多聪明，而是为了防止一个 phase 的“局部聪明”破坏另一个 phase 已经交付的能力。
+          - paragraph [ref=e442] [box=219,12411,666,66]: 这样 Agent 不会在 Phase 6 修 retrieval 时破坏 Phase 3 的 UI，也不会在 Phase 7 做 admin ops 时把 hidden content 暴露给 public answer。
+          - heading "8. Status 和 Handoff 是长期工作的骨架" [level=2] [ref=e443] [box=219,12517,666,41]
+          - paragraph [ref=e444] [box=219,12577,666,33]: 一个 phase 不应该只有“做了/没做”。它需要状态机：
+          - generic [ref=e445] [box=219,12634,666,138]
+          - paragraph [ref=e452] [box=219,12796,666,99]
+          - paragraph [ref=e454] [box=219,12914,666,66]: 这也是为什么 Anthropic long-running harness 强调 initializer、progress file 和 structured handoff。上下文窗口会结束，Agent 会换，但 repo 里的状态必须连续。
+          - heading "9. Goal Harness Skill" [level=2] [ref=e455] [box=219,13020,666,41]
+          - paragraph [ref=e456] [box=219,13080,666,66]
+          - generic [ref=e458] [box=219,13170,666,290]
+          - paragraph [ref=e465] [box=219,13484,666,33]: 每个 phase 同时有：
+          - list [ref=e466] [box=219,13536,666,387]
+          - paragraph [ref=e481] [box=219,13942,666,33]: 再配一个 validator：
+          - generic [ref=e482] [box=219,13999,666,88]
+          - paragraph [ref=e489] [box=219,14111,666,33]: 它至少应该抓住这些问题：
+          - list [ref=e490] [box=219,14163,666,347]
+          - paragraph [ref=e501] [box=219,14530,666,66]: 这才是 skill 的价值：不是让 Agent 更会写计划，而是让 Agent 写出来的计划可以被另一个 Agent 执行、质疑、回归和接手。
+          - heading "Engineering Takeaway" [level=2] [ref=e502] [box=219,14636,666,41]
+          - paragraph [ref=e503] [box=219,14696,666,99]: Codex、Claude Code 这类 Agent 已经足够强，强到可以一次读很多文件、写很多代码、跑很多命令。问题是它们也足够强，强到会在没有边界时把复杂任务做成一堆“看起来完成”的半成品。
+          - paragraph [ref=e504] [box=219,14814,666,33]: Goal Harness 的核心不是限制 Agent，而是给它一条持续工作的轨道：
+          - list [ref=e505] [box=219,14866,666,229]
+          - paragraph [ref=e512] [box=219,15114,666,66]: 当这些东西存在时，goal mode 才真正有意义。否则，“请实现整个 Agent PRD”只是把不确定性一次性丢给模型。
+          - paragraph [ref=e513] [box=219,15199,666,33]: 更好的提问方式是：
+          - generic [ref=e514] [box=219,15256,666,214]
+          - paragraph [ref=e521] [box=219,15494,666,33]: 这听起来没有“一句话让 AI 做完整产品”那么浪漫，但它更接近真实软件工程。
+          - paragraph [ref=e522] [box=219,15546,666,33]: 真正解放 Agent 的不是给它无限大的任务，而是给它一套可以连续完成任务的环境。
+        - generic [ref=e523] [box=145,15643,814,958]:
+          - generic [ref=e524] [box=145,15676,814,32]
+          - generic [ref=e527] [box=145,15732,814,186]
+          - generic [ref=e536] [box=145,15950,814,194]
+          - generic [ref=e551] [box=145,16184,814,417]
+        - generic [ref=e606] [box=145,16698,814,104]:
+          - heading "Misaya Yang" [level=3] [ref=e607] [box=145,16698,814,28]
+          - paragraph [ref=e608] [box=145,16734,814,20]: 关注深度学习、Transformer、大语言模型与位置编码机制。
+          - generic [ref=e609] [box=145,16770,814,32]
+      - complementary [ref=e613] [box=1036,120,300,16723]:
+        - generic [ref=e614] [box=1036,120,300,613]:
+          - heading "目录" [level=3] [ref=e615] [box=1057,141,258,23]
+          - navigation [ref=e616] [box=1057,180,258,532]
+  - button "阅读助手" [ref=e6] [cursor=pointer] [box=1284,932,132,44]:
+    - img [ref=e8] [box=1309,946,16,16]
+    - generic [ref=e10] [box=1343,944,56,20]: 阅读助手

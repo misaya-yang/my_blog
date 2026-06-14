@@ -1,0 +1,93 @@
+- generic [ref=e2] [box=0,0,390,1608]:
+  - region "Notifications alt+T" [box=0,0,390,0]
+  - generic [ref=e10] [box=0,0,390,1608]:
+    - banner [ref=e11] [box=0,0,390,72]:
+      - generic [ref=e12] [box=0,0,390,68]:
+        - link "Misaya Notes" [ref=e14] [cursor=pointer] [box=16,12,159,44]:
+          - /url: /
+          - generic [ref=e16] [box=33,24,8,21]: M
+          - generic [ref=e17] [box=70,22,105,24]: Misaya Notes
+        - navigation [ref=e18] [box=215,12,159,44]:
+          - button "EN" [ref=e19] [cursor=pointer] [box=215,12,45,44]
+          - link "登录" [ref=e20] [cursor=pointer] [box=268,12,54,44]:
+            - /url: /login
+            - button "登录" [ref=e21] [box=268,12,54,44]
+          - button "打开导航" [ref=e22] [cursor=pointer] [box=330,12,44,44]:
+            - img [box=344,26,16,16]
+    - main [ref=e23] [box=0,72,390,1536]:
+      - generic [ref=e24] [box=16,112,358,255]:
+        - generic [ref=e25] [box=32,112,94,34]:
+          - img [ref=e26] [box=43,121,16,16]
+          - text: 全站搜索
+        - heading "搜索研究索引" [level=1] [ref=e29] [box=32,170,327,119]
+        - paragraph [ref=e30] [box=32,310,342,57]: 跨标题、摘要、正文、分类与标签搜索所有公开文章。
+      - generic [ref=e31] [box=16,403,358,106]:
+        - generic [ref=e32] [box=31,414,329,24]:
+          - img [ref=e33] [box=31,416,20,20]
+          - generic [ref=e36] [box=61,414,32,24]: 搜索
+        - generic [ref=e37] [box=30,455,1,1]: agent、RoPE、context engineering...
+        - generic [ref=e38] [box=31,452,329,46]:
+          - searchbox "agent、RoPE、context engineering..." [ref=e39] [box=48,453,249,44]: zzzz-no-hit-ui-audit
+          - button "搜索" [ref=e40] [cursor=pointer] [box=307,453,44,44]:
+            - img [box=321,467,16,16]
+      - generic [ref=e41] [box=16,541,358,1027]:
+        - generic [ref=e42] [box=33,558,324,79]:
+          - heading "“zzzz-no-hit-ui-audit” 的 0 个结果" [level=2] [ref=e43] [box=33,558,298,23]
+          - link "归档" [ref=e44] [cursor=pointer] [box=33,593,61,44]:
+            - /url: /archive
+        - generic [ref=e45] [box=33,657,324,894]:
+          - generic [ref=e47] [box=54,690,282,168]:
+            - generic [ref=e48] [box=54,690,282,108]:
+              - heading "还没有直接命中" [level=3] [ref=e49] [box=54,690,282,28]
+              - paragraph [ref=e50] [box=54,726,282,72]: “zzzz-no-hit-ui-audit” 暂时没有匹配公开笔记。可以试试相近主题、让阅读助手基于公开内容综合查找，或从阅读线索继续。
+            - button "询问阅读助手" [ref=e51] [cursor=pointer] [box=54,814,282,44]:
+              - img [box=137,828,16,16]
+              - text: 询问阅读助手
+          - generic [ref=e52] [box=33,899,324,640]:
+            - generic [ref=e53] [box=33,899,324,412]:
+              - heading "相近主题" [level=3] [ref=e54] [box=33,899,324,20]
+              - generic [ref=e55] [box=33,931,324,380]
+            - complementary [ref=e96] [box=33,1327,324,212]:
+              - heading "研究路径" [level=3] [ref=e97] [box=50,1344,290,20]
+              - generic [ref=e100] [box=50,1376,290,90]
+              - paragraph [ref=e104] [box=50,1482,290,40]: 这个无结果查询会作为仅作者可见的内容信号保存，不包含邮箱、IP 或访客身份。
+  - button "阅读助手" [expanded] [active] [ref=e6] [cursor=pointer] [box=312,780,58,44]:
+    - img [ref=e105] [box=333,794,16,16]
+  - generic [ref=e109] [box=12,44,366,720]:
+    - generic [ref=e110] [box=13,45,364,73]:
+      - generic [ref=e111] [box=29,59,132,38]:
+        - img [ref=e113] [box=39,69,16,16]
+        - generic [ref=e115] [box=77,59,84,38]:
+          - heading "阅读助手" [level=2] [ref=e116] [box=77,59,84,20]
+          - paragraph [ref=e117] [box=77,81,84,16]: 只基于公开笔记
+      - button "关闭助手" [ref=e118] [cursor=pointer] [box=317,59,44,44]:
+        - img [ref=e119] [box=331,73,16,16]
+    - generic [ref=e123] [box=29,128,332,44]:
+      - generic [ref=e124] [box=29,137,221,26]:
+        - generic [ref=e125] [box=29,137,90,26]:
+          - img [ref=e126] [box=40,143,14,14]
+          - text: 全站笔记
+        - generic "anonymous quota" [ref=e128] [box=127,137,123,26]:
+          - img [ref=e129] [box=138,143,14,14]
+          - text: 今日剩余 10/10
+      - button "历史" [ref=e132] [cursor=pointer] [box=291,128,70,44]:
+        - img [ref=e133] [box=304,143,14,14]
+        - text: 历史
+    - generic [ref=e138] [box=29,199,332,400]:
+      - generic [ref=e139] [box=29,207,332,140]:
+        - img [ref=e141] [box=41,219,20,20]
+        - heading "把索引变成阅读计划" [level=3] [ref=e143] [box=29,263,332,28]
+        - paragraph [ref=e144] [box=29,299,332,48]: 基于公开搜索、归档、标签与分类缩小主题，找到下一篇该读的文章。
+      - generic [ref=e145] [box=29,363,332,148]:
+        - button "把这些搜索结果整理成阅读路径。" [ref=e146] [cursor=pointer] [box=29,363,332,44]
+        - button "帮我把这个主题收敛到合适的公开文章。" [ref=e147] [cursor=pointer] [box=29,415,332,44]
+        - button "推荐一条有来源依据的阅读路径。" [ref=e148] [cursor=pointer] [box=29,467,332,44]
+    - button "会话上下文" [ref=e151] [cursor=pointer] [box=25,624,98,44]:
+      - img [ref=e152] [box=33,639,14,14]
+      - generic [ref=e154] [box=55,638,60,16]: 会话上下文
+    - generic [ref=e156] [box=25,689,340,62]:
+      - button "添加会话上下文" [ref=e157] [cursor=pointer] [box=34,698,44,44]:
+        - img [box=48,712,16,16]
+      - textbox "询问笔记、小节或阅读路径..." [ref=e158] [box=86,698,218,44]
+      - button "发送" [disabled] [box=312,698,44,44]:
+        - img [box=326,712,16,16]

@@ -35,6 +35,24 @@ type ArticleCardProps = {
   language: "en" | "zh";
   t: (key: string, vars?: Record<string, string | number>) => string;
   track?: ArticleTrack;
+  featured?: boolean;
+};
+
+type ArticleVisualTheme =
+  | "trace"
+  | "mesh"
+  | "flow"
+  | "field"
+  | "packet"
+  | "harness";
+
+const ARTICLE_THUMBNAILS: Record<ArticleVisualTheme, string> = {
+  trace: "/images/article-thumbs/agent-trace-ladder.jpg",
+  mesh: "/images/article-thumbs/retrieval-evidence-mesh.jpg",
+  flow: "/images/article-thumbs/residual-flow-map.jpg",
+  field: "/images/article-thumbs/position-encoding-field.jpg",
+  packet: "/images/article-thumbs/context-compiler-packet.jpg",
+  harness: "/images/article-thumbs/evaluation-harness-loop.jpg",
 };
 
 function readingTime(content: string): number {
@@ -89,33 +107,79 @@ function buildExcerpt(post: ArticleCardPost): string {
   return content ? `${content.slice(0, 220)}...` : "";
 }
 
+function visualTheme(
+  post: ArticleCardPost,
+  track?: ArticleTrack
+): ArticleVisualTheme {
+  const text = [
+    post.slug,
+    post.seriesSlug,
+    post.category?.slug,
+    ...(post.tags ?? []).map(tag => tag.slug),
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  if (/evaluation|eval|harness|benchmark|score/.test(text)) {
+    return pickTheme(text, ["harness", "trace", "packet"]);
+  }
+  if (/agent|loop|tool|runtime/.test(text)) {
+    return pickTheme(text, ["trace", "harness", "packet"]);
+  }
+  if (/rag|retrieval|evidence|source/.test(text)) return "mesh";
+  if (/context|compiler|packet|prompt/.test(text)) return "packet";
+  if (/rope|position|encoding|long-context/.test(text)) return "field";
+  if (/residual|isohc|mixing|stability/.test(text)) return "flow";
+  return track === "applications" ? "packet" : "field";
+}
+
+function pickTheme<T extends ArticleVisualTheme>(text: string, themes: T[]): T {
+  const hash = Array.from(text).reduce(
+    (sum, char) => sum + char.charCodeAt(0),
+    0
+  );
+  return themes[hash % themes.length];
+}
+
 export function ArticleCard({
   post,
   index,
   language,
   t,
   track,
+  featured = false,
 }: ArticleCardProps) {
-  const visibleTags = Array.isArray(post.tags) ? post.tags.slice(0, 2) : [];
-  const articleNumber = String(index + 1).padStart(2, "0");
+  const visibleTags = Array.isArray(post.tags) ? post.tags.slice(0, 1) : [];
+  const topic = topicLabel(post, t, track);
+  const theme = visualTheme(post, track);
+  const thumbnailSrc = ARTICLE_THUMBNAILS[theme];
   const locale = language === "zh" ? "zh-CN" : "en-US";
 
   return (
-    <article className="article-card group">
+    <article
+      className={
+        featured
+          ? "article-card article-card-featured group"
+          : "article-card group"
+      }
+    >
       <Link href={`/post/${post.slug}`} aria-label={post.title}>
         {post.coverImage ? (
           <img
             src={post.coverImage}
             alt=""
-            className="article-visual object-cover"
+            className="article-visual article-visual-image object-cover"
           />
         ) : (
-          <div
-            className="article-visual article-visual-ledger"
-            aria-hidden="true"
-          >
-            <span>{articleNumber}</span>
-          </div>
+          <img
+            src={thumbnailSrc}
+            alt=""
+            width={640}
+            height={360}
+            loading={featured ? "eager" : "lazy"}
+            decoding="async"
+            className={`article-visual article-visual-thumb article-visual-${theme}`}
+          />
         )}
       </Link>
       <div className="article-copy">
@@ -139,15 +203,16 @@ export function ArticleCard({
               {post.seriesOrder ? ` #${post.seriesOrder}` : ""}
             </span>
           )}
-          {visibleTags.map(tag => (
-            <Link
-              key={tag.slug}
-              className="article-tag"
-              href={`/tags/${tag.slug}`}
-            >
-              {tag.name}
-            </Link>
-          ))}
+          {!post.seriesTitle &&
+            visibleTags.map(tag => (
+              <Link
+                key={tag.slug}
+                className="article-tag"
+                href={`/tags/${tag.slug}`}
+              >
+                {tag.name}
+              </Link>
+            ))}
         </div>
         <Link href={`/post/${post.slug}`}>
           <h3 className="article-title">{post.title}</h3>
@@ -168,7 +233,7 @@ export function ArticleCard({
             {post.viewCount || 0} {t("home.reads")}
           </span>
           <Link href={`/post/${post.slug}`} className="article-read-link">
-            {t("home.readMore")}{" "}
+            {featured ? t("home.readMore") : topic}{" "}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>

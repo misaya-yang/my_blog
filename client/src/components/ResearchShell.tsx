@@ -130,6 +130,17 @@ export function SiteHeader({
               <span className="hidden sm:inline">{t("nav.write")}</span>
             </Link>
           )}
+          <Link
+            href="/search"
+            className={cn(
+              "nav-icon-button",
+              active === "search" && "nav-icon-button-active"
+            )}
+            aria-label={t("nav.search")}
+            title={t("nav.search")}
+          >
+            <Search className="h-4 w-4" />
+          </Link>
           <span
             className="mx-1 hidden h-5 w-px bg-white/10 sm:block"
             aria-hidden="true"
@@ -160,7 +171,7 @@ export function SiteHeader({
                 size="sm"
                 variant="outline"
                 className={cn(
-                  "glass-button",
+                  "glass-button hidden sm:inline-flex",
                   active === "login" && "border-primary/70 text-white"
                 )}
               >

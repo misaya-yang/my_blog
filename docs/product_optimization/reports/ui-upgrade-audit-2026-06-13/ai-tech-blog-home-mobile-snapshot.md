@@ -1,0 +1,24 @@
+- generic [ref=e2] [box=0,0,390,5991]:
+  - region "Notifications alt+T" [box=0,0,390,0]
+  - generic [ref=e10] [box=0,0,390,5991]:
+    - banner [ref=e11] [box=0,0,390,72]:
+      - generic [ref=e12] [box=0,0,390,68]:
+        - link "Misaya Notes" [ref=e14] [cursor=pointer] [box=16,12,159,44]:
+          - /url: /
+        - navigation [ref=e18] [box=215,12,159,44]
+    - main [ref=e23] [box=0,72,390,5782]:
+      - generic [ref=e24] [box=0,72,390,872]:
+        - generic [ref=e26] [box=16,112,358,403]
+        - generic [ref=e36] [box=16,531,358,381]
+      - generic [ref=e83] [box=0,944,390,2042]:
+        - generic [ref=e84] [box=16,944,358,925]
+        - complementary [ref=e145] [box=16,1893,358,1037]
+      - generic [ref=e211] [box=0,2986,390,2868]:
+        - generic [ref=e212] [box=16,2986,358,2471]
+        - complementary [ref=e366] [box=16,5480,358,309]
+    - contentinfo [ref=e378] [box=0,5854,390,137]:
+      - generic [ref=e379] [box=0,5855,390,136]:
+        - paragraph [ref=e380] [box=16,5887,358,20]: © 2026 Misaya Notes. 保留所有权利.
+        - paragraph [ref=e381] [box=16,5919,358,40]: Misaya Yang / Transformer systems / Long-context mechanisms
+  - button "阅读助手" [ref=e6] [cursor=pointer] [box=312,780,58,44]:
+    - img [ref=e8] [box=333,794,16,16]

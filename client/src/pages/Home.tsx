@@ -4,12 +4,14 @@ import {
   type ArticleCardPost,
   type ArticleTrack,
 } from "@/components/ArticleCard";
+import { SeriesProgress } from "@/components/SeriesProgress";
 import {
   SiteHeader,
   SpaceBackdrop,
   StatTile,
 } from "@/components/ResearchShell";
 import { SubscriptionForm } from "@/components/SubscriptionForm";
+import { openBlogAgentWithPrompt } from "@/components/agent/routeContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -35,7 +37,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 const focusTagKeys = [
   "home.focusTag1",
@@ -104,6 +106,7 @@ export default function Home() {
     limit: 20,
     orderBy: "featured",
   });
+  const [showSlowLoading, setShowSlowLoading] = useState(false);
 
   const { data: categories } = trpc.categories.list.useQuery();
   const { data: tags } = trpc.tags.list.useQuery();
@@ -124,6 +127,16 @@ export default function Home() {
     publishedPosts.length > 0 || (categories?.length || 0) > 0 || totalViews > 0
   );
   const recommendedStartPost = publishedPosts[0];
+
+  useEffect(() => {
+    if (!isLoading) {
+      setShowSlowLoading(false);
+      return;
+    }
+
+    const timer = window.setTimeout(() => setShowSlowLoading(true), 1200);
+    return () => window.clearTimeout(timer);
+  }, [isLoading]);
 
   useSeo(
     buildRouteMetadata(siteUrl, {
@@ -298,7 +311,105 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="container grid gap-6 px-4 pb-14 sm:px-6 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px]">
+        <section
+          id="research-index"
+          className="container research-grid px-4 pb-16 sm:px-6"
+        >
+          <div className="glass-panel research-section-panel">
+            <div className="section-heading-row">
+              <h2 className="section-title">{t("home.latestArticles")}</h2>
+              {isAdmin && (
+                <Link href="/manage">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="glass-button h-9 w-9"
+                    aria-label={t("nav.manageArticles")}
+                    title={t("nav.manageArticles")}
+                  >
+                    <Settings2 className="h-4 w-4" />
+                  </Button>
+                </Link>
+              )}
+            </div>
+
+            {isLoading ? (
+              <div className="grid gap-4" aria-busy="true">
+                <p className="article-loading-copy">
+                  {showSlowLoading
+                    ? t("home.loadingArticlesSlow")
+                    : t("home.loadingArticles")}
+                </p>
+                {[1, 2].map(item => (
+                  <div key={item} className="article-skeleton">
+                    <span />
+                    <strong />
+                    <em />
+                    <i />
+                  </div>
+                ))}
+              </div>
+            ) : posts?.posts?.length ? (
+              <div className="grid gap-4">
+                {publishedPosts.map((post: any, index: number) => (
+                  <ArticleCard
+                    key={post.id}
+                    post={post}
+                    index={index}
+                    language={language}
+                    t={t}
+                    track={getArticleTrack(post)}
+                    featured={index < 2}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="article-empty-state">
+                <h3>{t("home.noArticles")}</h3>
+                <p>{t("home.noArticlesRecovery")}</p>
+                <div>
+                  <Link href="/archive" className="article-tag">
+                    {t("nav.archive")}
+                  </Link>
+                  <Link href="/search" className="article-tag">
+                    {t("nav.search")}
+                  </Link>
+                  <button
+                    type="button"
+                    className="article-tag"
+                    onClick={() =>
+                      openBlogAgentWithPrompt(t("agent.prompts.siteThemes"))
+                    }
+                  >
+                    {t("discovery.recoveryAskAgent")}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <aside className="glass-panel research-index-panel">
+            <h2 className="section-title">{t("home.researchIndex")}</h2>
+            <div className="research-index-list">
+              <Link href="/algorithms" className="research-index-row">
+                <span>{t("home.algorithmsLabel")}</span>
+                <span className="text-slate-400">{t("home.indexModels")}</span>
+              </Link>
+              <Link href="/applications" className="research-index-row">
+                <span>{t("home.applicationsLabel")}</span>
+                <span className="text-slate-400">{t("home.indexSystems")}</span>
+              </Link>
+              <Link href="/tags/harness-engine" className="research-index-row">
+                <span>{t("home.indexAgentHarness")}</span>
+                <span className="text-slate-400">
+                  {t("home.indexEvaluation")}
+                </span>
+              </Link>
+            </div>
+          </aside>
+        </section>
+
+        <section className="container home-discovery-grid px-4 pb-14 sm:px-6">
           <div className="min-w-0">
             {activeSeries.length > 0 && (
               <section className="research-map-strip max-w-5xl">
@@ -310,35 +421,33 @@ export default function Home() {
                     </h2>
                   </div>
                   <Link
-                    href="#research-index"
+                    href="/archive"
                     className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white"
                   >
-                    {t("home.researchIndexKicker")}
+                    {t("nav.archive")}
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>
                 <div className="research-series-grid">
                   {activeSeries.map(({ track, series }) => (
-                    <Link
+                    <SeriesProgress
                       key={series.slug}
-                      href={trackConfigs[track].href}
-                      className="series-card"
-                    >
-                      <span className="series-card-track">
-                        {t(
-                          track === "algorithms"
-                            ? "home.algorithmsLabel"
-                            : "home.applicationsLabel"
-                        )}
-                      </span>
-                      <h3>{t(series.titleKey)}</h3>
-                      <p>{t(series.promiseKey)}</p>
-                      <div className="series-card-concepts">
-                        {series.conceptKeys.slice(0, 3).map(key => (
-                          <span key={key}>{t(key)}</span>
-                        ))}
-                      </div>
-                    </Link>
+                      variant="card"
+                      label={t(
+                        track === "algorithms"
+                          ? "home.algorithmsLabel"
+                          : "home.applicationsLabel"
+                      )}
+                      title={t(series.titleKey)}
+                      promise={t(series.promiseKey)}
+                      links={[
+                        {
+                          href: trackConfigs[track].href,
+                          label: t("post.series.track"),
+                          direction: "track",
+                        },
+                      ]}
+                    />
                   ))}
                 </div>
               </section>
@@ -455,75 +564,6 @@ export default function Home() {
               className="home-subscription-card"
               surface="home"
             />
-          </aside>
-        </section>
-
-        <section
-          id="research-index"
-          className="container research-grid px-4 pb-16 sm:px-6"
-        >
-          <div className="glass-panel research-section-panel">
-            <div className="section-heading-row">
-              <h2 className="section-title">{t("home.latestArticles")}</h2>
-              {isAdmin && (
-                <Link href="/manage">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="glass-button h-9 w-9"
-                    aria-label={t("nav.manageArticles")}
-                    title={t("nav.manageArticles")}
-                  >
-                    <Settings2 className="h-4 w-4" />
-                  </Button>
-                </Link>
-              )}
-            </div>
-
-            {isLoading ? (
-              <div className="grid gap-4">
-                {[1, 2].map(item => (
-                  <div key={item} className="article-skeleton" />
-                ))}
-              </div>
-            ) : posts?.posts?.length ? (
-              <div className="grid gap-4">
-                {publishedPosts.map((post: any, index: number) => (
-                  <ArticleCard
-                    key={post.id}
-                    post={post}
-                    index={index}
-                    language={language}
-                    t={t}
-                    track={getArticleTrack(post)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="py-16 text-center text-sm text-slate-400">
-                {t("home.noArticles")}
-              </div>
-            )}
-          </div>
-
-          <aside className="glass-panel research-index-panel">
-            <h2 className="section-title">{t("home.researchIndex")}</h2>
-            <div className="research-index-list">
-              <Link href="/algorithms" className="research-index-row">
-                <span>{t("home.algorithmsLabel")}</span>
-                <span className="text-slate-400">{t("home.indexModels")}</span>
-              </Link>
-              <Link href="/applications" className="research-index-row">
-                <span>{t("home.applicationsLabel")}</span>
-                <span className="text-slate-400">{t("home.indexSystems")}</span>
-              </Link>
-              <Link href="/tags/harness-engine" className="research-index-row">
-                <span>{t("home.indexAgentHarness")}</span>
-                <span className="text-slate-400">
-                  {t("home.indexEvaluation")}
-                </span>
-              </Link>
-            </div>
           </aside>
         </section>
       </main>

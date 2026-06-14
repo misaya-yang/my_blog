@@ -64,6 +64,18 @@ const home: TranslationDict = {
   // Articles section
   "home.latestArticles": { en: "Latest notes", zh: "最新笔记" },
   "home.noArticles": { en: "No articles found", zh: "暂无文章" },
+  "home.noArticlesRecovery": {
+    en: "Use archive, search, or the reading assistant to continue through public notes.",
+    zh: "可以从归档、搜索或阅读助手继续找公开笔记。",
+  },
+  "home.loadingArticles": {
+    en: "Loading public notes...",
+    zh: "正在加载公开笔记...",
+  },
+  "home.loadingArticlesSlow": {
+    en: "Still loading public notes. The article index will appear here.",
+    zh: "公开笔记仍在加载中，文章索引会出现在这里。",
+  },
   "home.readMore": { en: "Read more", zh: "阅读全文" },
   "home.minRead": { en: "min read", zh: "分钟阅读" },
   "home.reads": { en: "reads", zh: "次阅读" },
@@ -85,7 +97,6 @@ const home: TranslationDict = {
   "home.indexSystems": { en: "Systems", zh: "系统" },
   "home.indexAgentHarness": { en: "Agent Harness", zh: "Agent Harness" },
   "home.indexEvaluation": { en: "Evaluation", zh: "评测" },
-
   // Focus tags (static research topics)
   "home.focusTag1": { en: "Transformer Architecture", zh: "Transformer 架构" },
   "home.focusTag2": {
@@ -158,6 +169,14 @@ const home: TranslationDict = {
   "discovery.recoveryAskAgent": {
     en: "Ask the reader",
     zh: "询问阅读助手",
+  },
+  "discovery.recoveryAssistantScope": {
+    en: "The assistant searches public articles, tags, categories, and the current query.",
+    zh: "助手会基于公开文章、标签、分类和当前 query 检索。",
+  },
+  "discovery.clearSearch": {
+    en: "Clear search",
+    zh: "清空搜索",
   },
   "discovery.recoveryTopics": {
     en: "Nearby topics",

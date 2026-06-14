@@ -1,0 +1,22 @@
+- generic [ref=e2] [box=0,0,390,1608]:
+  - region "Notifications alt+T" [box=0,0,390,0]
+  - generic [ref=e10] [box=0,0,390,1608]:
+    - banner [ref=e11] [box=0,0,390,72]:
+      - generic [ref=e12] [box=0,0,390,68]:
+        - link "Misaya Notes" [ref=e14] [cursor=pointer] [box=16,12,159,44]:
+          - /url: /
+        - navigation [ref=e18] [box=215,12,159,44]
+    - main [ref=e23] [box=0,72,390,1536]:
+      - generic [ref=e24] [box=16,112,358,255]:
+        - generic [ref=e25] [box=32,112,94,34]
+        - heading "搜索研究索引" [level=1] [ref=e29] [box=32,170,327,119]
+        - paragraph [ref=e30] [box=32,310,342,57]: 跨标题、摘要、正文、分类与标签搜索所有公开文章。
+      - generic [ref=e31] [box=16,403,358,106]:
+        - generic [ref=e32] [box=31,414,329,24]
+        - generic [ref=e37] [box=30,455,1,1]: agent、RoPE、context engineering...
+        - generic [ref=e38] [box=31,452,329,46]
+      - generic [ref=e41] [box=16,541,358,1027]:
+        - generic [ref=e42] [box=33,558,324,79]
+        - generic [ref=e45] [box=33,657,324,894]
+  - button "阅读助手" [ref=e6] [cursor=pointer] [box=312,780,58,44]:
+    - img [ref=e8] [box=333,794,16,16]

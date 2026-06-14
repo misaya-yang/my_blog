@@ -1,0 +1,55 @@
+- generic [ref=e2] [box=0,0,390,1608]:
+  - region "Notifications alt+T" [box=0,0,390,0]
+  - generic [ref=e10] [box=0,0,390,1608]:
+    - banner [ref=e11] [box=0,0,390,72]:
+      - generic [ref=e12] [box=0,0,390,68]:
+        - link "Misaya Notes" [ref=e14] [cursor=pointer] [box=16,12,159,44]:
+          - /url: /
+          - generic [ref=e16] [box=33,24,8,21]: M
+          - generic [ref=e17] [box=70,22,105,24]: Misaya Notes
+        - navigation [ref=e18] [box=215,12,159,44]:
+          - button "EN" [ref=e19] [cursor=pointer] [box=215,12,45,44]
+          - link "登录" [ref=e20] [cursor=pointer] [box=268,12,54,44]:
+            - /url: /login
+            - button "登录" [ref=e21] [box=268,12,54,44]
+          - button "打开导航" [ref=e22] [cursor=pointer] [box=330,12,44,44]:
+            - img [box=344,26,16,16]
+    - main [ref=e23] [box=0,72,390,1536]:
+      - generic [ref=e24] [box=16,112,358,255]:
+        - generic [ref=e25] [box=32,112,94,34]:
+          - img [ref=e26] [box=43,121,16,16]
+          - text: 全站搜索
+        - heading "搜索研究索引" [level=1] [ref=e29] [box=32,170,327,119]
+        - paragraph [ref=e30] [box=32,310,342,57]: 跨标题、摘要、正文、分类与标签搜索所有公开文章。
+      - generic [ref=e31] [box=16,403,358,106]:
+        - generic [ref=e32] [box=31,414,329,24]:
+          - img [ref=e33] [box=31,416,20,20]
+          - generic [ref=e36] [box=61,414,32,24]: 搜索
+        - generic [ref=e37] [box=30,455,1,1]: agent、RoPE、context engineering...
+        - generic [ref=e38] [box=31,452,329,46]:
+          - searchbox "agent、RoPE、context engineering..." [ref=e39] [box=48,453,249,44]: zzzz-no-hit-ui-audit
+          - button "搜索" [ref=e40] [cursor=pointer] [box=307,453,44,44]:
+            - img [box=321,467,16,16]
+      - generic [ref=e41] [box=16,541,358,1027]:
+        - generic [ref=e42] [box=33,558,324,79]:
+          - heading "“zzzz-no-hit-ui-audit” 的 0 个结果" [level=2] [ref=e43] [box=33,558,298,23]
+          - link "归档" [ref=e44] [cursor=pointer] [box=33,593,61,44]:
+            - /url: /archive
+        - generic [ref=e45] [box=33,657,324,894]:
+          - generic [ref=e47] [box=54,690,282,168]:
+            - generic [ref=e48] [box=54,690,282,108]:
+              - heading "还没有直接命中" [level=3] [ref=e49] [box=54,690,282,28]
+              - paragraph [ref=e50] [box=54,726,282,72]: “zzzz-no-hit-ui-audit” 暂时没有匹配公开笔记。可以试试相近主题、让阅读助手基于公开内容综合查找，或从阅读线索继续。
+            - button "询问阅读助手" [ref=e51] [cursor=pointer] [box=54,814,282,44]:
+              - img [box=137,828,16,16]
+              - text: 询问阅读助手
+          - generic [ref=e52] [box=33,899,324,640]:
+            - generic [ref=e53] [box=33,899,324,412]:
+              - heading "相近主题" [level=3] [ref=e54] [box=33,899,324,20]
+              - generic [ref=e55] [box=33,931,324,380]
+            - complementary [ref=e96] [box=33,1327,324,212]:
+              - heading "研究路径" [level=3] [ref=e97] [box=50,1344,290,20]
+              - generic [ref=e100] [box=50,1376,290,90]
+              - paragraph [ref=e104] [box=50,1482,290,40]: 这个无结果查询会作为仅作者可见的内容信号保存，不包含邮箱、IP 或访客身份。
+  - button "阅读助手" [ref=e6] [cursor=pointer] [box=312,780,58,44]:
+    - img [ref=e8] [box=333,794,16,16]

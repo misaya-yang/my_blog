@@ -20,6 +20,7 @@ import {
   Map,
   Search as SearchIcon,
   Tags,
+  X,
 } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useSearch } from "wouter";
@@ -246,25 +247,28 @@ function SearchRecoveryPanel({
   const { t } = useLanguage();
 
   return (
-    <div className="py-3">
-      <div className="rounded-lg border border-slate-300/15 bg-slate-950/35 p-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-2xl">
-            <h3 className="text-lg font-semibold text-white">
-              {t("discovery.recoveryTitle")}
-            </h3>
-            <p className="mt-2 text-sm leading-6 text-slate-400">
-              {t("discovery.recoveryBody", { query })}
-            </p>
-          </div>
+    <div className="search-recovery">
+      <div className="search-recovery-primary">
+        <div className="max-w-2xl">
+          <h3>{t("discovery.recoveryTitle")}</h3>
+          <p>{t("discovery.recoveryBody", { query })}</p>
+          <p className="search-recovery-scope">
+            {t("discovery.recoveryAssistantScope")}
+          </p>
+        </div>
+        <div className="search-recovery-actions">
           <Button
             type="button"
             onClick={onAskAgent}
-            className="shrink-0 border border-slate-600 bg-slate-100 text-slate-950 hover:bg-white"
+            className="search-recovery-agent-button"
           >
-            <BookOpen className="mr-2 h-4 w-4" />
+            <BookOpen className="h-4 w-4" />
             {t("discovery.recoveryAskAgent")}
           </Button>
+          <Link href="/search" className="search-recovery-clear">
+            <X className="h-4 w-4" />
+            {t("discovery.clearSearch")}
+          </Link>
         </div>
       </div>
 
@@ -273,29 +277,25 @@ function SearchRecoveryPanel({
           <h3 className="mb-3 text-sm font-semibold text-white">
             {t("discovery.recoveryTopics")}
           </h3>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="search-topic-grid">
             {topics.map(topic => (
               <Link
                 key={topic.query}
                 href={topic.href}
-                className="rounded-lg border border-slate-700 bg-slate-950/40 p-4 transition hover:border-slate-500 hover:bg-slate-900/70"
+                className="search-topic-chip"
+                aria-label={t("discovery.recoveryTopicQuery", {
+                  query: topic.query,
+                })}
               >
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-white">
-                    <GitBranch className="h-4 w-4 text-slate-400" />
-                    {t(topic.labelKey)}
-                  </span>
-                  <ArrowRight className="h-4 w-4 text-slate-400" />
-                </div>
-                <p className="text-xs leading-5 text-slate-400">
-                  {t("discovery.recoveryTopicQuery", { query: topic.query })}
-                </p>
+                <GitBranch className="h-4 w-4 text-slate-400" />
+                <span>{t(topic.labelKey)}</span>
+                <ArrowRight className="h-4 w-4 text-slate-400" />
               </Link>
             ))}
           </div>
         </div>
 
-        <aside className="rounded-lg border border-slate-700 bg-slate-950/35 p-4">
+        <aside className="search-recovery-paths">
           <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
             <Map className="h-4 w-4 text-slate-400" />
             {t("discovery.recoveryPaths")}

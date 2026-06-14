@@ -92,10 +92,19 @@ function TrackPage({ kind }: { kind: TrackKind }) {
               </p>
             </div>
 
-            <div className="mt-6 grid max-w-4xl gap-3 sm:grid-cols-3">
+            <div className="track-stat-grid mt-6 grid max-w-4xl grid-cols-3 gap-2 sm:gap-3">
               <StatTile
                 icon={<FileText className="h-5 w-5" />}
-                value={hasLoadedPosts ? trackPosts.length : "..."}
+                value={
+                  hasLoadedPosts ? (
+                    trackPosts.length
+                  ) : (
+                    <span
+                      className="stat-value-skeleton"
+                      aria-label={t("common.ui.loading")}
+                    />
+                  )
+                }
                 label={t("home.statArticles")}
               />
               <StatTile
@@ -105,7 +114,16 @@ function TrackPage({ kind }: { kind: TrackKind }) {
               />
               <StatTile
                 icon={<Eye className="h-5 w-5" />}
-                value={hasLoadedPosts ? totalViews : "..."}
+                value={
+                  hasLoadedPosts ? (
+                    totalViews
+                  ) : (
+                    <span
+                      className="stat-value-skeleton"
+                      aria-label={t("common.ui.loading")}
+                    />
+                  )
+                }
                 label={t("home.statViews")}
               />
             </div>

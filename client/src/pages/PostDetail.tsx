@@ -1,10 +1,10 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { ArticleFeedback } from "@/components/ArticleFeedback";
 import {
-  ResearchWaveVisual,
-  SiteHeader,
-  SpaceBackdrop,
-} from "@/components/ResearchShell";
+  SeriesProgress,
+  type SeriesProgressLink,
+} from "@/components/SeriesProgress";
+import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
 import { SubscriptionForm } from "@/components/SubscriptionForm";
 import { openBlogAgentWithPrompt } from "@/components/agent/routeContext";
 import { Button } from "@/components/ui/button";
@@ -547,7 +547,7 @@ export default function PostDetail() {
   const articlePost = post as ArticlePostModel;
   const readingTime = calculateReadingTime(articlePost.content || "");
   const postTags = Array.isArray(articlePost.tags) ? articlePost.tags : [];
-  const visibleHeaderTags = postTags.slice(0, 4);
+  const visibleHeaderTags = postTags.slice(0, 2);
   const remainingHeaderTagCount = Math.max(
     0,
     postTags.length - visibleHeaderTags.length
@@ -559,16 +559,64 @@ export default function PostDetail() {
     postCategory?.slug === "ai-applications"
       ? t("home.applicationsLabel")
       : t("home.algorithmsLabel");
-  const articleEntryItems = buildArticleEntryItems(
-    articlePost,
-    headings,
-    t
-  ).slice(0, 4);
+  const articleEntryItems = buildArticleEntryItems(articlePost, headings, t);
+  const primaryEntryItem =
+    articleEntryItems.find(item => item.key === "core") ?? articleEntryItems[0];
+  const secondaryEntryItems = articleEntryItems.filter(
+    item => item.key !== primaryEntryItem?.key
+  );
   const seriesContext = buildSeriesContext(
     articlePost,
     postContext as PostContextModel | undefined,
     t
   );
+  const seriesLinks: SeriesProgressLink[] = seriesContext
+    ? ([
+        !seriesContext.isFirst && seriesContext.first
+          ? {
+              href: `/post/${seriesContext.first.slug}`,
+              label: t("post.series.start"),
+              direction: "start" as const,
+            }
+          : null,
+        seriesContext.previous
+          ? {
+              href: `/post/${seriesContext.previous.slug}`,
+              label: t("post.series.previous"),
+              direction: "previous" as const,
+            }
+          : null,
+        seriesContext.next
+          ? {
+              href: `/post/${seriesContext.next.slug}`,
+              label: t("post.series.next"),
+              direction: "next" as const,
+              primary: true,
+            }
+          : {
+              href: continueTrackHref,
+              label: t("post.series.track"),
+              direction: "track" as const,
+            },
+      ].filter(Boolean) as SeriesProgressLink[])
+    : [];
+  const briefSeriesLinks: SeriesProgressLink[] = seriesContext
+    ? [
+        seriesContext.next
+          ? {
+              href: `/post/${seriesContext.next.slug}`,
+              label: t("post.series.next"),
+              direction: "next" as const,
+              primary: true,
+            }
+          : {
+              href: continueTrackHref,
+              label: t("post.series.track"),
+              direction: "track" as const,
+              primary: true,
+            },
+      ]
+    : [];
 
   return (
     <div className="space-page text-foreground">
@@ -583,7 +631,7 @@ export default function PostDetail() {
           {/* Main Content */}
           <article className="glass-panel reading-surface max-w-4xl p-5 sm:p-8 lg:p-10">
             {/* Post Header */}
-            <div className="mb-8">
+            <div className="article-reading-header">
               <h1 className="article-page-title mb-5">{post.title}</h1>
 
               {/* Author Info */}
@@ -666,89 +714,65 @@ export default function PostDetail() {
                 </div>
               )}
 
-              {(articleEntryItems.length > 0 || seriesContext) && (
+              {(primaryEntryItem || seriesContext) && (
                 <section
                   className="article-entry-layer"
                   aria-labelledby="article-entry-title"
                 >
-                  <div className="article-entry-heading">
-                    <p className="article-entry-kicker">
-                      {t("post.entry.kicker")}
-                    </p>
-                    <h2 id="article-entry-title">{t("post.entry.title")}</h2>
-                  </div>
+                  <div className="article-entry-brief">
+                    <div className="article-entry-heading">
+                      <p className="article-entry-kicker">
+                        {t("post.entry.kicker")}
+                      </p>
+                      <h2 id="article-entry-title">{t("post.entry.title")}</h2>
+                    </div>
 
-                  {articleEntryItems.length > 0 && (
-                    <dl className="article-entry-grid">
-                      {articleEntryItems.map(item => (
+                    {primaryEntryItem && (
+                      <dl className="article-entry-grid article-entry-grid-compact">
                         <div
-                          key={item.key}
                           className={
-                            item.muted
+                            primaryEntryItem.muted
                               ? "article-entry-item article-entry-item-muted"
                               : "article-entry-item"
                           }
                         >
-                          <dt>{item.label}</dt>
-                          <dd>{item.value}</dd>
+                          <dt>{primaryEntryItem.label}</dt>
+                          <dd>{primaryEntryItem.value}</dd>
                         </div>
-                      ))}
-                    </dl>
-                  )}
+                      </dl>
+                    )}
+                  </div>
 
                   {seriesContext && (
-                    <div className="article-series-inline">
-                      <div className="min-w-0">
-                        <span className="article-series-label">
-                          {t("post.series.label")}
-                        </span>
-                        <p className="article-series-title">
-                          {seriesContext.title}
-                        </p>
-                        <p className="article-series-meta">
-                          {seriesContext.positionLabel}
-                          {seriesContext.promise
-                            ? ` / ${seriesContext.promise}`
-                            : ""}
-                        </p>
-                      </div>
-                      <div className="article-series-actions">
-                        {!seriesContext.isFirst && seriesContext.first && (
-                          <Link
-                            href={`/post/${seriesContext.first.slug}`}
-                            className="article-series-action"
+                    <SeriesProgress
+                      variant="compact"
+                      label={t("post.series.label")}
+                      title={seriesContext.title}
+                      meta={seriesContext.positionLabel}
+                      promise={seriesContext.promise}
+                      links={briefSeriesLinks}
+                    />
+                  )}
+
+                  {secondaryEntryItems.length > 0 && (
+                    <details className="article-entry-details">
+                      <summary>{t("post.entry.more")}</summary>
+                      <dl className="article-entry-grid">
+                        {secondaryEntryItems.map(item => (
+                          <div
+                            key={item.key}
+                            className={
+                              item.muted
+                                ? "article-entry-item article-entry-item-muted"
+                                : "article-entry-item"
+                            }
                           >
-                            {t("post.series.start")}
-                          </Link>
-                        )}
-                        {seriesContext.previous && (
-                          <Link
-                            href={`/post/${seriesContext.previous.slug}`}
-                            className="article-series-action"
-                          >
-                            <ArrowLeft className="h-3.5 w-3.5" />
-                            {t("post.series.previous")}
-                          </Link>
-                        )}
-                        {seriesContext.next ? (
-                          <Link
-                            href={`/post/${seriesContext.next.slug}`}
-                            className="article-series-action article-series-action-primary"
-                          >
-                            {t("post.series.next")}
-                            <ArrowRight className="h-3.5 w-3.5" />
-                          </Link>
-                        ) : (
-                          <Link
-                            href={continueTrackHref}
-                            className="article-series-action"
-                          >
-                            {t("post.series.track")}
-                            <ArrowRight className="h-3.5 w-3.5" />
-                          </Link>
-                        )}
-                      </div>
-                    </div>
+                            <dt>{item.label}</dt>
+                            <dd>{item.value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </details>
                   )}
 
                   <div
@@ -777,70 +801,6 @@ export default function PostDetail() {
                   </div>
                 </section>
               )}
-
-              <div
-                className="article-secondary-actions"
-                aria-label={t("post.share")}
-              >
-                <span className="article-secondary-label">
-                  {t("post.share")}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="glass-button h-8 gap-1.5 text-xs"
-                  onClick={() => handleShare("twitter")}
-                >
-                  <Twitter className="h-3.5 w-3.5" />
-                  {t("post.twitter")}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="glass-button h-8 gap-1.5 text-xs"
-                  onClick={() => handleShare("linkedin")}
-                >
-                  <Linkedin className="h-3.5 w-3.5" />
-                  {t("post.linkedin")}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="glass-button h-8 gap-1.5 text-xs"
-                  onClick={() => handleShare("wechat")}
-                >
-                  <MessageCircle className="h-3.5 w-3.5" />
-                  {t("post.wechat")}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="glass-button h-8 gap-1.5 text-xs"
-                  onClick={() => handleShare("copy")}
-                >
-                  <Copy className="h-3.5 w-3.5" />
-                  {t("post.copyLink")}
-                </Button>
-                {isAdmin && (
-                  <Link href={`/write/${post.slug}`}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="glass-button h-8 gap-1.5 text-xs"
-                    >
-                      <Edit className="h-3.5 w-3.5" />
-                      {t("post.edit")}
-                    </Button>
-                  </Link>
-                )}
-              </div>
-
-              <div className="mt-7">
-                <ResearchWaveVisual
-                  variant={postVisualVariant(post.slug)}
-                  className="article-header-visual h-[120px] sm:h-[150px]"
-                />
-              </div>
             </div>
 
             {/* Cover Image */}
@@ -857,8 +817,23 @@ export default function PostDetail() {
               </div>
             )}
 
+            {/* Post Content */}
+            <div className="article-prose">
+              <Suspense
+                fallback={<div className="h-24 rounded-lg bg-slate-800/40" />}
+              >
+                <MarkdownRenderer
+                  content={post.content}
+                  headings={headings}
+                  copiedCode={copiedCode}
+                  copyCodeLabel={t("post.copyCode")}
+                  onCopyCode={copyCode}
+                />
+              </Suspense>
+            </div>
+
             {headings.length > 0 && (
-              <details className="mb-8 rounded-lg border border-white/10 bg-slate-950/35 p-4 lg:hidden">
+              <details className="mt-10 rounded-lg border border-white/10 bg-slate-950/35 p-4 lg:hidden">
                 <summary className="cursor-pointer text-sm font-semibold text-white">
                   {t("post.toc")}
                 </summary>
@@ -879,19 +854,59 @@ export default function PostDetail() {
               </details>
             )}
 
-            {/* Post Content */}
-            <div className="article-prose">
-              <Suspense
-                fallback={<div className="h-24 rounded-lg bg-slate-800/40" />}
+            <div
+              className="article-secondary-actions"
+              aria-label={t("post.share")}
+            >
+              <span className="article-secondary-label">{t("post.share")}</span>
+              <Button
+                variant="outline"
+                size="sm"
+                className="glass-button h-8 gap-1.5 text-xs"
+                onClick={() => handleShare("twitter")}
               >
-                <MarkdownRenderer
-                  content={post.content}
-                  headings={headings}
-                  copiedCode={copiedCode}
-                  copyCodeLabel={t("post.copyCode")}
-                  onCopyCode={copyCode}
-                />
-              </Suspense>
+                <Twitter className="h-3.5 w-3.5" />
+                {t("post.twitter")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="glass-button h-8 gap-1.5 text-xs"
+                onClick={() => handleShare("linkedin")}
+              >
+                <Linkedin className="h-3.5 w-3.5" />
+                {t("post.linkedin")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="glass-button h-8 gap-1.5 text-xs"
+                onClick={() => handleShare("wechat")}
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+                {t("post.wechat")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="glass-button h-8 gap-1.5 text-xs"
+                onClick={() => handleShare("copy")}
+              >
+                <Copy className="h-3.5 w-3.5" />
+                {t("post.copyLink")}
+              </Button>
+              {isAdmin && (
+                <Link href={`/write/${post.slug}`}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="glass-button h-8 gap-1.5 text-xs"
+                  >
+                    <Edit className="h-3.5 w-3.5" />
+                    {t("post.edit")}
+                  </Button>
+                </Link>
+              )}
             </div>
 
             {/* Author Footer */}
@@ -913,46 +928,32 @@ export default function PostDetail() {
 
               {seriesContext &&
                 (seriesContext.previous || seriesContext.next) && (
-                  <div className="article-series-footer mb-6">
-                    <div className="mb-4">
-                      <span className="article-series-label">
-                        {t("post.series.continuity")}
-                      </span>
-                      <p className="article-series-title">
-                        {seriesContext.title} / {seriesContext.positionLabel}
-                      </p>
-                    </div>
-                    <div className="grid gap-3 md:grid-cols-2">
-                      {seriesContext.previous && (
-                        <Link
-                          href={`/post/${seriesContext.previous.slug}`}
-                          className="article-series-footer-link"
-                        >
-                          <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
-                            <ArrowLeft className="h-3.5 w-3.5" />
-                            {t("post.series.previous")}
-                          </span>
-                          <span className="line-clamp-2 text-sm font-semibold leading-6 text-white">
-                            {seriesContext.previous.title}
-                          </span>
-                        </Link>
-                      )}
-                      {seriesContext.next && (
-                        <Link
-                          href={`/post/${seriesContext.next.slug}`}
-                          className="article-series-footer-link md:text-right"
-                        >
-                          <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400 md:justify-end">
-                            {t("post.series.next")}
-                            <ArrowRight className="h-3.5 w-3.5" />
-                          </span>
-                          <span className="line-clamp-2 text-sm font-semibold leading-6 text-white">
-                            {seriesContext.next.title}
-                          </span>
-                        </Link>
-                      )}
-                    </div>
-                  </div>
+                  <SeriesProgress
+                    variant="footer"
+                    className="mb-6"
+                    label={t("post.series.continuity")}
+                    title={seriesContext.title}
+                    meta={seriesContext.positionLabel}
+                    links={
+                      [
+                        seriesContext.previous
+                          ? {
+                              href: `/post/${seriesContext.previous.slug}`,
+                              label: seriesContext.previous.title,
+                              direction: "previous" as const,
+                            }
+                          : null,
+                        seriesContext.next
+                          ? {
+                              href: `/post/${seriesContext.next.slug}`,
+                              label: seriesContext.next.title,
+                              direction: "next" as const,
+                              primary: true,
+                            }
+                          : null,
+                      ].filter(Boolean) as SeriesProgressLink[]
+                    }
+                  />
                 )}
 
               {!seriesContext &&
