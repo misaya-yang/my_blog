@@ -192,37 +192,43 @@ function TrackPanel({
         <span>{model.label}</span>
         <strong>{model.meta}</strong>
       </div>
-      <Link href={model.href} className="home-track-title-link">
-        <h2>{model.title}</h2>
-      </Link>
-      <p>{model.subtitle}</p>
 
-      <div className="home-track-path">
-        <span>
-          <GitBranch className="h-4 w-4" />
-          {t("home.trackPathLabel")}
-        </span>
-        <strong>{model.pathTitle}</strong>
-        <p>{model.pathSummary}</p>
+      <div className="home-track-panel-main">
+        <div className="home-track-panel-copy">
+          <Link href={model.href} className="home-track-title-link">
+            <h2>{model.title}</h2>
+          </Link>
+          <p className="home-track-summary">{model.subtitle}</p>
+          <Link href={model.href} className="home-track-action">
+            {model.actionLabel}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+
+        <div className="home-track-panel-detail">
+          <div className="home-track-path">
+            <span>
+              <GitBranch className="h-4 w-4" />
+              {t("home.trackPathLabel")}
+            </span>
+            <strong>{model.pathTitle}</strong>
+            <p>{model.pathSummary}</p>
+          </div>
+
+          <div className="home-track-post-list">
+            {model.posts.length > 0 ? (
+              model.posts.map(post => (
+                <Link key={post.id} href={`/post/${post.slug}`}>
+                  <span>{post.seriesTitle ?? model.label}</span>
+                  <strong>{post.title}</strong>
+                </Link>
+              ))
+            ) : (
+              <div className="home-track-empty">{t("home.emptyTrack")}</div>
+            )}
+          </div>
+        </div>
       </div>
-
-      <div className="home-track-post-list">
-        {model.posts.length > 0 ? (
-          model.posts.map(post => (
-            <Link key={post.id} href={`/post/${post.slug}`}>
-              <span>{post.seriesTitle ?? model.label}</span>
-              <strong>{post.title}</strong>
-            </Link>
-          ))
-        ) : (
-          <div className="home-track-empty">{t("home.emptyTrack")}</div>
-        )}
-      </div>
-
-      <Link href={model.href} className="home-track-action">
-        {model.actionLabel}
-        <ArrowRight className="h-4 w-4" />
-      </Link>
     </section>
   );
 }
