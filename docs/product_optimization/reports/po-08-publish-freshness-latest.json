@@ -1,12 +1,30 @@
 {
-  "generatedAt": "2026-06-14T13:53:16.983Z",
+  "generatedAt": "2026-06-16T13:54:03.975Z",
   "git": {
     "branch": "codex/blog-agent-retrieval-rescue",
-    "commit": "ddc66a9",
+    "commit": "af1a564",
     "dirty": false
   },
   "baseUrl": "http://localhost:3000/",
   "publicInventory": [
+    {
+      "slug": "flow-matching-generative-transport",
+      "title": "Flow Matching：从扩散噪声到确定性运输",
+      "categorySlug": "ai-algorithms",
+      "tagSlugs": [
+        "continuous-normalizing-flow",
+        "diffusion-models",
+        "flow-matching",
+        "generative-modeling",
+        "optimal-transport",
+        "rectified-flow",
+        "transformer"
+      ],
+      "publishedAt": "2026-06-16T00:00:00.000Z",
+      "updatedAt": "2026-06-16T13:52:37.056Z",
+      "seriesSlug": "generative-modeling",
+      "seriesOrder": 1
+    },
     {
       "slug": "gated-ffn-multiplicative-channel-control",
       "title": "Gated FFN: Transformer 里的乘法通道",
@@ -21,7 +39,7 @@
         "transformer"
       ],
       "publishedAt": "2026-06-06T00:00:00.000Z",
-      "updatedAt": "2026-06-14T13:52:05.007Z",
+      "updatedAt": "2026-06-16T11:16:14.565Z",
       "seriesSlug": "feed-forward-mechanisms",
       "seriesOrder": 1
     },
@@ -40,7 +58,7 @@
         "tool-use"
       ],
       "publishedAt": "2026-05-31T00:40:00.000Z",
-      "updatedAt": "2026-06-14T13:52:46.171Z",
+      "updatedAt": "2026-06-14T15:36:27.585Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 4
     },
@@ -60,7 +78,7 @@
         "tool-use"
       ],
       "publishedAt": "2026-05-31T00:30:00.000Z",
-      "updatedAt": "2026-06-09T14:54:04.926Z",
+      "updatedAt": "2026-06-16T13:09:00.654Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 3
     },
@@ -80,7 +98,7 @@
         "rag"
       ],
       "publishedAt": "2026-05-31T00:20:00.000Z",
-      "updatedAt": "2026-06-14T13:52:25.434Z",
+      "updatedAt": "2026-06-16T06:04:04.754Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 2
     },
@@ -99,7 +117,7 @@
         "tool-use"
       ],
       "publishedAt": "2026-05-31T00:10:00.000Z",
-      "updatedAt": "2026-06-13T12:10:19.844Z",
+      "updatedAt": "2026-06-16T04:55:19.952Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 1
     },
@@ -136,6 +154,7 @@
       "publicSlugs": [
         "agent-harness-engine-evaluating-tool-using-agents",
         "agent-loop-observable-tool-using-agents",
+        "flow-matching-generative-transport",
         "gated-ffn-multiplicative-channel-control",
         "goal-harness-agent-phase-protocol",
         "isohc-fixed-vector-isometric-residual-mixing",
@@ -149,6 +168,7 @@
       "publicSlugs": [
         "agent-harness-engine-evaluating-tool-using-agents",
         "agent-loop-observable-tool-using-agents",
+        "flow-matching-generative-transport",
         "gated-ffn-multiplicative-channel-control",
         "goal-harness-agent-phase-protocol",
         "isohc-fixed-vector-isometric-residual-mixing",
@@ -162,6 +182,7 @@
       "publicSlugs": [
         "agent-harness-engine-evaluating-tool-using-agents",
         "agent-loop-observable-tool-using-agents",
+        "flow-matching-generative-transport",
         "gated-ffn-multiplicative-channel-control",
         "goal-harness-agent-phase-protocol",
         "isohc-fixed-vector-isometric-residual-mixing",
@@ -174,6 +195,7 @@
     "ok": true,
     "publicTrackSlugs": {
       "algorithms": [
+        "flow-matching-generative-transport",
         "gated-ffn-multiplicative-channel-control",
         "isohc-fixed-vector-isometric-residual-mixing"
       ],
@@ -191,22 +213,23 @@
   },
   "agentKnowledge": {
     "ok": true,
-    "chunkCount": 94,
-    "publicPostCount": 6,
-    "indexedPublicPostCount": 6,
+    "chunkCount": 114,
+    "publicPostCount": 7,
+    "indexedPublicPostCount": 7,
     "hiddenOrDraftExcludedCount": 1,
     "stalePublicPostSlugs": [],
     "extraIndexedPostSlugs": [],
     "indexedPostSlugs": [
       "agent-harness-engine-evaluating-tool-using-agents",
       "agent-loop-observable-tool-using-agents",
+      "flow-matching-generative-transport",
       "gated-ffn-multiplicative-channel-control",
       "goal-harness-agent-phase-protocol",
       "isohc-fixed-vector-isometric-residual-mixing",
       "rag-evidence-packet-context-compiler"
     ],
     "nonPublicIndexedSlugs": [],
-    "lastReindexAt": "2026-06-14T13:52:56.638Z"
+    "lastReindexAt": "2026-06-16T13:53:40.298Z"
   },
   "dateDrift": {
     "comparedPublicPosts": 6,
