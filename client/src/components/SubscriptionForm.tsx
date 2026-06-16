@@ -83,7 +83,7 @@ export function SubscriptionForm({
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="mb-2 flex items-center gap-2 text-white">
-            <MailPlus className="h-4 w-4 text-teal-200" />
+            <MailPlus className="h-4 w-4 text-sky-200" />
             <h2 className="text-base font-semibold">{t(titleKey)}</h2>
           </div>
           <p className="max-w-2xl text-sm leading-6 text-slate-400">
@@ -169,7 +169,7 @@ export function SubscriptionForm({
                   className={cn(
                     "h-8 rounded px-3 text-xs font-medium transition",
                     preferredLanguage === option
-                      ? "bg-teal-300/15 text-teal-100"
+                      ? "bg-sky-300/15 text-sky-100"
                       : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-100"
                   )}
                 >
@@ -213,14 +213,14 @@ function getSubscriptionMessage(
   if (status === "created") {
     return {
       text: t("engagement.subscribe.successCreated"),
-      className: "text-teal-100",
+      className: "text-sky-100",
     };
   }
 
   if (status === "existing") {
     return {
       text: t("engagement.subscribe.successExisting"),
-      className: "text-teal-100",
+      className: "text-sky-100",
     };
   }
 

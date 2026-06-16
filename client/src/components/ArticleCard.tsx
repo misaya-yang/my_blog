@@ -97,6 +97,9 @@ function fallbackTopicLabel(
   if (post.slug?.includes("isohc")) {
     return t("track.topic.residualMixing");
   }
+  if (/flow|matching|generative|diffusion/.test(post.slug ?? "")) {
+    return t("track.topic.generativeModeling");
+  }
 
   return t("track.topic.rope");
 }
@@ -129,6 +132,9 @@ function visualTheme(
   if (/rag|retrieval|evidence|source/.test(text)) return "mesh";
   if (/context|compiler|packet|prompt/.test(text)) return "packet";
   if (/rope|position|encoding|long-context/.test(text)) return "field";
+  if (/flow-matching|generative|diffusion|rectified|transport/.test(text)) {
+    return "flow";
+  }
   if (/residual|isohc|mixing|stability/.test(text)) return "flow";
   return track === "applications" ? "packet" : "field";
 }

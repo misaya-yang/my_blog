@@ -18,13 +18,11 @@ import { buildRouteMetadata } from "@shared/metadata";
 import {
   ArrowLeft,
   ArrowRight,
-  Boxes,
   Eye,
   FileText,
   Folder,
   GitBranch,
   Network,
-  Tags,
 } from "lucide-react";
 import { Link } from "wouter";
 
@@ -156,13 +154,17 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>
-                <div className="grid gap-4 md:grid-cols-2">
+                <div
+                  className={`track-series-grid grid gap-4 ${
+                    publicSeries.length === 1 ? "track-series-grid-single" : ""
+                  }`}
+                >
                   {publicSeries.map(series => (
                     <section key={series.slug} className="track-series-card">
                       <div className="mb-4 flex items-start justify-between gap-4">
-                      <div>
-                        <span className="series-card-track">
-                          {t("track.readingOrder")}
+                        <div>
+                          <span className="series-card-track">
+                            {t("track.readingOrder")}
                           </span>
                           <h2>{t(series.titleKey)}</h2>
                         </div>
@@ -243,26 +245,6 @@ function TrackPage({ kind }: { kind: TrackKind }) {
             )}
           </div>
 
-          <aside className="glass-panel research-index-panel track-topic-rail">
-            <div className="flex items-center gap-2">
-              <Boxes className="h-5 w-5 text-sky-200" />
-              <h2 className="section-title">{t("track.topicNodes")}</h2>
-            </div>
-            <div className="research-index-list">
-              {config.topics.map(topic => (
-                <div key={topic.labelKey} className="research-index-row">
-                  <span>{t(topic.labelKey)}</span>
-                  <span className="text-sky-100">{t(topic.metaKey)}</span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-6 flex flex-wrap gap-2">
-              <Tags className="h-4 w-4 text-slate-400" />
-              <span className="text-xs text-slate-400">
-                {t("track.topicHint")}
-              </span>
-            </div>
-          </aside>
         </section>
       </main>
     </div>

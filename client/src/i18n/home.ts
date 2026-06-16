@@ -7,8 +7,8 @@ const home: TranslationDict = {
     zh: "AI 算法与 AI 应用",
   },
   "home.subtitle": {
-    en: "Research notes on model mechanisms, long-context behavior, agent infrastructure, RAG, and evaluation.",
-    zh: "记录模型机制、长上下文行为、Agent 基础设施、RAG 与评测工程。",
+    en: "Research notes on model mechanisms, generative modeling, long-context behavior, agent infrastructure, RAG, and evaluation.",
+    zh: "记录模型机制、生成建模、长上下文行为、Agent 基础设施、RAG 与评测工程。",
   },
   "home.kicker": {
     en: "Two-track research notebook",
@@ -135,6 +135,7 @@ const home: TranslationDict = {
   "home.focusTag6": { en: "Frequency Domain Analysis", zh: "频域分析" },
   "home.focusTag7": { en: "Attention Mechanism", zh: "注意力机制" },
   "home.focusTag8": { en: "Efficiency Optimization", zh: "效率优化" },
+  "home.focusTag9": { en: "Generative Modeling", zh: "生成建模" },
 
   // Footer
   "home.footerTagline": {
@@ -286,38 +287,33 @@ const home: TranslationDict = {
   "track.articles": { en: "All notes", zh: "全部笔记" },
   "track.backHome": { en: "Back to index", zh: "返回索引" },
   "track.statTopics": { en: "Topics", zh: "专题" },
-  "track.topicNodes": { en: "Topic ledger", zh: "专题目录" },
   "track.seriesTitle": { en: "Reading paths", zh: "阅读路径" },
   "track.nextPlanned": { en: "Next planned", zh: "后续计划" },
   "track.readingOrder": { en: "Path", zh: "路径" },
   "track.readingOrderHint": {
-    en: "Read as an ordered path first; use the article index below for scanning and lookup.",
-    zh: "先按路径顺序阅读；需要快速查找时，再使用下方文章索引。",
+    en: "Start with the path, then use the note index below for lookup.",
+    zh: "先读路径，再用下方笔记索引查找细节。",
   },
-  "track.researchMap": { en: "Research map", zh: "研究地图" },
+  "track.researchMap": { en: "Research index", zh: "研究索引" },
   "track.algorithms.mapNote": {
-    en: "Follow the invariant: what quantity is preserved, what projection enforces it, and where the architecture pays for the constraint.",
-    zh: "沿着不变量阅读：保留什么量、由哪个投影约束、架构在哪里为稳定性付出代价。",
+    en: "Read by mechanism: modeled signal, shaping constraint, and implementation cost.",
+    zh: "按机制阅读：建模信号、约束来源和实现代价。",
   },
   "track.applications.mapNote": {
-    en: "Follow the runtime boundary: what enters context, what becomes a trace, and how agent behavior is evaluated instead of narrated.",
-    zh: "沿着运行时边界阅读：什么进入上下文、什么留下 trace，以及如何评测 Agent 行为而不是讲故事。",
-  },
-  "track.topicHint": {
-    en: "Topics are represented as tags and article series.",
-    zh: "专题通过标签和系列文章表达。",
+    en: "Read by runtime: context boundary, observable trace, and evaluation loop.",
+    zh: "按运行时阅读：上下文边界、可观测 trace 和评测循环。",
   },
   "track.algorithms.chip1": { en: "Mechanisms", zh: "机制" },
   "track.algorithms.chip2": { en: "Scaling", zh: "扩展" },
   "track.algorithms.chip3": { en: "Reliability", zh: "可靠性" },
   "track.algorithms.title": { en: "AI Algorithms", zh: "AI 算法研究" },
   "track.algorithms.subtitle": {
-    en: "Research notes on architecture, positional encoding, long-context behavior, and residual stability.",
-    zh: "围绕模型架构、位置编码、长上下文行为与残差稳定性展开研究记录。",
+    en: "Research notes on architecture, generative modeling, positional encoding, long-context behavior, and residual stability.",
+    zh: "围绕模型架构、生成建模、位置编码、长上下文行为与残差稳定性展开研究记录。",
   },
   "track.algorithms.overview": {
-    en: "This track keeps the mathematical and architectural side of the blog: hypotheses, derivations, invariants, and implementation implications for deep learning systems.",
-    zh: "这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、不变量，以及它们对深度学习系统实现的影响。",
+    en: "This track keeps the mathematical and architectural side of the blog: hypotheses, derivations, generative objectives, invariants, and implementation implications for deep learning systems.",
+    zh: "这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、生成目标、不变量，以及它们对深度学习系统实现的影响。",
   },
   "track.algorithms.topicTitle": { en: "Algorithm Index", zh: "算法索引" },
   "track.applications.chip1": { en: "Agents", zh: "Agent" },
@@ -356,6 +352,15 @@ const home: TranslationDict = {
   "track.topic.gatedFfn": { en: "Gated FFN", zh: "门控 FFN" },
   "track.topic.swiglu": { en: "SwiGLU", zh: "SwiGLU" },
   "track.topic.channelMixing": { en: "Channel Mixing", zh: "通道混合" },
+  "track.topic.generativeModeling": {
+    en: "Generative Modeling",
+    zh: "生成建模",
+  },
+  "track.topic.flowMatching": { en: "Flow Matching", zh: "Flow Matching" },
+  "track.topic.diffusionModels": {
+    en: "Diffusion Models",
+    zh: "扩散模型",
+  },
   "track.topic.agentSystems": { en: "Agent Systems", zh: "Agent 系统" },
   "track.topic.toolUse": { en: "Tool Use", zh: "工具调用" },
   "track.topic.harnessEngine": { en: "Harness Engine", zh: "Harness Engine" },
@@ -438,6 +443,22 @@ const home: TranslationDict = {
   "series.feedForward.next2": {
     en: "FFN parameter budget",
     zh: "FFN 参数预算",
+  },
+  "series.generativeModeling.title": {
+    en: "Generative Modeling",
+    zh: "生成建模",
+  },
+  "series.generativeModeling.promise": {
+    en: "Diffusion, flow matching, transport maps, and efficient samplers.",
+    zh: "从扩散、Flow Matching、运输映射到高效采样器。",
+  },
+  "series.generativeModeling.next1": {
+    en: "Flow model solvers",
+    zh: "Flow 模型采样器",
+  },
+  "series.generativeModeling.next2": {
+    en: "Conditional transport",
+    zh: "条件运输",
   },
 };
 

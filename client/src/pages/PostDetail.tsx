@@ -410,7 +410,7 @@ function MobileToc({
   if (headings.length === 0) return null;
 
   return (
-    <details className="mb-7 rounded-lg border border-white/10 bg-slate-950/35 p-4 lg:hidden">
+    <details className="mobile-toc-shell mb-7 rounded-lg border border-white/10 bg-slate-950/35 p-4 lg:hidden">
       <summary className="cursor-pointer text-sm font-semibold text-white">
         {t("post.toc")}
       </summary>
@@ -419,7 +419,7 @@ function MobileToc({
           <a
             key={heading.id}
             href={`#${heading.id}`}
-            className="text-sm text-slate-400 hover:text-teal-100"
+            className="text-sm text-slate-400 hover:text-sky-100"
             style={{
               paddingLeft: `${(heading.level - 1) * 0.75}rem`,
             }}
@@ -782,7 +782,7 @@ export default function PostDetail() {
               {/* Author Info */}
               <div className="mb-5 flex flex-wrap items-center gap-3 border-b border-white/10 pb-5">
                 <div className="flex items-center gap-2 text-sm">
-                  <User className="h-4 w-4 text-teal-200" />
+                  <User className="h-4 w-4 text-sky-200" />
                   <span className="font-medium text-white">
                     {t("post.authorName")}
                   </span>
@@ -792,14 +792,14 @@ export default function PostDetail() {
                   href="https://scholar.google.com/citations?user=6X9HlDAAAAAJ"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-teal-100"
+                  className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sky-100"
                 >
                   <GraduationCap className="h-3.5 w-3.5" />
                   {t("nav.scholar")}
                 </a>
                 <button
                   onClick={copyEmail}
-                  className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-teal-100"
+                  className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sky-100"
                 >
                   <Mail className="h-3.5 w-3.5" />
                   {t("nav.email")}
@@ -925,7 +925,7 @@ export default function PostDetail() {
                     aria-label={t("post.agentCompanion.title")}
                   >
                     <div className="article-agent-prompts-heading">
-                      <BookOpen className="h-4 w-4 text-teal-200" />
+                      <BookOpen className="h-4 w-4 text-sky-200" />
                       <span>{t("post.agentCompanion.title")}</span>
                     </div>
                     <div className="article-agent-prompt-list">
@@ -1087,7 +1087,7 @@ export default function PostDetail() {
                     {postContext.previous && (
                       <Link
                         href={`/post/${postContext.previous.slug}`}
-                        className="rounded-lg border border-white/10 bg-slate-950/35 p-4 transition hover:border-teal-200/35"
+                        className="rounded-lg border border-white/10 bg-slate-950/35 p-4 transition hover:border-sky-300/35"
                       >
                         <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
                           <ArrowLeft className="h-3.5 w-3.5" />
@@ -1101,7 +1101,7 @@ export default function PostDetail() {
                     {postContext.next && (
                       <Link
                         href={`/post/${postContext.next.slug}`}
-                        className="rounded-lg border border-white/10 bg-slate-950/35 p-4 text-right transition hover:border-teal-200/35"
+                        className="rounded-lg border border-white/10 bg-slate-950/35 p-4 text-right transition hover:border-sky-300/35"
                       >
                         <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
                           {t("post.next")}
@@ -1125,10 +1125,10 @@ export default function PostDetail() {
                       <Link
                         key={related.id}
                         href={`/post/${related.slug}`}
-                        className="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-slate-950/30 px-4 py-3 text-sm text-slate-200 transition hover:border-teal-200/35 hover:text-white"
+                        className="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-slate-950/30 px-4 py-3 text-sm text-slate-200 transition hover:border-sky-300/35 hover:text-white"
                       >
                         <span className="line-clamp-1">{related.title}</span>
-                        <ArrowRight className="h-4 w-4 shrink-0 text-teal-200" />
+                        <ArrowRight className="h-4 w-4 shrink-0 text-sky-200" />
                       </Link>
                     ))}
                   </div>
@@ -1195,7 +1195,7 @@ export default function PostDetail() {
                     href={`#${heading.id}`}
                     className={`block text-sm transition-colors ${
                       activeHeading === heading.id
-                        ? "text-teal-100 font-medium"
+                        ? "text-sky-100 font-medium"
                         : "text-slate-400 hover:text-white"
                     }`}
                     style={{ paddingLeft: `${(heading.level - 1) * 0.75}rem` }}

@@ -72,7 +72,7 @@ export default function MarkdownRenderer({
                   className="absolute right-3 top-3 rounded-md bg-slate-900/85 p-2 opacity-90 transition-colors hover:bg-slate-800 hover:opacity-100 focus-visible:opacity-100"
                 >
                   {copiedCode === codeId ? (
-                    <Check className="h-4 w-4 text-green-500" />
+                    <Check className="h-4 w-4 text-sky-300" />
                   ) : (
                     <Copy className="h-4 w-4 text-muted-foreground" />
                   )}

@@ -53,6 +53,10 @@ export const trackConfigs: Record<TrackKind, TrackConfig> = {
       { labelKey: "track.topic.isohc", metaKey: "track.topic.stability" },
       { labelKey: "track.topic.longContext", metaKey: "track.topic.scaling" },
       {
+        labelKey: "track.topic.generativeModeling",
+        metaKey: "track.topic.flowMatching",
+      },
+      {
         labelKey: "track.topic.residualMixing",
         metaKey: "track.topic.architecture",
       },
@@ -67,6 +71,7 @@ export const trackConfigs: Record<TrackKind, TrackConfig> = {
       "home.focusTag3",
       "home.focusTag4",
       "home.focusTag5",
+      "home.focusTag9",
       "home.focusTag8",
     ],
     series: buildTrackSeries("algorithms"),

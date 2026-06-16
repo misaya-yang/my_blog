@@ -116,6 +116,28 @@ const posts = [
     ],
   },
   {
+    title: "Flow Matching：从扩散噪声到确定性运输",
+    slug: "flow-matching-generative-transport",
+    contentPath: "./flow_matching_generative_transport.md",
+    categorySlug: "ai-algorithms",
+    status: "published",
+    visibility: "public",
+    publishedAt: "2026-06-16T00:00:00.000Z",
+    featuredRank: 6,
+    pinnedTrack: "algorithms",
+    excerpt:
+      "把生成模型从反向去噪改写成概率路径、速度场和数值采样的运输问题：Flow Matching 如何连接 Diffusion、CNF、Rectified Flow 与 OT-CFM。",
+    tags: [
+      { name: "Flow Matching", slug: "flow-matching" },
+      { name: "Generative Modeling", slug: "generative-modeling" },
+      { name: "Diffusion Models", slug: "diffusion-models" },
+      { name: "Rectified Flow", slug: "rectified-flow" },
+      { name: "Optimal Transport", slug: "optimal-transport" },
+      { name: "Continuous Normalizing Flow", slug: "continuous-normalizing-flow" },
+      { name: "Transformer", slug: "transformer" },
+    ],
+  },
+  {
     title:
       "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
     slug: "agent-harness-engine-evaluating-tool-using-agents",

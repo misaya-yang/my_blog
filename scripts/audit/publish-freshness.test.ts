@@ -34,6 +34,12 @@ describe("publish freshness track coverage", () => {
         pinnedTrack: "algorithms",
       }),
       publicPost({
+        slug: "flow-matching-generative-transport",
+        categorySlug: "ai-algorithms",
+        seriesSlug: "generative-modeling",
+        pinnedTrack: "algorithms",
+      }),
+      publicPost({
         slug: "agent-harness-engine-evaluating-tool-using-agents",
         categorySlug: "ai-applications",
         seriesSlug: "agent-runtime-systems",

@@ -11,6 +11,8 @@ export const publicArticleTitlesBySlug: Record<string, string> = {
     "IsoHC: Fixed-Vector Isometric Residual Mixing",
   "gated-ffn-multiplicative-channel-control":
     "Gated FFN: Transformer 里的乘法通道",
+  "flow-matching-generative-transport":
+    "Flow Matching：从扩散噪声到确定性运输",
 };
 
 export function getPublicArticleTitle(slug: string) {

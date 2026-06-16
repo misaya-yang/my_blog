@@ -130,6 +130,29 @@ export const contentSeriesCatalog = [
       "track.topic.channelMixing",
     ],
   },
+  {
+    slug: "generative-modeling",
+    title: "Generative Modeling",
+    promise:
+      "A path through diffusion, flow matching, transport maps, and efficient generative samplers.",
+    track: "algorithms",
+    orderedPostSlugs: ["flow-matching-generative-transport"],
+    expectedNext: [
+      "Solver design for flow models",
+      "Guidance and conditional transport",
+    ],
+    titleKey: "series.generativeModeling.title",
+    promiseKey: "series.generativeModeling.promise",
+    expectedNextKeys: [
+      "series.generativeModeling.next1",
+      "series.generativeModeling.next2",
+    ],
+    conceptKeys: [
+      "track.topic.generativeModeling",
+      "track.topic.flowMatching",
+      "track.topic.diffusionModels",
+    ],
+  },
 ] satisfies ContentSeriesDefinition[];
 
 export function getContentSeriesBySlug(slug: string) {
