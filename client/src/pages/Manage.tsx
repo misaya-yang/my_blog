@@ -71,6 +71,7 @@ import {
   Folder,
   Tags,
   Bot,
+  Lightbulb,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -78,6 +79,38 @@ import { Link } from "wouter";
 import { toast } from "sonner";
 
 type PostVisibility = "hidden" | "admin" | "public";
+type BacklogKind = "feedback" | "search_miss" | "agent_question";
+type BacklogPriority = "high" | "normal";
+type BacklogItem = {
+  id: string;
+  kind: BacklogKind;
+  title: string;
+  signalCount: number;
+  status: string;
+  priority: BacklogPriority;
+  sourceHref: string | null;
+  draftHref: string;
+  latestAt: Date | string | null;
+  evidence: string[];
+};
+type EngagementRadarSummary = {
+  writingBacklog?: BacklogItem[];
+  feedback?: { newCount?: number };
+  searchMisses?: { uniqueQueries?: number };
+};
+type AgentQuestionRadarSummary = {
+  summary?: {
+    noSourceRuns?: number;
+    failedRuns?: number;
+  };
+  suggestedIdeas?: Array<{
+    ideaId: string;
+    proposedTitle: string;
+    rationale: string;
+    supportCount: number;
+    status?: string;
+  }>;
+};
 
 const visibilityOptions: Array<{
   value: PostVisibility;
@@ -172,10 +205,21 @@ export default function Manage() {
     trpc.engagement.feedback.list.useQuery({ limit: 20 }, { enabled: isAdmin });
   const { data: subscribersData, isLoading: subscribersLoading } =
     trpc.engagement.subscribers.list.useQuery(undefined, { enabled: isAdmin });
-  const { data: contentRadarData, isLoading: contentRadarLoading } =
-    trpc.engagement.contentRadar.summary.useQuery(undefined, {
-      enabled: isAdmin,
-    });
+  const {
+    data: contentRadarData,
+    isLoading: contentRadarLoading,
+    isError: contentRadarError,
+  } = trpc.engagement.contentRadar.summary.useQuery(undefined, {
+    enabled: isAdmin,
+  });
+  const {
+    data: agentRadarData,
+    isLoading: agentRadarLoading,
+    isError: agentRadarError,
+  } = trpc.agent.adminQuestionRadar.useQuery(
+    { limit: 50 },
+    { enabled: isAdmin, retry: false }
+  );
 
   // 切换发布状态
   const updateMutation = trpc.posts.update.useMutation({
@@ -1071,6 +1115,14 @@ export default function Manage() {
           </Surface>
         </section>
 
+        <WritingBacklogPanel
+          loading={contentRadarLoading}
+          radar={contentRadarData}
+          agentRadar={agentRadarData}
+          agentLoading={agentRadarLoading}
+          hasError={contentRadarError || agentRadarError}
+        />
+
         <ContentRadarPanel
           loading={contentRadarLoading}
           radar={contentRadarData}
@@ -1449,6 +1501,180 @@ function ContentRadarPanel({
   );
 }
 
+function WritingBacklogPanel({
+  loading,
+  radar,
+  agentRadar,
+  agentLoading,
+  hasError,
+}: {
+  loading: boolean;
+  radar?: EngagementRadarSummary;
+  agentRadar?: AgentQuestionRadarSummary;
+  agentLoading: boolean;
+  hasError: boolean;
+}) {
+  const { language, t } = useLanguage();
+  const engagementItems = radar?.writingBacklog ?? [];
+  const agentItems: BacklogItem[] = (agentRadar?.suggestedIdeas ?? []).map(idea => ({
+    id: idea.ideaId,
+    kind: "agent_question",
+    title: idea.proposedTitle,
+    signalCount: idea.supportCount,
+    status: idea.status ?? "new",
+    priority: idea.supportCount > 1 ? "high" : "normal",
+    sourceHref: "/manage/agent",
+    draftHref: `/write?idea=${encodeURIComponent(idea.proposedTitle)}&source=agent_radar`,
+    latestAt: null,
+    evidence: [idea.rationale],
+  }));
+  const backlogItems = [...engagementItems, ...agentItems].slice(0, 10);
+  const isLoading = loading || agentLoading;
+  const noSourceCount = agentRadar?.summary?.noSourceRuns ?? 0;
+  const failedCount = agentRadar?.summary?.failedRuns ?? 0;
+  const hasAnyRadarData = Boolean(radar || agentRadar);
+
+  return (
+    <section className="owner-panel mt-8 p-5">
+      <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <div className="mb-2 flex items-center gap-2 text-white">
+            <Lightbulb className="h-5 w-5 owner-icon-accent" />
+            <h3 className="text-lg font-semibold">
+              {t("manage.engagement.backlogTitle")}
+            </h3>
+          </div>
+          <p className="max-w-3xl text-sm leading-6 text-slate-400">
+            {t("manage.engagement.backlogDescription")}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="outline" className="border-primary/20 text-primary">
+            {t("manage.engagement.backlogOwnerOnly")}
+          </Badge>
+          <Badge variant="outline" className="border-primary/20 text-primary">
+            {t("manage.engagement.backlogPrivacy")}
+          </Badge>
+        </div>
+      </div>
+
+      {hasError && (
+        <div className="mb-4 rounded-lg border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-sm leading-6 text-amber-100">
+          {backlogItems.length > 0 || hasAnyRadarData
+            ? t("manage.engagement.backlogPartial")
+            : t("manage.engagement.backlogUnavailable")}
+        </div>
+      )}
+
+      {hasAnyRadarData || !hasError ? (
+        <div className="mb-4 grid gap-3 md:grid-cols-4">
+          <RadarMetric
+            label={t("manage.engagement.backlogSignals")}
+            value={String(backlogItems.length)}
+          />
+          <RadarMetric
+            label={t("manage.engagement.radarNewFeedback")}
+            value={String(radar?.feedback?.newCount ?? 0)}
+          />
+          <RadarMetric
+            label={t("manage.engagement.radarSearchMisses")}
+            value={String(radar?.searchMisses?.uniqueQueries ?? 0)}
+          />
+          <RadarMetric
+            label={t("manage.engagement.backlogAgentGaps")}
+            value={String(noSourceCount + failedCount)}
+          />
+        </div>
+      ) : null}
+
+      {isLoading ? (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin owner-icon-accent" />
+        </div>
+      ) : backlogItems.length === 0 ? (
+        <div className="rounded-lg border border-primary/10 bg-slate-950/25 py-10 text-center">
+          <Lightbulb className="mx-auto mb-3 h-8 w-8 owner-icon-accent" />
+          <p className="text-sm text-slate-400">
+            {hasError
+              ? t("manage.engagement.backlogUnavailable")
+              : t("manage.engagement.backlogEmpty")}
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-3 lg:grid-cols-2">
+          {backlogItems.map(item => (
+            <article
+              key={`${item.kind}:${item.id}`}
+              className="rounded-lg border border-primary/10 bg-slate-950/30 p-4"
+            >
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0">
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    <Badge variant="secondary">
+                      {getBacklogKindLabel(item.kind, t)}
+                    </Badge>
+                    <Badge
+                      variant={item.priority === "high" ? "default" : "secondary"}
+                    >
+                      {getBacklogPriorityLabel(item.priority, t)}
+                    </Badge>
+                    <Badge variant="outline" className="border-primary/20">
+                      {getBacklogStatusLabel(item.status, t)}
+                    </Badge>
+                  </div>
+                  <h4 className="line-clamp-2 text-sm font-semibold leading-6 text-white">
+                    {item.title}
+                  </h4>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {getBacklogSourceLabel(item.kind, t)} ·{" "}
+                    {t("manage.engagement.backlogSignalCount", {
+                      count: item.signalCount,
+                    })}
+                    {formatBacklogLatestAt(item.latestAt, language)}
+                  </p>
+                  {item.evidence?.[0] && (
+                    <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-300">
+                      {item.evidence[0]}
+                    </p>
+                  )}
+                </div>
+                <div className="flex shrink-0 flex-wrap gap-2">
+                  {item.sourceHref && (
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="owner-button"
+                    >
+                      <Link href={item.sourceHref}>
+                        {t("manage.engagement.backlogInspect")}
+                      </Link>
+                    </Button>
+                  )}
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="owner-button"
+                  >
+                    <Link href={item.draftHref}>
+                      {t("manage.engagement.backlogDraft")}
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+
+      <p className="mt-4 text-xs leading-5 text-slate-500">
+        {t("manage.engagement.backlogPersistenceNote")}
+      </p>
+    </section>
+  );
+}
+
 function RadarMetric({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-primary/10 bg-slate-950/30 p-3">
@@ -1462,6 +1688,43 @@ function getFeedbackStatusLabel(status: string, t: (key: string) => string) {
   if (status === "hidden") return t("manage.engagement.statusHidden");
   if (status === "reviewed") return t("manage.engagement.statusReviewed");
   return t("manage.engagement.statusNew");
+}
+
+function getBacklogKindLabel(kind: string, t: (key: string) => string) {
+  if (kind === "search_miss") return t("manage.engagement.backlogKindSearch");
+  if (kind === "agent_question")
+    return t("manage.engagement.backlogKindAgent");
+  return t("manage.engagement.backlogKindFeedback");
+}
+
+function getBacklogPriorityLabel(priority: string, t: (key: string) => string) {
+  if (priority === "high") return t("manage.engagement.backlogPriorityHigh");
+  return t("manage.engagement.backlogPriorityNormal");
+}
+
+function getBacklogStatusLabel(status: string, t: (key: string) => string) {
+  if (status === "planned") return t("manage.engagement.backlogStatusPlanned");
+  if (status === "dismissed")
+    return t("manage.engagement.backlogStatusDismissed");
+  if (status === "reviewed")
+    return t("manage.engagement.backlogStatusReviewed");
+  return t("manage.engagement.backlogStatusNew");
+}
+
+function getBacklogSourceLabel(kind: BacklogKind, t: (key: string) => string) {
+  if (kind === "search_miss") return t("manage.engagement.backlogSearchSource");
+  if (kind === "agent_question")
+    return t("manage.engagement.backlogAgentSource");
+  return t("manage.engagement.backlogFeedbackSource");
+}
+
+function formatBacklogLatestAt(
+  latestAt: Date | string | null,
+  language: "en" | "zh"
+) {
+  if (!latestAt) return "";
+  const locale = language === "zh" ? "zh-CN" : "en-US";
+  return ` · ${new Date(latestAt).toLocaleString(locale)}`;
 }
 
 function maskEmail(email?: string | null) {

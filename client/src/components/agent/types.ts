@@ -4,7 +4,6 @@ export type ChatMessage = {
   content: string;
   sourceCards?: SourceCard[];
   relatedQuestions?: string[];
-  reasoningMarkdown?: string;
   traceEntries?: AgentTraceEntry[];
   streaming?: boolean;
 };

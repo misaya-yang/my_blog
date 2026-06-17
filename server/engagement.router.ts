@@ -253,7 +253,7 @@ function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
     if (item.message) {
       entry.messageCount += 1;
       if (entry.sampleMessages.length < 3)
-        entry.sampleMessages.push(item.message);
+        entry.sampleMessages.push(redactDirectContact(item.message));
     }
     if (
       !entry.latestAt ||
@@ -279,6 +279,17 @@ function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
     }
   }
 
+  const feedbackOpportunities = Array.from(articleMap.values())
+    .sort(
+      (a, b) =>
+        b.notUseful - a.notUseful ||
+        b.newCount - a.newCount ||
+        new Date(b.latestAt ?? 0).getTime() -
+          new Date(a.latestAt ?? 0).getTime()
+    )
+    .slice(0, 6);
+  const searchMissBacklog = searchMissOpportunities.slice(0, 8);
+
   return {
     feedback: {
       total: visibleFeedback.length,
@@ -290,15 +301,7 @@ function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
         .length,
       notUsefulCount: visibleFeedback.filter(item => item.type === "not_useful")
         .length,
-      opportunities: Array.from(articleMap.values())
-        .sort(
-          (a, b) =>
-            b.notUseful - a.notUseful ||
-            b.newCount - a.newCount ||
-            new Date(b.latestAt ?? 0).getTime() -
-              new Date(a.latestAt ?? 0).getTime()
-        )
-        .slice(0, 6),
+      opportunities: feedbackOpportunities,
     },
     subscriptions: {
       total: subscribers.length,
@@ -317,9 +320,77 @@ function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
     searchMisses: {
       total: searchMissOpportunities.reduce((sum, item) => sum + item.count, 0),
       uniqueQueries: searchMissOpportunities.length,
-      opportunities: searchMissOpportunities.slice(0, 8),
+      opportunities: searchMissBacklog,
     },
+    writingBacklog: buildWritingBacklog(
+      feedbackOpportunities,
+      searchMissBacklog
+    ),
   };
+}
+
+function buildWritingBacklog(
+  feedbackOpportunities: Array<{
+    postId: number | null;
+    postTitle: string;
+    postSlug: string | null;
+    total: number;
+    notUseful: number;
+    newCount: number;
+    latestAt: Date | string | null;
+    sampleMessages: string[];
+  }>,
+  searchMissOpportunities: Array<{
+    query: string;
+    count: number;
+    lastSeenAt: Date | string;
+    suggestedPrompt: string;
+  }>
+) {
+  const feedbackItems = feedbackOpportunities.map(item => ({
+    id: `feedback:${item.postSlug ?? item.postId ?? "unknown"}`,
+    kind: "feedback" as const,
+    title: item.postTitle,
+    signalCount: item.total,
+    status: item.newCount > 0 ? ("new" as const) : ("reviewed" as const),
+    priority:
+      item.notUseful > 0 || item.newCount > 0
+        ? ("high" as const)
+        : ("normal" as const),
+    sourceLabel: "reader feedback",
+    sourceHref: item.postSlug ? `/post/${item.postSlug}` : null,
+    draftHref: `/write?idea=${encodeURIComponent(item.postTitle)}&source=feedback`,
+    latestAt: item.latestAt,
+    evidence: item.sampleMessages.slice(0, 2).map(redactDirectContact),
+  }));
+
+  const searchItems = searchMissOpportunities.map(item => ({
+    id: `search:${item.query.toLowerCase()}`,
+    kind: "search_miss" as const,
+    title: item.query,
+    signalCount: item.count,
+    status: "new" as const,
+    priority: item.count > 1 ? ("high" as const) : ("normal" as const),
+    sourceLabel: "zero-result search",
+    sourceHref: null,
+    draftHref: `/write?idea=${encodeURIComponent(item.query)}&source=search_miss`,
+    latestAt: item.lastSeenAt,
+    evidence: [redactDirectContact(item.suggestedPrompt)],
+  }));
+
+  return [...feedbackItems, ...searchItems]
+    .sort(
+      (a, b) =>
+        getPriorityWeight(b.priority) - getPriorityWeight(a.priority) ||
+        b.signalCount - a.signalCount ||
+        new Date(b.latestAt ?? 0).getTime() -
+          new Date(a.latestAt ?? 0).getTime()
+    )
+    .slice(0, 10);
+}
+
+function getPriorityWeight(priority: "high" | "normal") {
+  return priority === "high" ? 1 : 0;
 }
 
 function splitInterestPhrases(value: string | null | undefined) {
@@ -328,4 +399,10 @@ function splitInterestPhrases(value: string | null | undefined) {
     .map(item => item.trim().toLowerCase())
     .filter(item => item.length >= 2)
     .slice(0, 20);
+}
+
+function redactDirectContact(value: string) {
+  return value
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]")
+    .replace(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g, "[redacted-ip]");
 }

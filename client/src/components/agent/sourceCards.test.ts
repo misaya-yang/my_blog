@@ -4,6 +4,7 @@ import {
   getSourceFallbackAnchorId,
   getSourceHref,
 } from "./BlogAgentRoot";
+import { toChatMessage } from "./messageState";
 import type { SourceCard } from "./types";
 
 const source: SourceCard = {
@@ -34,5 +35,20 @@ describe("Agent source cards", () => {
     expect(excerpt).not.toContain("3. Exact Invariants 3. Exact Invariants");
     expect(excerpt.length).toBeLessThanOrEqual(150);
     expect(excerpt).toContain("stream mean");
+  });
+
+  it("does not restore raw reasoning from persisted source metadata", () => {
+    const message = toChatMessage({
+      id: "assistant-1",
+      role: "assistant",
+      content: "Grounded answer.",
+      sourceJson: {
+        sourceCards: [source],
+        reasoningMarkdown: "private chain of thought should not render",
+      },
+    });
+
+    expect(message).not.toHaveProperty("reasoningMarkdown");
+    expect(message.sourceCards).toHaveLength(1);
   });
 });

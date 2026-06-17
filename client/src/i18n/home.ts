@@ -37,7 +37,7 @@ const home: TranslationDict = {
   "home.statViews": { en: "Views", zh: "阅读量" },
 
   // Sidebar - About
-  "home.aboutTitle": { en: "About Me", zh: "关于我" },
+  "home.aboutTitle": { en: "About", zh: "关于本站" },
   "home.aboutDescription": {
     en: "Notes on model mechanisms, long-context behavior, retrieval boundaries, and the engineering details behind reliable agent systems.",
     zh: "记录模型机制、长上下文行为、检索边界，以及可靠智能体系统背后的工程细节。",
@@ -119,6 +119,13 @@ const home: TranslationDict = {
   },
   "home.allNotes": { en: "Open archive", zh: "打开归档" },
   "home.startHere": { en: "Start here", zh: "从这里开始" },
+  "home.startHereHint": {
+    en: "Read the newest note, or enter a track if you already know the question.",
+    zh: "先读最新一篇，或按问题直接进入一条研究路径。",
+  },
+  "home.startLatest": { en: "Newest note", zh: "最新文章" },
+  "home.startAlgorithms": { en: "Algorithms path", zh: "算法路径" },
+  "home.startApplications": { en: "Applications path", zh: "应用路径" },
   "home.pathsPending": { en: "Paths loading", zh: "路径整理中" },
   "home.notesPending": { en: "Notes loading", zh: "文章整理中" },
   "home.pathCount": { en: "{count} paths", zh: "{count} 条路径" },
@@ -254,8 +261,8 @@ const home: TranslationDict = {
   "about.kicker": { en: "Author note", zh: "作者札记" },
   "about.title": { en: "Misaya Yang", zh: "Misaya Yang" },
   "about.subtitle": {
-    en: "I write about the mechanics of AI systems: model architecture, long-context behavior, agent infrastructure, retrieval, evaluation, and the engineering constraints behind reliable software.",
-    zh: "我记录 AI 系统的机制与工程：模型架构、长上下文行为、Agent 基础设施、检索、评测，以及可靠软件背后的工程约束。",
+    en: "Notes on the mechanics of AI systems: model architecture, long-context behavior, agent infrastructure, retrieval, evaluation, and the engineering constraints behind reliable software.",
+    zh: "记录 AI 系统的机制与工程：模型架构、长上下文行为、Agent 基础设施、检索、评测，以及可靠软件背后的工程约束。",
   },
   "about.focusTitle": { en: "Current focus", zh: "当前关注" },
   "about.focusBody": {
@@ -361,6 +368,15 @@ const home: TranslationDict = {
     en: "Diffusion Models",
     zh: "扩散模型",
   },
+  "track.topic.rlhf": { en: "RLHF", zh: "RLHF" },
+  "track.topic.preferenceOptimization": {
+    en: "Preference Optimization",
+    zh: "偏好优化",
+  },
+  "track.topic.verifiableRewards": {
+    en: "Verifiable Rewards",
+    zh: "可验证奖励",
+  },
   "track.topic.agentSystems": { en: "Agent Systems", zh: "Agent 系统" },
   "track.topic.toolUse": { en: "Tool Use", zh: "工具调用" },
   "track.topic.harnessEngine": { en: "Harness Engine", zh: "Harness Engine" },
@@ -459,6 +475,22 @@ const home: TranslationDict = {
   "series.generativeModeling.next2": {
     en: "Conditional transport",
     zh: "条件运输",
+  },
+  "series.llmPostTrainingRl.title": {
+    en: "LLM Post-Training and RL",
+    zh: "大模型后训练与强化学习",
+  },
+  "series.llmPostTrainingRl.promise": {
+    en: "RLHF, preference optimization, verifiable rewards, and agent RL after pretraining.",
+    zh: "从 RLHF、偏好优化、可验证奖励到 Agent RL 的后训练路线图。",
+  },
+  "series.llmPostTrainingRl.next1": {
+    en: "RLVR reward design",
+    zh: "RLVR 奖励设计",
+  },
+  "series.llmPostTrainingRl.next2": {
+    en: "Beyond DPO",
+    zh: "DPO 之后",
   },
 };
 

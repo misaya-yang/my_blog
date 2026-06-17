@@ -747,14 +747,11 @@ describe("AI agent harness", () => {
         status: "completed",
         sourceCards: result.sourceCards,
       },
-      reasoningMarkdown: "Inspecting retrieved public context.",
     });
+    expect(finalEvent).not.toHaveProperty("reasoningMarkdown");
+    expect(events.some(event => event.type === "reasoning_delta")).toBe(false);
     expect(events).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({
-          type: "reasoning_delta",
-          delta: "Inspecting retrieved public context.\n",
-        }),
         expect.objectContaining({
           type: "answer_delta",
           delta: "Harness engines stream grounded answers.",
@@ -770,9 +767,11 @@ describe("AI agent harness", () => {
       content: "Harness engines stream grounded answers.",
       sourceJson: {
         sourceCards: result.sourceCards,
-        reasoningMarkdown: "Inspecting retrieved public context.",
       },
     });
+    expect(assistantMessage?.sourceJson).not.toHaveProperty(
+      "reasoningMarkdown"
+    );
   });
 
   it("streams a source-grounded fallback instead of an error when the model is not configured", async () => {

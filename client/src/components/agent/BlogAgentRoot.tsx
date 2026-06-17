@@ -48,6 +48,7 @@ import {
   isAbortError,
   isTimeoutError,
   streamAgentMessage,
+  type AgentAnswerMode,
 } from "./streamClient";
 import type {
   AgentTraceEntry,
@@ -232,7 +233,6 @@ export function BlogAgentRoot() {
       id: assistantMessageId,
       role: "assistant",
       content: "",
-      reasoningMarkdown: "",
       traceEntries: [],
       streaming: true,
     };
@@ -248,6 +248,7 @@ export function BlogAgentRoot() {
         conversationId,
         message: trimmed,
         routeContext,
+        answerMode: inferAnswerMode(trimmed, routeContext),
         signal: controller.signal,
         onStatus: event => {
           setMessages(current =>
@@ -262,18 +263,6 @@ export function BlogAgentRoot() {
                       currentPageContextInjected:
                         event.currentPageContextInjected,
                     }),
-                  }
-                : item
-            )
-          );
-        },
-        onReasoningDelta: delta => {
-          setMessages(current =>
-            current.map(item =>
-              item.id === assistantMessageId
-                ? {
-                    ...item,
-                    reasoningMarkdown: `${item.reasoningMarkdown ?? ""}${delta}`,
                   }
                 : item
             )
@@ -334,8 +323,6 @@ export function BlogAgentRoot() {
                     content: response.answer.answerMarkdown,
                     sourceCards: response.sourceCards,
                     relatedQuestions: response.relatedQuestions,
-                    reasoningMarkdown:
-                      event.reasoningMarkdown ?? item.reasoningMarkdown,
                     streaming: false,
                   }
                 : item
@@ -1338,9 +1325,7 @@ function AgentReasoningTrace({ message }: { message: ChatMessage }) {
   if (message.role !== "assistant") return null;
 
   const traceEntries = message.traceEntries ?? [];
-  const reasoningMarkdown = message.reasoningMarkdown?.trim();
-  const hasTrace =
-    message.streaming || traceEntries.length > 0 || Boolean(reasoningMarkdown);
+  const hasTrace = message.streaming || traceEntries.length > 0;
   if (!hasTrace) return null;
 
   const elapsedMs = Math.max(0, ...traceEntries.map(entry => entry.elapsedMs));
@@ -1385,22 +1370,6 @@ function AgentReasoningTrace({ message }: { message: ChatMessage }) {
           </ol>
         )}
 
-        {reasoningMarkdown && (
-          <div className="mt-2 rounded-md border border-slate-700/60 bg-black/20 px-3 py-2">
-            <div className="mb-1 text-[0.68rem] font-semibold uppercase text-slate-500">
-              {t("agent.trace.reasoning")}
-            </div>
-            <div className="prose prose-xs prose-invert max-h-44 max-w-none overflow-y-auto text-xs leading-5 prose-p:my-1.5 prose-li:my-1">
-              <Suspense
-                fallback={
-                  <p className="whitespace-pre-wrap">{reasoningMarkdown}</p>
-                }
-              >
-                <AgentMarkdown>{reasoningMarkdown}</AgentMarkdown>
-              </Suspense>
-            </div>
-          </div>
-        )}
       </div>
     </details>
   );
@@ -1424,6 +1393,30 @@ function traceStageLabel(
 
 function formatElapsedSeconds(elapsedMs: number) {
   return (elapsedMs / 1000).toFixed(elapsedMs < 10_000 ? 1 : 0);
+}
+
+export function inferAnswerMode(
+  message: string,
+  routeContext?: AgentRouteContext
+): AgentAnswerMode {
+  const normalized = message.toLowerCase();
+  if (/compare|对比|比较/.test(normalized)) return "compare";
+  if (
+    /path|checklist|next|first|read next|reading path|阅读路径|阅读清单|清单|下一篇|先读/.test(
+      normalized
+    )
+  ) {
+    return "reading_path";
+  }
+  if (
+    /deep|implementation|implication|failure|assumption|source|detail|实现|启发|假设|失败|来源|细节/.test(
+      normalized
+    )
+  ) {
+    return "deep";
+  }
+  if (routeContext?.routeType === "post") return "deep";
+  return "summary";
 }
 
 function AgentRelatedQuestions({

@@ -156,4 +156,70 @@ describe("content quality audit", () => {
         .map(issue => issue.line)
     ).toEqual([9, 13]);
   });
+
+  it("distinguishes shell-provided titles from true missing H1 defects", async () => {
+    const root = await createTempProject();
+    await writeFile(
+      join(root, "seed-blog.mjs"),
+      `
+      const posts = [
+        {
+          title: "Shell Titled",
+          slug: "shell-titled",
+          contentPath: "./shell.md",
+          status: "published",
+          visibility: "public",
+          excerpt: "Uses shell title.",
+        },
+      ];
+      `
+    );
+    await writeFile(join(root, "shell.md"), "Body starts without an H1.");
+    await writeFile(join(root, "orphan.md"), "Orphan body starts without an H1.");
+
+    const report = await runContentQualityAudit(root);
+
+    expect(report.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          severity: "warning",
+          code: "content.shell_title_only",
+          file: "shell.md",
+        }),
+        expect.objectContaining({
+          severity: "failure",
+          code: "content.missing_h1",
+          file: "orphan.md",
+        }),
+      ])
+    );
+  });
+
+  it("ignores phase evidence markdown snapshots in the project root", async () => {
+    const root = await createTempProject();
+    await writeFile(
+      join(root, "seed-blog.mjs"),
+      `
+      const posts = [
+        {
+          title: "Seeded",
+          slug: "seeded",
+          contentPath: "./seeded.md",
+          status: "published",
+          visibility: "public",
+          excerpt: "Seeded note.",
+        },
+      ];
+      `
+    );
+    await writeFile(join(root, "seeded.md"), "# Seeded\n\nBody.");
+    await writeFile(join(root, "wpu-01-home-mobile-snapshot.md"), "snapshot text");
+
+    const report = await runContentQualityAudit(root);
+
+    expect(report.summary.markdownFiles).toBe(1);
+    expect(report.issues.map(issue => issue.file)).not.toContain(
+      "wpu-01-home-mobile-snapshot.md"
+    );
+  });
 });

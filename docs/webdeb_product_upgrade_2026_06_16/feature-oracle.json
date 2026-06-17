@@ -1,0 +1,105 @@
+{
+  "schema_version": "prd-phase-harness/feature-oracle/v1",
+  "instructions": {
+    "allowed_edits": "Coding agents may update only status, evidence, and notes fields unless the user explicitly changes scope.",
+    "completion_rule": "A feature is passing only after end-to-end evidence exists.",
+    "status_values": [
+      "failing",
+      "passing",
+      "blocked",
+      "waived"
+    ]
+  },
+  "features": [
+    {
+      "id": "WPU-F001",
+      "phase_id": "WPU-00",
+      "category": "baseline",
+      "description": "The current WebDeb product baseline is documented with code facts, screenshots, validation output, and risk-ranked findings.",
+      "steps": [
+        "Run pnpm check, pnpm test, pnpm content:audit, and pnpm build or document blockers.",
+        "Capture or cite desktop and mobile screenshots for home and one public article.",
+        "Update source-packet.md, progress-log.md, agent-handoff.md, and continuity-ledger.md with current facts."
+      ],
+      "status": "passing",
+      "evidence": "docs/webdeb_product_upgrade_2026_06_16/reports/wpu-00-baseline-product-audit-report.md records pnpm check, pnpm test, pnpm content:audit, local server startup, screenshots, source-packet writeback, and continuity handoff.",
+      "notes": "Authenticated owner screenshots were not captured; downstream owner phases must capture them or document fallback evidence."
+    },
+    {
+      "id": "WPU-F002",
+      "phase_id": "WPU-01",
+      "category": "ui",
+      "description": "A new reader can identify the first recommended reading path on home, and article readers can enter the article without auxiliary modules dominating the first viewport.",
+      "steps": [
+        "Open / at 1440x900 and 390x844.",
+        "Verify home shows search, current/latest article, dual tracks, and a clear first-read path without misleading loading or empty states.",
+        "Open /post/goal-harness-agent-phase-protocol at 1440x900 and 390x844.",
+        "Verify article title, core claim or reading brief, compact TOC/series affordance, and reader assistant entry are visible without layout overflow."
+      ],
+      "status": "passing",
+      "evidence": "reports/wpu-01-reader-ia-and-visual-system-report.md; screenshots wpu-01-home-desktop.png, wpu-01-home-mobile.png, wpu-01-post-desktop.png, wpu-01-post-mobile-after.png, wpu-01-algorithms-desktop.png, wpu-01-algorithms-mobile.png, wpu-01-applications-desktop.png, wpu-01-applications-mobile.png, wpu-01-search-zero-mobile.png; validation pnpm check, pnpm test, pnpm build, AUDIT_BASE_URL=http://localhost:3000 pnpm audit:ui.",
+      "notes": "Home now has a visible first-read path after search. Mobile article entry and TOC are restored through a final CSS override instead of being hidden. WPU-02 may rely on the article companion entry remaining visible."
+    },
+    {
+      "id": "WPU-F003",
+      "phase_id": "WPU-02",
+      "category": "agent",
+      "description": "The public Blog Agent answers only from public sources, never exposes raw reasoning, supports useful article/track modes, and renders source-card evidence.",
+      "steps": [
+        "Ask an article-grounded question on a public article.",
+        "Verify source cards are shown and no raw reasoning or internal planning is visible.",
+        "Ask about hidden/admin/draft content and verify the answer refuses or explains public-source limits.",
+        "Verify timeout, cancel, quota, history, and mobile panel states remain usable.",
+        "Run focused Agent tests."
+      ],
+      "status": "passing",
+      "evidence": "reports/wpu-02-article-companion-and-agent-ux-report.md; focused Agent tests passed; pnpm check passed; pnpm build passed; static privacy search found only internal/no-op/test reasoning hits; screenshots wpu-02-agent-desktop.png, wpu-02-agent-mobile.png, wpu-02-agent-hidden-mobile.png, wpu-02-agent-hidden-desktop-final.png.",
+      "notes": "Public stream no longer emits reasoning_delta or final reasoningMarkdown. Client ChatMessage no longer carries reasoningMarkdown, and persisted legacy reasoningMarkdown is ignored. answerMode is sent from the public Agent path via intent inference. Hidden-content prompt was bounded to public-source limits without source cards or hidden text."
+    },
+    {
+      "id": "WPU-F004",
+      "phase_id": "WPU-03",
+      "category": "owner-workflow",
+      "description": "The author can convert reader feedback, search misses, and Agent question radar into a durable writing backlog with clear statuses and privacy boundaries.",
+      "steps": [
+        "Open /manage and /manage/agent as an authenticated owner or document unauthenticated fallback.",
+        "Verify feedback, subscriptions, search misses, Agent runs, and question radar are visible as writing signals.",
+        "Verify writing backlog statuses persist beyond localStorage if persistence is implemented, or a blocker is documented.",
+        "Verify no private context, email, IP, or hidden content is exposed in backlog evidence."
+      ],
+      "status": "passing",
+      "evidence": "reports/wpu-03-writing-workbench-and-content-backlog-report.md; owner workflow tests passed; pnpm check passed; pnpm test passed; pnpm build passed; screenshots wpu-03-manage-desktop.png, wpu-03-manage-mobile.png, wpu-03-manage-agent-desktop.png, wpu-03-manage-agent-mobile.png, wpu-03-write-seed-desktop.png, wpu-03-write-seed-mobile.png.",
+      "notes": "The owner writing backlog is exposed on /manage and combines feedback, search misses, and Agent question radar ideas. Feedback status is database-backed; Agent idea status persistence remains a documented localStorage gap because no migration was introduced. Contact data is redacted in feedback/search-miss backlog evidence. Browser checks used unauthenticated fallback plus code-level admin evidence."
+    },
+    {
+      "id": "WPU-F005",
+      "phase_id": "WPU-04",
+      "category": "content-discovery",
+      "description": "Seed, fallback, series catalog, track pages, search, RSS, sitemap, and Agent chunks agree on the same public content atlas.",
+      "steps": [
+        "Verify public and hidden slugs are consistent across seed-blog.mjs, server/publicSeedPosts.ts, shared/content-series.ts, discovery, RSS, sitemap, and Agent chunks.",
+        "Verify public fallback articles have series, track, excerpt, cover/thumbnail strategy, and title parity.",
+        "Verify search handles key aliases and Chinese/English mixed terms better than plain substring matching, or records a blocker.",
+        "Run content, discovery, SEO, and publish-freshness tests."
+      ],
+      "status": "passing",
+      "evidence": "reports/wpu-04-content-atlas-and-article-quality-report.md; focused content/discovery/SEO/freshness tests passed; pnpm content:audit passed; pnpm content:verify passed with 7 public posts, 114 chunks, 0 blockers; pnpm check passed; pnpm test passed; browser route evidence wpu-04-*.png and wpu-04-*.txt.",
+      "notes": "Fallback public posts now derive primary series metadata from shared/content-series.ts. Discovery search supports lightweight aliases for mixed Chinese/English topic queries while keeping hidden/draft posts excluded. RSS includes lastBuildDate and atom:updated. Search miss persistence remains deferred and documented; WPU-03 redaction remains in place."
+    },
+    {
+      "id": "WPU-F006",
+      "phase_id": "WPU-05",
+      "category": "release",
+      "description": "A release candidate can prove UI, Agent, content freshness, feeds, sitemap, hidden-content boundaries, privacy, and rollback readiness in one evidence packet.",
+      "steps": [
+        "Run pnpm check, pnpm test, pnpm build, pnpm content:audit, pnpm content:publish, and focused Agent tests or document blockers.",
+        "Run browser route checks against a live local server.",
+        "Verify release report marks skipped checks as blocked or waived, never silently passing.",
+        "Verify rollback notes and non-deployment status are explicit unless the user approved deployment."
+      ],
+      "status": "passing",
+      "evidence": "reports/wpu-05-release-and-evaluation-gates-report.md; pnpm check passed; pnpm test passed with 32 files and 201 tests; pnpm content:audit passed; pnpm content:publish passed with 7/7 public posts indexed, 114 chunks, 1 hidden/draft excluded, 0 blockers; pnpm build passed; AUDIT_BASE_URL=http://localhost:3000 pnpm audit:baseline:quick passed; AUDIT_BASE_URL=http://localhost:3000 pnpm audit:ui passed; browser evidence wpu-05-*.png, wpu-05-*.txt, wpu-05-agent-hidden-refusal.json.",
+      "notes": "Release verdict is locally passing and deployment was approved in the 2026-06-17 review turn. Baseline quick retains 4 known gaps but exits successfully with 14 route checks and 0 skipped routes. Owner authenticated screenshots were not available; Manage Agent fallback plus admin-only tests/code evidence are recorded. Generated evidence files should be curated before commit."
+    }
+  ]
+}

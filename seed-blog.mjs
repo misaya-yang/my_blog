@@ -138,6 +138,30 @@ const posts = [
     ],
   },
   {
+    title: "大模型强化学习：从 RLHF 到可验证奖励的后训练主线",
+    slug: "llm-rl-post-training-verifiable-rewards",
+    contentPath: "./llm_rl_post_training.md",
+    categorySlug: "ai-algorithms",
+    status: "published",
+    visibility: "public",
+    publishedAt: "2026-06-17T00:00:00.000Z",
+    featuredRank: 7,
+    pinnedTrack: "algorithms",
+    excerpt:
+      "一篇面向后训练技术栈的系统梳理：把 RLHF、DPO、RLAIF、RLVR、GRPO、PRM、Verifier 与 Agent RL 放进同一张反馈系统地图。",
+    tags: [
+      { name: "RLHF", slug: "rlhf" },
+      { name: "Reinforcement Learning", slug: "reinforcement-learning" },
+      { name: "Post-training", slug: "post-training" },
+      { name: "Preference Optimization", slug: "preference-optimization" },
+      { name: "DPO", slug: "dpo" },
+      { name: "RLVR", slug: "rlvr" },
+      { name: "GRPO", slug: "grpo" },
+      { name: "Verifier", slug: "verifier" },
+      { name: "Agent RL", slug: "agent-rl" },
+    ],
+  },
+  {
     title:
       "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
     slug: "agent-harness-engine-evaluating-tool-using-agents",

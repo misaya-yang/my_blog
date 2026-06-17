@@ -86,7 +86,7 @@ This gives a tuning constraint: keep $\\alpha$ small enough to avoid damaging lo
 
 ### Translation Invariance Perturbation
 
-I also analyzed how much DF-RoPE violates translation invariance (a key property of standard RoPE). For a shift
+The analysis also measures how much DF-RoPE violates translation invariance (a key property of standard RoPE). For a shift
 $\\tau$
 :
 
@@ -96,11 +96,11 @@ $$
 
 This bound shows that the perturbation grows with
 $\\tau$
-, but slowly—exactly what we want to inject absolute positional information without destroying local structure.
+, but slowly, which is exactly the desired behavior for injecting absolute positional information without destroying local structure.
 
 ## Frequency-Domain Perspective
 
-To understand DF-RoPE more deeply, I analyzed it through the lens of **frequency modulation (FM)**. In signal processing, FM with a sinusoidal carrier produces sidebands described by Bessel functions:
+DF-RoPE can also be analyzed through the lens of **frequency modulation (FM)**. In signal processing, FM with a sinusoidal carrier produces sidebands described by Bessel functions:
 
 $$
 e^{i \\beta \\sin(\\omega_{\\text{mod}} t)} = \\sum_{n=-\\infty}^{\\infty} J_n(\\beta) e^{i n \\omega_{\\text{mod}} t}
@@ -124,7 +124,7 @@ $\\omega_k \\pm \\omega_{\\text{mod}}$
 
 ### Multi-Frequency Extension
 
-Motivated by this FM perspective, I also explored using **multiple modulation frequencies**:
+Motivated by this FM perspective, DF-RoPE can also use **multiple modulation frequencies**:
 
 $$
 f(t) = 1 + \\sum_{j=1}^{J} \\alpha_j \\sin(\\omega_j t)
@@ -134,36 +134,36 @@ This creates a richer phase landscape, further reducing aliasing while maintaini
 
 ## Adaptive Modulation Index Control
 
-One challenge I faced was choosing the right modulation strength for each attention head. Different heads specialize in different ranges—some focus on local context, others on long-range dependencies. I developed a **per-head modulation index control** scheme:
+One practical challenge is choosing the right modulation strength for each attention head. Different heads specialize in different ranges: some focus on local context, while others handle long-range dependencies. DF-RoPE addresses this with a **per-head modulation index control** scheme:
 
 For head
 $h$
 with base frequencies
 $\\{\\omega_k^{(h)}\\}$
-, I compute:
+, compute:
 
 $$
 \\beta_h = \\frac{\\alpha \\cdot \\text{median}(\\{\\omega_k^{(h)}\\})}{\\omega_{\\text{mod}}}
 $$
 
-Then I scale
+Then scale
 $\\alpha_h$
 to keep
 $\\beta_h$
-within a target range (e.g., 0.1–0.5). This ensures that:
+within a target range (e.g., 0.1-0.5). This ensures that:
 
 - Low-frequency heads (long-range) get stronger modulation
 - High-frequency heads (local) get weaker modulation
 
 ## Implementation Details
 
-I implemented DF-RoPE with two key optimizations:
+The implementation uses two key optimizations:
 
 ### 1. Block-Level Evaluation
 
 Instead of computing
 $\\int_0^m f(t) dt$
-from scratch for every position, I precompute it in blocks:
+from scratch for every position, precompute it in blocks:
 
 ```python
 def compute_phase_blocks(m_max, omega_k, alpha, omega_mod, block_size=1024):
@@ -178,7 +178,7 @@ def compute_phase_blocks(m_max, omega_k, alpha, omega_mod, block_size=1024):
 
 ### 2. Stable Recursive Computation
 
-For online inference, I use a numerically stable recursive formula:
+For online inference, use a numerically stable recursive formula:
 
 $$
 \\phi_k(m+1) = \\phi_k(m) + \\omega_k f(m)
@@ -206,7 +206,7 @@ Useful checks include:
 
 ### Why DF-RoPE Works
 
-The success of DF-RoPE comes from a simple principle: **you don't need perfect translation invariance to model sequences**. By introducing a controlled, slow-varying phase drift, we get:
+The success of DF-RoPE comes from a simple principle: **perfect translation invariance is not required to model sequences**. A controlled, slow-varying phase drift yields:
 
 1. **Local fidelity**: Nearby positions still have nearly-linear phase relationships
 2. **Global disambiguation**: Far-apart positions accumulate enough phase difference to be distinguishable
@@ -220,9 +220,9 @@ The success of DF-RoPE comes from a simple principle: **you don't need perfect t
   $\\omega_{\\text{mod}}$
   still requires some trial-and-error
 - **Multi-modal sequences**: How does DF-RoPE behave with mixed modalities (text + images)?
-- **Theoretical optimality**: Is sinusoidal modulation the best choice, or can we derive an optimal
+- **Theoretical optimality**: Is sinusoidal modulation the best choice, or can an optimal
   $f(t)$
-  from first principles?
+  be derived from first principles?
 
 ### Connections to Other Work
 

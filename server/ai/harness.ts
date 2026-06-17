@@ -919,12 +919,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
                 }
                 emit({ type: "answer_delta", delta, elapsedMs: elapsedMs() });
               },
-              onReasoningDelta: delta =>
-                emit({
-                  type: "reasoning_delta",
-                  delta,
-                  elapsedMs: elapsedMs(),
-                }),
+              onReasoningDelta: () => {},
             })
           : await deps.model.generate({
               message: input.message,
@@ -955,7 +950,6 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           content: answer.answerMarkdown,
           sourceJson: {
             sourceCards: answer.sourceCards,
-            reasoningMarkdown: modelResult.reasoningMarkdown ?? null,
           },
           usageJson: {
             inputTokens: modelResult.inputTokens ?? 0,
@@ -991,7 +985,6 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           type: "final",
           output,
           elapsedMs: elapsedMs(),
-          reasoningMarkdown: modelResult.reasoningMarkdown,
         });
         return output;
       } catch (error) {

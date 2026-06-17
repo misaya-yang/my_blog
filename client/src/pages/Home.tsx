@@ -20,6 +20,7 @@ import {
   ArrowRight,
   FileText,
   GitBranch,
+  Route,
   Search,
   Settings2,
 } from "lucide-react";
@@ -75,39 +76,69 @@ function renderHeroTitle(language: "en" | "zh") {
   );
 }
 
-function getPrimarySeries(
-  track: TrackKind,
-  publicSeries: TrackSeriesConfig[]
-) {
-  if (track === "applications") {
-    return (
-      publicSeries.find(series => series.slug === "agent-runtime-systems") ??
-      publicSeries[0] ??
-      null
-    );
-  }
-
-  return publicSeries[0] ?? null;
+export function getPostPublishedTime(post: ArticleCardPost) {
+  if (!post.publishedAt) return 0;
+  const time = new Date(post.publishedAt).getTime();
+  return Number.isNaN(time) ? 0 : time;
 }
 
-function getRepresentativePosts(
+export function sortPostsNewestFirst(posts: ArticleCardPost[]) {
+  return [...posts].sort((a, b) => {
+    const timeDiff = getPostPublishedTime(b) - getPostPublishedTime(a);
+    if (timeDiff !== 0) return timeDiff;
+    return String(a.title ?? a.slug).localeCompare(String(b.title ?? b.slug));
+  });
+}
+
+function getLatestSeriesPostTime(
+  series: TrackSeriesConfig,
+  postsBySlug: Map<string, ArticleCardPost>
+) {
+  return Math.max(
+    0,
+    ...series.postSlugs.map(slug => {
+      const post = postsBySlug.get(slug);
+      return post ? getPostPublishedTime(post) : 0;
+    })
+  );
+}
+
+export function getPrimarySeries(
+  publicSeries: TrackSeriesConfig[],
+  posts: ArticleCardPost[]
+) {
+  const postsBySlug = new Map(posts.map(post => [post.slug, post]));
+  const sortedSeries = [...publicSeries].sort((a, b) => {
+    const timeDiff =
+      getLatestSeriesPostTime(b, postsBySlug) -
+      getLatestSeriesPostTime(a, postsBySlug);
+    if (timeDiff !== 0) return timeDiff;
+    return a.slug.localeCompare(b.slug);
+  });
+
+  return sortedSeries[0] ?? null;
+}
+
+export function getRepresentativePosts(
   posts: ArticleCardPost[],
-  track: TrackKind,
-  publicSeries: TrackSeriesConfig[]
+  track: TrackKind
 ) {
   const config = trackConfigs[track];
   const trackPosts = posts.filter(
     post => post.category?.slug === config.categorySlug
   );
-  const postsBySlug = new Map(trackPosts.map(post => [post.slug, post]));
-  const orderedSlugs = publicSeries.flatMap(series => series.postSlugs);
-  const orderedPosts = orderedSlugs
-    .map(slug => postsBySlug.get(slug))
-    .filter((post): post is ArticleCardPost => Boolean(post));
-  const orderedSet = new Set(orderedPosts.map(post => post.slug));
-  const fallbackPosts = trackPosts.filter(post => !orderedSet.has(post.slug));
 
-  return [...orderedPosts, ...fallbackPosts].slice(0, 2);
+  return sortPostsNewestFirst(trackPosts).slice(0, 2);
+}
+
+function getPanelPathSummary(
+  track: TrackKind,
+  primarySeries: TrackSeriesConfig | null,
+  t: (key: string, vars?: Record<string, string | number>) => string
+) {
+  if (primarySeries) return t(primarySeries.promiseKey);
+  if (track === "applications") return t("home.applicationsPathSummary");
+  return t("home.algorithmsPathSummary");
 }
 
 function FeaturedNote({
@@ -233,6 +264,35 @@ function TrackPanel({
   );
 }
 
+function StartHerePath({
+  featuredPost,
+  t,
+}: {
+  featuredPost?: ArticleCardPost;
+  t: (key: string, vars?: Record<string, string | number>) => string;
+}) {
+  return (
+    <nav className="home-start-path" aria-label={t("home.startHere")}>
+      <div className="home-start-path-copy">
+        <Route className="h-4 w-4 text-sky-200" aria-hidden="true" />
+        <div>
+          <strong>{t("home.startHere")}</strong>
+          <span>{t("home.startHereHint")}</span>
+        </div>
+      </div>
+      <div className="home-start-path-actions">
+        {featuredPost && (
+          <Link href={`/post/${featuredPost.slug}`}>
+            {t("home.startLatest")}
+          </Link>
+        )}
+        <Link href="/applications">{t("home.startApplications")}</Link>
+        <Link href="/algorithms">{t("home.startAlgorithms")}</Link>
+      </div>
+    </nav>
+  );
+}
+
 export default function Home() {
   const { isAdmin } = useAuth();
   const { language, t } = useLanguage();
@@ -244,17 +304,22 @@ export default function Home() {
   const { data: posts, isLoading } = trpc.posts.list.useQuery({
     status: "published",
     limit: 20,
-    orderBy: "featured",
+    orderBy: "publishedAt",
   });
 
-  const publishedPosts = (posts?.posts ?? []) as ArticleCardPost[];
-  const publicSeriesByTrack: Record<
-    TrackKind,
-    ReturnType<typeof getPublicTrackSeries>
-  > = {
-    algorithms: getPublicTrackSeries("algorithms", publishedPosts),
-    applications: getPublicTrackSeries("applications", publishedPosts),
-  };
+  const publishedPosts = useMemo(
+    () => sortPostsNewestFirst((posts?.posts ?? []) as ArticleCardPost[]),
+    [posts?.posts]
+  );
+  const publicSeriesByTrack = useMemo<
+    Record<TrackKind, ReturnType<typeof getPublicTrackSeries>>
+  >(
+    () => ({
+      algorithms: getPublicTrackSeries("algorithms", publishedPosts),
+      applications: getPublicTrackSeries("applications", publishedPosts),
+    }),
+    [publishedPosts]
+  );
 
   useEffect(() => {
     if (!isLoading) {
@@ -281,7 +346,7 @@ export default function Home() {
       portalTracks.map(track => {
         const config = trackConfigs[track];
         const publicSeries = publicSeriesByTrack[track];
-        const primarySeries = getPrimarySeries(track, publicSeries);
+        const primarySeries = getPrimarySeries(publicSeries, publishedPosts);
         const publicCount = countTrackPosts(publishedPosts, track);
         const pathCount = publicSeries.length;
 
@@ -301,19 +366,15 @@ export default function Home() {
                 "home.publicNotes",
                 { count: publicCount }
               )}`,
-          pathTitle:
-            track === "applications" && primarySeries
-              ? t(primarySeries.titleKey)
-              : t("home.algorithmsPathTitle"),
-          pathSummary:
-            track === "applications"
-              ? t("home.applicationsPathSummary")
-              : t("home.algorithmsPathSummary"),
+          pathTitle: primarySeries
+            ? t(primarySeries.titleKey)
+            : t("home.algorithmsPathTitle"),
+          pathSummary: getPanelPathSummary(track, primarySeries, t),
           actionLabel:
             track === "applications"
               ? t("home.enterApplications")
               : t("home.enterAlgorithms"),
-          posts: getRepresentativePosts(publishedPosts, track, publicSeries),
+          posts: getRepresentativePosts(publishedPosts, track),
         };
       }),
     [isLoading, publishedPosts, publicSeriesByTrack, t]
@@ -372,6 +433,8 @@ export default function Home() {
                   </Button>
                 </div>
               </form>
+
+              <StartHerePath featuredPost={featuredPost} t={t} />
 
               <FeaturedNote
                 post={featuredPost}

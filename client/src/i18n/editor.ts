@@ -138,6 +138,26 @@ const editor: TranslationDict = {
     en: "Restore this version? The current content will be saved as a new version first.",
     zh: "确认恢复这个版本吗？当前内容会先保存为一个新版本。",
   },
+  "editor.backlogSeed.source": {
+    en: "Backlog source",
+    zh: "Backlog 来源",
+  },
+  "editor.backlogSeed.readerQuestion": {
+    en: "Reader question or missing path",
+    zh: "读者问题或缺失路径",
+  },
+  "editor.backlogSeed.claim": {
+    en: "Claim to make precise",
+    zh: "需要精确化的主张",
+  },
+  "editor.backlogSeed.evidence": {
+    en: "Evidence and implementation notes",
+    zh: "证据与实现笔记",
+  },
+  "editor.backlogSeed.caveats": {
+    en: "Caveats and follow-ups",
+    zh: "限制与后续问题",
+  },
 
   // Link dialog
   "editor.linkDialogTitle": { en: "Insert Link", zh: "插入链接" },

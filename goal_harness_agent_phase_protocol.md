@@ -63,7 +63,7 @@ Coding Agent 的职责刚好相反：它不重新发明全局计划，只在既�
 这个模式的亮点不在“用了多 Agent”，而在把长任务从聊天流搬进仓库状态。面试里如果只说“让 Claude Code 先规划再编码”，信息量不够；更有区分度的说法是：
 
 - Initializer Agent 负责把自然语言需求编译成可执行测试簿，避免后续 session 被空泛 PRD 牵着走。
-- `failing -> passing` 的 feature list 是轻量 acceptance test registry，不依赖模型自我感觉。
+- `failing -> passing` 的 feature list 是轻量 acceptance test registry，不依赖模型主观判断。
 - `init.sh` 和初始 commit 解决环境可复现问题，进度日志解决上下文窗口断裂问题。
 - Coding Agent 每轮只做小批量 failing items，天然形成可 code review、可回滚、可继续的增量。
 - Goal Harness 可以把 Anthropic 的进度日志升级成 phase folder：Source Packet 记录可信上下文，Feature Oracle 记录 failing/passing，Phase Contract 限定读写边界，Evidence Report 记录验证证据。

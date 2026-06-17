@@ -40,6 +40,12 @@ describe("publish freshness track coverage", () => {
         pinnedTrack: "algorithms",
       }),
       publicPost({
+        slug: "llm-rl-post-training-verifiable-rewards",
+        categorySlug: "ai-algorithms",
+        seriesSlug: "llm-post-training-rl",
+        pinnedTrack: "algorithms",
+      }),
+      publicPost({
         slug: "agent-harness-engine-evaluating-tool-using-agents",
         categorySlug: "ai-applications",
         seriesSlug: "agent-runtime-systems",

@@ -50,6 +50,13 @@ pids
 # Playwright MCP artifacts
 .playwright-mcp/
 
+# Local product audit evidence
+/wpu-*.png
+/wpu-*.txt
+/wpu-*.json
+/wpu-*.md
+/webdeb-*.png
+
 # Playwright test outputs
 playwright-report/
 test-results/

@@ -153,6 +153,29 @@ export const contentSeriesCatalog = [
       "track.topic.diffusionModels",
     ],
   },
+  {
+    slug: "llm-post-training-rl",
+    title: "LLM Post-Training and RL",
+    promise:
+      "A map of RLHF, preference optimization, verifiable rewards, and agent RL after pretraining.",
+    track: "algorithms",
+    orderedPostSlugs: ["llm-rl-post-training-verifiable-rewards"],
+    expectedNext: [
+      "RLVR reward design for reasoning models",
+      "Preference optimization beyond DPO",
+    ],
+    titleKey: "series.llmPostTrainingRl.title",
+    promiseKey: "series.llmPostTrainingRl.promise",
+    expectedNextKeys: [
+      "series.llmPostTrainingRl.next1",
+      "series.llmPostTrainingRl.next2",
+    ],
+    conceptKeys: [
+      "track.topic.rlhf",
+      "track.topic.preferenceOptimization",
+      "track.topic.verifiableRewards",
+    ],
+  },
 ] satisfies ContentSeriesDefinition[];
 
 export function getContentSeriesBySlug(slug: string) {

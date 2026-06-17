@@ -3,13 +3,15 @@ import type { AgentTraceEntry, QuotaInfo, SourceCard } from "./types";
 
 export const AGENT_STREAM_TIMEOUT_MS = 45_000;
 
+export type AgentAnswerMode = "summary" | "deep" | "compare" | "reading_path";
+
 type AgentStreamCallbacks = {
   conversationId?: string;
   message: string;
   routeContext: AgentRouteContext;
+  answerMode?: AgentAnswerMode;
   signal?: AbortSignal;
   onStatus: (event: AgentStreamStatusEvent) => void;
-  onReasoningDelta: (delta: string) => void;
   onAnswerDelta: (delta: string) => void;
   onFinal: (event: AgentStreamFinalEvent) => void;
 };
@@ -22,7 +24,6 @@ type AgentStreamFinalEvent = {
   type: "final";
   output: AgentSendMessageResponse;
   elapsedMs: number;
-  reasoningMarkdown?: string;
 };
 
 type AgentSendMessageResponse =
@@ -56,9 +57,9 @@ export async function streamAgentMessage({
   conversationId,
   message,
   routeContext,
+  answerMode,
   signal,
   onStatus,
-  onReasoningDelta,
   onAnswerDelta,
   onFinal,
 }: AgentStreamCallbacks) {
@@ -82,6 +83,7 @@ export async function streamAgentMessage({
         conversationId,
         message,
         routeContext,
+        answerMode,
       }),
       signal: combinedSignal,
     });
@@ -99,12 +101,10 @@ export async function streamAgentMessage({
       event:
         | AgentStreamStatusEvent
         | AgentStreamFinalEvent
-        | { type: "reasoning_delta"; delta: string }
         | { type: "answer_delta"; delta: string }
         | { type: "error"; message: string }
     ) => {
       if (event.type === "status") onStatus(event);
-      if (event.type === "reasoning_delta") onReasoningDelta(event.delta);
       if (event.type === "answer_delta") onAnswerDelta(event.delta);
       if (event.type === "final") {
         finalSeen = true;
@@ -182,7 +182,6 @@ function parseSseFrame(
 ):
   | AgentStreamStatusEvent
   | AgentStreamFinalEvent
-  | { type: "reasoning_delta"; delta: string }
   | { type: "answer_delta"; delta: string }
   | { type: "error"; message: string }
   | null {

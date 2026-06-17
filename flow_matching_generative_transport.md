@@ -134,7 +134,7 @@ $$
 
 两者的差异不应被讲成“谁完全替代谁”。Diffusion 的 score/SDE 工具链成熟，训练经验和采样器积累很深。Flow Matching 的优势是目标更直接，ODE 采样自然，和直线路径、OT 配对、Transformer backbone 的组合很顺。
 
-我更愿意这样表述：
+更稳妥的表述是：
 
 > Diffusion 用去噪语言描述生成，Flow Matching 用速度场语言描述生成。
 
@@ -204,7 +204,7 @@ Stable Diffusion 3 使用 reweighted Rectified Flow formulation 与 MMDiT backbo
 
 ## 8. 为什么它在 2024 之后变得重要
 
-我认为原因有四个。
+原因主要有四个。
 
 第一，训练目标足够直接。Velocity regression 比很多 likelihood-based CNF 训练更容易落地，训练时也不必反复求解 ODE。
 
@@ -238,9 +238,9 @@ Guidance 也没有完全定型。Classifier-free guidance 可以迁移到 veloci
 
 最后，现代生成模型并不会只剩下 Flow Matching。Latent Diffusion、score-based model、consistency model、autoregressive model、transition-based model 都还在发展。更稳妥的判断是：Flow Matching 已经成为多模态生成模型的一条主线，而不是唯一答案。
 
-## 11. 我会怎么学
+## 11. 学习路径
 
-如果重新学习这条线，我会按这个顺序走。
+学习这条线可以按这个顺序走。
 
 1. 先理解 CNF 和 ODE flow。重点是 $dx/dt=v_t(x)$ 如何推动分布变化，以及连续性方程在说什么。
 2. 再理解 Diffusion 的 probability flow ODE。这样才能看清 Diffusion 和 Flow Matching 的翻译关系。
@@ -267,7 +267,7 @@ $$
 
 这个改写很有价值。它让 CNF、Diffusion、Probability Flow ODE、Rectified Flow、Optimal Transport、Schroedinger Bridge、Stochastic Interpolants、Riemannian Flow 和 Discrete Flow Matching 都能放进“路径、速度场、采样器”的框架里讨论。
 
-我对这条路线的判断很简单：Flow Matching 的核心不是“比 Diffusion 快”这么单一，而是把生成模型重新理解为一个可设计、可优化、可扩展的分布运输问题。速度场只是表面，真正值得研究的是路径怎么选、样本怎么配、采样怎么做、条件怎么对齐，以及这些选择如何进入真实的多模态系统。
+对这条路线的判断很简单：Flow Matching 的核心不是“比 Diffusion 快”这么单一，而是把生成模型重新理解为一个可设计、可优化、可扩展的分布运输问题。速度场只是表面，真正值得研究的是路径怎么选、样本怎么配、采样怎么做、条件怎么对齐，以及这些选择如何进入真实的多模态系统。
 
 ## References
 

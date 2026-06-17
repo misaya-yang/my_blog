@@ -357,11 +357,6 @@ export type AgentStreamEvent =
       currentPageContextInjected?: boolean;
     }
   | {
-      type: "reasoning_delta";
-      delta: string;
-      elapsedMs: number;
-    }
-  | {
       type: "answer_delta";
       delta: string;
       elapsedMs: number;
@@ -370,7 +365,6 @@ export type AgentStreamEvent =
       type: "final";
       output: AgentSendMessageOutput;
       elapsedMs: number;
-      reasoningMarkdown?: string;
     }
   | {
       type: "error";

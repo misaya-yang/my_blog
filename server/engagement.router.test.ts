@@ -305,7 +305,7 @@ describe("engagement router", () => {
         ...feedback,
         id: 12,
         type: "not_useful",
-        message: "Need implementation examples.",
+        message: "Need implementation examples. Email me at followup@example.com.",
         replyEmail: "followup@example.com",
       },
     ]);
@@ -329,6 +329,12 @@ describe("engagement router", () => {
       notUseful: 1,
       messageCount: 2,
     });
+    expect(summary.writingBacklog[0]).toMatchObject({
+      kind: "feedback",
+      title: publishedPost.title,
+      priority: "high",
+      status: "new",
+    });
     expect(summary.subscriptions).toMatchObject({
       total: 2,
       activeCount: 2,
@@ -344,6 +350,7 @@ describe("engagement router", () => {
     ).toContain("agents");
     expect(JSON.stringify(summary)).not.toContain("reader@example.com");
     expect(JSON.stringify(summary)).not.toContain("followup@example.com");
+    expect(JSON.stringify(summary)).toContain("[redacted-email]");
   });
 
   it("turns zero-result searches into owner-only content opportunities", async () => {
@@ -351,7 +358,7 @@ describe("engagement router", () => {
       results: [],
       total: 0,
     } as any);
-    const query = "uncovered agent memory pattern";
+    const query = "uncovered agent memory pattern from reader@example.com";
     const anonymousCaller = routers.appRouter.createCaller(
       createContext("", "203.0.113.120").ctx
     ) as any;
@@ -370,15 +377,22 @@ describe("engagement router", () => {
       uniqueQueries: 1,
       opportunities: [
         expect.objectContaining({
-          query,
-          normalizedQuery: query,
+          query: "uncovered agent memory pattern from [redacted-email]",
+          normalizedQuery:
+            "uncovered agent memory pattern from [redacted-email]",
           count: 2,
         }),
       ],
     });
     expect(summary.searchMisses.opportunities[0].suggestedPrompt).toContain(
-      query
+      "uncovered agent memory pattern"
     );
+    expect(summary.writingBacklog[0]).toMatchObject({
+      kind: "search_miss",
+      priority: "high",
+      status: "new",
+    });
+    expect(summary.writingBacklog[0].draftHref).toContain("/write?idea=");
     expect(JSON.stringify(summary.searchMisses)).not.toContain("203.0.113.120");
     expect(JSON.stringify(summary.searchMisses)).not.toContain(
       "reader@example.com"

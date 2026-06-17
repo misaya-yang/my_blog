@@ -115,6 +115,8 @@ describe("SEO distribution endpoints", () => {
     expect(response.headers.get("content-type")).toContain("application/rss+xml");
     expect(xml).toContain("<rss");
     expect(xml).toContain("<title>Agent Harness Engine</title>");
+    expect(xml).toContain("<lastBuildDate>");
+    expect(xml).toContain("<atom:updated>");
     expect(xml).toContain("<category>Harness Engine</category>");
     expect(xml).not.toContain("Owner Draft");
   });

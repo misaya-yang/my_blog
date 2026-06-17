@@ -90,6 +90,11 @@ export function renderSitemapXml(baseUrl: string, posts: DiscoveryPost[]) {
 
 export function renderRssXml(baseUrl: string, posts: DiscoveryPost[]) {
   const publicPosts = publicPostsOnly(posts).slice(0, 20);
+  const latestUpdatedAt = publicPosts
+    .map(post => post.updatedAt ?? post.publishedAt ?? post.createdAt)
+    .map(value => new Date(value).getTime())
+    .filter(value => Number.isFinite(value))
+    .sort((a, b) => b - a)[0];
 
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -99,12 +104,15 @@ export function renderRssXml(baseUrl: string, posts: DiscoveryPost[]) {
     `    <link>${escapeXml(joinUrl(baseUrl, "/"))}</link>`,
     `    <description>${escapeXml(siteConfig.feedDescription)}</description>`,
     `    <language>${siteConfig.defaultLocale}</language>`,
+    latestUpdatedAt
+      ? `    <lastBuildDate>${new Date(latestUpdatedAt).toUTCString()}</lastBuildDate>`
+      : null,
     `    <atom:link href="${escapeXml(joinUrl(baseUrl, siteConfig.feedPath))}" rel="self" type="application/rss+xml" />`,
     ...publicPosts.map((post) => renderRssItem(baseUrl, post)),
     "  </channel>",
     "</rss>",
     "",
-  ].join("\n");
+  ].filter(Boolean).join("\n");
 }
 
 export function buildSitemapEntries(posts: DiscoveryPost[]): SitemapEntry[] {
@@ -155,6 +163,7 @@ function renderRssItem(baseUrl: string, post: DiscoveryPost) {
     `      <link>${escapeXml(link)}</link>`,
     `      <guid isPermaLink="true">${escapeXml(link)}</guid>`,
     `      <pubDate>${new Date(post.publishedAt ?? post.createdAt).toUTCString()}</pubDate>`,
+    `      <atom:updated>${new Date(post.updatedAt ?? post.publishedAt ?? post.createdAt).toISOString()}</atom:updated>`,
     `      <description>${escapeXml(post.excerpt ?? "")}</description>`,
     `      <author>${escapeXml(`${siteConfig.authorEmail} (${siteConfig.authorName})`)}</author>`,
     ...categories.map((category) => `      <category>${escapeXml(category)}</category>`),

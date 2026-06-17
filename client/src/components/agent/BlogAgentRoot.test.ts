@@ -7,6 +7,7 @@ import {
   inferClientScope,
   openBlogAgentWithPrompt,
 } from "./routeContext";
+import { inferAnswerMode } from "./BlogAgentRoot";
 import {
   isAbortError,
   isTimeoutError,
@@ -90,6 +91,23 @@ describe("BlogAgent route context", () => {
     });
   });
 
+  it("infers answer mode from companion prompt intent", () => {
+    expect(inferAnswerMode("Compare Harness Engine and Agent Loop")).toBe(
+      "compare"
+    );
+    expect(inferAnswerMode("What should I read next?")).toBe("reading_path");
+    expect(inferAnswerMode("What implementation implications matter?")).toBe(
+      "deep"
+    );
+    expect(inferAnswerMode("Summarize the notebook")).toBe("summary");
+    expect(
+      inferAnswerMode(
+        "Explain the core abstraction.",
+        buildRouteContext("/post/agent-loop", "en")
+      )
+    ).toBe("deep");
+  });
+
   it("dispatches an open event with an article prompt", () => {
     const dispatchEvent = vi.fn();
     vi.stubGlobal("window", { dispatchEvent });
@@ -130,7 +148,6 @@ describe("BlogAgent route context", () => {
       routeContext: buildRouteContext("/", "en"),
       signal: controller.signal,
       onStatus: vi.fn(),
-      onReasoningDelta: vi.fn(),
       onAnswerDelta: vi.fn(),
       onFinal: vi.fn(),
     });
@@ -180,7 +197,6 @@ describe("BlogAgent route context", () => {
         message: "解释这篇文章里的核心抽象。",
         routeContext: buildRouteContext("/", "zh"),
         onStatus: vi.fn(),
-        onReasoningDelta: vi.fn(),
         onAnswerDelta: vi.fn(),
         onFinal,
       })
@@ -194,6 +210,45 @@ describe("BlogAgent route context", () => {
         }),
       })
     );
+
+    vi.unstubAllGlobals();
+  });
+
+  it("sends inferred answer mode through the stream request body", async () => {
+    const encoder = new TextEncoder();
+    const body = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          encoder.encode(
+            [
+              'data: {"type":"final","elapsedMs":9,"output":{"status":"failed","conversationId":"conv-1","messageId":"msg-1","quota":{"limit":10,"used":1,"remaining":9,"resetAt":"2026-06-06T16:00:00.000Z","tier":"anonymous","allowed":true},"runStatus":"failed","errorCode":"model_not_configured"}}',
+              "",
+            ].join("\n")
+          )
+        );
+        controller.close();
+      },
+    });
+    const fetchMock = vi.fn(async () => new Response(body, { status: 200 }));
+    vi.stubGlobal("window", {
+      setTimeout,
+      clearTimeout,
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await streamAgentMessage({
+      message: "Compare the two tracks",
+      routeContext: buildRouteContext("/", "en"),
+      answerMode: "compare",
+      onStatus: vi.fn(),
+      onAnswerDelta: vi.fn(),
+      onFinal: vi.fn(),
+    });
+
+    const requestBody = JSON.parse(
+      String((fetchMock.mock.calls[0][1] as RequestInit).body)
+    );
+    expect(requestBody.answerMode).toBe("compare");
 
     vi.unstubAllGlobals();
   });
@@ -226,7 +281,6 @@ describe("BlogAgent route context", () => {
         message: "Explain AgentLoop",
         routeContext: buildRouteContext("/", "en"),
         onStatus: vi.fn(),
-        onReasoningDelta: vi.fn(),
         onAnswerDelta: vi.fn(),
         onFinal: vi.fn(),
       })

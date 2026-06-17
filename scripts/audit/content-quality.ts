@@ -72,9 +72,7 @@ export async function runContentQualityAudit(
   const seedPath = resolve(root, "seed-blog.mjs");
   const seedSource = await readFile(seedPath, "utf-8");
   const seedPosts = parseSeedPosts(seedSource);
-  const markdownFiles = (await readdir(root)).filter(file =>
-    file.endsWith(".md")
-  );
+  const markdownFiles = (await readdir(root)).filter(isAuditedMarkdownFile);
   const issues: ContentQualityIssue[] = [];
 
   issues.push(...auditSeedPosts(root, seedPosts));
@@ -100,6 +98,12 @@ export async function runContentQualityAudit(
     },
     issues,
   };
+}
+
+function isAuditedMarkdownFile(file: string) {
+  if (!file.endsWith(".md")) return false;
+  if (/^wpu-\d+-.*snapshot\.md$/i.test(file)) return false;
+  return true;
 }
 
 export function parseSeedPosts(seedSource: string): SeedPost[] {
@@ -244,6 +248,28 @@ function auditMarkdownFile(
     .find(line => /^#\s+/.test(line))
     ?.replace(/^#\s+/, "")
     .trim();
+
+  if (!h1) {
+    if (post) {
+      issues.push(
+        warning(
+          "content.shell_title_only",
+          file,
+          `Markdown relies on the article shell title for ${post.slug}.`,
+          undefined,
+          `seed=${post.title}`
+        )
+      );
+    } else {
+      issues.push(
+        failure(
+          "content.missing_h1",
+          file,
+          "Markdown file is not tied to a seed post and has no H1 title."
+        )
+      );
+    }
+  }
 
   if (post && h1 && h1 !== post.title) {
     issues.push(

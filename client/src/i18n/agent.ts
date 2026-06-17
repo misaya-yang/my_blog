@@ -86,7 +86,7 @@ const agent: TranslationDict = {
     zh: "从笔记里提问",
   },
   "agent.welcome.body": {
-    en: "I can summarize public notes, compare reading threads, and point to the sources used.",
+    en: "Use public notes to summarize topics, compare reading threads, and inspect sources.",
     zh: "可以解读公开笔记、比较阅读线索，并标出使用的来源。",
   },
   "agent.welcome.postTitle": {
@@ -366,8 +366,8 @@ const agent: TranslationDict = {
     zh: "选取 {count} 个来源 {current}",
   },
   "agent.trace.stage.reasoning": {
-    en: "Run model reasoning stream",
-    zh: "接收模型推理流",
+    en: "Plan a source-grounded answer",
+    zh: "组织有来源依据的回答",
   },
   "agent.trace.stage.answer": {
     en: "Stream answer",
@@ -430,12 +430,12 @@ const agent: TranslationDict = {
     zh: "无法加载这段对话。",
   },
   "agent.error.noPublicContext": {
-    en: "I could not find enough public blog context for this question.",
+    en: "Not enough public blog context was found for this question.",
     zh: "没有找到足够的公开博客上下文来回答这个问题。",
   },
   "agent.refusal.hidden": {
-    en: "I can only answer from public posts and cannot discuss hidden or admin-only material.",
-    zh: "我只能基于公开文章回答，不能讨论隐藏或仅管理员可见的内容。",
+    en: "Answers are limited to public posts; hidden or admin-only material is not available.",
+    zh: "回答范围仅限公开文章；隐藏或仅管理员可见的内容不可用于回答。",
   },
 };
 

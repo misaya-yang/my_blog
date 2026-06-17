@@ -23,17 +23,7 @@ export function toChatMessage(message: {
     role: message.role === "assistant" ? "assistant" : "user",
     content: message.content,
     sourceCards: extractSourceCards(message.sourceJson),
-    reasoningMarkdown: extractReasoningMarkdown(message.sourceJson),
   };
-}
-
-function extractReasoningMarkdown(
-  sourceJson: Record<string, unknown> | null | undefined
-) {
-  const reasoning = sourceJson?.reasoningMarkdown;
-  return typeof reasoning === "string" && reasoning.trim()
-    ? reasoning
-    : undefined;
 }
 
 function extractSourceCards(

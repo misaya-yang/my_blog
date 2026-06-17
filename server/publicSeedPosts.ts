@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import type { Category, Post, Tag } from "../drizzle/schema.js";
+import { contentSeriesCatalog } from "../shared/content-series.js";
 
 type PublicSeedPost = {
   title: string;
@@ -101,6 +102,28 @@ const publicSeedPosts: PublicSeedPost[] = [
     ],
   },
   {
+    title: "大模型强化学习：从 RLHF 到可验证奖励的后训练主线",
+    slug: "llm-rl-post-training-verifiable-rewards",
+    contentPath: "llm_rl_post_training.md",
+    category: categories.algorithms,
+    publishedAt: "2026-06-17T00:00:00.000Z",
+    featuredRank: 7,
+    pinnedTrack: "algorithms",
+    excerpt:
+      "一篇面向后训练技术栈的系统梳理：把 RLHF、DPO、RLAIF、RLVR、GRPO、PRM、Verifier 与 Agent RL 放进同一张反馈系统地图。",
+    tags: [
+      { id: 38, name: "RLHF", slug: "rlhf" },
+      { id: 39, name: "Reinforcement Learning", slug: "reinforcement-learning" },
+      { id: 40, name: "Post-training", slug: "post-training" },
+      { id: 41, name: "Preference Optimization", slug: "preference-optimization" },
+      { id: 42, name: "DPO", slug: "dpo" },
+      { id: 43, name: "RLVR", slug: "rlvr" },
+      { id: 44, name: "GRPO", slug: "grpo" },
+      { id: 45, name: "Verifier", slug: "verifier" },
+      { id: 46, name: "Agent RL", slug: "agent-rl" },
+    ],
+  },
+  {
     title:
       "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
     slug: "agent-harness-engine-evaluating-tool-using-agents",
@@ -189,6 +212,22 @@ const publicSeedPosts: PublicSeedPost[] = [
   },
 ];
 
+const primarySeriesByPostSlug = new Map<
+  string,
+  { seriesSlug: string; seriesTitle: string; seriesOrder: number }
+>();
+
+for (const series of contentSeriesCatalog) {
+  series.orderedPostSlugs.forEach((postSlug, index) => {
+    if (primarySeriesByPostSlug.has(postSlug)) return;
+    primarySeriesByPostSlug.set(postSlug, {
+      seriesSlug: series.slug,
+      seriesTitle: series.title,
+      seriesOrder: index + 1,
+    });
+  });
+}
+
 export async function getPublicSeedArticleBySlug(
   slug: string
 ): Promise<PublicSeedArticle | null> {
@@ -201,6 +240,11 @@ export async function getPublicSeedArticleBySlug(
   if (!content) return null;
 
   const publishedAt = new Date(seed.publishedAt);
+  const seriesMetadata = primarySeriesByPostSlug.get(seed.slug) ?? {
+    seriesSlug: null,
+    seriesTitle: null,
+    seriesOrder: null,
+  };
   const post: Post = {
     id: -publicSeedPosts.indexOf(seed) - 1,
     title: seed.title,
@@ -212,9 +256,9 @@ export async function getPublicSeedArticleBySlug(
     visibility: "public",
     categoryId: seed.category.id,
     authorId: 1,
-    seriesSlug: null,
-    seriesTitle: null,
-    seriesOrder: null,
+    seriesSlug: seriesMetadata.seriesSlug,
+    seriesTitle: seriesMetadata.seriesTitle,
+    seriesOrder: seriesMetadata.seriesOrder,
     featuredRank: seed.featuredRank,
     pinnedTrack: seed.pinnedTrack,
     viewCount: 0,

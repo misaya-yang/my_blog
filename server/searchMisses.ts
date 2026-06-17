@@ -12,7 +12,7 @@ const searchMisses = new Map<
 >();
 
 export function normalizeSearchMissQuery(query: string) {
-  return query
+  return sanitizeSearchMissQuery(query)
     .normalize("NFKC")
     .trim()
     .replace(/\s+/g, " ")
@@ -21,7 +21,8 @@ export function normalizeSearchMissQuery(query: string) {
 }
 
 export function recordSearchMiss(query: string) {
-  const normalizedQuery = normalizeSearchMissQuery(query);
+  const sanitizedQuery = sanitizeSearchMissQuery(query);
+  const normalizedQuery = normalizeSearchMissQuery(sanitizedQuery);
   if (normalizedQuery.length < 2) return;
 
   const now = new Date();
@@ -43,7 +44,7 @@ export function recordSearchMiss(query: string) {
   }
 
   searchMisses.set(normalizedQuery, {
-    query: query.trim().slice(0, 120),
+    query: sanitizedQuery.trim().slice(0, 120),
     normalizedQuery,
     count: 1,
     firstSeenAt: now,
@@ -67,6 +68,12 @@ export function listSearchMissOpportunities() {
       lastSeenAt: item.lastSeenAt,
       suggestedPrompt: `Write or connect a public note that answers: ${item.query}`,
     }));
+}
+
+function sanitizeSearchMissQuery(query: string) {
+  return query
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]")
+    .replace(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g, "[redacted-ip]");
 }
 
 export function resetSearchMissesForTests() {

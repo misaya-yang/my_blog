@@ -186,6 +186,7 @@ export default function Editor() {
   const [linkText, setLinkText] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [imageAlt, setImageAlt] = useState("");
+  const seededFromBacklogRef = useRef(false);
 
   // 编辑器引用
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -275,6 +276,40 @@ export default function Editor() {
       }
     }
   }, [existingPost]);
+
+  useEffect(() => {
+    if (isEditing || seededFromBacklogRef.current) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const idea = params.get("idea")?.trim();
+    if (!idea) return;
+
+    const source = params.get("source")?.trim() || "backlog";
+    seededFromBacklogRef.current = true;
+    setTitle(current => current || idea.slice(0, 120));
+    setContent(current => {
+      if (current.trim()) return current;
+      return [
+        `# ${idea}`,
+        "",
+        `> ${t("editor.backlogSeed.source")}: ${source}`,
+        "",
+        `## ${t("editor.backlogSeed.readerQuestion")}`,
+        "",
+        idea,
+        "",
+        `## ${t("editor.backlogSeed.claim")}`,
+        "",
+        "",
+        `## ${t("editor.backlogSeed.evidence")}`,
+        "",
+        "",
+        `## ${t("editor.backlogSeed.caveats")}`,
+        "",
+      ].join("\n");
+    });
+    setExcerpt(current => current || idea.slice(0, 200));
+  }, [isEditing, t]);
 
   useEffect(() => {
     const mobileQuery = window.matchMedia("(max-width: 767px)");
@@ -1265,7 +1300,7 @@ export default function Editor() {
             </div>
 
             {/* 内容编辑 */}
-            <div className="flex-1 overflow-hidden">
+            <div className="owner-editor-content-shell flex-1 overflow-hidden">
               <textarea
                 ref={textareaRef}
                 value={content}

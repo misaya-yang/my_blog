@@ -73,6 +73,13 @@ const ropeTag = {
   createdAt: new Date(baseDate),
 };
 
+const rlhfTag = {
+  id: 4,
+  name: "RLHF",
+  slug: "rlhf",
+  createdAt: new Date(baseDate),
+};
+
 describe("reader discovery logic", () => {
   const posts: DiscoveryPost[] = [
     post({
@@ -100,6 +107,15 @@ describe("reader discovery logic", () => {
       tags: [ropeTag],
       publishedAt: new Date("2026-04-12T00:00:00.000Z"),
       updatedAt: new Date("2026-04-20T00:00:00.000Z"),
+    }),
+    post({
+      id: 6,
+      title: "LLM Post-Training RL",
+      slug: "llm-rl",
+      content: "RLHF, DPO, RLVR, GRPO, verifier, and agent RL.",
+      category: algorithms,
+      tags: [rlhfTag],
+      publishedAt: new Date("2026-06-17T00:00:00.000Z"),
     }),
     post({
       id: 4,
@@ -135,12 +151,61 @@ describe("reader discovery logic", () => {
     expect(searchDiscoveryPosts(posts, "secret", { limit: 10, offset: 0 }).total).toBe(0);
   });
 
+  it("matches discovery aliases and mixed Chinese-English intent without leaking hidden posts", () => {
+    expect(
+      searchDiscoveryPosts(posts, "智能体", {
+        limit: 10,
+        offset: 0,
+      }).results.map(item => item.slug)
+    ).toEqual(["agent-harness", "retrieval-latency"]);
+    expect(
+      searchDiscoveryPosts(posts, "位置编码", { limit: 10, offset: 0 }).results.map(
+        item => item.slug
+      )
+    ).toEqual(["rope-frequency"]);
+    expect(
+      searchDiscoveryPosts(posts, "强化学习 后训练", {
+        limit: 10,
+        offset: 0,
+      }).results.map(item => item.slug)
+    ).toEqual(["llm-rl"]);
+    expect(
+      searchDiscoveryPosts(posts, "hidden 智能体", { limit: 10, offset: 0 }).results.map(
+        item => item.slug
+      )
+    ).not.toContain("hidden-harness-note");
+  });
+
+  it("does not expand latin aliases from arbitrary substrings", () => {
+    const isoPost = post({
+      id: 9,
+      title: "IsoHC Residual Mixing",
+      slug: "isohc-residual-mixing",
+      category: algorithms,
+      content: "Fixed-vector isometric residual stability.",
+      publishedAt: new Date("2026-04-18T00:00:00.000Z"),
+    });
+
+    expect(
+      searchDiscoveryPosts([...posts, isoPost], "iso", {
+        limit: 10,
+        offset: 0,
+      }).results.map(item => item.slug)
+    ).toEqual(["isohc-residual-mixing"]);
+    expect(
+      searchDiscoveryPosts([...posts, isoPost], "isolation", {
+        limit: 10,
+        offset: 0,
+      }).results.map(item => item.slug)
+    ).not.toContain("isohc-residual-mixing");
+  });
+
   it("paginates after filtering the complete public corpus", () => {
     const result = searchDiscoveryPosts(posts, "agent", { limit: 1, offset: 1 });
 
-    expect(result.total).toBe(2);
+    expect(result.total).toBe(3);
     expect(result.results).toHaveLength(1);
-    expect(result.results[0].slug).toBe("retrieval-latency");
+    expect(result.results[0].slug).toBe("agent-harness");
   });
 
   it("filters tag and category pages to public matching posts only", () => {
@@ -156,9 +221,10 @@ describe("reader discovery logic", () => {
   it("groups archive rows by published month in scan-friendly order", () => {
     const groups = groupArchivePosts(posts);
 
-    expect(groups.map((group) => group.key)).toEqual(["2026-05", "2026-04"]);
-    expect(groups[0].posts.map((item) => item.slug)).toEqual(["agent-harness", "retrieval-latency"]);
-    expect(groups[1].posts[0]).toMatchObject({
+    expect(groups.map((group) => group.key)).toEqual(["2026-06", "2026-05", "2026-04"]);
+    expect(groups[0].posts.map((item) => item.slug)).toEqual(["llm-rl"]);
+    expect(groups[1].posts.map((item) => item.slug)).toEqual(["agent-harness", "retrieval-latency"]);
+    expect(groups[2].posts[0]).toMatchObject({
       slug: "rope-frequency",
       updatedAt: new Date("2026-04-20T00:00:00.000Z"),
     });
@@ -183,7 +249,7 @@ describe("reader discovery logic", () => {
     const candidates = [
       ...posts,
       post({
-        id: 6,
+        id: 7,
         title: "Same Category Only",
         slug: "same-category-only",
         category: applications,
@@ -191,7 +257,7 @@ describe("reader discovery logic", () => {
         publishedAt: new Date("2026-05-18T00:00:00.000Z"),
       }),
       post({
-        id: 7,
+        id: 8,
         title: "Shared Tag Elsewhere",
         slug: "shared-tag-elsewhere",
         category: algorithms,

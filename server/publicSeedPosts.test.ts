@@ -1,0 +1,38 @@
+import { describe, expect, it } from "vitest";
+import { getPublicSeedArticleBySlug } from "./publicSeedPosts";
+
+describe("public seed fallback posts", () => {
+  it("carries primary series metadata from the shared content atlas", async () => {
+    const article = await getPublicSeedArticleBySlug(
+      "agent-loop-observable-tool-using-agents"
+    );
+
+    expect(article).toMatchObject({
+      slug: "agent-loop-observable-tool-using-agents",
+      seriesSlug: "agent-runtime-systems",
+      seriesTitle: "Agent Runtime Systems",
+      seriesOrder: 3,
+      pinnedTrack: "applications",
+    });
+  });
+
+  it("exposes the LLM RL article as a public algorithm seed post", async () => {
+    const article = await getPublicSeedArticleBySlug(
+      "llm-rl-post-training-verifiable-rewards"
+    );
+
+    expect(article).toMatchObject({
+      title: "大模型强化学习：从 RLHF 到可验证奖励的后训练主线",
+      slug: "llm-rl-post-training-verifiable-rewards",
+      seriesSlug: "llm-post-training-rl",
+      seriesTitle: "LLM Post-Training and RL",
+      seriesOrder: 1,
+      pinnedTrack: "algorithms",
+      category: {
+        slug: "ai-algorithms",
+      },
+    });
+    expect(article?.content).toContain("## 三、当前技术路线");
+    expect(article?.tags.map(tag => tag.slug)).toContain("rlhf");
+  });
+});

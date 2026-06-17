@@ -185,6 +185,110 @@ const manage: TranslationDict = {
     zh: "有效订阅",
   },
   "manage.engagement.radarHidden": { en: "Hidden signals", zh: "已隐藏信号" },
+  "manage.engagement.radarSearchMisses": {
+    en: "Search gaps",
+    zh: "搜索缺口",
+  },
+  "manage.engagement.backlogTitle": {
+    en: "Writing Backlog",
+    zh: "写作 Backlog",
+  },
+  "manage.engagement.backlogDescription": {
+    en: "A single owner-only queue for reader feedback, zero-result searches, and Agent questions that should become edits, links, or new drafts.",
+    zh: "把读者反馈、零结果搜索和 Agent 问题聚合成仅作者可见的队列，用来决定要修改、补链还是开新草稿。",
+  },
+  "manage.engagement.backlogOwnerOnly": {
+    en: "Owner-only",
+    zh: "仅作者可见",
+  },
+  "manage.engagement.backlogPrivacy": {
+    en: "Contact data redacted",
+    zh: "联系信息已脱敏",
+  },
+  "manage.engagement.backlogSignals": {
+    en: "Backlog items",
+    zh: "Backlog 项",
+  },
+  "manage.engagement.backlogAgentGaps": {
+    en: "Agent gaps",
+    zh: "Agent 缺口",
+  },
+  "manage.engagement.backlogEmpty": {
+    en: "No writing signals yet.",
+    zh: "暂无写作信号。",
+  },
+  "manage.engagement.backlogKindFeedback": {
+    en: "Feedback",
+    zh: "反馈",
+  },
+  "manage.engagement.backlogKindSearch": {
+    en: "Search miss",
+    zh: "搜索缺口",
+  },
+  "manage.engagement.backlogKindAgent": {
+    en: "Agent question",
+    zh: "Agent 问题",
+  },
+  "manage.engagement.backlogPriorityHigh": {
+    en: "High",
+    zh: "高优先级",
+  },
+  "manage.engagement.backlogPriorityNormal": {
+    en: "Normal",
+    zh: "普通",
+  },
+  "manage.engagement.backlogStatusNew": {
+    en: "New",
+    zh: "新建",
+  },
+  "manage.engagement.backlogStatusReviewed": {
+    en: "Reviewed",
+    zh: "已查看",
+  },
+  "manage.engagement.backlogStatusPlanned": {
+    en: "Planned",
+    zh: "计划中",
+  },
+  "manage.engagement.backlogStatusDismissed": {
+    en: "Dismissed",
+    zh: "已忽略",
+  },
+  "manage.engagement.backlogSignalCount": {
+    en: "{count} signals",
+    zh: "{count} 个信号",
+  },
+  "manage.engagement.backlogInspect": {
+    en: "Inspect",
+    zh: "查看",
+  },
+  "manage.engagement.backlogDraft": {
+    en: "Open draft",
+    zh: "开草稿",
+  },
+  "manage.engagement.backlogAgentSource": {
+    en: "Agent question radar",
+    zh: "Agent 问题雷达",
+  },
+  "manage.engagement.backlogFeedbackSource": {
+    en: "Reader feedback",
+    zh: "读者反馈",
+  },
+  "manage.engagement.backlogSearchSource": {
+    en: "Zero-result search",
+    zh: "无结果搜索",
+  },
+  "manage.engagement.backlogPartial": {
+    en: "Some backlog signals could not be loaded. Showing the available data.",
+    zh: "部分写作信号暂时无法加载，当前仅显示已获取的数据。",
+  },
+  "manage.engagement.backlogUnavailable": {
+    en: "Writing backlog signals could not be loaded right now.",
+    zh: "写作 backlog 信号暂时无法加载。",
+  },
+  "manage.engagement.backlogPersistenceNote": {
+    en: "Feedback status is saved. Agent ideas are reviewed from the radar list and can be turned into drafts when useful.",
+    zh: "反馈状态已保存。Agent 选题从雷达列表中查看，适合的条目可以直接转成草稿。",
+  },
   "manage.engagement.opportunitiesTitle": {
     en: "Writing opportunities",
     zh: "写作机会",
