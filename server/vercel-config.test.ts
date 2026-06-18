@@ -14,9 +14,40 @@ describe("Vercel routing guardrails", () => {
       source: "/:path*",
       destination: "/api/index",
     });
-    expect(rewrites.find((rewrite) => rewrite.source === "/api/:path*")).toEqual({
+    expect(rewrites.find(rewrite => rewrite.source === "/api/:path*")).toEqual({
       source: "/api/:path*",
       destination: "/api/index",
     });
+  });
+
+  it("routes known browser pages through the app shell function for route metadata", () => {
+    const configPath = join(process.cwd(), "vercel.json");
+    const config = JSON.parse(readFileSync(configPath, "utf8")) as {
+      rewrites?: Array<{ source: string; destination: string }>;
+    };
+    const rewrites = config.rewrites ?? [];
+    const browserRoutes = [
+      "/",
+      "/algorithms",
+      "/applications",
+      "/archive",
+      "/search",
+      "/about",
+      "/login",
+      "/manage",
+      "/manage/agent",
+      "/write",
+      "/write/:slug",
+      "/tags/:slug",
+      "/categories/:slug",
+      "/404",
+    ];
+
+    for (const source of browserRoutes) {
+      expect(rewrites.find(rewrite => rewrite.source === source)).toEqual({
+        source,
+        destination: "/api/index",
+      });
+    }
   });
 });

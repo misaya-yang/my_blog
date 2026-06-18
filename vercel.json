@@ -31,59 +31,59 @@
     },
     {
       "source": "/",
-      "destination": "/index.html"
+      "destination": "/api/index"
     },
     {
       "source": "/algorithms",
-      "destination": "/index.html"
+      "destination": "/api/index"
     },
     {
       "source": "/applications",
-      "destination": "/index.html"
+      "destination": "/api/index"
     },
     {
       "source": "/archive",
-      "destination": "/index.html"
+      "destination": "/api/index"
     },
     {
       "source": "/search",
-      "destination": "/index.html"
+      "destination": "/api/index"
     },
     {
       "source": "/about",
-      "destination": "/index.html"
+      "destination": "/api/index"
     },
     {
       "source": "/login",
-      "destination": "/index.html"
+      "destination": "/api/index"
     },
     {
       "source": "/manage",
-      "destination": "/index.html"
+      "destination": "/api/index"
     },
     {
       "source": "/manage/agent",
-      "destination": "/index.html"
+      "destination": "/api/index"
     },
     {
       "source": "/write",
-      "destination": "/index.html"
+      "destination": "/api/index"
     },
     {
       "source": "/write/:slug",
-      "destination": "/index.html"
+      "destination": "/api/index"
     },
     {
       "source": "/tags/:slug",
-      "destination": "/index.html"
+      "destination": "/api/index"
     },
     {
       "source": "/categories/:slug",
-      "destination": "/index.html"
+      "destination": "/api/index"
     },
     {
       "source": "/404",
-      "destination": "/index.html"
+      "destination": "/api/index"
     },
     {
       "source": "/:path*",

@@ -12,13 +12,14 @@ This post-review pass resolved the local release risks that remained after MNUI-
 
 ## Risks Resolved
 
-| Risk | Prior State | Resolution | Evidence |
-| --- | --- | --- | --- |
-| SEO metadata on SPA routes | Known client routes lacked canonical/OG metadata before hydration. | `server/client-render.ts` now injects route metadata for known public, taxonomy, owner, search, and 404 routes. Owner/write/login routes remain noindex. | `server/client-render.test.ts`; `reports/release-evidence/post-review-baseline-quick.json`. |
-| Generated robots/sitemap/RSS false positives | Baseline treated missing static files as warnings even when generated HTTP routes were healthy. | `scripts/audit/baseline.ts` now accepts healthy generated `/robots.txt`, `/sitemap.xml`, and `/rss.xml` routes and checks routes sequentially to avoid local timeout flakes. | `scripts/audit/baseline.test.ts`; post-review baseline reports 14 checked routes, 0 route failures, 0 known gaps. |
-| Content audit shell-title warnings | Three Markdown seed-backed posts had no explicit Markdown H1. | Added exact top-level H1s that match seeded post titles. Existing post rendering strips matching Markdown titles, so the visible article H1 is not duplicated. | `pnpm content:audit` passed with 0 warnings and 0 failures in the post-review gate. |
-| Owner CSS bleed risk | `.glass-button` styling in the owner layer could affect public reader buttons if class names overlapped. | Scoped `.glass-button` rules to `.owner-ops-page`, `.owner-editor-shell`, `.agent-console-tabs`, `.login-panel`, and `.auth-required-card`. | `client/src/styles/owner-tools.css`; post-review screenshots verify public and owner/auth surfaces separately. |
-| Over-complex route metadata branching | Known-route metadata was drifting toward conditional sprawl. | Consolidated stable route copy into `knownRouteMetadata` and kept dynamic cases only for owner/write, categories, and tags. | Code review plus `server/client-render.test.ts`. |
+| Risk                                         | Prior State                                                                                                                                                         | Resolution                                                                                                                                                                   | Evidence                                                                                                          |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| SEO metadata on SPA routes                   | Known client routes lacked canonical/OG metadata before hydration.                                                                                                  | `server/client-render.ts` now injects route metadata for known public, taxonomy, owner, search, and 404 routes. Owner/write/login routes remain noindex.                     | `server/client-render.test.ts`; `reports/release-evidence/post-review-baseline-quick.json`.                       |
+| Vercel static rewrite bypass                 | The first production smoke showed known SPA routes such as `/archive` and `/login` were still served from static `index.html`, bypassing server metadata injection. | `vercel.json` now routes known browser pages through `/api/index`, and `server/vercel-config.test.ts` locks the route-metadata deployment contract.                          | Production redeploy and public URL smoke must show canonical/robots metadata on known routes.                     |
+| Generated robots/sitemap/RSS false positives | Baseline treated missing static files as warnings even when generated HTTP routes were healthy.                                                                     | `scripts/audit/baseline.ts` now accepts healthy generated `/robots.txt`, `/sitemap.xml`, and `/rss.xml` routes and checks routes sequentially to avoid local timeout flakes. | `scripts/audit/baseline.test.ts`; post-review baseline reports 14 checked routes, 0 route failures, 0 known gaps. |
+| Content audit shell-title warnings           | Three Markdown seed-backed posts had no explicit Markdown H1.                                                                                                       | Added exact top-level H1s that match seeded post titles. Existing post rendering strips matching Markdown titles, so the visible article H1 is not duplicated.               | `pnpm content:audit` passed with 0 warnings and 0 failures in the post-review gate.                               |
+| Owner CSS bleed risk                         | `.glass-button` styling in the owner layer could affect public reader buttons if class names overlapped.                                                            | Scoped `.glass-button` rules to `.owner-ops-page`, `.owner-editor-shell`, `.agent-console-tabs`, `.login-panel`, and `.auth-required-card`.                                  | `client/src/styles/owner-tools.css`; post-review screenshots verify public and owner/auth surfaces separately.    |
+| Over-complex route metadata branching        | Known-route metadata was drifting toward conditional sprawl.                                                                                                        | Consolidated stable route copy into `knownRouteMetadata` and kept dynamic cases only for owner/write, categories, and tags.                                                  | Code review plus `server/client-render.test.ts`.                                                                  |
 
 ## Code Review And Simplification Notes
 
@@ -29,25 +30,25 @@ This post-review pass resolved the local release risks that remained after MNUI-
 
 ## Post-Review UI Walkthrough
 
-| Evidence | Result |
-| --- | --- |
-| `reports/release-evidence/post-review-ui-layout-checks.json` | passed; 6 measured UI scenarios, 0 failed checks. |
-| `reports/release-evidence/post-review-screenshots/screenshot-metrics.json` | 32 screenshots, 0 non-200 responses, 0 console issues, 0 failed network requests, 0 horizontal overflows, 0 public Agent launchers on owner/login guard routes. |
-| Sampled visual inspection | Desktop Home and mobile Post with Blog Agent open were inspected against the Misaya Notes design-system direction: dark cobalt notebook identity, compact dense surfaces, restrained glass, visible focus, and no obvious clipped text or overlapping controls. |
+| Evidence                                                                   | Result                                                                                                                                                                                                                                                          |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `reports/release-evidence/post-review-ui-layout-checks.json`               | passed; 6 measured UI scenarios, 0 failed checks.                                                                                                                                                                                                               |
+| `reports/release-evidence/post-review-screenshots/screenshot-metrics.json` | 32 screenshots, 0 non-200 responses, 0 console issues, 0 failed network requests, 0 horizontal overflows, 0 public Agent launchers on owner/login guard routes.                                                                                                 |
+| Sampled visual inspection                                                  | Desktop Home and mobile Post with Blog Agent open were inspected against the Misaya Notes design-system direction: dark cobalt notebook identity, compact dense surfaces, restrained glass, visible focus, and no obvious clipped text or overlapping controls. |
 
 ## Local Evidence Index
 
-| Gate | Status | Evidence |
-| --- | --- | --- |
-| Targeted post-review tests | passed | `pnpm exec vitest run server/client-render.test.ts scripts/audit/baseline.test.ts scripts/audit/content-quality.test.ts`. |
-| Typecheck | passed | `pnpm check`. |
-| Full tests | passed | `pnpm test`; known OAuth warning only. |
-| Production build | passed | `pnpm build`. |
-| Content audit | passed | `pnpm content:audit`; 0 warnings, 0 failures after H1 fixes. |
-| Publish freshness | passed | `docs/product_optimization/reports/po-08-publish-freshness-latest.json`: 8 public posts, 1 non-public post excluded, 142 Agent chunks, 0 blockers. |
-| UI audit | passed | `reports/release-evidence/post-review-ui-layout-checks.json`. |
-| Route baseline | passed | `reports/release-evidence/post-review-baseline-quick.json`: 14 checked routes, 0 route failures, 0 known gaps. |
-| Harness validator | passed | `python3 /Users/yang/.codex/skills/prd-phase-harness/scripts/validate_harness_prd.py docs/misaya_notes_ui_optimization_2026_06_18 --strict --quality-score`; quality score 100. |
+| Gate                       | Status | Evidence                                                                                                                                                                        |
+| -------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Targeted post-review tests | passed | `pnpm exec vitest run server/client-render.test.ts scripts/audit/baseline.test.ts scripts/audit/content-quality.test.ts`.                                                       |
+| Typecheck                  | passed | `pnpm check`.                                                                                                                                                                   |
+| Full tests                 | passed | `pnpm test`; known OAuth warning only.                                                                                                                                          |
+| Production build           | passed | `pnpm build`.                                                                                                                                                                   |
+| Content audit              | passed | `pnpm content:audit`; 0 warnings, 0 failures after H1 fixes.                                                                                                                    |
+| Publish freshness          | passed | `docs/product_optimization/reports/po-08-publish-freshness-latest.json`: 8 public posts, 1 non-public post excluded, 142 Agent chunks, 0 blockers.                              |
+| UI audit                   | passed | `reports/release-evidence/post-review-ui-layout-checks.json`.                                                                                                                   |
+| Route baseline             | passed | `reports/release-evidence/post-review-baseline-quick.json`: 14 checked routes, 0 route failures, 0 known gaps.                                                                  |
+| Harness validator          | passed | `python3 /Users/yang/.codex/skills/prd-phase-harness/scripts/validate_harness_prd.py docs/misaya_notes_ui_optimization_2026_06_18 --strict --quality-score`; quality score 100. |
 
 ## Remaining Boundaries
 
