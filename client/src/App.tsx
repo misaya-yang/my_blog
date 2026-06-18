@@ -98,11 +98,12 @@ function AnalyticsRouteTracker() {
 // NOTE: About Theme
 // - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
 //   to keep consistent foreground/background color across components
-// - The public blog intentionally stays dark-only to preserve the research console visual system.
+// - Public pages default to the canonical dark notebook but allow a manual
+//   light/dark switch without changing routes or information architecture.
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="dark">
+    <ThemeProvider defaultTheme="dark" switchable>
       <LanguageProvider>
         <ErrorBoundary>
           <Suspense fallback={null}>

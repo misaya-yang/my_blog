@@ -202,7 +202,7 @@ export default function ManageAgent() {
   const evalItems = evals.data?.items ?? [];
 
   return (
-    <div className="space-page">
+    <div className="space-page owner-dark-scope">
       <SpaceBackdrop subtle />
       <SiteHeader
         active="agent"

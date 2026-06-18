@@ -35,10 +35,20 @@ vi.mock("@/contexts/LanguageContext", () => ({
           "nav.menu": "Open navigation",
           "nav.switchToZh": "中文",
           "nav.switchToEn": "EN",
+          "nav.switchToLight": "Switch to light mode",
+          "nav.switchToDark": "Switch to dark mode",
           "nav.brand": "Misaya Notes",
           "nav.back": "Back",
         } satisfies Record<string, string>
       )[key] ?? key,
+  }),
+}));
+
+vi.mock("@/contexts/ThemeContext", () => ({
+  useTheme: () => ({
+    theme: "dark",
+    toggleTheme: () => undefined,
+    switchable: true,
   }),
 }));
 
@@ -67,6 +77,7 @@ describe("SiteHeader public access model", () => {
     const html = renderToStaticMarkup(<SiteHeader active="home" />);
 
     expect(html).toContain("Misaya Notes");
+    expect(html).toContain('aria-label="Switch to light mode"');
     expect(html).not.toContain('href="/login"');
     expect(html).not.toContain(">Login<");
   });
@@ -83,5 +94,19 @@ describe("SiteHeader public access model", () => {
 
     expect(html).toContain('href="/write"');
     expect(html).toContain("Misaya");
+  });
+
+  it("does not show the theme toggle inside locked owner routes", () => {
+    authState.current = {
+      isAdmin: true,
+      isAuthenticated: true,
+      displayName: "Misaya Yang",
+      logout: () => undefined,
+    };
+
+    const html = renderToStaticMarkup(<SiteHeader active="manage" />);
+
+    expect(html).not.toContain("Switch to light mode");
+    expect(html).not.toContain("Switch to dark mode");
   });
 });

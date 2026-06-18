@@ -69,6 +69,7 @@ export default function Search() {
     [search]
   );
   const [input, setInput] = useState(query);
+  const [showSlowSearchRecovery, setShowSlowSearchRecovery] = useState(false);
   const {
     data,
     isLoading,
@@ -97,6 +98,19 @@ export default function Search() {
   }, [query]);
 
   useEffect(() => {
+    if (!query || !isLoading) {
+      setShowSlowSearchRecovery(false);
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setShowSlowSearchRecovery(true);
+    }, 1200);
+
+    return () => window.clearTimeout(timer);
+  }, [isLoading, query]);
+
+  useEffect(() => {
     if (!isLoading && !isError && query && data?.total === 0) {
       trackAnalyticsEvent("search_zero_results", { query });
     }
@@ -114,7 +128,7 @@ export default function Search() {
   };
 
   return (
-    <div className="space-page">
+    <div className={query ? "space-page search-page-has-query" : "space-page"}>
       <SpaceBackdrop subtle />
       <SiteHeader active="search" />
 
@@ -160,7 +174,7 @@ export default function Search() {
           </div>
         </form>
 
-        <Surface className="mt-8">
+        <Surface className="mt-8" density={query ? "compact" : "normal"}>
           <SectionHeader
             title={
               isLoading && query
@@ -177,30 +191,67 @@ export default function Search() {
           />
 
           {isLoading ? (
-            <LoadingState
-              title={t("common.loadingNotes")}
-              description={t("common.loadingHint")}
-              className="mt-5"
-            />
+            <div>
+              <LoadingState
+                title={t("common.loadingNotes")}
+                description={t("common.loadingHint")}
+                className="mt-5"
+              />
+              {query && showSlowSearchRecovery ? (
+                <SearchRecoveryPanel
+                  query={query}
+                  topics={suggestedTopics}
+                  onAskAgent={askAgent}
+                />
+              ) : null}
+            </div>
           ) : isError ? (
-            <EmptyState
-              icon={<SearchIcon className="h-4 w-4" />}
-              title={t("discovery.searchFailed")}
-              description={
-                searchError?.message || t("discovery.searchFailedHint")
-              }
-              className="mt-5"
-              action={
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="glass-button"
-                  onClick={() => void refetch()}
-                >
-                  {t("common.retry")}
-                </Button>
-              }
-            />
+            query ? (
+              <div>
+                <EmptyState
+                  icon={<SearchIcon className="h-4 w-4" />}
+                  title={t("discovery.searchFailed")}
+                  description={
+                    searchError?.message || t("discovery.searchFailedHint")
+                  }
+                  className="mt-5"
+                  action={
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="glass-button"
+                      onClick={() => void refetch()}
+                    >
+                      {t("common.retry")}
+                    </Button>
+                  }
+                />
+                <SearchRecoveryPanel
+                  query={query}
+                  topics={suggestedTopics}
+                  onAskAgent={askAgent}
+                />
+              </div>
+            ) : (
+              <EmptyState
+                icon={<SearchIcon className="h-4 w-4" />}
+                title={t("discovery.searchFailed")}
+                description={
+                  searchError?.message || t("discovery.searchFailedHint")
+                }
+                className="mt-5"
+                action={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="glass-button"
+                    onClick={() => void refetch()}
+                  >
+                    {t("common.retry")}
+                  </Button>
+                }
+              />
+            )
           ) : data?.results?.length ? (
             <div className="mt-5 divide-y divide-sky-200/10">
               {data.results.map((post: any) => (

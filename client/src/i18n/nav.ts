@@ -25,6 +25,8 @@ const nav: TranslationDict = {
   // Language switch
   "nav.switchToZh": { en: "中文", zh: "中文" },
   "nav.switchToEn": { en: "EN", zh: "EN" },
+  "nav.switchToLight": { en: "Switch to light mode", zh: "切换到浅色模式" },
+  "nav.switchToDark": { en: "Switch to dark mode", zh: "切换到深色模式" },
 
   // Brand
   "nav.brand": { en: "Misaya Notes", zh: "Misaya Notes" },

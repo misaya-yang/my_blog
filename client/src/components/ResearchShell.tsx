@@ -9,6 +9,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
@@ -16,7 +17,9 @@ import {
   FileText,
   LogOut,
   Menu,
+  Moon,
   Search,
+  Sun,
   UserRound,
 } from "lucide-react";
 import { Link } from "wouter";
@@ -119,6 +122,12 @@ export function SiteHeader({
 }: SiteHeaderProps) {
   const { isAdmin, isAuthenticated, displayName, logout } = useAuth();
   const { language, toggleLanguage, t } = useLanguage();
+  const { theme, toggleTheme, switchable } = useTheme();
+  const ownerThemeLocked = active === "manage" || active === "agent";
+  const canToggleTheme = switchable && toggleTheme && !ownerThemeLocked;
+  const themeToggleLabel =
+    theme === "dark" ? t("nav.switchToLight") : t("nav.switchToDark");
+  const ThemeIcon = theme === "dark" ? Sun : Moon;
   const primaryLinks: Array<{
     href: string;
     key: NonNullable<SiteHeaderProps["active"]>;
@@ -202,8 +211,20 @@ export function SiteHeader({
           >
             <Search className="h-4 w-4" />
           </Link>
+          {canToggleTheme ? (
+            <button
+              type="button"
+              className="nav-icon-button nav-theme-toggle"
+              onClick={toggleTheme}
+              aria-label={themeToggleLabel}
+              aria-pressed={theme === "dark"}
+              title={themeToggleLabel}
+            >
+              <ThemeIcon className="h-4 w-4" />
+            </button>
+          ) : null}
           <span
-            className="mx-1 hidden h-5 w-px bg-white/10 sm:block"
+            className="site-header-divider mx-1 hidden h-5 w-px sm:block"
             aria-hidden="true"
           />
           <button
@@ -239,9 +260,9 @@ export function SiteHeader({
                 <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[20rem] border-white/10 bg-slate-950/95 p-0 text-white">
-              <SheetHeader className="border-b border-white/10 p-5">
-                <SheetTitle className="flex items-center gap-3 text-white">
+            <SheetContent className="site-mobile-sheet w-[20rem] p-0">
+              <SheetHeader className="site-mobile-sheet-header p-5">
+                <SheetTitle className="site-mobile-sheet-title flex items-center gap-3">
                   <BrandMark />
                   {t("nav.brand")}
                 </SheetTitle>
@@ -252,8 +273,8 @@ export function SiteHeader({
                     <Link
                       href={link.href}
                       className={cn(
-                        "flex h-11 items-center gap-2 rounded-md px-3 text-sm text-slate-200 transition-colors hover:bg-white/5 hover:text-white",
-                        active === link.key && "bg-white/7 text-white"
+                        "site-mobile-sheet-link flex h-11 items-center gap-2 rounded-md px-3 text-sm transition-colors",
+                        active === link.key && "site-mobile-sheet-link-active"
                       )}
                     >
                       {link.key === "search" && <Search className="h-4 w-4" />}
@@ -262,7 +283,18 @@ export function SiteHeader({
                   </SheetClose>
                 ))}
               </div>
-              <div className="grid gap-2 border-t border-white/10 px-4 py-5">
+              <div className="site-mobile-sheet-actions grid gap-2 px-4 py-5">
+                {canToggleTheme ? (
+                  <button
+                    type="button"
+                    className="nav-ink h-11 justify-start gap-2"
+                    onClick={toggleTheme}
+                    aria-pressed={theme === "dark"}
+                  >
+                    <ThemeIcon className="h-4 w-4" />
+                    {themeToggleLabel}
+                  </button>
+                ) : null}
                 <button
                   type="button"
                   className="nav-ink h-11 justify-start"

@@ -1036,7 +1036,7 @@ export default function PostDetail() {
 
             {/* Author Footer */}
             <div className="mt-16 border-t border-white/10 pt-8">
-              <div className="mb-6 flex items-center justify-between gap-4">
+              <div className="mb-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                 <h2 className="section-title">{t("post.discoveryTitle")}</h2>
                 <Button
                   asChild

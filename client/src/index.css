@@ -10,6 +10,7 @@
   font-display: swap;
   src:
     local("SF Pro Display"),
+    local("Albert Sans"),
     local("Avenir Next Demi Bold"),
     local("Avenir Next Medium"),
     local("Segoe UI Variable Display"),
@@ -44,6 +45,7 @@
   src:
     local("Iowan Old Style"),
     local("Charter"),
+    local("Source Serif 4"),
     local("Source Han Serif SC"),
     local("Noto Serif CJK SC"),
     local("Songti SC"),
@@ -57,6 +59,7 @@
   font-display: swap;
   src:
     local("SF Pro Text"),
+    local("Albert Sans"),
     local("Segoe UI Variable Text"),
     local("Aptos"),
     local("PingFang SC"),
@@ -102,21 +105,21 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --font-sans:
-    "Misaya UI", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    "Misaya UI", "Albert Sans", "SF Pro Text", -apple-system, BlinkMacSystemFont,
     "Segoe UI Variable Text", "Aptos", "Helvetica Neue", "PingFang SC",
     "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
   --font-display:
-    "Misaya Display", "SF Pro Display", "Avenir Next",
+    "Misaya Display", "Albert Sans", "SF Pro Display", "Avenir Next",
     "Segoe UI Variable Display", "Aptos Display", "Helvetica Neue",
     "PingFang SC", "Source Han Sans SC", "Noto Sans CJK SC", sans-serif;
   --font-serif:
-    "Misaya Reading", "Iowan Old Style", Charter, "Songti SC", "STSong",
+    "Misaya Reading", "Source Serif 4", "Iowan Old Style", Charter, "Songti SC", "STSong",
     "Source Han Serif SC", "Noto Serif CJK SC", Georgia, serif;
   --font-reading:
-    "Misaya Reading", "Iowan Old Style", Charter, "Songti SC", "STSong",
+    "Misaya Reading", "Source Serif 4", "Iowan Old Style", Charter, "Songti SC", "STSong",
     "Source Han Serif SC", "Noto Serif CJK SC", Georgia, serif;
   --font-caption:
-    "Misaya UI", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    "Misaya UI", "Albert Sans", "SF Pro Text", -apple-system, BlinkMacSystemFont,
     "Segoe UI Variable Text", "Aptos", "PingFang SC", "Hiragino Sans GB",
     system-ui, sans-serif;
   --font-mono:
@@ -155,7 +158,7 @@
   --surface-card: oklch(0.985 0.012 250);
   --surface-card-strong: oklch(0.93 0.016 250);
   --surface-inline: oklch(0.936 0.006 245);
-  --primary-hover: oklch(0.58 0.17 248);
+  --primary-hover: oklch(0.48 0.16 248);
   --accent-soft: oklch(0.52 0.13 230 / 24%);
   --accent-bright: oklch(0.48 0.15 240);
   --border-faint: oklch(0.86 0.008 245);
@@ -172,9 +175,9 @@
     0 12px 22px oklch(0.35 0.025 250 / 14%);
   --glow-accent: 0 0 22px oklch(0.58 0.16 245 / 18%);
   --glow-focus: 0 0 0 3px oklch(0.48 0.12 205 / 28%);
-  --primary: oklch(0.64 0.17 248);
+  --primary: oklch(0.52 0.16 248);
   --primary-foreground: oklch(0.99 0 0);
-  --sidebar-primary: oklch(0.64 0.17 248);
+  --sidebar-primary: oklch(0.52 0.16 248);
   --sidebar-primary-foreground: oklch(0.99 0 0);
   --chart-1: oklch(0.52 0.13 205);
   --chart-2: oklch(0.5 0.1 165);
@@ -221,9 +224,9 @@
   --card-foreground: var(--fg);
   --popover: oklch(0.115 0.013 252);
   --popover-foreground: var(--fg);
-  --primary: oklch(0.72 0.15 245);
+  --primary: oklch(0.55 0.16 248);
   --primary-foreground: oklch(0.985 0.012 235);
-  --primary-hover: oklch(0.78 0.16 235);
+  --primary-hover: oklch(0.5 0.15 248);
   --secondary: oklch(0.18 0.026 250);
   --secondary-foreground: oklch(0.9 0.012 235);
   --muted: oklch(0.17 0.022 248);

@@ -1,0 +1,2036 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "generatedAt": "2026-06-18T15:10:38.408Z",
+  "results": [
+    {
+      "route": "home",
+      "path": "/",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "home-desktop-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/"
+      },
+      "lowContrast": [],
+      "overflow": [
+        {
+          "tag": "section",
+          "className": "home-index-spread container px-4 py-8 sm:px-6 lg:py-10",
+          "text": "Two-track research notebookAI Algorithmsand AIApplicationsResearch notes on mode",
+          "scrollWidth": 1328,
+          "clientWidth": 1280
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Search notes...",
+          "scrollWidth": 108,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [],
+      "unnamedControls": [
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground bord"
+        }
+      ],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "AI Algorithms and Applications · Misaya Notes"
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "home-desktop-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/"
+      },
+      "lowContrast": [],
+      "overflow": [
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Search notes...",
+          "scrollWidth": 108,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [],
+      "unnamedControls": [
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground bord"
+        }
+      ],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "AI Algorithms and Applications · Misaya Notes"
+    },
+    {
+      "route": "algorithms",
+      "path": "/algorithms",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "algorithms-desktop-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/algorithms"
+      },
+      "lowContrast": [],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "AI Algorithms · Misaya Notes"
+    },
+    {
+      "route": "algorithms",
+      "path": "/algorithms",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "algorithms-desktop-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/algorithms"
+      },
+      "lowContrast": [],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "AI Algorithms · Misaya Notes"
+    },
+    {
+      "route": "applications",
+      "path": "/applications",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "applications-desktop-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/applications"
+      },
+      "lowContrast": [],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "AI Applications · Misaya Notes"
+    },
+    {
+      "route": "applications",
+      "path": "/applications",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "applications-desktop-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/applications"
+      },
+      "lowContrast": [],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "AI Applications · Misaya Notes"
+    },
+    {
+      "route": "archive",
+      "path": "/archive",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "archive-desktop-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/archive"
+      },
+      "lowContrast": [
+        {
+          "text": "Loading notes",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "state-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "Archive · Misaya Notes"
+    },
+    {
+      "route": "archive",
+      "path": "/archive",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "archive-desktop-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/archive"
+      },
+      "lowContrast": [
+        {
+          "text": "Loading notes",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "state-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "Archive · Misaya Notes"
+    },
+    {
+      "route": "search-empty",
+      "path": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "search-empty-desktop-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/search?q=zzzz-no-hit-ui-audit"
+      },
+      "lowContrast": [
+        {
+          "text": "Search",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "span",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Loading notes",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "state-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "agent, RoPE, context engineering...",
+          "scrollWidth": 254,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [],
+      "unnamedControls": [
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground bord"
+        }
+      ],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes"
+    },
+    {
+      "route": "search-empty",
+      "path": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "search-empty-desktop-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/search?q=zzzz-no-hit-ui-audit"
+      },
+      "lowContrast": [
+        {
+          "text": "Search",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "span",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Loading notes",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "state-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "agent, RoPE, context engineering...",
+          "scrollWidth": 254,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [],
+      "unnamedControls": [
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground bord"
+        }
+      ],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes"
+    },
+    {
+      "route": "about",
+      "path": "/about",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "about-desktop-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/about"
+      },
+      "lowContrast": [
+        {
+          "text": "Links",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "p",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Current focus",
+          "ratio": 1,
+          "threshold": 3,
+          "selector": "h2",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "Misaya Yang · Misaya Notes"
+    },
+    {
+      "route": "about",
+      "path": "/about",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "about-desktop-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/about"
+      },
+      "lowContrast": [
+        {
+          "text": "Links",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "p",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Current focus",
+          "ratio": 1,
+          "threshold": 3,
+          "selector": "h2",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "Misaya Yang · Misaya Notes"
+    },
+    {
+      "route": "post",
+      "path": "/post/goal-harness-agent-phase-protocol",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "post-desktop-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/post/goal-harness-agent-phase-protocol"
+      },
+      "lowContrast": [
+        {
+          "text": "Misaya Yang",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "font-medium text-white",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "How to read this article",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "h2",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Agent Runtime Systems",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "series-progress-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "View path",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "series-progress-action series-progress-action-primary",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Agent Runtime Systems",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "series-progress-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Was this useful?",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "text-base font-semibold text-white",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Save interest in future notes",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "text-base font-semibold",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Misaya Yang",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "mb-2 text-lg font-semibold text-white",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional note: what was clear or missing?",
+          "scrollWidth": 300,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional nickname",
+          "scrollWidth": 135,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional reply email",
+          "scrollWidth": 144,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "you@example.com",
+          "scrollWidth": 137,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional topics: RoPE, agents, RAG...",
+          "scrollWidth": 268,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [
+        {
+          "tag": "a",
+          "text": "Scholar",
+          "width": 62.8,
+          "height": 16,
+          "className": "flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sk"
+        },
+        {
+          "tag": "button",
+          "text": "Email",
+          "width": 50.2,
+          "height": 16,
+          "className": "flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sk"
+        },
+        {
+          "tag": "a",
+          "text": "AI Applications",
+          "width": 124.4,
+          "height": 25.6,
+          "className": "article-tag article-tag-primary gap-1.5"
+        },
+        {
+          "tag": "a",
+          "text": "Agent Systems",
+          "width": 124.1,
+          "height": 25.6,
+          "className": "article-tag gap-1.5"
+        },
+        {
+          "tag": "a",
+          "text": "Goal Harness",
+          "width": 114.6,
+          "height": 25.6,
+          "className": "article-tag gap-1.5"
+        },
+        {
+          "tag": "a",
+          "text": "View path",
+          "width": 105.5,
+          "height": 30.4,
+          "className": "series-progress-action series-progress-action-primary"
+        },
+        {
+          "tag": "a",
+          "text": "Agent Loop: 从 ReAct 模式到可观测运行时",
+          "width": 294.3,
+          "height": 30.4,
+          "className": "series-progress-action"
+        },
+        {
+          "tag": "a",
+          "text": "Design Boundary",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        },
+        {
+          "tag": "a",
+          "text": "0. Anthropic 的两段式解法",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        },
+        {
+          "tag": "a",
+          "text": "关键细节",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        },
+        {
+          "tag": "a",
+          "text": "面试加分点",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        },
+        {
+          "tag": "a",
+          "text": "1. PRD 不是执行协议",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        },
+        {
+          "tag": "a",
+          "text": "5. 拆 phase 要按风险，不按文件夹",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        },
+        {
+          "tag": "a",
+          "text": "7. 完整回归要有 Regression Bank",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        },
+        {
+          "tag": "a",
+          "text": "9. Goal Harness Skill",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        }
+      ],
+      "unnamedControls": [
+        {
+          "tag": "textarea",
+          "className": "focus-visible:border-[color:var(--border-strong)] focus-visible:ring-ring/35 ari"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        }
+      ],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes"
+    },
+    {
+      "route": "post",
+      "path": "/post/goal-harness-agent-phase-protocol",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "post-desktop-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/post/goal-harness-agent-phase-protocol"
+      },
+      "lowContrast": [
+        {
+          "text": "Misaya Yang",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "font-medium text-white",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "How to read this article",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "h2",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Agent Runtime Systems",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "series-progress-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "View path",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "series-progress-action series-progress-action-primary",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Agent Runtime Systems",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "series-progress-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Was this useful?",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "text-base font-semibold text-white",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Save interest in future notes",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "text-base font-semibold",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Misaya Yang",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "mb-2 text-lg font-semibold text-white",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional note: what was clear or missing?",
+          "scrollWidth": 300,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional nickname",
+          "scrollWidth": 135,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional reply email",
+          "scrollWidth": 144,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "you@example.com",
+          "scrollWidth": 137,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional topics: RoPE, agents, RAG...",
+          "scrollWidth": 268,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [
+        {
+          "tag": "a",
+          "text": "Scholar",
+          "width": 62.8,
+          "height": 16,
+          "className": "flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sk"
+        },
+        {
+          "tag": "button",
+          "text": "Email",
+          "width": 50.2,
+          "height": 16,
+          "className": "flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sk"
+        },
+        {
+          "tag": "a",
+          "text": "AI Applications",
+          "width": 124.4,
+          "height": 25.6,
+          "className": "article-tag article-tag-primary gap-1.5"
+        },
+        {
+          "tag": "a",
+          "text": "Agent Systems",
+          "width": 124.1,
+          "height": 25.6,
+          "className": "article-tag gap-1.5"
+        },
+        {
+          "tag": "a",
+          "text": "Goal Harness",
+          "width": 114.6,
+          "height": 25.6,
+          "className": "article-tag gap-1.5"
+        },
+        {
+          "tag": "a",
+          "text": "View path",
+          "width": 105.5,
+          "height": 30.4,
+          "className": "series-progress-action series-progress-action-primary"
+        },
+        {
+          "tag": "a",
+          "text": "Agent Loop: 从 ReAct 模式到可观测运行时",
+          "width": 294.3,
+          "height": 30.4,
+          "className": "series-progress-action"
+        },
+        {
+          "tag": "a",
+          "text": "Design Boundary",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        },
+        {
+          "tag": "a",
+          "text": "0. Anthropic 的两段式解法",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        },
+        {
+          "tag": "a",
+          "text": "关键细节",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        },
+        {
+          "tag": "a",
+          "text": "面试加分点",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        },
+        {
+          "tag": "a",
+          "text": "1. PRD 不是执行协议",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        },
+        {
+          "tag": "a",
+          "text": "5. 拆 phase 要按风险，不按文件夹",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        },
+        {
+          "tag": "a",
+          "text": "7. 完整回归要有 Regression Bank",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        },
+        {
+          "tag": "a",
+          "text": "9. Goal Harness Skill",
+          "width": 250.9,
+          "height": 20,
+          "className": "block text-sm transition-colors text-slate-400 hover:text-white"
+        }
+      ],
+      "unnamedControls": [
+        {
+          "tag": "textarea",
+          "className": "focus-visible:border-[color:var(--border-strong)] focus-visible:ring-ring/35 ari"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        }
+      ],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes"
+    },
+    {
+      "route": "login",
+      "path": "/login",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "login-desktop-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/login"
+      },
+      "lowContrast": [],
+      "overflow": [
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Admin password",
+          "scrollWidth": 120,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "Owner access · Misaya Notes"
+    },
+    {
+      "route": "login",
+      "path": "/login",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "login-desktop-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/login"
+      },
+      "lowContrast": [],
+      "overflow": [
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Admin password",
+          "scrollWidth": 120,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 72,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "Owner access · Misaya Notes"
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "home-mobile-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/"
+      },
+      "lowContrast": [],
+      "overflow": [
+        {
+          "tag": "section",
+          "className": "home-index-spread container px-4 py-8 sm:px-6 lg:py-10",
+          "text": "Two-track research notebookAI Algorithmsand AIApplicationsResearch notes on mode",
+          "scrollWidth": 502,
+          "clientWidth": 390
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Search notes...",
+          "scrollWidth": 108,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [],
+      "unnamedControls": [
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground bord"
+        }
+      ],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "AI Algorithms and Applications · Misaya Notes"
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "home-mobile-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/"
+      },
+      "lowContrast": [],
+      "overflow": [
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Search notes...",
+          "scrollWidth": 108,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [],
+      "unnamedControls": [
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground bord"
+        }
+      ],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "AI Algorithms and Applications · Misaya Notes"
+    },
+    {
+      "route": "algorithms",
+      "path": "/algorithms",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "algorithms-mobile-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/algorithms"
+      },
+      "lowContrast": [],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "AI Algorithms · Misaya Notes"
+    },
+    {
+      "route": "algorithms",
+      "path": "/algorithms",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "algorithms-mobile-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/algorithms"
+      },
+      "lowContrast": [],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "AI Algorithms · Misaya Notes"
+    },
+    {
+      "route": "applications",
+      "path": "/applications",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "applications-mobile-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/applications"
+      },
+      "lowContrast": [],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "AI Applications · Misaya Notes"
+    },
+    {
+      "route": "applications",
+      "path": "/applications",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "applications-mobile-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/applications"
+      },
+      "lowContrast": [],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "AI Applications · Misaya Notes"
+    },
+    {
+      "route": "archive",
+      "path": "/archive",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "archive-mobile-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/archive"
+      },
+      "lowContrast": [
+        {
+          "text": "Loading notes",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "state-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "Archive · Misaya Notes"
+    },
+    {
+      "route": "archive",
+      "path": "/archive",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "archive-mobile-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/archive"
+      },
+      "lowContrast": [
+        {
+          "text": "Loading notes",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "state-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "Archive · Misaya Notes"
+    },
+    {
+      "route": "search-empty",
+      "path": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "search-empty-mobile-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/search?q=zzzz-no-hit-ui-audit"
+      },
+      "lowContrast": [
+        {
+          "text": "Search",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "span",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Loading notes",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "state-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "agent, RoPE, context engineering...",
+          "scrollWidth": 254,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [],
+      "unnamedControls": [
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground bord"
+        }
+      ],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes"
+    },
+    {
+      "route": "search-empty",
+      "path": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "search-empty-mobile-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/search?q=zzzz-no-hit-ui-audit"
+      },
+      "lowContrast": [
+        {
+          "text": "Search",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "span",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Loading notes",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "state-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "agent, RoPE, context engineering...",
+          "scrollWidth": 254,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [],
+      "unnamedControls": [
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground bord"
+        }
+      ],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes"
+    },
+    {
+      "route": "about",
+      "path": "/about",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "about-mobile-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/about"
+      },
+      "lowContrast": [
+        {
+          "text": "Links",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "p",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Current focus",
+          "ratio": 1,
+          "threshold": 3,
+          "selector": "h2",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "Misaya Yang · Misaya Notes"
+    },
+    {
+      "route": "about",
+      "path": "/about",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "about-mobile-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/about"
+      },
+      "lowContrast": [
+        {
+          "text": "Links",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "p",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Current focus",
+          "ratio": 1,
+          "threshold": 3,
+          "selector": "h2",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "Misaya Yang · Misaya Notes"
+    },
+    {
+      "route": "post",
+      "path": "/post/goal-harness-agent-phase-protocol",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "post-mobile-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/post/goal-harness-agent-phase-protocol"
+      },
+      "lowContrast": [
+        {
+          "text": "Misaya Yang",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "font-medium text-white",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Agent Runtime Systems",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "series-progress-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "View path",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "series-progress-action series-progress-action-primary",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Table of Contents",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "cursor-pointer text-sm font-semibold text-white",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Agent Runtime Systems",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "series-progress-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Was this useful?",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "text-base font-semibold text-white",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Save interest in future notes",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "text-base font-semibold",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Misaya Yang",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "mb-2 text-lg font-semibold text-white",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [
+        {
+          "tag": "div",
+          "className": "mt-16 border-t border-white/10 pt-8",
+          "text": "Continue readingContinue in AI ApplicationsSeries continuityAgent Runtime System",
+          "scrollWidth": 329,
+          "clientWidth": 324
+        },
+        {
+          "tag": "div",
+          "className": "mb-6 flex items-center justify-between gap-4",
+          "text": "Continue readingContinue in AI Applications",
+          "scrollWidth": 329,
+          "clientWidth": 324
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional note: what was clear or missing?",
+          "scrollWidth": 300,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional nickname",
+          "scrollWidth": 135,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional reply email",
+          "scrollWidth": 144,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "you@example.com",
+          "scrollWidth": 137,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional topics: RoPE, agents, RAG...",
+          "scrollWidth": 268,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [
+        {
+          "tag": "a",
+          "text": "Scholar",
+          "width": 62.8,
+          "height": 16,
+          "className": "flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sk"
+        },
+        {
+          "tag": "button",
+          "text": "Email",
+          "width": 50.2,
+          "height": 16,
+          "className": "flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sk"
+        },
+        {
+          "tag": "a",
+          "text": "AI Applications",
+          "width": 124.4,
+          "height": 25.6,
+          "className": "article-tag article-tag-primary gap-1.5"
+        },
+        {
+          "tag": "a",
+          "text": "Agent Systems",
+          "width": 124.1,
+          "height": 25.6,
+          "className": "article-tag gap-1.5"
+        },
+        {
+          "tag": "a",
+          "text": "Goal Harness",
+          "width": 114.6,
+          "height": 25.6,
+          "className": "article-tag gap-1.5"
+        },
+        {
+          "tag": "a",
+          "text": "View path",
+          "width": 288,
+          "height": 30.4,
+          "className": "series-progress-action series-progress-action-primary"
+        },
+        {
+          "tag": "button",
+          "text": "Explain the core abstraction in this article.",
+          "width": 283.6,
+          "height": 30.4,
+          "className": "article-agent-prompt"
+        },
+        {
+          "tag": "a",
+          "text": "Design Boundary",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        },
+        {
+          "tag": "a",
+          "text": "0. Anthropic 的两段式解法",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        },
+        {
+          "tag": "a",
+          "text": "关键细节",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        },
+        {
+          "tag": "a",
+          "text": "面试加分点",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        },
+        {
+          "tag": "a",
+          "text": "1. PRD 不是执行协议",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        },
+        {
+          "tag": "a",
+          "text": "2. Source Packet: 先把上下文变成证据",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        },
+        {
+          "tag": "a",
+          "text": "3. Feature Oracle: 让“完成”变成可枚举对象",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        },
+        {
+          "tag": "a",
+          "text": "5. 拆 phase 要按风险，不按文件夹",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        }
+      ],
+      "unnamedControls": [
+        {
+          "tag": "textarea",
+          "className": "focus-visible:border-[color:var(--border-strong)] focus-visible:ring-ring/35 ari"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        }
+      ],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes"
+    },
+    {
+      "route": "post",
+      "path": "/post/goal-harness-agent-phase-protocol",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "post-mobile-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/post/goal-harness-agent-phase-protocol"
+      },
+      "lowContrast": [
+        {
+          "text": "Misaya Yang",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "font-medium text-white",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Agent Runtime Systems",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "series-progress-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "View path",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "series-progress-action series-progress-action-primary",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Table of Contents",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "cursor-pointer text-sm font-semibold text-white",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Agent Runtime Systems",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "series-progress-title",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Was this useful?",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "text-base font-semibold text-white",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Save interest in future notes",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "text-base font-semibold",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "text": "Misaya Yang",
+          "ratio": 1,
+          "threshold": 4.5,
+          "selector": "mb-2 text-lg font-semibold text-white",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "overflow": [
+        {
+          "tag": "div",
+          "className": "mt-16 border-t border-white/10 pt-8",
+          "text": "Continue readingContinue in AI ApplicationsSeries continuityAgent Runtime System",
+          "scrollWidth": 329,
+          "clientWidth": 324
+        },
+        {
+          "tag": "div",
+          "className": "mb-6 flex items-center justify-between gap-4",
+          "text": "Continue readingContinue in AI Applications",
+          "scrollWidth": 329,
+          "clientWidth": 324
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional note: what was clear or missing?",
+          "scrollWidth": 300,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional nickname",
+          "scrollWidth": 135,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional reply email",
+          "scrollWidth": 144,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "you@example.com",
+          "scrollWidth": 137,
+          "clientWidth": 1
+        },
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Optional topics: RoPE, agents, RAG...",
+          "scrollWidth": 268,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [
+        {
+          "tag": "a",
+          "text": "Scholar",
+          "width": 62.8,
+          "height": 16,
+          "className": "flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sk"
+        },
+        {
+          "tag": "button",
+          "text": "Email",
+          "width": 50.2,
+          "height": 16,
+          "className": "flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sk"
+        },
+        {
+          "tag": "a",
+          "text": "AI Applications",
+          "width": 124.4,
+          "height": 25.6,
+          "className": "article-tag article-tag-primary gap-1.5"
+        },
+        {
+          "tag": "a",
+          "text": "Agent Systems",
+          "width": 124.1,
+          "height": 25.6,
+          "className": "article-tag gap-1.5"
+        },
+        {
+          "tag": "a",
+          "text": "Goal Harness",
+          "width": 114.6,
+          "height": 25.6,
+          "className": "article-tag gap-1.5"
+        },
+        {
+          "tag": "a",
+          "text": "View path",
+          "width": 288,
+          "height": 30.4,
+          "className": "series-progress-action series-progress-action-primary"
+        },
+        {
+          "tag": "button",
+          "text": "Explain the core abstraction in this article.",
+          "width": 283.6,
+          "height": 30.4,
+          "className": "article-agent-prompt"
+        },
+        {
+          "tag": "a",
+          "text": "Design Boundary",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        },
+        {
+          "tag": "a",
+          "text": "0. Anthropic 的两段式解法",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        },
+        {
+          "tag": "a",
+          "text": "关键细节",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        },
+        {
+          "tag": "a",
+          "text": "面试加分点",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        },
+        {
+          "tag": "a",
+          "text": "1. PRD 不是执行协议",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        },
+        {
+          "tag": "a",
+          "text": "2. Source Packet: 先把上下文变成证据",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        },
+        {
+          "tag": "a",
+          "text": "3. Feature Oracle: 让“完成”变成可枚举对象",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        },
+        {
+          "tag": "a",
+          "text": "5. 拆 phase 要按风险，不按文件夹",
+          "width": 297.1,
+          "height": 20,
+          "className": "text-sm text-slate-400 hover:text-sky-100"
+        }
+      ],
+      "unnamedControls": [
+        {
+          "tag": "textarea",
+          "className": "focus-visible:border-[color:var(--border-strong)] focus-visible:ring-ring/35 ari"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        },
+        {
+          "tag": "input",
+          "className": "file:text-foreground selection:bg-primary selection:text-primary-foreground h-11"
+        }
+      ],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes"
+    },
+    {
+      "route": "login",
+      "path": "/login",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "login-mobile-dark-viewport.png",
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "path": "/login"
+      },
+      "lowContrast": [],
+      "overflow": [
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Admin password",
+          "scrollWidth": 120,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to light mode",
+      "title": "Owner access · Misaya Notes"
+    },
+    {
+      "route": "login",
+      "path": "/login",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "login-mobile-light-viewport.png",
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "path": "/login"
+      },
+      "lowContrast": [],
+      "overflow": [
+        {
+          "tag": "label",
+          "className": "sr-only",
+          "text": "Admin password",
+          "scrollWidth": 120,
+          "clientWidth": 1
+        }
+      ],
+      "tinyTargets": [],
+      "unnamedControls": [],
+      "headerHeight": 68,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontStatus": "loaded",
+      "themeButtonLabel": "Switch to dark mode",
+      "title": "Owner access · Misaya Notes"
+    }
+  ]
+}

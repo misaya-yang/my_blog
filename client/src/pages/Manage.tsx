@@ -485,7 +485,7 @@ export default function Manage() {
   }
 
   return (
-    <div className="space-page">
+    <div className="space-page owner-dark-scope">
       <SpaceBackdrop subtle />
       <SiteHeader
         active="manage"

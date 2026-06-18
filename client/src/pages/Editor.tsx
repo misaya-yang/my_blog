@@ -793,7 +793,7 @@ export default function Editor() {
   return (
     <TooltipProvider>
       <div
-        className={`owner-editor-shell relative flex min-h-screen flex-col overflow-hidden text-slate-100 ${isFullscreen ? "fixed inset-0 z-50" : ""}`}
+        className={`owner-editor-shell owner-dark-scope relative flex min-h-screen flex-col overflow-hidden text-slate-100 ${isFullscreen ? "fixed inset-0 z-50" : ""}`}
       >
         <SpaceBackdrop subtle />
         {/* 顶部工具栏 */}

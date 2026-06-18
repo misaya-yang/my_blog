@@ -56,75 +56,76 @@ export default function Login() {
         compact
       />
 
-      <main className="container relative z-10 grid min-h-[calc(100dvh-68px)] grid-cols-1 items-start gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center lg:py-12">
-        <section className="page-hero login-copy max-w-2xl">
-          <div className="signal-chip mb-7">
-            <ShieldCheck className="h-3.5 w-3.5" />
-            {t("login.chip")}
-          </div>
-          <h1 className="page-title max-w-xl">{t("login.title")}</h1>
-          <p className="page-copy mt-5 max-w-xl">{t("login.subtitle")}</p>
-          <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-2">
-            <Surface as="div" density="compact">
-              <BookOpen className="mb-3 h-5 w-5 text-sky-300" />
-              <p className="text-sm font-medium text-white">
-                {t("login.readerOpenTitle")}
-              </p>
-              <p className="mt-2 text-xs leading-5 text-slate-400">
-                {t("login.readerOpenDesc")}
-              </p>
-            </Surface>
-            <Surface as="div" density="compact">
-              <LockKeyhole className="mb-3 h-5 w-5 text-blue-300" />
-              <p className="text-sm font-medium text-white">
-                {t("login.ownerCardTitle")}
-              </p>
-              <p className="mt-2 text-xs leading-5 text-slate-400">
-                {t("login.ownerCardDesc")}
-              </p>
-            </Surface>
-          </div>
-        </section>
-
-        <Surface className="login-panel">
-          <SectionHeader
-            icon={<KeyRound className="h-4 w-4" />}
-            title={t("login.panelTitle")}
-          />
-          <form onSubmit={handleAdminSubmit} className="mt-6 space-y-5">
-            <div>
-              <h2 className="text-xl font-semibold text-white">
-                {t("login.adminTitle")}
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-400">
-                {t("login.adminDesc")}
-              </p>
+      <main className="login-access-shell container relative z-10 px-4 sm:px-6">
+        <section
+          className="login-access-card"
+          aria-labelledby="owner-access-title"
+        >
+          <div className="login-access-copy">
+            <div className="signal-chip login-access-chip">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              {t("login.chip")}
             </div>
-            <label className="sr-only" htmlFor="admin-password">
-              {t("login.adminPasswordPlaceholder")}
-            </label>
-            <Input
-              id="admin-password"
-              type="password"
-              placeholder={t("login.adminPasswordPlaceholder")}
-              value={password}
-              onChange={event => setPassword(event.target.value)}
-              required
-              aria-label={t("login.adminPasswordPlaceholder")}
-              autoComplete="current-password"
-              className="border-sky-200/15 bg-slate-950/40 text-white placeholder:text-slate-500"
+            <h1 id="owner-access-title" className="login-access-title">
+              {t("login.title")}
+            </h1>
+            <p className="login-access-lede">{t("login.subtitle")}</p>
+
+            <div className="login-access-notes">
+              <div className="login-access-note">
+                <BookOpen className="h-4 w-4" />
+                <div>
+                  <strong>{t("login.readerOpenTitle")}</strong>
+                  <span>{t("login.readerOpenDesc")}</span>
+                </div>
+              </div>
+              <div className="login-access-note">
+                <LockKeyhole className="h-4 w-4" />
+                <div>
+                  <strong>{t("login.ownerCardTitle")}</strong>
+                  <span>{t("login.ownerCardDesc")}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <Surface className="login-panel login-access-form">
+            <SectionHeader
+              icon={<KeyRound className="h-4 w-4" />}
+              title={t("login.panelTitle")}
+              description={t("login.adminDesc")}
             />
-            <Button
-              type="submit"
-              className="owner-primary-action w-full"
-              disabled={adminLogin.isPending}
+            <form
+              onSubmit={handleAdminSubmit}
+              className="login-access-form-stack"
             >
-              {adminLogin.isPending
-                ? t("login.adminBtnLoading")
-                : t("login.adminBtn")}
-            </Button>
-          </form>
-        </Surface>
+              <label className="sr-only" htmlFor="admin-password">
+                {t("login.adminPasswordPlaceholder")}
+              </label>
+              <Input
+                id="admin-password"
+                type="password"
+                placeholder={t("login.adminPasswordPlaceholder")}
+                value={password}
+                onChange={event => setPassword(event.target.value)}
+                required
+                aria-label={t("login.adminPasswordPlaceholder")}
+                autoComplete="current-password"
+                className="login-access-input"
+              />
+              <Button
+                type="submit"
+                className="owner-primary-action w-full"
+                disabled={adminLogin.isPending}
+              >
+                {adminLogin.isPending
+                  ? t("login.adminBtnLoading")
+                  : t("login.adminBtn")}
+              </Button>
+              <p className="login-access-footnote">{t("login.formHint")}</p>
+            </form>
+          </Surface>
+        </section>
       </main>
     </div>
   );

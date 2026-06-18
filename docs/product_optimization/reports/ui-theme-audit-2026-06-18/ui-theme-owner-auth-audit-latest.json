@@ -1,0 +1,4655 @@
+{
+  "generatedAt": "2026-06-18T16:39:09.230Z",
+  "baseURL": "http://localhost:3002",
+  "method": "Playwright screenshots plus computed theme, font stack, contrast, and overflow checks. OKLCH/OKLAB colors converted in audit code.",
+  "auth": "owner checks used a signed local admin session; token intentionally not written",
+  "checks": 6,
+  "publicChecks": 44,
+  "ownerChecks": 6,
+  "failures": [],
+  "counts": {
+    "lowContrast": 0,
+    "pageOverflow": 0,
+    "fontNotLoaded": 0,
+    "publicThemeFailures": 0,
+    "ownerLockFailures": 0
+  },
+  "results": [
+    {
+      "area": "owner",
+      "route": "manage",
+      "path": "/manage",
+      "viewport": "desktop",
+      "theme": "light-pref-owner-locked",
+      "screenshotKey": "verified-owner-manage-desktop-lightpref",
+      "status": 200,
+      "screenshot": "docs/product_optimization/reports/ui-theme-audit-2026-06-18/screenshots/verified-owner-manage-desktop-lightpref.png",
+      "metrics": {
+        "url": "http://localhost:3002/manage",
+        "pathname": "/manage",
+        "title": "Content Dashboard · Misaya Notes",
+        "rootTheme": "light",
+        "rootDarkClass": false,
+        "storedTheme": "light",
+        "ownerDarkScope": true,
+        "authWall": false,
+        "themeButtonLabels": [],
+        "documentWidth": 1440,
+        "viewportWidth": 1440,
+        "documentHeight": 1957,
+        "viewportHeight": 1100,
+        "pageOverflow": false,
+        "overflowElements": [],
+        "fontStatus": "loaded",
+        "fontStacksPresent": {
+          "ui": true,
+          "display": true,
+          "reading": false
+        },
+        "visibleFontFamilies": [
+          "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+          "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+          "\"Misaya Display\", \"Albert Sans\", \"SF Pro Display\", \"Avenir Next\", \"Segoe UI Variable Display\", \"Aptos Display\", \"Helvetica Neue\", \"PingFang SC\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif"
+        ],
+        "samples": [
+          {
+            "index": 10,
+            "tag": "span",
+            "text": "Back to Home",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "14.08px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 142,
+              "y": 24,
+              "width": 95,
+              "height": 20,
+              "right": 237
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 16,
+            "tag": "span",
+            "text": "Write",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "14.08px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1031,
+              "y": 24,
+              "width": 37,
+              "height": 20,
+              "right": 1068
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 17,
+            "tag": "a",
+            "text": "Search",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": "Search",
+            "rect": {
+              "x": 1090,
+              "y": 12,
+              "width": 44,
+              "height": 44,
+              "right": 1134
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 20,
+            "tag": "button",
+            "text": "中文",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "14.08px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1159,
+              "y": 14,
+              "width": 52,
+              "height": 39,
+              "right": 1211
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 25,
+            "tag": "span",
+            "text": "Misaya",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "13.76px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1254,
+              "y": 24,
+              "width": 47,
+              "height": 20,
+              "right": 1301
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 31,
+            "tag": "div",
+            "text": "Content management",
+            "color": "oklch(0.84 0.13 210)",
+            "backgroundColor": "oklch(0.54 0.17 245 / 0.1)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 104,
+              "y": 104,
+              "width": 171,
+              "height": 34,
+              "right": 275
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 34,
+            "tag": "h2",
+            "text": "Content Dashboard",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya Display\", \"Albert Sans\", \"SF Pro Display\", \"Avenir Next\", \"Segoe UI Variable Display\", \"Aptos Display\", \"Helvetica Neue\", \"PingFang SC\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif",
+            "fontSize": "36px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 104,
+              "y": 158,
+              "width": 617,
+              "height": 45,
+              "right": 721
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 35,
+            "tag": "p",
+            "text": "Quickly check drafts, publishing status, views, and research notes that need further refinement.",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 104,
+              "y": 215,
+              "width": 617,
+              "height": 24,
+              "right": 721
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 37,
+            "tag": "a",
+            "text": "Agent Operations",
+            "color": "oklch(0.84 0.13 210)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14.4px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1002,
+              "y": 199,
+              "width": 181,
+              "height": 40,
+              "right": 1182
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 40,
+            "tag": "a",
+            "text": "Write Article",
+            "color": "oklch(0.99 0 0)",
+            "backgroundColor": "oklch(0.55 0.16 248)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14.4px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1190,
+              "y": 199,
+              "width": 146,
+              "height": 40,
+              "right": 1336
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 46,
+            "tag": "input",
+            "text": "Search articles...",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.055 0.014 252 / 0.86)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "15.04px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 127,
+              "y": 309,
+              "width": 448,
+              "height": 44,
+              "right": 575
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 48,
+            "tag": "span",
+            "text": "All technical areas",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 973,
+              "y": 317,
+              "width": 117,
+              "height": 20,
+              "right": 1090
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 51,
+            "tag": "div",
+            "text": "0 articles",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.095 0.014 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1254,
+              "y": 309,
+              "width": 60,
+              "height": 44,
+              "right": 1313
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 58,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 162,
+              "y": 418,
+              "width": 72,
+              "height": 22,
+              "right": 234
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 59,
+            "tag": "span",
+            "text": "Drafts",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 162,
+              "y": 451,
+              "width": 72,
+              "height": 15,
+              "right": 234
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 67,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 317,
+              "y": 418,
+              "width": 72,
+              "height": 22,
+              "right": 389
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 68,
+            "tag": "span",
+            "text": "Public",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 317,
+              "y": 451,
+              "width": 72,
+              "height": 15,
+              "right": 389
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 73,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 473,
+              "y": 418,
+              "width": 72,
+              "height": 22,
+              "right": 544
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 74,
+            "tag": "span",
+            "text": "Admin-only",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 473,
+              "y": 451,
+              "width": 72,
+              "height": 15,
+              "right": 544
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 81,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 628,
+              "y": 418,
+              "width": 72,
+              "height": 22,
+              "right": 700
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 82,
+            "tag": "span",
+            "text": "Hidden",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 628,
+              "y": 451,
+              "width": 72,
+              "height": 15,
+              "right": 700
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 87,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 783,
+              "y": 418,
+              "width": 72,
+              "height": 22,
+              "right": 855
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 88,
+            "tag": "span",
+            "text": "No excerpt",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 783,
+              "y": 451,
+              "width": 72,
+              "height": 15,
+              "right": 855
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 93,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 939,
+              "y": 415,
+              "width": 72,
+              "height": 22,
+              "right": 1011
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 94,
+            "tag": "span",
+            "text": "No category",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 939,
+              "y": 440,
+              "width": 72,
+              "height": 29,
+              "right": 1011
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 100,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1094,
+              "y": 418,
+              "width": 72,
+              "height": 22,
+              "right": 1166
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 101,
+            "tag": "span",
+            "text": "No tags",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1094,
+              "y": 451,
+              "width": 72,
+              "height": 15,
+              "right": 1166
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 106,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1250,
+              "y": 418,
+              "width": 72,
+              "height": 22,
+              "right": 1321
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 107,
+            "tag": "span",
+            "text": "Recent",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1250,
+              "y": 451,
+              "width": 72,
+              "height": 15,
+              "right": 1321
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 114,
+            "tag": "p",
+            "text": "Loading notes",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.095 0.014 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "720",
+            "ariaLabel": null,
+            "rect": {
+              "x": 665,
+              "y": 585,
+              "width": 110,
+              "height": 22,
+              "right": 775
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 115,
+            "tag": "p",
+            "text": "Fetching the latest notes. Search stays available.",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.095 0.014 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14.4px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 559,
+              "y": 612,
+              "width": 322,
+              "height": 23,
+              "right": 881
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 124,
+            "tag": "h2",
+            "text": "Categories",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.095 0.014 252)",
+            "fontFamily": "\"Misaya Display\", \"Albert Sans\", \"SF Pro Display\", \"Avenir Next\", \"Segoe UI Variable Display\", \"Aptos Display\", \"Helvetica Neue\", \"PingFang SC\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif",
+            "fontSize": "18.88px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 164,
+              "y": 791,
+              "width": 95,
+              "height": 23,
+              "right": 259
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 126,
+            "tag": "input",
+            "text": "Name",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.055 0.014 252 / 0.86)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "15.04px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 127,
+              "y": 878,
+              "width": 125,
+              "height": 44,
+              "right": 252
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 127,
+            "tag": "input",
+            "text": "Slug",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.055 0.014 252 / 0.86)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "15.04px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 264,
+              "y": 878,
+              "width": 125,
+              "height": 44,
+              "right": 389
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 128,
+            "tag": "input",
+            "text": "Description",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.055 0.014 252 / 0.86)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "15.04px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 401,
+              "y": 878,
+              "width": 175,
+              "height": 44,
+              "right": 577
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 139,
+            "tag": "h2",
+            "text": "Tags",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.095 0.014 252)",
+            "fontFamily": "\"Misaya Display\", \"Albert Sans\", \"SF Pro Display\", \"Avenir Next\", \"Segoe UI Variable Display\", \"Aptos Display\", \"Helvetica Neue\", \"PingFang SC\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif",
+            "fontSize": "18.88px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 792,
+              "y": 791,
+              "width": 40,
+              "height": 23,
+              "right": 832
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 141,
+            "tag": "input",
+            "text": "Name",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.055 0.014 252 / 0.86)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "15.04px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 755,
+              "y": 878,
+              "width": 219,
+              "height": 44,
+              "right": 974
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 142,
+            "tag": "input",
+            "text": "Slug",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.055 0.014 252 / 0.86)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "15.04px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 986,
+              "y": 878,
+              "width": 219,
+              "height": 44,
+              "right": 1205
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 151,
+            "tag": "h3",
+            "text": "Writing Backlog",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 153,
+              "y": 1014,
+              "width": 133,
+              "height": 28,
+              "right": 286
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 152,
+            "tag": "p",
+            "text": "A single owner-only queue for reader feedback, zero-result searches, and Agent questions that should",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 125,
+              "y": 1050,
+              "width": 768,
+              "height": 48,
+              "right": 893
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 154,
+            "tag": "span",
+            "text": "Owner-only",
+            "color": "oklch(0.84 0.13 210)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "11.84px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1076,
+              "y": 1014,
+              "width": 85,
+              "height": 23,
+              "right": 1161
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 155,
+            "tag": "span",
+            "text": "Contact data redacted",
+            "color": "oklch(0.84 0.13 210)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "11.84px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1169,
+              "y": 1014,
+              "width": 146,
+              "height": 23,
+              "right": 1315
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 158,
+            "tag": "p",
+            "text": "Backlog items",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 138,
+              "y": 1131,
+              "width": 263,
+              "height": 16,
+              "right": 401
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 159,
+            "tag": "p",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "20px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 138,
+              "y": 1151,
+              "width": 263,
+              "height": 28,
+              "right": 401
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 161,
+            "tag": "p",
+            "text": "New feedback",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 439,
+              "y": 1131,
+              "width": 263,
+              "height": 16,
+              "right": 701
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 162,
+            "tag": "p",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "20px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 439,
+              "y": 1151,
+              "width": 263,
+              "height": 28,
+              "right": 701
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 164,
+            "tag": "p",
+            "text": "Search gaps",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 739,
+              "y": 1131,
+              "width": 263,
+              "height": 16,
+              "right": 1002
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 165,
+            "tag": "p",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "20px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 739,
+              "y": 1151,
+              "width": 263,
+              "height": 28,
+              "right": 1002
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 167,
+            "tag": "p",
+            "text": "Agent gaps",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1040,
+              "y": 1131,
+              "width": 263,
+              "height": 16,
+              "right": 1302
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 168,
+            "tag": "p",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "20px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1040,
+              "y": 1151,
+              "width": 263,
+              "height": 28,
+              "right": 1302
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 172,
+            "tag": "p",
+            "text": "Feedback status is saved. Agent ideas are reviewed from the radar list and can be turned into drafts",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 125,
+              "y": 1312,
+              "width": 1190,
+              "height": 20,
+              "right": 1315
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 179,
+            "tag": "h3",
+            "text": "Content Radar",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 153,
+              "y": 1406,
+              "width": 122,
+              "height": 28,
+              "right": 275
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 180,
+            "tag": "p",
+            "text": "Private reader signals grouped into writing opportunities. This stays owner-only and does not create",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 125,
+              "y": 1442,
+              "width": 768,
+              "height": 48,
+              "right": 893
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 181,
+            "tag": "span",
+            "text": "Stored-only subscription",
+            "color": "oklch(0.84 0.13 210)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "11.84px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1155,
+              "y": 1406,
+              "width": 160,
+              "height": 23,
+              "right": 1315
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 192,
+            "tag": "h3",
+            "text": "Reader Feedback",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 153,
+              "y": 1672,
+              "width": 146,
+              "height": 28,
+              "right": 299
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 193,
+            "tag": "p",
+            "text": "Private feedback submitted from article pages.",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 125,
+              "y": 1708,
+              "width": 302,
+              "height": 24,
+              "right": 427
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 194,
+            "tag": "span",
+            "text": "0 items",
+            "color": "oklch(0.18 0.018 260)",
+            "backgroundColor": "oklch(0.93 0.016 250)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "11.84px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 838,
+              "y": 1690,
+              "width": 60,
+              "height": 23,
+              "right": 898
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 205,
+            "tag": "h3",
+            "text": "Subscribers",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 992,
+              "y": 1672,
+              "width": 101,
+              "height": 28,
+              "right": 1094
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 206,
+            "tag": "p",
+            "text": "Stored subscription intent. Export this list when connecting an email provider.",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 964,
+              "y": 1708,
+              "width": 246,
+              "height": 72,
+              "right": 1211
+            },
+            "isIconOnly": false
+          }
+        ],
+        "sampleCount": 59,
+        "lowContrastCount": 0,
+        "lowContrast": []
+      }
+    },
+    {
+      "area": "owner",
+      "route": "manage-agent",
+      "path": "/manage/agent",
+      "viewport": "desktop",
+      "theme": "light-pref-owner-locked",
+      "screenshotKey": "verified-owner-manage-agent-desktop-lightpref",
+      "status": 200,
+      "screenshot": "docs/product_optimization/reports/ui-theme-audit-2026-06-18/screenshots/verified-owner-manage-agent-desktop-lightpref.png",
+      "metrics": {
+        "url": "http://localhost:3002/manage/agent",
+        "pathname": "/manage/agent",
+        "title": "Agent Operations · Misaya Notes",
+        "rootTheme": "light",
+        "rootDarkClass": false,
+        "storedTheme": "light",
+        "ownerDarkScope": true,
+        "authWall": false,
+        "themeButtonLabels": [],
+        "documentWidth": 1440,
+        "viewportWidth": 1440,
+        "documentHeight": 1100,
+        "viewportHeight": 1100,
+        "pageOverflow": false,
+        "overflowElements": [],
+        "fontStatus": "loaded",
+        "fontStacksPresent": {
+          "ui": true,
+          "display": true,
+          "reading": false
+        },
+        "visibleFontFamilies": [
+          "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+          "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+          "\"Misaya Display\", \"Albert Sans\", \"SF Pro Display\", \"Avenir Next\", \"Segoe UI Variable Display\", \"Aptos Display\", \"Helvetica Neue\", \"PingFang SC\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif"
+        ],
+        "samples": [
+          {
+            "index": 10,
+            "tag": "span",
+            "text": "Back to content",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "14.08px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 142,
+              "y": 24,
+              "width": 108,
+              "height": 20,
+              "right": 250
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 16,
+            "tag": "span",
+            "text": "Write",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "14.08px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1031,
+              "y": 24,
+              "width": 37,
+              "height": 20,
+              "right": 1068
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 17,
+            "tag": "a",
+            "text": "Search",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": "Search",
+            "rect": {
+              "x": 1090,
+              "y": 12,
+              "width": 44,
+              "height": 44,
+              "right": 1134
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 20,
+            "tag": "button",
+            "text": "中文",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "14.08px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1159,
+              "y": 14,
+              "width": 52,
+              "height": 39,
+              "right": 1211
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 25,
+            "tag": "span",
+            "text": "Misaya",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "13.76px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1254,
+              "y": 24,
+              "width": 47,
+              "height": 20,
+              "right": 1301
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 31,
+            "tag": "div",
+            "text": "Agent Operations",
+            "color": "oklch(0.84 0.13 210)",
+            "backgroundColor": "oklch(0.54 0.17 245 / 0.1)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 104,
+              "y": 104,
+              "width": 147,
+              "height": 34,
+              "right": 251
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 34,
+            "tag": "h1",
+            "text": "Agent Operations",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya Display\", \"Albert Sans\", \"SF Pro Display\", \"Avenir Next\", \"Segoe UI Variable Display\", \"Aptos Display\", \"Helvetica Neue\", \"PingFang SC\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif",
+            "fontSize": "36px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 104,
+              "y": 158,
+              "width": 607,
+              "height": 45,
+              "right": 711
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 35,
+            "tag": "p",
+            "text": "Check index freshness, retrieval misses, evals, traces, and reader questions from one console.",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 104,
+              "y": 215,
+              "width": 607,
+              "height": 24,
+              "right": 711
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 36,
+            "tag": "a",
+            "text": "Back to content",
+            "color": "oklch(0.84 0.13 210)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14.4px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1168,
+              "y": 199,
+              "width": 168,
+              "height": 40,
+              "right": 1336
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 41,
+            "tag": "button",
+            "text": "Index Status",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.16 0.036 248)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 108,
+              "y": 271,
+              "width": 227,
+              "height": 40,
+              "right": 335
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 45,
+            "tag": "button",
+            "text": "Retrieval Debugger",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 108,
+              "y": 317,
+              "width": 227,
+              "height": 40,
+              "right": 335
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 49,
+            "tag": "button",
+            "text": "Local Eval Runner",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 108,
+              "y": 363,
+              "width": 227,
+              "height": 40,
+              "right": 335
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 52,
+            "tag": "button",
+            "text": "Recent Traces",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 108,
+              "y": 408,
+              "width": 227,
+              "height": 40,
+              "right": 335
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 57,
+            "tag": "button",
+            "text": "Content Radar",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 108,
+              "y": 454,
+              "width": 227,
+              "height": 40,
+              "right": 335
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 67,
+            "tag": "p",
+            "text": "Loading index status...",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "720",
+            "ariaLabel": null,
+            "rect": {
+              "x": 757,
+              "y": 364,
+              "width": 177,
+              "height": 22,
+              "right": 934
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 68,
+            "tag": "p",
+            "text": "Fetching the latest notes. Search stays available.",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14.4px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 685,
+              "y": 391,
+              "width": 322,
+              "height": 23,
+              "right": 1006
+            },
+            "isIconOnly": false
+          }
+        ],
+        "sampleCount": 16,
+        "lowContrastCount": 0,
+        "lowContrast": []
+      }
+    },
+    {
+      "area": "owner",
+      "route": "write",
+      "path": "/write",
+      "viewport": "desktop",
+      "theme": "light-pref-owner-locked",
+      "screenshotKey": "verified-owner-write-desktop-lightpref",
+      "status": 200,
+      "screenshot": "docs/product_optimization/reports/ui-theme-audit-2026-06-18/screenshots/verified-owner-write-desktop-lightpref.png",
+      "metrics": {
+        "url": "http://localhost:3002/write",
+        "pathname": "/write",
+        "title": "New article · Misaya Notes",
+        "rootTheme": "light",
+        "rootDarkClass": false,
+        "storedTheme": "light",
+        "ownerDarkScope": true,
+        "authWall": false,
+        "themeButtonLabels": [],
+        "documentWidth": 1440,
+        "viewportWidth": 1440,
+        "documentHeight": 1100,
+        "viewportHeight": 1100,
+        "pageOverflow": false,
+        "overflowElements": [],
+        "fontStatus": "loaded",
+        "fontStacksPresent": {
+          "ui": true,
+          "display": false,
+          "reading": true
+        },
+        "visibleFontFamilies": [
+          "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+          "\"SF Mono\", \"JetBrains Mono\", \"Cascadia Code\", \"Fira Code\", ui-monospace, monospace",
+          "\"Misaya Reading\", \"Source Serif 4\", \"Iowan Old Style\", Charter, \"Songti SC\", STSong, \"Source Han Serif SC\", \"Noto Serif CJK SC\", Georgia, serif"
+        ],
+        "samples": [
+          {
+            "index": 11,
+            "tag": "span",
+            "text": "Back",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "13.76px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 50,
+              "y": 17,
+              "width": 33,
+              "height": 21,
+              "right": 83
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 14,
+            "tag": "span",
+            "text": "0 words",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 692,
+              "y": 18,
+              "width": 70,
+              "height": 20,
+              "right": 762
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 16,
+            "tag": "span",
+            "text": "~ 1 min",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 774,
+              "y": 18,
+              "width": 64,
+              "height": 20,
+              "right": 838
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 19,
+            "tag": "span",
+            "text": "0 equations",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 850,
+              "y": 18,
+              "width": 94,
+              "height": 20,
+              "right": 944
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 21,
+            "tag": "span",
+            "text": "0 code blocks",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 956,
+              "y": 18,
+              "width": 108,
+              "height": 20,
+              "right": 1064
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 23,
+            "tag": "button",
+            "text": "Hide preview",
+            "color": "oklch(0.84 0.13 210)",
+            "backgroundColor": "oklab(0.52 -0.059937 -0.148349 / 0.15)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Hide preview",
+            "rect": {
+              "x": 1080,
+              "y": 12,
+              "width": 32,
+              "height": 32,
+              "right": 1112
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 28,
+            "tag": "button",
+            "text": "Fullscreen",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Fullscreen",
+            "rect": {
+              "x": 1120,
+              "y": 12,
+              "width": 32,
+              "height": 32,
+              "right": 1152
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 34,
+            "tag": "button",
+            "text": "Article Settings",
+            "color": "oklch(0.47 0.018 250)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "13.76px",
+            "fontWeight": "650",
+            "ariaLabel": "Article Settings",
+            "rect": {
+              "x": 1160,
+              "y": 10,
+              "width": 36,
+              "height": 36,
+              "right": 1196
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 42,
+            "tag": "span",
+            "text": "Save Draft",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "13.76px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1239,
+              "y": 17,
+              "width": 70,
+              "height": 21,
+              "right": 1309
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 43,
+            "tag": "button",
+            "text": "Publish",
+            "color": "oklch(0.99 0 0)",
+            "backgroundColor": "oklch(0.55 0.16 248)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "13.76px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 1328,
+              "y": 9,
+              "width": 96,
+              "height": 38,
+              "right": 1424
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 48,
+            "tag": "button",
+            "text": "Heading 1",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Heading 1",
+            "rect": {
+              "x": 16,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 48
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 50,
+            "tag": "button",
+            "text": "Heading 2",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Heading 2",
+            "rect": {
+              "x": 52,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 84
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 52,
+            "tag": "button",
+            "text": "Heading 3",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Heading 3",
+            "rect": {
+              "x": 88,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 120
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 54,
+            "tag": "button",
+            "text": "Bold",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Bold",
+            "rect": {
+              "x": 137,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 169
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 57,
+            "tag": "button",
+            "text": "Italic",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Italic",
+            "rect": {
+              "x": 173,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 205
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 60,
+            "tag": "button",
+            "text": "Strikethrough",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Strikethrough",
+            "rect": {
+              "x": 209,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 241
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 63,
+            "tag": "button",
+            "text": "Inline code",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Inline code",
+            "rect": {
+              "x": 245,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 277
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 67,
+            "tag": "button",
+            "text": "Bullet list",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Bullet list",
+            "rect": {
+              "x": 294,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 326
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 69,
+            "tag": "button",
+            "text": "Ordered list",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Ordered list",
+            "rect": {
+              "x": 330,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 362
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 71,
+            "tag": "button",
+            "text": "Quote",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Quote",
+            "rect": {
+              "x": 366,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 398
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 75,
+            "tag": "button",
+            "text": "Divider",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Divider",
+            "rect": {
+              "x": 402,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 434
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 77,
+            "tag": "button",
+            "text": "Insert link",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Insert link",
+            "rect": {
+              "x": 451,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 483
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 81,
+            "tag": "button",
+            "text": "Insert image",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Insert image",
+            "rect": {
+              "x": 487,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 519
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 85,
+            "tag": "button",
+            "text": "Code block",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Code block",
+            "rect": {
+              "x": 523,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 555
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 89,
+            "tag": "button",
+            "text": "Inline math",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Inline math",
+            "rect": {
+              "x": 559,
+              "y": 63,
+              "width": 25,
+              "height": 40,
+              "right": 584
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 90,
+            "tag": "span",
+            "text": "∑",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"SF Mono\", \"JetBrains Mono\", \"Cascadia Code\", \"Fira Code\", ui-monospace, monospace",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 567,
+              "y": 78,
+              "width": 9,
+              "height": 14,
+              "right": 576
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 91,
+            "tag": "button",
+            "text": "Math block",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Math block",
+            "rect": {
+              "x": 588,
+              "y": 63,
+              "width": 19,
+              "height": 40,
+              "right": 607
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 95,
+            "tag": "p",
+            "text": "Research Snippets",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "oklch(0.047 0.012 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 17,
+              "y": 128,
+              "width": 222,
+              "height": 20,
+              "right": 239
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 96,
+            "tag": "p",
+            "text": "Quickly insert paper-style structures to keep claims and evidence clearly bounded.",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.047 0.012 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 17,
+              "y": 152,
+              "width": 222,
+              "height": 60,
+              "right": 239
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 99,
+            "tag": "span",
+            "text": "Claim",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "oklab(0.129 -0.0038832 -0.0418201 / 0.45)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 30,
+              "y": 237,
+              "width": 196,
+              "height": 20,
+              "right": 226
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 100,
+            "tag": "span",
+            "text": "Claim / evidence / caveat",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklab(0.129 -0.0038832 -0.0418201 / 0.45)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 30,
+              "y": 261,
+              "width": 196,
+              "height": 16,
+              "right": 226
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 102,
+            "tag": "span",
+            "text": "Theorem",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "oklab(0.129 -0.0038832 -0.0418201 / 0.45)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 30,
+              "y": 303,
+              "width": 196,
+              "height": 20,
+              "right": 226
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 103,
+            "tag": "span",
+            "text": "Theorem block",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklab(0.129 -0.0038832 -0.0418201 / 0.45)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 30,
+              "y": 327,
+              "width": 196,
+              "height": 16,
+              "right": 226
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 105,
+            "tag": "span",
+            "text": "Proposition",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "oklab(0.129 -0.0038832 -0.0418201 / 0.45)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 30,
+              "y": 369,
+              "width": 196,
+              "height": 20,
+              "right": 226
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 106,
+            "tag": "span",
+            "text": "Proposition block",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklab(0.129 -0.0038832 -0.0418201 / 0.45)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 30,
+              "y": 393,
+              "width": 196,
+              "height": 16,
+              "right": 226
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 108,
+            "tag": "span",
+            "text": "Experiment",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "oklab(0.129 -0.0038832 -0.0418201 / 0.45)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 30,
+              "y": 435,
+              "width": 196,
+              "height": 20,
+              "right": 226
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 109,
+            "tag": "span",
+            "text": "Setup / metric / result",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklab(0.129 -0.0038832 -0.0418201 / 0.45)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 30,
+              "y": 459,
+              "width": 196,
+              "height": 16,
+              "right": 226
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 111,
+            "tag": "span",
+            "text": "Formula",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "oklab(0.129 -0.0038832 -0.0418201 / 0.45)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 30,
+              "y": 501,
+              "width": 196,
+              "height": 20,
+              "right": 226
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 112,
+            "tag": "span",
+            "text": "Display math",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklab(0.129 -0.0038832 -0.0418201 / 0.45)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 30,
+              "y": 525,
+              "width": 196,
+              "height": 16,
+              "right": 226
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 114,
+            "tag": "span",
+            "text": "Figure",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "oklab(0.129 -0.0038832 -0.0418201 / 0.45)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 30,
+              "y": 567,
+              "width": 196,
+              "height": 20,
+              "right": 226
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 115,
+            "tag": "span",
+            "text": "Figure note",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklab(0.129 -0.0038832 -0.0418201 / 0.45)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 30,
+              "y": 591,
+              "width": 196,
+              "height": 16,
+              "right": 226
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 118,
+            "tag": "span",
+            "text": "Equations",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.047 0.012 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 17,
+              "y": 661,
+              "width": 56,
+              "height": 16,
+              "right": 73
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 119,
+            "tag": "span",
+            "text": "0",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "oklch(0.047 0.012 252)",
+            "fontFamily": "\"SF Mono\", \"JetBrains Mono\", \"Cascadia Code\", \"Fira Code\", ui-monospace, monospace",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 232,
+              "y": 661,
+              "width": 7,
+              "height": 16,
+              "right": 239
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 121,
+            "tag": "span",
+            "text": "Code blocks",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.047 0.012 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 17,
+              "y": 685,
+              "width": 70,
+              "height": 16,
+              "right": 87
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 122,
+            "tag": "span",
+            "text": "0",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "oklch(0.047 0.012 252)",
+            "fontFamily": "\"SF Mono\", \"JetBrains Mono\", \"Cascadia Code\", \"Fira Code\", ui-monospace, monospace",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 232,
+              "y": 685,
+              "width": 7,
+              "height": 16,
+              "right": 239
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 124,
+            "tag": "span",
+            "text": "Reading",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.047 0.012 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 17,
+              "y": 709,
+              "width": 46,
+              "height": 16,
+              "right": 63
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 125,
+            "tag": "span",
+            "text": "1 min",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "oklch(0.047 0.012 252)",
+            "fontFamily": "\"SF Mono\", \"JetBrains Mono\", \"Cascadia Code\", \"Fira Code\", ui-monospace, monospace",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 203,
+              "y": 709,
+              "width": 36,
+              "height": 16,
+              "right": 239
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 128,
+            "tag": "input",
+            "text": "Enter article title...",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.052 0.012 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "24px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 273,
+              "y": 128,
+              "width": 558,
+              "height": 30,
+              "right": 831
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 130,
+            "tag": "textarea",
+            "text": "Start writing your article...\n\nSupports Markdown syntax:\n- # Heading 1\n- ## Heading 2\n- **Bold** and",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.052 0.012 252)",
+            "fontFamily": "\"SF Mono\", \"JetBrains Mono\", \"Cascadia Code\", \"Fira Code\", ui-monospace, monospace",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 256,
+              "y": 175,
+              "width": 592,
+              "height": 925,
+              "right": 848
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 135,
+            "tag": "em",
+            "text": "Preview will appear here after you start writing...",
+            "color": "oklch(0.968 0.007 247.896)",
+            "backgroundColor": "oklch(0.047 0.012 252)",
+            "fontFamily": "\"Misaya Reading\", \"Source Serif 4\", \"Iowan Old Style\", Charter, \"Songti SC\", STSong, \"Source Han Serif SC\", \"Noto Serif CJK SC\", Georgia, serif",
+            "fontSize": "15.68px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 881,
+              "y": 149,
+              "width": 312,
+              "height": 15,
+              "right": 1192
+            },
+            "isIconOnly": false
+          }
+        ],
+        "sampleCount": 50,
+        "lowContrastCount": 0,
+        "lowContrast": []
+      }
+    },
+    {
+      "area": "owner",
+      "route": "manage",
+      "path": "/manage",
+      "viewport": "mobile",
+      "theme": "light-pref-owner-locked",
+      "screenshotKey": "verified-owner-manage-mobile-lightpref",
+      "status": 200,
+      "screenshot": "docs/product_optimization/reports/ui-theme-audit-2026-06-18/screenshots/verified-owner-manage-mobile-lightpref.png",
+      "metrics": {
+        "url": "http://localhost:3002/manage",
+        "pathname": "/manage",
+        "title": "Content Dashboard · Misaya Notes",
+        "rootTheme": "light",
+        "rootDarkClass": false,
+        "storedTheme": "light",
+        "ownerDarkScope": true,
+        "authWall": false,
+        "themeButtonLabels": [],
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "documentHeight": 3539,
+        "viewportHeight": 844,
+        "pageOverflow": false,
+        "overflowElements": [],
+        "fontStatus": "loaded",
+        "fontStacksPresent": {
+          "ui": true,
+          "display": true,
+          "reading": false
+        },
+        "visibleFontFamilies": [
+          "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+          "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+          "\"Misaya Display\", \"Albert Sans\", \"SF Pro Display\", \"Avenir Next\", \"Segoe UI Variable Display\", \"Aptos Display\", \"Helvetica Neue\", \"PingFang SC\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif"
+        ],
+        "samples": [
+          {
+            "index": 15,
+            "tag": "a",
+            "text": "Search",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": "Search",
+            "rect": {
+              "x": 218,
+              "y": 12,
+              "width": 44,
+              "height": 44,
+              "right": 262
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 18,
+            "tag": "button",
+            "text": "中文",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "14.08px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 270,
+              "y": 14,
+              "width": 52,
+              "height": 39,
+              "right": 322
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 19,
+            "tag": "button",
+            "text": "Open navigation",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "650",
+            "ariaLabel": "Open navigation",
+            "rect": {
+              "x": 330,
+              "y": 12,
+              "width": 44,
+              "height": 44,
+              "right": 374
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 24,
+            "tag": "div",
+            "text": "Content management",
+            "color": "oklch(0.84 0.13 210)",
+            "backgroundColor": "oklch(0.54 0.17 245 / 0.1)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 16,
+              "y": 100,
+              "width": 171,
+              "height": 34,
+              "right": 187
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 28,
+            "tag": "h2",
+            "text": "Content Dashboard",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya Display\", \"Albert Sans\", \"SF Pro Display\", \"Avenir Next\", \"Segoe UI Variable Display\", \"Aptos Display\", \"Helvetica Neue\", \"PingFang SC\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif",
+            "fontSize": "36px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 16,
+              "y": 154,
+              "width": 358,
+              "height": 45,
+              "right": 374
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 29,
+            "tag": "p",
+            "text": "Quickly check drafts, publishing status, views, and research notes that need further refinement.",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 16,
+              "y": 211,
+              "width": 358,
+              "height": 48,
+              "right": 374
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 31,
+            "tag": "a",
+            "text": "Agent Operations",
+            "color": "oklch(0.84 0.13 210)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14.4px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 16,
+              "y": 275,
+              "width": 181,
+              "height": 44,
+              "right": 197
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 34,
+            "tag": "a",
+            "text": "Write Article",
+            "color": "oklch(0.99 0 0)",
+            "backgroundColor": "oklch(0.55 0.16 248)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14.4px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 205,
+              "y": 275,
+              "width": 146,
+              "height": 44,
+              "right": 350
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 40,
+            "tag": "input",
+            "text": "Search articles...",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.055 0.014 252 / 0.86)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 33,
+              "y": 384,
+              "width": 324,
+              "height": 44,
+              "right": 357
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 42,
+            "tag": "span",
+            "text": "All technical areas",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 46,
+              "y": 448,
+              "width": 117,
+              "height": 20,
+              "right": 163
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 45,
+            "tag": "div",
+            "text": "0 articles",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.095 0.014 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 33,
+              "y": 488,
+              "width": 324,
+              "height": 20,
+              "right": 357
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 52,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 72,
+              "y": 566,
+              "width": 104,
+              "height": 22,
+              "right": 176
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 53,
+            "tag": "span",
+            "text": "Drafts",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 72,
+              "y": 600,
+              "width": 104,
+              "height": 15,
+              "right": 176
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 61,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 257,
+              "y": 566,
+              "width": 104,
+              "height": 22,
+              "right": 361
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 62,
+            "tag": "span",
+            "text": "Public",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 257,
+              "y": 600,
+              "width": 104,
+              "height": 15,
+              "right": 361
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 67,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 72,
+              "y": 659,
+              "width": 104,
+              "height": 22,
+              "right": 176
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 68,
+            "tag": "span",
+            "text": "Admin-only",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 72,
+              "y": 693,
+              "width": 104,
+              "height": 15,
+              "right": 176
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 75,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 257,
+              "y": 659,
+              "width": 104,
+              "height": 22,
+              "right": 361
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 76,
+            "tag": "span",
+            "text": "Hidden",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 257,
+              "y": 693,
+              "width": 104,
+              "height": 15,
+              "right": 361
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 81,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 72,
+              "y": 753,
+              "width": 104,
+              "height": 22,
+              "right": 176
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 82,
+            "tag": "span",
+            "text": "No excerpt",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 72,
+              "y": 787,
+              "width": 104,
+              "height": 15,
+              "right": 176
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 87,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 257,
+              "y": 753,
+              "width": 104,
+              "height": 22,
+              "right": 361
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 88,
+            "tag": "span",
+            "text": "No category",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 257,
+              "y": 787,
+              "width": 104,
+              "height": 15,
+              "right": 361
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 94,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 72,
+              "y": 847,
+              "width": 104,
+              "height": 22,
+              "right": 176
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 95,
+            "tag": "span",
+            "text": "No tags",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 72,
+              "y": 880,
+              "width": 104,
+              "height": 15,
+              "right": 176
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 100,
+            "tag": "span",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "760",
+            "ariaLabel": null,
+            "rect": {
+              "x": 257,
+              "y": 847,
+              "width": 104,
+              "height": 22,
+              "right": 361
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 101,
+            "tag": "span",
+            "text": "Recent",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.075 0.012 252 / 0.62)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "12.16px",
+            "fontWeight": "620",
+            "ariaLabel": null,
+            "rect": {
+              "x": 257,
+              "y": 880,
+              "width": 104,
+              "height": 15,
+              "right": 361
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 108,
+            "tag": "p",
+            "text": "Loading notes",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.095 0.014 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "720",
+            "ariaLabel": null,
+            "rect": {
+              "x": 140,
+              "y": 1007,
+              "width": 110,
+              "height": 22,
+              "right": 250
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 109,
+            "tag": "p",
+            "text": "Fetching the latest notes. Search stays available.",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.095 0.014 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14.4px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 34,
+              "y": 1034,
+              "width": 322,
+              "height": 23,
+              "right": 356
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 118,
+            "tag": "h2",
+            "text": "Categories",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.095 0.014 252)",
+            "fontFamily": "\"Misaya Display\", \"Albert Sans\", \"SF Pro Display\", \"Avenir Next\", \"Segoe UI Variable Display\", \"Aptos Display\", \"Helvetica Neue\", \"PingFang SC\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 71,
+              "y": 1204,
+              "width": 80,
+              "height": 19,
+              "right": 151
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 120,
+            "tag": "input",
+            "text": "Name",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.055 0.014 252 / 0.86)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 33,
+              "y": 1281,
+              "width": 324,
+              "height": 44,
+              "right": 357
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 121,
+            "tag": "input",
+            "text": "Slug",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.055 0.014 252 / 0.86)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 33,
+              "y": 1337,
+              "width": 324,
+              "height": 44,
+              "right": 357
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 122,
+            "tag": "input",
+            "text": "Description",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.055 0.014 252 / 0.86)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 33,
+              "y": 1393,
+              "width": 324,
+              "height": 44,
+              "right": 357
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 133,
+            "tag": "h2",
+            "text": "Tags",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.095 0.014 252)",
+            "fontFamily": "\"Misaya Display\", \"Albert Sans\", \"SF Pro Display\", \"Avenir Next\", \"Segoe UI Variable Display\", \"Aptos Display\", \"Helvetica Neue\", \"PingFang SC\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 71,
+              "y": 1578,
+              "width": 34,
+              "height": 19,
+              "right": 104
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 135,
+            "tag": "input",
+            "text": "Name",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.055 0.014 252 / 0.86)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 33,
+              "y": 1655,
+              "width": 324,
+              "height": 44,
+              "right": 357
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 136,
+            "tag": "input",
+            "text": "Slug",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.055 0.014 252 / 0.86)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 33,
+              "y": 1711,
+              "width": 324,
+              "height": 44,
+              "right": 357
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 145,
+            "tag": "h3",
+            "text": "Writing Backlog",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 65,
+              "y": 1897,
+              "width": 133,
+              "height": 28,
+              "right": 198
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 146,
+            "tag": "p",
+            "text": "A single owner-only queue for reader feedback, zero-result searches, and Agent questions that should",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 37,
+              "y": 1933,
+              "width": 316,
+              "height": 72,
+              "right": 353
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 148,
+            "tag": "span",
+            "text": "Owner-only",
+            "color": "oklch(0.84 0.13 210)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "11.84px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 37,
+              "y": 2017,
+              "width": 85,
+              "height": 23,
+              "right": 122
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 149,
+            "tag": "span",
+            "text": "Contact data redacted",
+            "color": "oklch(0.84 0.13 210)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "11.84px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 130,
+              "y": 2017,
+              "width": 146,
+              "height": 23,
+              "right": 276
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 152,
+            "tag": "p",
+            "text": "Backlog items",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 50,
+              "y": 2072,
+              "width": 290,
+              "height": 16,
+              "right": 340
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 153,
+            "tag": "p",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "20px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 50,
+              "y": 2092,
+              "width": 290,
+              "height": 28,
+              "right": 340
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 155,
+            "tag": "p",
+            "text": "New feedback",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 50,
+              "y": 2158,
+              "width": 290,
+              "height": 16,
+              "right": 340
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 156,
+            "tag": "p",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "20px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 50,
+              "y": 2178,
+              "width": 290,
+              "height": 28,
+              "right": 340
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 158,
+            "tag": "p",
+            "text": "Search gaps",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 50,
+              "y": 2244,
+              "width": 290,
+              "height": 16,
+              "right": 340
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 159,
+            "tag": "p",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "20px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 50,
+              "y": 2264,
+              "width": 290,
+              "height": 28,
+              "right": 340
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 161,
+            "tag": "p",
+            "text": "Agent gaps",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 50,
+              "y": 2330,
+              "width": 290,
+              "height": 16,
+              "right": 340
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 162,
+            "tag": "p",
+            "text": "0",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "20px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 50,
+              "y": 2350,
+              "width": 290,
+              "height": 28,
+              "right": 340
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 166,
+            "tag": "p",
+            "text": "Feedback status is saved. Agent ideas are reviewed from the radar list and can be turned into drafts",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 37,
+              "y": 2511,
+              "width": 316,
+              "height": 60,
+              "right": 353
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 173,
+            "tag": "h3",
+            "text": "Content Radar",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 65,
+              "y": 2645,
+              "width": 122,
+              "height": 28,
+              "right": 187
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 174,
+            "tag": "p",
+            "text": "Private reader signals grouped into writing opportunities. This stays owner-only and does not create",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 37,
+              "y": 2681,
+              "width": 316,
+              "height": 72,
+              "right": 353
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 175,
+            "tag": "span",
+            "text": "Stored-only subscription",
+            "color": "oklch(0.84 0.13 210)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "11.84px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 37,
+              "y": 2765,
+              "width": 160,
+              "height": 23,
+              "right": 197
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 186,
+            "tag": "h3",
+            "text": "Reader Feedback",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 65,
+              "y": 2970,
+              "width": 146,
+              "height": 28,
+              "right": 211
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 187,
+            "tag": "p",
+            "text": "Private feedback submitted from article pages.",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 37,
+              "y": 3006,
+              "width": 316,
+              "height": 24,
+              "right": 353
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 188,
+            "tag": "span",
+            "text": "0 items",
+            "color": "oklch(0.18 0.018 260)",
+            "backgroundColor": "oklch(0.93 0.016 250)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "11.84px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 37,
+              "y": 3042,
+              "width": 60,
+              "height": 23,
+              "right": 97
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 199,
+            "tag": "h3",
+            "text": "Subscribers",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 65,
+              "y": 3254,
+              "width": 101,
+              "height": 28,
+              "right": 166
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 200,
+            "tag": "p",
+            "text": "Stored subscription intent. Export this list when connecting an email provider.",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 37,
+              "y": 3290,
+              "width": 212,
+              "height": 72,
+              "right": 249
+            },
+            "isIconOnly": false
+          }
+        ],
+        "sampleCount": 57,
+        "lowContrastCount": 0,
+        "lowContrast": []
+      }
+    },
+    {
+      "area": "owner",
+      "route": "manage-agent",
+      "path": "/manage/agent",
+      "viewport": "mobile",
+      "theme": "light-pref-owner-locked",
+      "screenshotKey": "verified-owner-manage-agent-mobile-lightpref",
+      "status": 200,
+      "screenshot": "docs/product_optimization/reports/ui-theme-audit-2026-06-18/screenshots/verified-owner-manage-agent-mobile-lightpref.png",
+      "metrics": {
+        "url": "http://localhost:3002/manage/agent",
+        "pathname": "/manage/agent",
+        "title": "Agent Operations · Misaya Notes",
+        "rootTheme": "light",
+        "rootDarkClass": false,
+        "storedTheme": "light",
+        "ownerDarkScope": true,
+        "authWall": false,
+        "themeButtonLabels": [],
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "documentHeight": 844,
+        "viewportHeight": 844,
+        "pageOverflow": false,
+        "overflowElements": [
+          {
+            "tag": "button",
+            "className": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-",
+            "text": "Local Eval Runner",
+            "x": 348,
+            "right": 512,
+            "width": 165
+          },
+          {
+            "tag": "button",
+            "className": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-",
+            "text": "Recent Traces",
+            "x": 519,
+            "right": 661,
+            "width": 142
+          },
+          {
+            "tag": "svg",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 528,
+            "right": 544,
+            "width": 16
+          },
+          {
+            "tag": "circle",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 530,
+            "right": 534,
+            "width": 4
+          },
+          {
+            "tag": "path",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 530,
+            "right": 542,
+            "width": 12
+          },
+          {
+            "tag": "circle",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 538,
+            "right": 542,
+            "width": 4
+          },
+          {
+            "tag": "button",
+            "className": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-",
+            "text": "Content Radar",
+            "x": 667,
+            "right": 810,
+            "width": 143
+          },
+          {
+            "tag": "svg",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 676,
+            "right": 692,
+            "width": 16
+          },
+          {
+            "tag": "path",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 680,
+            "right": 688,
+            "width": 8
+          }
+        ],
+        "fontStatus": "loaded",
+        "fontStacksPresent": {
+          "ui": true,
+          "display": true,
+          "reading": false
+        },
+        "visibleFontFamilies": [
+          "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+          "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+          "\"Misaya Display\", \"Albert Sans\", \"SF Pro Display\", \"Avenir Next\", \"Segoe UI Variable Display\", \"Aptos Display\", \"Helvetica Neue\", \"PingFang SC\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif"
+        ],
+        "samples": [
+          {
+            "index": 15,
+            "tag": "a",
+            "text": "Search",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": "Search",
+            "rect": {
+              "x": 218,
+              "y": 12,
+              "width": 44,
+              "height": 44,
+              "right": 262
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 18,
+            "tag": "button",
+            "text": "中文",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "14.08px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 270,
+              "y": 14,
+              "width": 52,
+              "height": 39,
+              "right": 322
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 19,
+            "tag": "button",
+            "text": "Open navigation",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252 / 0.82)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "650",
+            "ariaLabel": "Open navigation",
+            "rect": {
+              "x": 330,
+              "y": 12,
+              "width": 44,
+              "height": 44,
+              "right": 374
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 24,
+            "tag": "div",
+            "text": "Agent Operations",
+            "color": "oklch(0.84 0.13 210)",
+            "backgroundColor": "oklch(0.54 0.17 245 / 0.1)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 16,
+              "y": 100,
+              "width": 147,
+              "height": 34,
+              "right": 163
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 27,
+            "tag": "h1",
+            "text": "Agent Operations",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya Display\", \"Albert Sans\", \"SF Pro Display\", \"Avenir Next\", \"Segoe UI Variable Display\", \"Aptos Display\", \"Helvetica Neue\", \"PingFang SC\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif",
+            "fontSize": "36px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 16,
+              "y": 154,
+              "width": 358,
+              "height": 45,
+              "right": 374
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 28,
+            "tag": "p",
+            "text": "Check index freshness, retrieval misses, evals, traces, and reader questions from one console.",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 16,
+              "y": 211,
+              "width": 358,
+              "height": 48,
+              "right": 374
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 29,
+            "tag": "a",
+            "text": "Back to content",
+            "color": "oklch(0.84 0.13 210)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14.4px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 16,
+              "y": 275,
+              "width": 358,
+              "height": 44,
+              "right": 374
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 34,
+            "tag": "button",
+            "text": "Index Status",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.16 0.036 248)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 20,
+              "y": 345,
+              "width": 140,
+              "height": 40,
+              "right": 160
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 38,
+            "tag": "button",
+            "text": "Retrieval Debugger",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 166,
+              "y": 345,
+              "width": 175,
+              "height": 40,
+              "right": 341
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 43,
+            "tag": "button",
+            "text": "Local Eval Runner",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 348,
+              "y": 345,
+              "width": 165,
+              "height": 40,
+              "right": 512
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 46,
+            "tag": "button",
+            "text": "Recent Traces",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 519,
+              "y": 345,
+              "width": 142,
+              "height": 40,
+              "right": 661
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 51,
+            "tag": "button",
+            "text": "Content Radar",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.11 0.016 248 / 0.44)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "ariaLabel": null,
+            "rect": {
+              "x": 667,
+              "y": 345,
+              "width": 143,
+              "height": 40,
+              "right": 810
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 61,
+            "tag": "p",
+            "text": "Loading index status...",
+            "color": "oklch(0.94 0.008 240)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"PingFang SC\", \"Hiragino Sans GB\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "720",
+            "ariaLabel": null,
+            "rect": {
+              "x": 107,
+              "y": 477,
+              "width": 177,
+              "height": 22,
+              "right": 283
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 62,
+            "tag": "p",
+            "text": "Fetching the latest notes. Search stays available.",
+            "color": "oklch(0.74 0.018 236)",
+            "backgroundColor": "oklch(0.105 0.013 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "14.4px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 50,
+              "y": 504,
+              "width": 290,
+              "height": 47,
+              "right": 340
+            },
+            "isIconOnly": false
+          }
+        ],
+        "sampleCount": 14,
+        "lowContrastCount": 0,
+        "lowContrast": []
+      }
+    },
+    {
+      "area": "owner",
+      "route": "write",
+      "path": "/write",
+      "viewport": "mobile",
+      "theme": "light-pref-owner-locked",
+      "screenshotKey": "verified-owner-write-mobile-lightpref",
+      "status": 200,
+      "screenshot": "docs/product_optimization/reports/ui-theme-audit-2026-06-18/screenshots/verified-owner-write-mobile-lightpref.png",
+      "metrics": {
+        "url": "http://localhost:3002/write",
+        "pathname": "/write",
+        "title": "New article · Misaya Notes",
+        "rootTheme": "light",
+        "rootDarkClass": false,
+        "storedTheme": "light",
+        "ownerDarkScope": true,
+        "authWall": false,
+        "themeButtonLabels": [],
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "documentHeight": 844,
+        "viewportHeight": 844,
+        "pageOverflow": false,
+        "overflowElements": [
+          {
+            "tag": "button",
+            "className": "rounded-md p-2 transition-all duration-150 text-slate-400 hover:bg-primary/10 hover:text-white cursor-pointer",
+            "text": "Quote",
+            "x": 364,
+            "right": 396,
+            "width": 32
+          },
+          {
+            "tag": "button",
+            "className": "rounded-md p-2 transition-all duration-150 text-slate-400 hover:bg-primary/10 hover:text-white cursor-pointer",
+            "text": "Divider",
+            "x": 400,
+            "right": 432,
+            "width": 32
+          },
+          {
+            "tag": "svg",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 408,
+            "right": 424,
+            "width": 16
+          },
+          {
+            "tag": "button",
+            "className": "rounded-md p-2 transition-all duration-150 text-slate-400 hover:bg-primary/10 hover:text-white cursor-pointer",
+            "text": "Insert link",
+            "x": 448,
+            "right": 480,
+            "width": 32
+          },
+          {
+            "tag": "svg",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 456,
+            "right": 472,
+            "width": 16
+          },
+          {
+            "tag": "path",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 463,
+            "right": 471,
+            "width": 8
+          },
+          {
+            "tag": "path",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 457,
+            "right": 465,
+            "width": 8
+          },
+          {
+            "tag": "button",
+            "className": "rounded-md p-2 transition-all duration-150 text-slate-400 hover:bg-primary/10 hover:text-white cursor-pointer",
+            "text": "Insert image",
+            "x": 484,
+            "right": 516,
+            "width": 32
+          },
+          {
+            "tag": "svg",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 492,
+            "right": 508,
+            "width": 16
+          },
+          {
+            "tag": "rect",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 494,
+            "right": 506,
+            "width": 12
+          },
+          {
+            "tag": "path",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 496,
+            "right": 506,
+            "width": 10
+          },
+          {
+            "tag": "button",
+            "className": "rounded-md p-2 transition-all duration-150 text-slate-400 hover:bg-primary/10 hover:text-white cursor-pointer",
+            "text": "Code block",
+            "x": 520,
+            "right": 552,
+            "width": 32
+          },
+          {
+            "tag": "svg",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 528,
+            "right": 544,
+            "width": 16
+          },
+          {
+            "tag": "path",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 531,
+            "right": 541,
+            "width": 11
+          },
+          {
+            "tag": "path",
+            "className": "[object SVGAnimatedString]",
+            "text": "",
+            "x": 537,
+            "right": 541,
+            "width": 4
+          },
+          {
+            "tag": "button",
+            "className": "rounded-md p-2 transition-all duration-150 text-slate-400 hover:bg-primary/10 hover:text-white cursor-pointer",
+            "text": "∑",
+            "x": 556,
+            "right": 581,
+            "width": 25
+          },
+          {
+            "tag": "span",
+            "className": "text-xs font-mono",
+            "text": "∑",
+            "x": 564,
+            "right": 573,
+            "width": 9
+          },
+          {
+            "tag": "button",
+            "className": "rounded-md p-2 transition-all duration-150 text-slate-400 hover:bg-primary/10 hover:text-white cursor-pointer",
+            "text": "∫",
+            "x": 585,
+            "right": 604,
+            "width": 19
+          }
+        ],
+        "fontStatus": "loaded",
+        "fontStacksPresent": {
+          "ui": true,
+          "display": false,
+          "reading": false
+        },
+        "visibleFontFamilies": [
+          "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+          "\"SF Mono\", \"JetBrains Mono\", \"Cascadia Code\", \"Fira Code\", ui-monospace, monospace"
+        ],
+        "samples": [
+          {
+            "index": 11,
+            "tag": "button",
+            "text": "Show preview",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Show preview",
+            "rect": {
+              "x": 108,
+              "y": 12,
+              "width": 32,
+              "height": 32,
+              "right": 140
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 15,
+            "tag": "button",
+            "text": "Fullscreen",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Fullscreen",
+            "rect": {
+              "x": 148,
+              "y": 12,
+              "width": 32,
+              "height": 32,
+              "right": 180
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 21,
+            "tag": "button",
+            "text": "Article Settings",
+            "color": "oklch(0.47 0.018 250)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "13.76px",
+            "fontWeight": "650",
+            "ariaLabel": "Article Settings",
+            "rect": {
+              "x": 188,
+              "y": 8,
+              "width": 36,
+              "height": 40,
+              "right": 224
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 29,
+            "tag": "button",
+            "text": "Publish",
+            "color": "oklch(0.99 0 0)",
+            "backgroundColor": "oklch(0.55 0.16 248)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "13.76px",
+            "fontWeight": "650",
+            "ariaLabel": null,
+            "rect": {
+              "x": 278,
+              "y": 8,
+              "width": 96,
+              "height": 40,
+              "right": 374
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 34,
+            "tag": "button",
+            "text": "Heading 1",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Heading 1",
+            "rect": {
+              "x": 16,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 48
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 36,
+            "tag": "button",
+            "text": "Heading 2",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Heading 2",
+            "rect": {
+              "x": 52,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 84
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 38,
+            "tag": "button",
+            "text": "Heading 3",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Heading 3",
+            "rect": {
+              "x": 88,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 120
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 40,
+            "tag": "button",
+            "text": "Bold",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Bold",
+            "rect": {
+              "x": 136,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 168
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 43,
+            "tag": "button",
+            "text": "Italic",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Italic",
+            "rect": {
+              "x": 172,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 204
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 46,
+            "tag": "button",
+            "text": "Strikethrough",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Strikethrough",
+            "rect": {
+              "x": 208,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 240
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 49,
+            "tag": "button",
+            "text": "Inline code",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Inline code",
+            "rect": {
+              "x": 244,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 276
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 53,
+            "tag": "button",
+            "text": "Bullet list",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Bullet list",
+            "rect": {
+              "x": 292,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 324
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 55,
+            "tag": "button",
+            "text": "Ordered list",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Ordered list",
+            "rect": {
+              "x": 328,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 360
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 57,
+            "tag": "button",
+            "text": "Quote",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Quote",
+            "rect": {
+              "x": 364,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 396
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 61,
+            "tag": "button",
+            "text": "Divider",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Divider",
+            "rect": {
+              "x": 400,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 432
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 63,
+            "tag": "button",
+            "text": "Insert link",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Insert link",
+            "rect": {
+              "x": 448,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 480
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 67,
+            "tag": "button",
+            "text": "Insert image",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Insert image",
+            "rect": {
+              "x": 484,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 516
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 71,
+            "tag": "button",
+            "text": "Code block",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Code block",
+            "rect": {
+              "x": 520,
+              "y": 67,
+              "width": 32,
+              "height": 32,
+              "right": 552
+            },
+            "isIconOnly": true
+          },
+          {
+            "index": 75,
+            "tag": "button",
+            "text": "Inline math",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Inline math",
+            "rect": {
+              "x": 556,
+              "y": 63,
+              "width": 25,
+              "height": 40,
+              "right": 581
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 76,
+            "tag": "span",
+            "text": "∑",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"SF Mono\", \"JetBrains Mono\", \"Cascadia Code\", \"Fira Code\", ui-monospace, monospace",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 564,
+              "y": 78,
+              "width": 9,
+              "height": 14,
+              "right": 573
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 77,
+            "tag": "button",
+            "text": "Math block",
+            "color": "oklch(0.704 0.04 256.788)",
+            "backgroundColor": "oklch(0.048 0.012 252 / 0.96)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "ariaLabel": "Math block",
+            "rect": {
+              "x": 585,
+              "y": 63,
+              "width": 19,
+              "height": 40,
+              "right": 604
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 81,
+            "tag": "input",
+            "text": "Enter article title...",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.052 0.012 252)",
+            "fontFamily": "\"Misaya UI\", \"Albert Sans\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+            "fontSize": "21.6px",
+            "fontWeight": "600",
+            "ariaLabel": null,
+            "rect": {
+              "x": 17,
+              "y": 128,
+              "width": 356,
+              "height": 26,
+              "right": 373
+            },
+            "isIconOnly": false
+          },
+          {
+            "index": 83,
+            "tag": "textarea",
+            "text": "Start writing your article...\n\nSupports Markdown syntax:\n- # Heading 1\n- ## Heading 2\n- **Bold** and",
+            "color": "oklch(0.58 0.016 235)",
+            "backgroundColor": "oklch(0.052 0.012 252)",
+            "fontFamily": "\"SF Mono\", \"JetBrains Mono\", \"Cascadia Code\", \"Fira Code\", ui-monospace, monospace",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "ariaLabel": null,
+            "rect": {
+              "x": 0,
+              "y": 171,
+              "width": 390,
+              "height": 673,
+              "right": 390
+            },
+            "isIconOnly": false
+          }
+        ],
+        "sampleCount": 23,
+        "lowContrastCount": 0,
+        "lowContrast": []
+      }
+    }
+  ]
+}

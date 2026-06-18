@@ -1,0 +1,3498 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "generatedAt": "2026-06-18T15:31:34.563Z",
+  "summary": {
+    "checks": 32,
+    "lowContrast": 0,
+    "pageOverflow": 0,
+    "nestedOverflow": 262,
+    "byCheck": [
+      {
+        "route": "home",
+        "viewport": "desktop",
+        "theme": "dark",
+        "screenshot": "after-home-desktop-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 1,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "algorithms",
+        "viewport": "desktop",
+        "theme": "dark",
+        "screenshot": "after-algorithms-desktop-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "applications",
+        "viewport": "desktop",
+        "theme": "dark",
+        "screenshot": "after-applications-desktop-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "archive",
+        "viewport": "desktop",
+        "theme": "dark",
+        "screenshot": "after-archive-desktop-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "search-empty",
+        "viewport": "desktop",
+        "theme": "dark",
+        "screenshot": "after-search-empty-desktop-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "about",
+        "viewport": "desktop",
+        "theme": "dark",
+        "screenshot": "after-about-desktop-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "post",
+        "viewport": "desktop",
+        "theme": "dark",
+        "screenshot": "after-post-desktop-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 7,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "login",
+        "viewport": "desktop",
+        "theme": "dark",
+        "screenshot": "after-login-desktop-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "home",
+        "viewport": "desktop",
+        "theme": "light",
+        "screenshot": "after-home-desktop-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      },
+      {
+        "route": "algorithms",
+        "viewport": "desktop",
+        "theme": "light",
+        "screenshot": "after-algorithms-desktop-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      },
+      {
+        "route": "applications",
+        "viewport": "desktop",
+        "theme": "light",
+        "screenshot": "after-applications-desktop-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      },
+      {
+        "route": "archive",
+        "viewport": "desktop",
+        "theme": "light",
+        "screenshot": "after-archive-desktop-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      },
+      {
+        "route": "search-empty",
+        "viewport": "desktop",
+        "theme": "light",
+        "screenshot": "after-search-empty-desktop-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      },
+      {
+        "route": "about",
+        "viewport": "desktop",
+        "theme": "light",
+        "screenshot": "after-about-desktop-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      },
+      {
+        "route": "post",
+        "viewport": "desktop",
+        "theme": "light",
+        "screenshot": "after-post-desktop-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 7,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      },
+      {
+        "route": "login",
+        "viewport": "desktop",
+        "theme": "light",
+        "screenshot": "after-login-desktop-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      },
+      {
+        "route": "home",
+        "viewport": "mobile",
+        "theme": "dark",
+        "screenshot": "after-home-mobile-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 1,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "algorithms",
+        "viewport": "mobile",
+        "theme": "dark",
+        "screenshot": "after-algorithms-mobile-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "applications",
+        "viewport": "mobile",
+        "theme": "dark",
+        "screenshot": "after-applications-mobile-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "archive",
+        "viewport": "mobile",
+        "theme": "dark",
+        "screenshot": "after-archive-mobile-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "search-empty",
+        "viewport": "mobile",
+        "theme": "dark",
+        "screenshot": "after-search-empty-mobile-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "about",
+        "viewport": "mobile",
+        "theme": "dark",
+        "screenshot": "after-about-mobile-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "post",
+        "viewport": "mobile",
+        "theme": "dark",
+        "screenshot": "after-post-mobile-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 123,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "login",
+        "viewport": "mobile",
+        "theme": "dark",
+        "screenshot": "after-login-mobile-dark.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to light mode"
+      },
+      {
+        "route": "home",
+        "viewport": "mobile",
+        "theme": "light",
+        "screenshot": "after-home-mobile-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      },
+      {
+        "route": "algorithms",
+        "viewport": "mobile",
+        "theme": "light",
+        "screenshot": "after-algorithms-mobile-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      },
+      {
+        "route": "applications",
+        "viewport": "mobile",
+        "theme": "light",
+        "screenshot": "after-applications-mobile-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      },
+      {
+        "route": "archive",
+        "viewport": "mobile",
+        "theme": "light",
+        "screenshot": "after-archive-mobile-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      },
+      {
+        "route": "search-empty",
+        "viewport": "mobile",
+        "theme": "light",
+        "screenshot": "after-search-empty-mobile-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      },
+      {
+        "route": "about",
+        "viewport": "mobile",
+        "theme": "light",
+        "screenshot": "after-about-mobile-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      },
+      {
+        "route": "post",
+        "viewport": "mobile",
+        "theme": "light",
+        "screenshot": "after-post-mobile-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 123,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      },
+      {
+        "route": "login",
+        "viewport": "mobile",
+        "theme": "light",
+        "screenshot": "after-login-mobile-light.png",
+        "lowContrast": 0,
+        "pageOverflow": false,
+        "nestedOverflow": 0,
+        "fontStatus": "loaded",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    ]
+  },
+  "results": [
+    {
+      "route": "home",
+      "path": "/",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "after-home-desktop-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [
+        {
+          "tag": "section",
+          "className": "home-index-spread container px-4 py-8 sm:px-6 lg:py-10",
+          "text": "Two-track research notebookAI Algorithmsand AIApplicationsResearch notes on model mechanisms, generative modeling, long-",
+          "scrollWidth": 1328,
+          "clientWidth": 1280,
+          "left": 80,
+          "right": 1360
+        }
+      ],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "AI Algorithms and Applications · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "algorithms",
+      "path": "/algorithms",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "after-algorithms-desktop-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "AI Algorithms · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "applications",
+      "path": "/applications",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "after-applications-desktop-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "AI Applications · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "archive",
+      "path": "/archive",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "after-archive-desktop-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Archive · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "search-empty",
+      "path": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "after-search-empty-desktop-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "about",
+      "path": "/about",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "after-about-desktop-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Misaya Yang · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "post",
+      "path": "/post/goal-harness-agent-phase-protocol",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "after-post-desktop-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [
+        {
+          "tag": "div",
+          "className": "technical-table-wrap",
+          "text": "Missing LayerSymptomBetter Harness BehaviorBaseline EvidenceAgent 开始写代码前没有固定当前 schema、route、test、UI 和检索边界。Phase 00 先产出 b",
+          "scrollWidth": 672,
+          "clientWidth": 633,
+          "left": 244,
+          "right": 879
+        },
+        {
+          "tag": "div",
+          "className": "technical-table-wrap",
+          "text": "FieldPurposeRequest Summary用户真正想完成的产品/工程目标。Source InventoryPRD、Figma、截图、现有代码、外部文档分别来自哪里。Trust Level哪些是 repo fact，哪些是 unt",
+          "scrollWidth": 672,
+          "clientWidth": 633,
+          "left": 244,
+          "right": 879
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-json",
+          "text": "[ { \"id\": \"AGENT-QA-001\", \"category\": \"retrieval\", \"given\": \"public article Agent Loop is indexed\", \"when\": \"visitor ask",
+          "scrollWidth": 734,
+          "clientWidth": 565,
+          "left": 261,
+          "right": 826
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-json",
+          "text": "{ \"schema_version\": \"prd-phase-harness/v2\", \"phase\": { \"id\": \"AGENT-02\", \"status\": \"ready\", \"depends_on\": [\"AGENT-01\"], ",
+          "scrollWidth": 779,
+          "clientWidth": 565,
+          "left": 261,
+          "right": 826
+        },
+        {
+          "tag": "div",
+          "className": "technical-table-wrap",
+          "text": "PhaseDominant RiskCompletion EvidenceBaseline Audit不知道当前系统真实状态route/test/schema/report baselineKnowledge Indexpublic/hid",
+          "scrollWidth": 672,
+          "clientWidth": 633,
+          "left": 244,
+          "right": 879
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-bash",
+          "text": "python3 scripts/validate_harness_prd.py docs/<topic> --strict --quality-score",
+          "scrollWidth": 725,
+          "clientWidth": 565,
+          "left": 261,
+          "right": 826
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-text",
+          "text": "Complete AGENT-02 Quota Router. Read only the harness README, manifest, this phase, and PRIMARY_CONTEXT. Stay inside LIK",
+          "scrollWidth": 680,
+          "clientWidth": 565,
+          "left": 261,
+          "right": 826
+        }
+      ],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "login",
+      "path": "/login",
+      "viewport": "desktop",
+      "theme": "dark",
+      "screenshot": "after-login-desktop-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Owner access · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "after-home-desktop-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "AI Algorithms and Applications · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    },
+    {
+      "route": "algorithms",
+      "path": "/algorithms",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "after-algorithms-desktop-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "AI Algorithms · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    },
+    {
+      "route": "applications",
+      "path": "/applications",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "after-applications-desktop-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "AI Applications · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    },
+    {
+      "route": "archive",
+      "path": "/archive",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "after-archive-desktop-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Archive · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    },
+    {
+      "route": "search-empty",
+      "path": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "after-search-empty-desktop-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    },
+    {
+      "route": "about",
+      "path": "/about",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "after-about-desktop-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Misaya Yang · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    },
+    {
+      "route": "post",
+      "path": "/post/goal-harness-agent-phase-protocol",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "after-post-desktop-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [
+        {
+          "tag": "div",
+          "className": "technical-table-wrap",
+          "text": "Missing LayerSymptomBetter Harness BehaviorBaseline EvidenceAgent 开始写代码前没有固定当前 schema、route、test、UI 和检索边界。Phase 00 先产出 b",
+          "scrollWidth": 672,
+          "clientWidth": 633,
+          "left": 244,
+          "right": 879
+        },
+        {
+          "tag": "div",
+          "className": "technical-table-wrap",
+          "text": "FieldPurposeRequest Summary用户真正想完成的产品/工程目标。Source InventoryPRD、Figma、截图、现有代码、外部文档分别来自哪里。Trust Level哪些是 repo fact，哪些是 unt",
+          "scrollWidth": 672,
+          "clientWidth": 633,
+          "left": 244,
+          "right": 879
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-json",
+          "text": "[ { \"id\": \"AGENT-QA-001\", \"category\": \"retrieval\", \"given\": \"public article Agent Loop is indexed\", \"when\": \"visitor ask",
+          "scrollWidth": 734,
+          "clientWidth": 565,
+          "left": 261,
+          "right": 826
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-json",
+          "text": "{ \"schema_version\": \"prd-phase-harness/v2\", \"phase\": { \"id\": \"AGENT-02\", \"status\": \"ready\", \"depends_on\": [\"AGENT-01\"], ",
+          "scrollWidth": 779,
+          "clientWidth": 565,
+          "left": 261,
+          "right": 826
+        },
+        {
+          "tag": "div",
+          "className": "technical-table-wrap",
+          "text": "PhaseDominant RiskCompletion EvidenceBaseline Audit不知道当前系统真实状态route/test/schema/report baselineKnowledge Indexpublic/hid",
+          "scrollWidth": 672,
+          "clientWidth": 633,
+          "left": 244,
+          "right": 879
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-bash",
+          "text": "python3 scripts/validate_harness_prd.py docs/<topic> --strict --quality-score",
+          "scrollWidth": 725,
+          "clientWidth": 565,
+          "left": 261,
+          "right": 826
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-text",
+          "text": "Complete AGENT-02 Quota Router. Read only the harness README, manifest, this phase, and PRIMARY_CONTEXT. Stay inside LIK",
+          "scrollWidth": 680,
+          "clientWidth": 565,
+          "left": 261,
+          "right": 826
+        }
+      ],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    },
+    {
+      "route": "login",
+      "path": "/login",
+      "viewport": "desktop",
+      "theme": "light",
+      "screenshot": "after-login-desktop-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Owner access · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "after-home-mobile-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [
+        {
+          "tag": "section",
+          "className": "home-index-spread container px-4 py-8 sm:px-6 lg:py-10",
+          "text": "Two-track research notebookAI Algorithmsand AIApplicationsResearch notes on model mechanisms, generative modeling, long-",
+          "scrollWidth": 502,
+          "clientWidth": 390,
+          "left": 0,
+          "right": 390
+        }
+      ],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "AI Algorithms and Applications · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "algorithms",
+      "path": "/algorithms",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "after-algorithms-mobile-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "AI Algorithms · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "applications",
+      "path": "/applications",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "after-applications-mobile-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "AI Applications · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "archive",
+      "path": "/archive",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "after-archive-mobile-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Archive · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "search-empty",
+      "path": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "after-search-empty-mobile-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "about",
+      "path": "/about",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "after-about-mobile-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Misaya Yang · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "post",
+      "path": "/post/goal-harness-agent-phase-protocol",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "after-post-mobile-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [
+        {
+          "tag": "code",
+          "className": "hljs language-text",
+          "text": "一个新 Agent 现在只能做哪一个 phase？ 它凭什么知道自己做完了？ 下一个 Agent 凭什么敢接着做？",
+          "scrollWidth": 328,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        },
+        {
+          "tag": "div",
+          "className": "technical-table-wrap",
+          "text": "Missing LayerSymptomBetter Harness BehaviorBaseline EvidenceAgent 开始写代码前没有固定当前 schema、route、test、UI 和检索边界。Phase 00 先产出 b",
+          "scrollWidth": 672,
+          "clientWidth": 322,
+          "left": 33,
+          "right": 357
+        },
+        {
+          "tag": "table",
+          "className": "",
+          "text": "Missing LayerSymptomBetter Harness BehaviorBaseline EvidenceAgent 开始写代码前没有固定当前 schema、route、test、UI 和检索边界。Phase 00 先产出 b",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "thead",
+          "className": "",
+          "text": "Missing LayerSymptomBetter Harness Behavior",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Missing LayerSymptomBetter Harness Behavior",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "text": "Symptom",
+          "scrollWidth": 276,
+          "clientWidth": 276,
+          "left": 147,
+          "right": 423
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "text": "Better Harness Behavior",
+          "scrollWidth": 283,
+          "clientWidth": 283,
+          "left": 423,
+          "right": 706
+        },
+        {
+          "tag": "tbody",
+          "className": "",
+          "text": "Baseline EvidenceAgent 开始写代码前没有固定当前 schema、route、test、UI 和检索边界。Phase 00 先产出 baseline report，再允许实现 phase 解锁。Feature Oracl",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Baseline EvidenceAgent 开始写代码前没有固定当前 schema、route、test、UI 和检索边界。Phase 00 先产出 baseline report，再允许实现 phase 解锁。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "Agent 开始写代码前没有固定当前 schema、route、test、UI 和检索边界。",
+          "scrollWidth": 276,
+          "clientWidth": 276,
+          "left": 147,
+          "right": 423
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "Phase 00 先产出 baseline report，再允许实现 phase 解锁。",
+          "scrollWidth": 283,
+          "clientWidth": 283,
+          "left": 423,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Feature Oracle“能回答博客问题”太软，成功题、拒答题、quota 题没有被枚举。把 public QA、hidden refusal、quota-before-model、source card 都写成验收案例。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "“能回答博客问题”太软，成功题、拒答题、quota 题没有被枚举。",
+          "scrollWidth": 276,
+          "clientWidth": 276,
+          "left": 147,
+          "right": 423
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "把 public QA、hidden refusal、quota-before-model、source card 都写成验收案例。",
+          "scrollWidth": 283,
+          "clientWidth": 283,
+          "left": 423,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Phase Boundaryschema、router、retrieval、UI、admin、eval 混在同一轮 goal 里。按风险拆 phase，每个 phase 只允许有限 edit paths。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "schema、router、retrieval、UI、admin、eval 混在同一轮 goal 里。",
+          "scrollWidth": 276,
+          "clientWidth": 276,
+          "left": 147,
+          "right": 423
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "按风险拆 phase，每个 phase 只允许有限 edit paths。",
+          "scrollWidth": 283,
+          "clientWidth": 283,
+          "left": 423,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Regression Bank新测试可能过了，但旧的阅读路径、移动端、隐藏内容边界没有被完整回归。每个 phase 声明触碰哪部分 regression bank，release phase 跑完整银行。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "新测试可能过了，但旧的阅读路径、移动端、隐藏内容边界没有被完整回归。",
+          "scrollWidth": 276,
+          "clientWidth": 276,
+          "left": 147,
+          "right": 423
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "每个 phase 声明触碰哪部分 regression bank，release phase 跑完整银行。",
+          "scrollWidth": 283,
+          "clientWidth": 283,
+          "left": 423,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Evidence Report“完成”只存在于聊天总结里，下一轮 Agent 不知道哪些检查真的跑过。每个 phase 写 report，记录命令、截图、eval、waiver、blocker 和 handoff。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "“完成”只存在于聊天总结里，下一轮 Agent 不知道哪些检查真的跑过。",
+          "scrollWidth": 276,
+          "clientWidth": 276,
+          "left": 147,
+          "right": 423
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "每个 phase 写 report，记录命令、截图、eval、waiver、blocker 和 handoff。",
+          "scrollWidth": 283,
+          "clientWidth": 283,
+          "left": 423,
+          "right": 706
+        },
+        {
+          "tag": "div",
+          "className": "technical-table-wrap",
+          "text": "FieldPurposeRequest Summary用户真正想完成的产品/工程目标。Source InventoryPRD、Figma、截图、现有代码、外部文档分别来自哪里。Trust Level哪些是 repo fact，哪些是 unt",
+          "scrollWidth": 672,
+          "clientWidth": 322,
+          "left": 33,
+          "right": 357
+        },
+        {
+          "tag": "table",
+          "className": "",
+          "text": "FieldPurposeRequest Summary用户真正想完成的产品/工程目标。Source InventoryPRD、Figma、截图、现有代码、外部文档分别来自哪里。Trust Level哪些是 repo fact，哪些是 unt",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "thead",
+          "className": "",
+          "text": "FieldPurpose",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "FieldPurpose",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "text": "Purpose",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "tbody",
+          "className": "",
+          "text": "Request Summary用户真正想完成的产品/工程目标。Source InventoryPRD、Figma、截图、现有代码、外部文档分别来自哪里。Trust Level哪些是 repo fact，哪些是 untrusted user/",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Request Summary用户真正想完成的产品/工程目标。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "用户真正想完成的产品/工程目标。",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Source InventoryPRD、Figma、截图、现有代码、外部文档分别来自哪里。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "PRD、Figma、截图、现有代码、外部文档分别来自哪里。",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Trust Level哪些是 repo fact，哪些是 untrusted user/design/web source。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "哪些是 repo fact，哪些是 untrusted user/design/web source。",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Current System Shape当前路由、schema、测试、脚本、部署、已有模块。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "当前路由、schema、测试、脚本、部署、已有模块。",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Assumptions不问也能安全推进的假设。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "不问也能安全推进的假设。",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Unknowns需要 stop 或 approval 的未知。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "需要 stop 或 approval 的未知。",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Risk TagsUI、auth、payment、database、migration、AI/eval、external service、release。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "UI、auth、payment、database、migration、AI/eval、external service、release。",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-json",
+          "text": "[ { \"id\": \"AGENT-QA-001\", \"category\": \"retrieval\", \"given\": \"public article Agent Loop is indexed\", \"when\": \"visitor ask",
+          "scrollWidth": 734,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"public article Agent Loop is indexed\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 182,
+          "right": 525
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 525,
+          "right": 534
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"visitor asks what Agent Loop means\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 173,
+          "right": 498
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 498,
+          "right": 507
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"answer cites the Agent Loop post and shows a public source card\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 173,
+          "right": 760
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 760,
+          "right": 769
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"browser screenshot + eval row\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 209,
+          "right": 489
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 489,
+          "right": 498
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"EVQ-Cosh is hidden/draft\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 182,
+          "right": 417
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 417,
+          "right": 426
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"anonymous user asks for EVQ details\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 173,
+          "right": 507
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 507,
+          "right": 516
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"assistant refuses or says no public source is available\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 173,
+          "right": 688
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 688,
+          "right": 697
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"unit test + eval refusal case\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 209,
+          "right": 489
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 489,
+          "right": 498
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-json",
+          "text": "{ \"schema_version\": \"prd-phase-harness/v2\", \"phase\": { \"id\": \"AGENT-02\", \"status\": \"ready\", \"depends_on\": [\"AGENT-01\"], ",
+          "scrollWidth": 779,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"prd-phase-harness/v2\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 246,
+          "right": 444
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 444,
+          "right": 453
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"docs/blog_agent_harness/phase-02-quota-router.md\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 228,
+          "right": 679
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"Implement quota-before-retrieval agent router\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 191,
+          "right": 616
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 616,
+          "right": 625
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"docs/blog_agent_harness/reports/agent-02-quota-router.md\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 291,
+          "right": 814
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"docs/blog_agent_harness/README.md\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 119,
+          "right": 435
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 435,
+          "right": 444
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"docs/blog_agent_harness/phase-manifest.md\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 119,
+          "right": 507
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"server/ai/*\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 300,
+          "right": 417
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 417,
+          "right": 426
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"server/agent.router.test.ts\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 435,
+          "right": 697
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": "]",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 697,
+          "right": 706
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 706,
+          "right": 715
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"client/src/components/agent/*\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 246,
+          "right": 525
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": "]",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 525,
+          "right": 534
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"pnpm exec vitest run server/agent.router.test.ts\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 237,
+          "right": 688
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 688,
+          "right": 697
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"quota blocks before retrieval/model calls\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 246,
+          "right": 634
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 634,
+          "right": 643
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"anonymous blocked on 3rd daily message\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 119,
+          "right": 480
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 480,
+          "right": 489
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"visitor blocked on 7th daily message\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 119,
+          "right": 462
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 462,
+          "right": 471
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"quota block does not call retrieval\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 119,
+          "right": 453
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 453,
+          "right": 462
+        },
+        {
+          "tag": "div",
+          "className": "technical-table-wrap",
+          "text": "PhaseDominant RiskCompletion EvidenceBaseline Audit不知道当前系统真实状态route/test/schema/report baselineKnowledge Indexpublic/hid",
+          "scrollWidth": 672,
+          "clientWidth": 322,
+          "left": 33,
+          "right": 357
+        },
+        {
+          "tag": "table",
+          "className": "",
+          "text": "PhaseDominant RiskCompletion EvidenceBaseline Audit不知道当前系统真实状态route/test/schema/report baselineKnowledge Indexpublic/hid",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "thead",
+          "className": "",
+          "text": "PhaseDominant RiskCompletion Evidence",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "PhaseDominant RiskCompletion Evidence",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "text": "Dominant Risk",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "text": "Completion Evidence",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tbody",
+          "className": "",
+          "text": "Baseline Audit不知道当前系统真实状态route/test/schema/report baselineKnowledge Indexpublic/hidden 内容边界chunk tests + reindex reportQ",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Baseline Audit不知道当前系统真实状态route/test/schema/report baseline",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "不知道当前系统真实状态",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "route/test/schema/report baseline",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Knowledge Indexpublic/hidden 内容边界chunk tests + reindex report",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "public/hidden 内容边界",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "chunk tests + reindex report",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Quota Router费用和滥用控制quota-before-model tests",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "费用和滥用控制",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "quota-before-model tests",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Assistant Shell真实用户路径是否可用desktop/mobile browser screenshots",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "真实用户路径是否可用",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "desktop/mobile browser screenshots",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Answer Quality来源 grounding 和拒答golden questions + trace",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "来源 grounding 和拒答",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "golden questions + trace",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "History / Filesownership、retention、scopeauth tests + cleanup checks",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "ownership、retention、scope",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "auth tests + cleanup checks",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Admin Ops可观测和可运维retrieval debugger + eval dashboard",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "可观测和可运维",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "retrieval debugger + eval dashboard",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Release Gate完整回归和部署风险full build/test/browser/eval report",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "完整回归和部署风险",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "full build/test/browser/eval report",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-text",
+          "text": "Targeted Tests -> Regression Scope -> User Journey / Browser Check -> Evidence Report",
+          "scrollWidth": 328,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-text",
+          "text": "draft -> ready -> planned -> in_progress -> passed └-> blocked └-> waived",
+          "scrollWidth": 481,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-text",
+          "text": "docs/<topic>/ ├── README.md ├── source-packet.md ├── phase-manifest.md ├── phase-00-baseline-audit.md ├── phase-01-knowl",
+          "scrollWidth": 337,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-bash",
+          "text": "python3 scripts/validate_harness_prd.py docs/<topic> --strict --quality-score",
+          "scrollWidth": 725,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-text",
+          "text": "Complete AGENT-02 Quota Router. Read only the harness README, manifest, this phase, and PRIMARY_CONTEXT. Stay inside LIK",
+          "scrollWidth": 680,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        }
+      ],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "login",
+      "path": "/login",
+      "viewport": "mobile",
+      "theme": "dark",
+      "screenshot": "after-login-mobile-dark.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "dark",
+        "darkClass": true,
+        "colorScheme": "dark",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Owner access · Misaya Notes",
+        "themeButtonLabel": "Switch to light mode"
+      }
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "after-home-mobile-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "AI Algorithms and Applications · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    },
+    {
+      "route": "algorithms",
+      "path": "/algorithms",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "after-algorithms-mobile-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "AI Algorithms · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    },
+    {
+      "route": "applications",
+      "path": "/applications",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "after-applications-mobile-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "AI Applications · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    },
+    {
+      "route": "archive",
+      "path": "/archive",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "after-archive-mobile-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Archive · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    },
+    {
+      "route": "search-empty",
+      "path": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "after-search-empty-mobile-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    },
+    {
+      "route": "about",
+      "path": "/about",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "after-about-mobile-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Misaya Yang · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    },
+    {
+      "route": "post",
+      "path": "/post/goal-harness-agent-phase-protocol",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "after-post-mobile-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [
+        {
+          "tag": "code",
+          "className": "hljs language-text",
+          "text": "一个新 Agent 现在只能做哪一个 phase？ 它凭什么知道自己做完了？ 下一个 Agent 凭什么敢接着做？",
+          "scrollWidth": 328,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        },
+        {
+          "tag": "div",
+          "className": "technical-table-wrap",
+          "text": "Missing LayerSymptomBetter Harness BehaviorBaseline EvidenceAgent 开始写代码前没有固定当前 schema、route、test、UI 和检索边界。Phase 00 先产出 b",
+          "scrollWidth": 672,
+          "clientWidth": 322,
+          "left": 33,
+          "right": 357
+        },
+        {
+          "tag": "table",
+          "className": "",
+          "text": "Missing LayerSymptomBetter Harness BehaviorBaseline EvidenceAgent 开始写代码前没有固定当前 schema、route、test、UI 和检索边界。Phase 00 先产出 b",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "thead",
+          "className": "",
+          "text": "Missing LayerSymptomBetter Harness Behavior",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Missing LayerSymptomBetter Harness Behavior",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "text": "Symptom",
+          "scrollWidth": 276,
+          "clientWidth": 276,
+          "left": 147,
+          "right": 423
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "text": "Better Harness Behavior",
+          "scrollWidth": 283,
+          "clientWidth": 283,
+          "left": 423,
+          "right": 706
+        },
+        {
+          "tag": "tbody",
+          "className": "",
+          "text": "Baseline EvidenceAgent 开始写代码前没有固定当前 schema、route、test、UI 和检索边界。Phase 00 先产出 baseline report，再允许实现 phase 解锁。Feature Oracl",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Baseline EvidenceAgent 开始写代码前没有固定当前 schema、route、test、UI 和检索边界。Phase 00 先产出 baseline report，再允许实现 phase 解锁。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "Agent 开始写代码前没有固定当前 schema、route、test、UI 和检索边界。",
+          "scrollWidth": 276,
+          "clientWidth": 276,
+          "left": 147,
+          "right": 423
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "Phase 00 先产出 baseline report，再允许实现 phase 解锁。",
+          "scrollWidth": 283,
+          "clientWidth": 283,
+          "left": 423,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Feature Oracle“能回答博客问题”太软，成功题、拒答题、quota 题没有被枚举。把 public QA、hidden refusal、quota-before-model、source card 都写成验收案例。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "“能回答博客问题”太软，成功题、拒答题、quota 题没有被枚举。",
+          "scrollWidth": 276,
+          "clientWidth": 276,
+          "left": 147,
+          "right": 423
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "把 public QA、hidden refusal、quota-before-model、source card 都写成验收案例。",
+          "scrollWidth": 283,
+          "clientWidth": 283,
+          "left": 423,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Phase Boundaryschema、router、retrieval、UI、admin、eval 混在同一轮 goal 里。按风险拆 phase，每个 phase 只允许有限 edit paths。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "schema、router、retrieval、UI、admin、eval 混在同一轮 goal 里。",
+          "scrollWidth": 276,
+          "clientWidth": 276,
+          "left": 147,
+          "right": 423
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "按风险拆 phase，每个 phase 只允许有限 edit paths。",
+          "scrollWidth": 283,
+          "clientWidth": 283,
+          "left": 423,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Regression Bank新测试可能过了，但旧的阅读路径、移动端、隐藏内容边界没有被完整回归。每个 phase 声明触碰哪部分 regression bank，release phase 跑完整银行。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "新测试可能过了，但旧的阅读路径、移动端、隐藏内容边界没有被完整回归。",
+          "scrollWidth": 276,
+          "clientWidth": 276,
+          "left": 147,
+          "right": 423
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "每个 phase 声明触碰哪部分 regression bank，release phase 跑完整银行。",
+          "scrollWidth": 283,
+          "clientWidth": 283,
+          "left": 423,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Evidence Report“完成”只存在于聊天总结里，下一轮 Agent 不知道哪些检查真的跑过。每个 phase 写 report，记录命令、截图、eval、waiver、blocker 和 handoff。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "“完成”只存在于聊天总结里，下一轮 Agent 不知道哪些检查真的跑过。",
+          "scrollWidth": 276,
+          "clientWidth": 276,
+          "left": 147,
+          "right": 423
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "每个 phase 写 report，记录命令、截图、eval、waiver、blocker 和 handoff。",
+          "scrollWidth": 283,
+          "clientWidth": 283,
+          "left": 423,
+          "right": 706
+        },
+        {
+          "tag": "div",
+          "className": "technical-table-wrap",
+          "text": "FieldPurposeRequest Summary用户真正想完成的产品/工程目标。Source InventoryPRD、Figma、截图、现有代码、外部文档分别来自哪里。Trust Level哪些是 repo fact，哪些是 unt",
+          "scrollWidth": 672,
+          "clientWidth": 322,
+          "left": 33,
+          "right": 357
+        },
+        {
+          "tag": "table",
+          "className": "",
+          "text": "FieldPurposeRequest Summary用户真正想完成的产品/工程目标。Source InventoryPRD、Figma、截图、现有代码、外部文档分别来自哪里。Trust Level哪些是 repo fact，哪些是 unt",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "thead",
+          "className": "",
+          "text": "FieldPurpose",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "FieldPurpose",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "text": "Purpose",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "tbody",
+          "className": "",
+          "text": "Request Summary用户真正想完成的产品/工程目标。Source InventoryPRD、Figma、截图、现有代码、外部文档分别来自哪里。Trust Level哪些是 repo fact，哪些是 untrusted user/",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Request Summary用户真正想完成的产品/工程目标。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "用户真正想完成的产品/工程目标。",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Source InventoryPRD、Figma、截图、现有代码、外部文档分别来自哪里。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "PRD、Figma、截图、现有代码、外部文档分别来自哪里。",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Trust Level哪些是 repo fact，哪些是 untrusted user/design/web source。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "哪些是 repo fact，哪些是 untrusted user/design/web source。",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Current System Shape当前路由、schema、测试、脚本、部署、已有模块。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "当前路由、schema、测试、脚本、部署、已有模块。",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Assumptions不问也能安全推进的假设。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "不问也能安全推进的假设。",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Unknowns需要 stop 或 approval 的未知。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "需要 stop 或 approval 的未知。",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Risk TagsUI、auth、payment、database、migration、AI/eval、external service、release。",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "UI、auth、payment、database、migration、AI/eval、external service、release。",
+          "scrollWidth": 513,
+          "clientWidth": 513,
+          "left": 193,
+          "right": 706
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-json",
+          "text": "[ { \"id\": \"AGENT-QA-001\", \"category\": \"retrieval\", \"given\": \"public article Agent Loop is indexed\", \"when\": \"visitor ask",
+          "scrollWidth": 734,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"public article Agent Loop is indexed\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 182,
+          "right": 525
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 525,
+          "right": 534
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"visitor asks what Agent Loop means\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 173,
+          "right": 498
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 498,
+          "right": 507
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"answer cites the Agent Loop post and shows a public source card\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 173,
+          "right": 760
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 760,
+          "right": 769
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"browser screenshot + eval row\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 209,
+          "right": 489
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 489,
+          "right": 498
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"EVQ-Cosh is hidden/draft\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 182,
+          "right": 417
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 417,
+          "right": 426
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"anonymous user asks for EVQ details\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 173,
+          "right": 507
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 507,
+          "right": 516
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"assistant refuses or says no public source is available\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 173,
+          "right": 688
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 688,
+          "right": 697
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"unit test + eval refusal case\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 209,
+          "right": 489
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 489,
+          "right": 498
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-json",
+          "text": "{ \"schema_version\": \"prd-phase-harness/v2\", \"phase\": { \"id\": \"AGENT-02\", \"status\": \"ready\", \"depends_on\": [\"AGENT-01\"], ",
+          "scrollWidth": 779,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"prd-phase-harness/v2\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 246,
+          "right": 444
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 444,
+          "right": 453
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"docs/blog_agent_harness/phase-02-quota-router.md\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 228,
+          "right": 679
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"Implement quota-before-retrieval agent router\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 191,
+          "right": 616
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 616,
+          "right": 625
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"docs/blog_agent_harness/reports/agent-02-quota-router.md\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 291,
+          "right": 814
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"docs/blog_agent_harness/README.md\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 119,
+          "right": 435
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 435,
+          "right": 444
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"docs/blog_agent_harness/phase-manifest.md\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 119,
+          "right": 507
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"server/ai/*\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 300,
+          "right": 417
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 417,
+          "right": 426
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"server/agent.router.test.ts\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 435,
+          "right": 697
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": "]",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 697,
+          "right": 706
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 706,
+          "right": 715
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"client/src/components/agent/*\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 246,
+          "right": 525
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": "]",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 525,
+          "right": 534
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"pnpm exec vitest run server/agent.router.test.ts\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 237,
+          "right": 688
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 688,
+          "right": 697
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"quota blocks before retrieval/model calls\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 246,
+          "right": 634
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 634,
+          "right": 643
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"anonymous blocked on 3rd daily message\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 119,
+          "right": 480
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 480,
+          "right": 489
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"visitor blocked on 7th daily message\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 119,
+          "right": 462
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 462,
+          "right": 471
+        },
+        {
+          "tag": "span",
+          "className": "hljs-string",
+          "text": "\"quota block does not call retrieval\"",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 119,
+          "right": 453
+        },
+        {
+          "tag": "span",
+          "className": "hljs-punctuation",
+          "text": ",",
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "left": 453,
+          "right": 462
+        },
+        {
+          "tag": "div",
+          "className": "technical-table-wrap",
+          "text": "PhaseDominant RiskCompletion EvidenceBaseline Audit不知道当前系统真实状态route/test/schema/report baselineKnowledge Indexpublic/hid",
+          "scrollWidth": 672,
+          "clientWidth": 322,
+          "left": 33,
+          "right": 357
+        },
+        {
+          "tag": "table",
+          "className": "",
+          "text": "PhaseDominant RiskCompletion EvidenceBaseline Audit不知道当前系统真实状态route/test/schema/report baselineKnowledge Indexpublic/hid",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "thead",
+          "className": "",
+          "text": "PhaseDominant RiskCompletion Evidence",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "PhaseDominant RiskCompletion Evidence",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "text": "Dominant Risk",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "text": "Completion Evidence",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tbody",
+          "className": "",
+          "text": "Baseline Audit不知道当前系统真实状态route/test/schema/report baselineKnowledge Indexpublic/hidden 内容边界chunk tests + reindex reportQ",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Baseline Audit不知道当前系统真实状态route/test/schema/report baseline",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "不知道当前系统真实状态",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "route/test/schema/report baseline",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Knowledge Indexpublic/hidden 内容边界chunk tests + reindex report",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "public/hidden 内容边界",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "chunk tests + reindex report",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Quota Router费用和滥用控制quota-before-model tests",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "费用和滥用控制",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "quota-before-model tests",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Assistant Shell真实用户路径是否可用desktop/mobile browser screenshots",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "真实用户路径是否可用",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "desktop/mobile browser screenshots",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Answer Quality来源 grounding 和拒答golden questions + trace",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "来源 grounding 和拒答",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "golden questions + trace",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "History / Filesownership、retention、scopeauth tests + cleanup checks",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "ownership、retention、scope",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "auth tests + cleanup checks",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Admin Ops可观测和可运维retrieval debugger + eval dashboard",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "可观测和可运维",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "retrieval debugger + eval dashboard",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "Release Gate完整回归和部署风险full build/test/browser/eval report",
+          "scrollWidth": 672,
+          "clientWidth": 672,
+          "left": 34,
+          "right": 706
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "完整回归和部署风险",
+          "scrollWidth": 238,
+          "clientWidth": 238,
+          "left": 185,
+          "right": 422
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "full build/test/browser/eval report",
+          "scrollWidth": 284,
+          "clientWidth": 284,
+          "left": 422,
+          "right": 706
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-text",
+          "text": "Targeted Tests -> Regression Scope -> User Journey / Browser Check -> Evidence Report",
+          "scrollWidth": 328,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-text",
+          "text": "draft -> ready -> planned -> in_progress -> passed └-> blocked └-> waived",
+          "scrollWidth": 481,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-text",
+          "text": "docs/<topic>/ ├── README.md ├── source-packet.md ├── phase-manifest.md ├── phase-00-baseline-audit.md ├── phase-01-knowl",
+          "scrollWidth": 337,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-bash",
+          "text": "python3 scripts/validate_harness_prd.py docs/<topic> --strict --quality-score",
+          "scrollWidth": 725,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        },
+        {
+          "tag": "code",
+          "className": "hljs language-text",
+          "text": "Complete AGENT-02 Quota Router. Read only the harness README, manifest, this phase, and PRIMARY_CONTEXT. Stay inside LIK",
+          "scrollWidth": 680,
+          "clientWidth": 254,
+          "left": 50,
+          "right": 304
+        }
+      ],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    },
+    {
+      "route": "login",
+      "path": "/login",
+      "viewport": "mobile",
+      "theme": "light",
+      "screenshot": "after-login-mobile-light.png",
+      "lowContrast": [],
+      "nestedOverflow": [],
+      "pageOverflow": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflows": false
+      },
+      "themeState": {
+        "dataTheme": "light",
+        "darkClass": false,
+        "colorScheme": "light",
+        "bodyFont": "\"Misaya UI\", \"SF Pro Text\", -apple-system, \"system-ui\", \"Segoe UI Variable Text\", Aptos, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "fontStatus": "loaded",
+        "title": "Owner access · Misaya Notes",
+        "themeButtonLabel": "Switch to dark mode"
+      }
+    }
+  ]
+}
