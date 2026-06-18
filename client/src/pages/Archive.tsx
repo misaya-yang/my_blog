@@ -113,7 +113,7 @@ export default function Archive() {
                             {post.category && (
                               <Link
                                 href={`/categories/${post.category.slug}`}
-                                className="inline-flex items-center gap-1 hover:text-sky-200"
+                                className="article-tag gap-1"
                               >
                                 <Folder className="h-3.5 w-3.5" />
                                 {post.category.name}
@@ -123,7 +123,7 @@ export default function Archive() {
                               <Link
                                 key={tag.slug}
                                 href={`/tags/${tag.slug}`}
-                                className="inline-flex items-center gap-1 rounded-md border border-sky-200/10 px-2 py-1 hover:border-sky-300/40 hover:text-sky-200"
+                                className="article-tag gap-1"
                               >
                                 <Tags className="h-3 w-3" />
                                 {tag.name}

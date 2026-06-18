@@ -2,20 +2,20 @@ import type { TranslationDict } from "./types";
 
 const agent: TranslationDict = {
   "agent.launcher.label": {
-    en: "Reader",
-    zh: "阅读助手",
+    en: "Blog Agent",
+    zh: "博客助手",
   },
   "agent.launcher.tooltip": {
     en: "Ask about public notes and reading paths",
     zh: "询问公开笔记与阅读路径",
   },
   "agent.header.title": {
-    en: "Reading Assistant",
-    zh: "阅读助手",
+    en: "Blog Agent",
+    zh: "博客助手",
   },
   "agent.header.subtitle": {
-    en: "Uses public notes only",
-    zh: "只基于公开笔记",
+    en: "Grounded in public notes",
+    zh: "基于公开笔记",
   },
   "agent.header.close": {
     en: "Close assistant",
@@ -80,6 +80,18 @@ const agent: TranslationDict = {
   "agent.scope.track": {
     en: "Track",
     zh: "技术区",
+  },
+  "agent.trust.publicScope": {
+    en: "Answers cite public notes in this {scope} scope.",
+    zh: "回答会引用这个{scope}范围内的公开笔记。",
+  },
+  "agent.trust.contextPrivate": {
+    en: "Private pasted or uploaded context stays conversation-local.",
+    zh: "你粘贴或上传的私有上下文只用于当前会话。",
+  },
+  "agent.trust.contextAttached": {
+    en: "Attached context is active, but public source cards stay separated.",
+    zh: "已接入会话上下文，但公开来源卡片会保持分离。",
   },
   "agent.welcome.title": {
     en: "Ask from the notebook",

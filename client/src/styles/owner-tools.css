@@ -96,7 +96,11 @@
 
   .owner-editor-shell {
     background:
-      radial-gradient(circle at 12% 0%, oklch(0.36 0.12 255 / 14%), transparent 28rem),
+      radial-gradient(
+        circle at 12% 0%,
+        oklch(0.36 0.12 255 / 14%),
+        transparent 28rem
+      ),
       linear-gradient(180deg, oklch(0.06 0.018 252), oklch(0.045 0.016 252));
   }
 
@@ -124,5 +128,215 @@
 
   .owner-editor-preview {
     background: oklch(0.055 0.018 252 / 54%);
+  }
+}
+
+@layer components {
+  /* MNUI-04 owner pass: operational surfaces should be dense, opaque, and repeatable. */
+  .owner-ops-page,
+  .owner-editor-shell,
+  .agent-console-tabs,
+  .login-panel,
+  .auth-required-card {
+    --owner-control-bg: oklch(0.052 0.012 252);
+    --owner-control-bg-hover: oklch(0.085 0.014 250);
+    --owner-control-border: var(--ui-border, oklch(0.82 0.035 238 / 14%));
+    --owner-control-border-strong: var(
+      --ui-border-strong,
+      oklch(0.72 0.13 230 / 30%)
+    );
+    --owner-control-text: var(--ui-text, oklch(0.92 0.01 235));
+    --owner-control-muted: var(--ui-muted, oklch(0.72 0.018 235));
+    --owner-control-radius: var(--ui-radius-sm, 0.56rem);
+  }
+
+  .owner-panel,
+  .login-panel,
+  .auth-required-card,
+  .agent-console-tabs .research-surface,
+  .owner-ops-ledger,
+  .owner-table-wrap {
+    background: linear-gradient(
+      180deg,
+      oklch(0.108 0.015 250),
+      oklch(0.058 0.012 252)
+    ) !important;
+    border-color: var(--owner-control-border) !important;
+    box-shadow:
+      inset 0 1px 0 oklch(0.98 0.01 230 / 5%),
+      0 12px 24px oklch(0.02 0.012 252 / 18%);
+  }
+
+  .owner-ops-taxonomy > *:first-child {
+    transform: none !important;
+  }
+
+  .owner-command-strip {
+    min-width: 0;
+    align-items: stretch;
+  }
+
+  .owner-command-strip > *,
+  .owner-ops-page .research-surface,
+  .owner-panel,
+  .agent-console-tabs [data-slot="tabs-content"] {
+    min-width: 0;
+  }
+
+  .owner-ops-page input,
+  .owner-ops-page textarea,
+  .owner-ops-page [role="combobox"],
+  .agent-console-tabs input,
+  .agent-console-tabs textarea,
+  .agent-console-tabs [role="combobox"],
+  .login-panel input,
+  .owner-editor-shell input,
+  .owner-editor-shell textarea,
+  .owner-editor-shell [role="combobox"] {
+    border-color: var(--owner-control-border) !important;
+    border-radius: var(--owner-control-radius) !important;
+    background-color: var(--owner-control-bg) !important;
+    color: var(--owner-control-text) !important;
+    box-shadow: inset 0 1px 0 oklch(0.98 0.01 230 / 4%) !important;
+  }
+
+  .owner-ops-page input::placeholder,
+  .owner-ops-page textarea::placeholder,
+  .agent-console-tabs input::placeholder,
+  .agent-console-tabs textarea::placeholder,
+  .login-panel input::placeholder,
+  .owner-editor-shell input::placeholder,
+  .owner-editor-shell textarea::placeholder {
+    color: oklch(0.58 0.016 235) !important;
+  }
+
+  .owner-ops-page input:focus-visible,
+  .owner-ops-page textarea:focus-visible,
+  .agent-console-tabs input:focus-visible,
+  .agent-console-tabs textarea:focus-visible,
+  .login-panel input:focus-visible,
+  .owner-editor-shell input:focus-visible,
+  .owner-editor-shell textarea:focus-visible {
+    border-color: var(--owner-control-border-strong) !important;
+    outline: 2px solid var(--focus-ring, oklch(0.74 0.16 245 / 62%));
+    outline-offset: 2px;
+  }
+
+  .owner-button,
+  .owner-ops-page .glass-button,
+  .owner-editor-shell .glass-button,
+  .agent-console-tabs .glass-button,
+  .login-panel .glass-button,
+  .auth-required-card .glass-button,
+  .agent-console-tabs button:not([data-slot="tabs-trigger"]),
+  .owner-ops-page button:not(.owner-primary-action):not(.owner-segmented-item),
+  .login-panel button:not(.owner-primary-action) {
+    border-color: var(--owner-control-border);
+    background: var(--owner-control-bg);
+    color: var(--owner-control-text);
+  }
+
+  .owner-button:hover,
+  .owner-ops-page .glass-button:hover,
+  .owner-editor-shell .glass-button:hover,
+  .agent-console-tabs .glass-button:hover,
+  .login-panel .glass-button:hover,
+  .auth-required-card .glass-button:hover,
+  .agent-console-tabs button:not([data-slot="tabs-trigger"]):hover,
+  .owner-ops-page
+    button:not(.owner-primary-action):not(.owner-segmented-item):hover,
+  .login-panel button:not(.owner-primary-action):hover {
+    border-color: var(--owner-control-border-strong);
+    background: var(--owner-control-bg-hover);
+    color: white;
+  }
+
+  .owner-primary-action {
+    font-weight: 700;
+  }
+
+  .owner-segmented {
+    background: oklch(0.048 0.012 252) !important;
+  }
+
+  .owner-segmented-item {
+    min-height: 2.25rem;
+  }
+
+  .owner-table-wrap {
+    padding: 0.5rem;
+  }
+
+  .owner-table-wrap table {
+    min-width: 920px;
+  }
+
+  .owner-table-wrap th,
+  .owner-table-wrap td {
+    white-space: nowrap;
+  }
+
+  .owner-table-wrap th:first-child,
+  .owner-table-wrap td:first-child {
+    white-space: normal;
+  }
+
+  .agent-console-tabs [data-slot="tabs-list"] {
+    border-color: var(--owner-control-border) !important;
+    background: oklch(0.052 0.012 252) !important;
+  }
+
+  .agent-console-tabs [data-slot="tabs-trigger"] {
+    min-height: 2.5rem;
+    justify-content: flex-start;
+    border-radius: var(--owner-control-radius);
+    color: var(--owner-control-muted);
+  }
+
+  .agent-console-tabs [data-slot="tabs-trigger"][data-state="active"] {
+    background: var(--ui-accent-soft, oklch(0.76 0.13 226 / 12%));
+    color: white;
+  }
+
+  .owner-editor-shell {
+    background: linear-gradient(
+      180deg,
+      oklch(0.055 0.012 252),
+      oklch(0.036 0.012 252)
+    ) !important;
+  }
+
+  .owner-toolbar {
+    background: oklch(0.048 0.012 252 / 96%) !important;
+  }
+
+  .owner-editor-pane,
+  .owner-editor-preview,
+  .owner-editor-textarea {
+    background-color: oklch(0.047 0.012 252) !important;
+  }
+
+  .owner-editor-content-shell,
+  .owner-writer-source,
+  .owner-writer-preview {
+    min-width: 0;
+  }
+
+  .login-panel {
+    width: min(100%, 28rem);
+  }
+
+  @media (max-width: 760px) {
+    .owner-command-strip {
+      gap: 0.75rem;
+    }
+
+    .owner-table-wrap table {
+      min-width: 760px;
+    }
+
+    .agent-console-tabs [data-slot="tabs-list"] {
+      padding-bottom: 0.45rem;
+    }
   }
 }

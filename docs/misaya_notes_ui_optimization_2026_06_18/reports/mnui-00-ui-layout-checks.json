@@ -1,0 +1,144 @@
+{
+  "generatedAt": "2026-06-18T11:33:52.586Z",
+  "baseUrl": "http://localhost:3000",
+  "passed": true,
+  "results": [
+    {
+      "route": "/",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "measurements": {
+        "firstArticleY": 606.359375,
+        "headerHeight": 69,
+        "searchDockY": 358.953125,
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390
+      },
+      "checks": {
+        "noHorizontalOverflow": true,
+        "headerHeightWithinLimit": true,
+        "firstArticleVisibleSoon": true,
+        "searchDockEarly": true
+      }
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 1000
+      },
+      "measurements": {
+        "firstArticleY": 675.640625,
+        "headerHeight": 69,
+        "searchDockY": 464.625,
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440
+      },
+      "checks": {
+        "noHorizontalOverflow": true,
+        "headerHeightWithinLimit": true,
+        "firstArticleVisibleSoon": true,
+        "searchDockEarly": true
+      }
+    },
+    {
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "measurements": {
+        "headerHeight": 69,
+        "proseY": 889.859375,
+        "entryHeight": 315.140625,
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390
+      },
+      "checks": {
+        "noHorizontalOverflow": true,
+        "headerHeightWithinLimit": true,
+        "proseStartsSoon": true,
+        "entryLayerCompact": true
+      }
+    },
+    {
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 1000
+      },
+      "measurements": {
+        "headerHeight": 69,
+        "proseY": 628.8125,
+        "entryHeight": 112.875,
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440
+      },
+      "checks": {
+        "noHorizontalOverflow": true,
+        "headerHeightWithinLimit": true,
+        "proseStartsSoon": true,
+        "entryLayerCompact": true
+      }
+    },
+    {
+      "route": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "measurements": {
+        "recoveryY": 651.828125,
+        "actionY": 664.34375,
+        "clearExists": true,
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390
+      },
+      "checks": {
+        "noHorizontalOverflow": true,
+        "primaryRecoveryVisible": true,
+        "agentActionVisible": true,
+        "clearSearchAvailable": true
+      }
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "measurements": {
+        "launcherExpanded": "true",
+        "launcherControls": "blog-agent-panel",
+        "panelRole": "dialog",
+        "panelModal": "true",
+        "panelLabelledBy": "blog-agent-title",
+        "activeElementInsidePanel": true,
+        "panelExists": false,
+        "activeIsLauncher": true
+      },
+      "checks": {
+        "launcherControlsPanel": true,
+        "panelIsDialog": true,
+        "panelIsModal": true,
+        "panelHasName": true,
+        "focusEnteredPanel": true,
+        "escapeClosesPanel": true,
+        "focusReturnsToLauncher": true
+      }
+    }
+  ]
+}

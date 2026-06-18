@@ -52,10 +52,61 @@ export function SpaceBackdrop({ subtle = false }: { subtle?: boolean }) {
   );
 }
 
-export function BrandMark({ className }: { className?: string }) {
+type BrandMarkProps = {
+  className?: string;
+  size?: "sm" | "md" | "lg" | number;
+  withWordmark?: boolean;
+};
+
+function getBrandMarkSize(size: BrandMarkProps["size"]) {
+  if (typeof size === "number") return `${size}px`;
+  if (size === "sm") return "2.25rem";
+  if (size === "lg") return "3rem";
+  return "2.65rem";
+}
+
+export function BrandMark({
+  className,
+  size = "md",
+  withWordmark = false,
+}: BrandMarkProps) {
+  const markSize = getBrandMarkSize(size);
+  const glyph = (
+    <span
+      className={cn("brand-mark", className)}
+      style={
+        {
+          "--brand-mark-size": markSize,
+        } as React.CSSProperties
+      }
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 64 64" className="h-[58%] w-[58%]">
+        <path
+          d="M18 18h19a9 9 0 0 1 9 9v19H27a9 9 0 0 1-9-9V18Z"
+          fill="currentColor"
+          fillOpacity="0.16"
+          stroke="currentColor"
+          strokeWidth="2.5"
+        />
+        <path
+          d="M25 27h14M25 34h14M25 41h9"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeWidth="3.2"
+        />
+      </svg>
+    </span>
+  );
+
+  if (!withWordmark) return glyph;
+
   return (
-    <span className={cn("brand-mark", className)}>
-      <span aria-hidden="true">M</span>
+    <span className="inline-flex min-h-11 items-center gap-3">
+      {glyph}
+      <span className="text-base font-[650] tracking-normal text-white sm:text-lg">
+        Misaya Notes
+      </span>
     </span>
   );
 }

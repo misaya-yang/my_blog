@@ -1,0 +1,246 @@
+{
+  "generatedAt": "2026-06-18T12:18:49.943Z",
+  "baseUrl": "http://localhost:3000",
+  "results": [
+    {
+      "name": "desktop-manage-guard",
+      "route": "/manage",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-04/desktop-manage-guard.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "Content Dashboard · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "authCardVisible": true,
+        "loginPanelVisible": false,
+        "ownerOpsPageVisible": false,
+        "editorShellVisible": false,
+        "agentConsoleVisible": false,
+        "publicAgentLauncherVisible": false,
+        "visibleButtons": 7,
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "textOverflowCandidates": [],
+        "pageText": "window.__MANUS_HOST_DEV__ = true; (function(){\"use strict\";var Mr={exports:{}},Kn={};/** * @license React * react-jsx-runtime.production.js * * Copyright (c) Meta Platforms, Inc. and affiliates. * * This source code is licensed under the MIT license found in the * LICENSE file in the root directory of this source tree. */var $c;function um(){if($c)return Kn;$c=1;var r=Symbol.for(\"react.transitional.element\"),i=Symbol"
+      }
+    },
+    {
+      "name": "mobile-manage-guard",
+      "route": "/manage",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-04/mobile-manage-guard.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "Content Dashboard · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "authCardVisible": true,
+        "loginPanelVisible": false,
+        "ownerOpsPageVisible": false,
+        "editorShellVisible": false,
+        "agentConsoleVisible": false,
+        "publicAgentLauncherVisible": false,
+        "visibleButtons": 7,
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "textOverflowCandidates": [],
+        "pageText": "window.__MANUS_HOST_DEV__ = true; (function(){\"use strict\";var Mr={exports:{}},Kn={};/** * @license React * react-jsx-runtime.production.js * * Copyright (c) Meta Platforms, Inc. and affiliates. * * This source code is licensed under the MIT license found in the * LICENSE file in the root directory of this source tree. */var $c;function um(){if($c)return Kn;$c=1;var r=Symbol.for(\"react.transitional.element\"),i=Symbol"
+      }
+    },
+    {
+      "name": "desktop-write-guard",
+      "route": "/write",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-04/desktop-write-guard.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "New article · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "authCardVisible": true,
+        "loginPanelVisible": false,
+        "ownerOpsPageVisible": false,
+        "editorShellVisible": false,
+        "agentConsoleVisible": false,
+        "publicAgentLauncherVisible": false,
+        "visibleButtons": 7,
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "textOverflowCandidates": [],
+        "pageText": "window.__MANUS_HOST_DEV__ = true; (function(){\"use strict\";var Mr={exports:{}},Kn={};/** * @license React * react-jsx-runtime.production.js * * Copyright (c) Meta Platforms, Inc. and affiliates. * * This source code is licensed under the MIT license found in the * LICENSE file in the root directory of this source tree. */var $c;function um(){if($c)return Kn;$c=1;var r=Symbol.for(\"react.transitional.element\"),i=Symbol"
+      }
+    },
+    {
+      "name": "mobile-write-guard",
+      "route": "/write",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-04/mobile-write-guard.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "New article · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "authCardVisible": true,
+        "loginPanelVisible": false,
+        "ownerOpsPageVisible": false,
+        "editorShellVisible": false,
+        "agentConsoleVisible": false,
+        "publicAgentLauncherVisible": false,
+        "visibleButtons": 7,
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "textOverflowCandidates": [],
+        "pageText": "window.__MANUS_HOST_DEV__ = true; (function(){\"use strict\";var Mr={exports:{}},Kn={};/** * @license React * react-jsx-runtime.production.js * * Copyright (c) Meta Platforms, Inc. and affiliates. * * This source code is licensed under the MIT license found in the * LICENSE file in the root directory of this source tree. */var $c;function um(){if($c)return Kn;$c=1;var r=Symbol.for(\"react.transitional.element\"),i=Symbol"
+      }
+    },
+    {
+      "name": "desktop-manage-agent-guard",
+      "route": "/manage/agent",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-04/desktop-manage-agent-guard.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "Agent Operations · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "authCardVisible": true,
+        "loginPanelVisible": false,
+        "ownerOpsPageVisible": false,
+        "editorShellVisible": false,
+        "agentConsoleVisible": false,
+        "publicAgentLauncherVisible": false,
+        "visibleButtons": 7,
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "textOverflowCandidates": [],
+        "pageText": "window.__MANUS_HOST_DEV__ = true; (function(){\"use strict\";var Mr={exports:{}},Kn={};/** * @license React * react-jsx-runtime.production.js * * Copyright (c) Meta Platforms, Inc. and affiliates. * * This source code is licensed under the MIT license found in the * LICENSE file in the root directory of this source tree. */var $c;function um(){if($c)return Kn;$c=1;var r=Symbol.for(\"react.transitional.element\"),i=Symbol"
+      }
+    },
+    {
+      "name": "mobile-manage-agent-guard",
+      "route": "/manage/agent",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-04/mobile-manage-agent-guard.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "Agent Operations · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "authCardVisible": true,
+        "loginPanelVisible": false,
+        "ownerOpsPageVisible": false,
+        "editorShellVisible": false,
+        "agentConsoleVisible": false,
+        "publicAgentLauncherVisible": false,
+        "visibleButtons": 7,
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "textOverflowCandidates": [],
+        "pageText": "window.__MANUS_HOST_DEV__ = true; (function(){\"use strict\";var Mr={exports:{}},Kn={};/** * @license React * react-jsx-runtime.production.js * * Copyright (c) Meta Platforms, Inc. and affiliates. * * This source code is licensed under the MIT license found in the * LICENSE file in the root directory of this source tree. */var $c;function um(){if($c)return Kn;$c=1;var r=Symbol.for(\"react.transitional.element\"),i=Symbol"
+      }
+    },
+    {
+      "name": "desktop-login",
+      "route": "/login",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-04/desktop-login.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "Login · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "authCardVisible": false,
+        "loginPanelVisible": true,
+        "ownerOpsPageVisible": false,
+        "editorShellVisible": false,
+        "agentConsoleVisible": false,
+        "publicAgentLauncherVisible": false,
+        "visibleButtons": 8,
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "textOverflowCandidates": [],
+        "pageText": "window.__MANUS_HOST_DEV__ = true; (function(){\"use strict\";var Mr={exports:{}},Kn={};/** * @license React * react-jsx-runtime.production.js * * Copyright (c) Meta Platforms, Inc. and affiliates. * * This source code is licensed under the MIT license found in the * LICENSE file in the root directory of this source tree. */var $c;function um(){if($c)return Kn;$c=1;var r=Symbol.for(\"react.transitional.element\"),i=Symbol"
+      }
+    },
+    {
+      "name": "mobile-login",
+      "route": "/login",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-04/mobile-login.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "Login · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "authCardVisible": false,
+        "loginPanelVisible": true,
+        "ownerOpsPageVisible": false,
+        "editorShellVisible": false,
+        "agentConsoleVisible": false,
+        "publicAgentLauncherVisible": false,
+        "visibleButtons": 8,
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "textOverflowCandidates": [],
+        "pageText": "window.__MANUS_HOST_DEV__ = true; (function(){\"use strict\";var Mr={exports:{}},Kn={};/** * @license React * react-jsx-runtime.production.js * * Copyright (c) Meta Platforms, Inc. and affiliates. * * This source code is licensed under the MIT license found in the * LICENSE file in the root directory of this source tree. */var $c;function um(){if($c)return Kn;$c=1;var r=Symbol.for(\"react.transitional.element\"),i=Symbol"
+      }
+    }
+  ]
+}

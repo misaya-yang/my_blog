@@ -232,7 +232,9 @@ export function collectMetadata(html: string): MetadataSnapshot {
     title: decodeHtml(matchFirst(html, /<title[^>]*>([\s\S]*?)<\/title>/i)),
     description: getMeta(html, "name", "description"),
     canonical: getLink(html, "canonical"),
-    htmlLang: decodeHtml(matchFirst(html, /<html[^>]*\slang=["']?([^"'\s>]+)/i)),
+    htmlLang: decodeHtml(
+      matchFirst(html, /<html[^>]*\slang=["']?([^"'\s>]+)/i)
+    ),
     openGraph: {
       title: getMeta(html, "property", "og:title"),
       description: getMeta(html, "property", "og:description"),
@@ -250,20 +252,24 @@ export function collectMetadata(html: string): MetadataSnapshot {
   };
 }
 
-export async function collectDistAssetSizes(distDir: string): Promise<DistAssetSizes> {
+export async function collectDistAssetSizes(
+  distDir: string
+): Promise<DistAssetSizes> {
   const resolvedDist = resolve(distDir);
   if (!existsSync(resolvedDist)) {
     return { html: null, javascript: [], css: [] };
   }
 
   const files = await listFiles(resolvedDist);
-  const sized = await Promise.all(files.map((file) => sizeAsset(resolvedDist, file)));
-  const html = sized.find((asset) => asset.file === "index.html") ?? null;
+  const sized = await Promise.all(
+    files.map(file => sizeAsset(resolvedDist, file))
+  );
+  const html = sized.find(asset => asset.file === "index.html") ?? null;
   const javascript = sized
-    .filter((asset) => asset.file.endsWith(".js"))
+    .filter(asset => asset.file.endsWith(".js"))
     .sort((a, b) => b.gzipBytes - a.gzipBytes);
   const css = sized
-    .filter((asset) => asset.file.endsWith(".css"))
+    .filter(asset => asset.file.endsWith(".css"))
     .sort((a, b) => b.gzipBytes - a.gzipBytes);
 
   return { html, javascript, css };
@@ -273,7 +279,9 @@ export async function runBaselineAudit(
   options: RunBaselineAuditOptions = {}
 ): Promise<BaselineAuditReport> {
   const projectRoot = resolve(options.projectRoot ?? process.cwd());
-  const baseUrl = normalizeBaseUrl(options.baseUrl ?? process.env.AUDIT_BASE_URL ?? null);
+  const baseUrl = normalizeBaseUrl(
+    options.baseUrl ?? process.env.AUDIT_BASE_URL ?? null
+  );
   const distDir = resolve(projectRoot, options.distDir ?? "dist/public");
   const includeChecks = options.includeChecks ?? true;
 
@@ -302,9 +310,14 @@ export async function runBaselineAudit(
     browserSmoke: {
       state: "manual-required",
       viewport: { width: 390, height: 844 },
-      routes: ["/", "/algorithms", "/applications", "/login", routeInventory[6].path],
-      note:
-        "Use the Codex Browser plugin for rendered desktop/mobile checks; package script records the required viewport and route set.",
+      routes: [
+        "/",
+        "/algorithms",
+        "/applications",
+        "/login",
+        routeInventory[6].path,
+      ],
+      note: "Use the Codex Browser plugin for rendered desktop/mobile checks; package script records the required viewport and route set.",
     },
     knownGaps: collectKnownGaps(projectRoot, routes, dist, accessibility),
   };
@@ -312,32 +325,44 @@ export async function runBaselineAudit(
   if (options.outputPath) {
     const outputPath = resolve(projectRoot, options.outputPath);
     await mkdir(resolve(outputPath, ".."), { recursive: true });
-    await writeFile(outputPath, `${JSON.stringify(report, null, 2)}\n`, "utf-8");
+    await writeFile(
+      outputPath,
+      `${JSON.stringify(report, null, 2)}\n`,
+      "utf-8"
+    );
   }
 
   return report;
 }
 
-async function collectRouteResults(baseUrl: string | null): Promise<RouteAuditResult[]> {
+async function collectRouteResults(
+  baseUrl: string | null
+): Promise<RouteAuditResult[]> {
   if (!baseUrl) {
-    return routeInventory.map((route) => ({
+    return routeInventory.map(route => ({
       ...route,
       statusResult: {
         state: "skipped",
-        reason: "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status.",
+        reason:
+          "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status.",
       },
     }));
   }
 
-  return Promise.all(
-    routeInventory.map(async (route) => ({
+  const results: RouteAuditResult[] = [];
+  for (const route of routeInventory) {
+    results.push({
       ...route,
       statusResult: await checkRoute(baseUrl, route),
-    }))
-  );
+    });
+  }
+  return results;
 }
 
-async function checkRoute(baseUrl: string, route: RouteAuditTarget): Promise<RouteStatusResult> {
+async function checkRoute(
+  baseUrl: string,
+  route: RouteAuditTarget
+): Promise<RouteStatusResult> {
   try {
     const response = await fetch(new URL(route.path, baseUrl), {
       redirect: "manual",
@@ -407,7 +432,9 @@ async function runCommandTraces(
   return traces;
 }
 
-async function collectGitState(cwd: string): Promise<BaselineAuditReport["git"]> {
+async function collectGitState(
+  cwd: string
+): Promise<BaselineAuditReport["git"]> {
   const [branch, commit, status] = await Promise.all([
     runGit(cwd, ["branch", "--show-current"]),
     runGit(cwd, ["rev-parse", "--short", "HEAD"]),
@@ -432,7 +459,10 @@ async function runGit(cwd: string, args: string[]) {
 
 async function collectAccessibilitySignals(projectRoot: string) {
   const cssPath = resolve(projectRoot, "client/src/index.css");
-  const postDetailPath = resolve(projectRoot, "client/src/pages/PostDetail.tsx");
+  const postDetailPath = resolve(
+    projectRoot,
+    "client/src/pages/PostDetail.tsx"
+  );
   const css = existsSync(cssPath) ? await readFile(cssPath, "utf-8") : "";
   const postDetail = existsSync(postDetailPath)
     ? await readFile(postDetailPath, "utf-8")
@@ -458,7 +488,10 @@ function collectKnownGaps(
     ["missing-sitemap", "sitemap.xml", "No sitemap.xml is present."],
     ["missing-rss", "rss.xml", "No RSS feed is present."],
   ] as const) {
-    if (!existsSync(resolve(publicDir, file))) {
+    if (
+      !existsSync(resolve(publicDir, file)) &&
+      !hasHealthyGeneratedRoute(routes, `/${file}`)
+    ) {
       gaps.push({
         id,
         severity: "warning",
@@ -468,9 +501,14 @@ function collectKnownGaps(
     }
   }
 
-  const htmlRoutes = routes.filter((route) => route.statusResult.state === "checked");
-  const missingCanonical = htmlRoutes.filter((route) => {
-    const metadata = route.statusResult.state === "checked" ? route.statusResult.metadata : null;
+  const htmlRoutes = routes.filter(
+    route => route.statusResult.state === "checked"
+  );
+  const missingCanonical = htmlRoutes.filter(route => {
+    const metadata =
+      route.statusResult.state === "checked"
+        ? route.statusResult.metadata
+        : null;
     return metadata && !metadata.canonical;
   });
   if (missingCanonical.length > 0) {
@@ -478,11 +516,13 @@ function collectKnownGaps(
       id: "missing-canonical",
       severity: "warning",
       summary: "One or more checked HTML routes are missing canonical URLs.",
-      evidence: missingCanonical.map((route) => route.path).join(", "),
+      evidence: missingCanonical.map(route => route.path).join(", "),
     });
   }
 
-  const notFoundRoute = routes.find((route) => route.path === "/not-a-real-route");
+  const notFoundRoute = routes.find(
+    route => route.path === "/not-a-real-route"
+  );
   if (
     notFoundRoute?.statusResult.state === "checked" &&
     notFoundRoute.statusResult.status !== 404
@@ -495,7 +535,10 @@ function collectKnownGaps(
     });
   }
 
-  if (dist.javascript[0]?.gzipBytes && dist.javascript[0].gzipBytes > 200 * 1024) {
+  if (
+    dist.javascript[0]?.gzipBytes &&
+    dist.javascript[0].gzipBytes > 200 * 1024
+  ) {
     gaps.push({
       id: "large-initial-js",
       severity: "warning",
@@ -516,9 +559,21 @@ function collectKnownGaps(
   return gaps;
 }
 
+function hasHealthyGeneratedRoute(
+  routes: RouteAuditResult[],
+  routePath: string
+) {
+  const route = routes.find(result => result.path === routePath);
+  return (
+    route?.statusResult.state === "checked" &&
+    route.statusResult.ok &&
+    route.statusResult.status === 200
+  );
+}
+
 function countIconOnlyButtons(source: string) {
   const buttonMatches = source.match(/<button\b[\s\S]*?<\/button>/g) ?? [];
-  return buttonMatches.filter((button) => {
+  return buttonMatches.filter(button => {
     const hasAccessibleName = /\baria-label=|\btitle=/.test(button);
     const visibleText = button
       .replace(/<[^>]+>/g, "")
@@ -531,7 +586,7 @@ function countIconOnlyButtons(source: string) {
 async function listFiles(root: string, current = root): Promise<string[]> {
   const entries = await readdir(current, { withFileTypes: true });
   const files = await Promise.all(
-    entries.map(async (entry) => {
+    entries.map(async entry => {
       const absolutePath = resolve(current, entry.name);
       if (entry.isDirectory()) {
         return listFiles(root, absolutePath);
@@ -543,7 +598,10 @@ async function listFiles(root: string, current = root): Promise<string[]> {
   return files.flat();
 }
 
-async function sizeAsset(root: string, absolutePath: string): Promise<SizedAsset> {
+async function sizeAsset(
+  root: string,
+  absolutePath: string
+): Promise<SizedAsset> {
   const contents = await readFile(absolutePath);
   const fileStat = await stat(absolutePath);
   return {
@@ -556,7 +614,10 @@ async function sizeAsset(root: string, absolutePath: string): Promise<SizedAsset
 function getMeta(html: string, attribute: "name" | "property", key: string) {
   const tag =
     html.match(
-      new RegExp(`<meta\\b(?=[^>]*\\b${attribute}=["']${escapeRegExp(key)}["'])[^>]*>`, "i")
+      new RegExp(
+        `<meta\\b(?=[^>]*\\b${attribute}=["']${escapeRegExp(key)}["'])[^>]*>`,
+        "i"
+      )
     )?.[0] ?? null;
   if (!tag) return null;
   return getAttribute(tag, "content");
@@ -564,8 +625,12 @@ function getMeta(html: string, attribute: "name" | "property", key: string) {
 
 function getLink(html: string, rel: string) {
   const tag =
-    html.match(new RegExp(`<link\\b(?=[^>]*\\brel=["']${escapeRegExp(rel)}["'])[^>]*>`, "i"))?.[0] ??
-    null;
+    html.match(
+      new RegExp(
+        `<link\\b(?=[^>]*\\brel=["']${escapeRegExp(rel)}["'])[^>]*>`,
+        "i"
+      )
+    )?.[0] ?? null;
   if (!tag) return null;
   return getAttribute(tag, "href");
 }
@@ -582,7 +647,7 @@ function collectJsonLdTypes(html: string) {
   );
   if (!scripts) return [];
 
-  return scripts.flatMap((script) => {
+  return scripts.flatMap(script => {
     const json = matchFirst(script, /<script[^>]*>([\s\S]*?)<\/script>/i);
     if (!json) return [];
     try {
@@ -655,22 +720,27 @@ async function main() {
     generatedAt: report.generatedAt,
     commit: report.git.commit,
     dirty: report.git.dirty,
-    commandFailures: report.commands.filter((command) => command.exitCode !== 0).length,
-    routeChecks: report.routes.filter((route) => route.statusResult.state === "checked").length,
-    skippedRoutes: report.routes.filter((route) => route.statusResult.state === "skipped").length,
+    commandFailures: report.commands.filter(command => command.exitCode !== 0)
+      .length,
+    routeChecks: report.routes.filter(
+      route => route.statusResult.state === "checked"
+    ).length,
+    skippedRoutes: report.routes.filter(
+      route => route.statusResult.state === "skipped"
+    ).length,
     knownGaps: report.knownGaps.length,
     largestJsGzipBytes: report.dist.javascript[0]?.gzipBytes ?? null,
   };
 
   console.log(JSON.stringify(output, null, 2));
 
-  if (report.commands.some((command) => command.exitCode !== 0)) {
+  if (report.commands.some(command => command.exitCode !== 0)) {
     process.exitCode = 1;
   }
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
-  main().catch((error) => {
+  main().catch(error => {
     console.error(error instanceof Error ? error.stack : error);
     process.exitCode = 1;
   });

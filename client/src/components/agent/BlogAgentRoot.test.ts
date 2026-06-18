@@ -7,7 +7,7 @@ import {
   inferClientScope,
   openBlogAgentWithPrompt,
 } from "./routeContext";
-import { inferAnswerMode } from "./BlogAgentRoot";
+import { inferAnswerMode, isBlogAgentHiddenRoute } from "./BlogAgentRoot";
 import {
   isAbortError,
   isTimeoutError,
@@ -89,6 +89,18 @@ describe("BlogAgent route context", () => {
       titleKey: "agent.welcome.trackTitle",
       bodyKey: "agent.welcome.trackBody",
     });
+  });
+
+  it("hides the public Blog Agent on owner and auth routes only", () => {
+    expect(isBlogAgentHiddenRoute("/manage")).toBe(true);
+    expect(isBlogAgentHiddenRoute("/manage/agent")).toBe(true);
+    expect(isBlogAgentHiddenRoute("/write")).toBe(true);
+    expect(isBlogAgentHiddenRoute("/login")).toBe(true);
+
+    expect(isBlogAgentHiddenRoute("/")).toBe(false);
+    expect(isBlogAgentHiddenRoute("/archive")).toBe(false);
+    expect(isBlogAgentHiddenRoute("/post/agent-loop")).toBe(false);
+    expect(isBlogAgentHiddenRoute("/managed-reading-notes")).toBe(false);
   });
 
   it("infers answer mode from companion prompt intent", () => {

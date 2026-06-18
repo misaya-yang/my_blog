@@ -141,7 +141,8 @@ async function inspectHome(browser: BrowserLike, viewport: Viewport) {
           : true,
       searchDockEarly:
         viewport.width < 768
-          ? Number(measurements.searchDockY ?? Infinity) <= viewport.height + 120
+          ? Number(measurements.searchDockY ?? Infinity) <=
+            viewport.height + 120
           : true,
     },
   };
@@ -246,7 +247,9 @@ async function inspectSearchZero(browser: BrowserLike, viewport: Viewport) {
 async function inspectAgentDialog(browser: BrowserLike, viewport: Viewport) {
   const page = await newMeasuredPage(browser, viewport);
   await gotoAndWait(page, `${baseUrl}/`, ".agent-liquid-launcher");
-  await page.getByRole("button", { name: /阅读助手|Reader/i }).click();
+  await page
+    .getByRole("button", { name: /Blog Agent|阅读助手|Reader/i })
+    .click();
   await page.waitForSelector(".agent-liquid-panel");
   await page.waitForTimeout(120);
 

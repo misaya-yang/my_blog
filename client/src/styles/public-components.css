@@ -171,6 +171,8 @@
 
   .brand-mark {
     @apply grid h-10 w-10 place-items-center rounded-md text-slate-100;
+    height: var(--brand-mark-size, 2.65rem);
+    width: var(--brand-mark-size, 2.65rem);
     background: oklch(0.08 0.01 240 / 84%);
     border: 1px solid oklch(0.82 0.05 190 / 24%);
     box-shadow:

@@ -1,3 +1,5 @@
+# Gated FFN: Transformer 里的乘法通道
+
 很多 Transformer 文章会把 FFN 一笔带过：attention 负责 token mixing，FFN 负责 channel mixing。这个说法没错，但太轻了。真正读模型结构时，FFN 往往是参数最多、计算最重、也最容易被误解的一块。
 
 尤其是现代 LLM 里常见的 Gated FFN。它看起来只是把两层 MLP 换成了三组矩阵和一个逐元素乘法，但这个乘法并不是装饰。它改变了 FFN 的函数族：普通 FFN 像“先投影、再激活、再投回”；门控 FFN 更像“先判断哪些通道该开，再决定什么内容通过”。

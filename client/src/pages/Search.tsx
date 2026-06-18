@@ -234,7 +234,7 @@ export default function Search() {
                     {post.category && (
                       <Link
                         href={`/categories/${post.category.slug}`}
-                        className="inline-flex items-center gap-1.5 hover:text-slate-200"
+                        className="article-tag gap-1.5"
                       >
                         <Folder className="h-3.5 w-3.5" />
                         {post.category.name}
@@ -244,7 +244,7 @@ export default function Search() {
                       <Link
                         key={tag.slug}
                         href={`/tags/${tag.slug}`}
-                        className="inline-flex items-center gap-1 rounded-md border border-slate-700 px-2 py-1 hover:border-slate-500 hover:text-slate-200"
+                        className="article-tag gap-1"
                       >
                         <Tags className="h-3 w-3" />
                         {tag.name}

@@ -1,0 +1,35 @@
+{
+  "schema_version": "prd-phase-harness/loop-contract/v1",
+  "goal": "Run one bounded Misaya Notes UI optimization phase and one feature-oracle item until evidence proves pass, block, or fail.",
+  "cycle": [
+    "observe",
+    "select",
+    "execute",
+    "verify",
+    "record",
+    "decide"
+  ],
+  "max_iterations": 3,
+  "state_file": "docs/misaya_notes_ui_optimization_2026_06_18/loop-state.json",
+  "oracle_file": "docs/misaya_notes_ui_optimization_2026_06_18/feature-oracle.json",
+  "progress_file": "docs/misaya_notes_ui_optimization_2026_06_18/progress-log.md",
+  "handoff_file": "docs/misaya_notes_ui_optimization_2026_06_18/agent-handoff.md",
+  "continuity_file": "docs/misaya_notes_ui_optimization_2026_06_18/continuity-ledger.md",
+  "done_when": [
+    "Selected phase report exists with command, browser, compliance, rollback, and acceptance evidence or blocker notes.",
+    "Selected feature-oracle item has status passing, blocked, or waived with evidence or notes.",
+    "Source packet and continuity ledger contain current code facts and boundary decisions.",
+    "Progress log and agent handoff name the next concrete action."
+  ],
+  "continue_when": [
+    "The target phase still has unchecked acceptance gates.",
+    "Required validation can run inside the phase boundary.",
+    "Iteration count is below max_iterations."
+  ],
+  "stop_when": [
+    "Credentials or approvals are missing.",
+    "Production deployment, migration, destructive git action, or provider change is required.",
+    "A needed edit path is outside the phase boundary.",
+    "A public/private content boundary is ambiguous."
+  ]
+}

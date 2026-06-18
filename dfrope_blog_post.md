@@ -1,3 +1,5 @@
+# EVQ-Cosh: RoPE as a Finite Spectral Budget
+
 RoPE 很容易被当成一个已经定型的组件：选一个 `base`，生成一张 inverse-frequency table，然后把旋转塞进 attention。真正有意思的地方反而藏在这张表里：有限的 rotary channel 到底把频率预算花在了哪里？
 
 EVQ-Cosh 只碰这一层。它不改变 RoPE operator，不引入可学习位置参数，也不宣称替代推理期长度外推技巧；它把 RoPE inverse frequency initialization 写成一个可推导的 allocation rule。

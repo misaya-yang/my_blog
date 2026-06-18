@@ -54,9 +54,13 @@ describe("client shell renderability", () => {
       slug: "agent-harness-engine",
     });
     expect(classifyClientRoute("/manage/agent")).toEqual({ kind: "known" });
-    expect(classifyClientRoute("/tags/harness-engine")).toEqual({ kind: "known" });
+    expect(classifyClientRoute("/tags/harness-engine")).toEqual({
+      kind: "known",
+    });
     expect(classifyClientRoute("/projects")).toEqual({ kind: "unknown" });
-    expect(classifyClientRoute("/not-a-real-route")).toEqual({ kind: "unknown" });
+    expect(classifyClientRoute("/not-a-real-route")).toEqual({
+      kind: "unknown",
+    });
   });
 
   it("bypasses Vite source and asset requests so client modules are not rendered as HTML", () => {
@@ -76,12 +80,20 @@ describe("client shell renderability", () => {
 
     expect(rendered.status).toBe(200);
     expect(rendered.html).toContain("<h1>Agent Harness Engine</h1>");
-    expect(rendered.html).toContain("A product-quality harness for tool-using agents.");
-    expect(rendered.html).toContain("Harnesses make agent behavior observable before launch.");
+    expect(rendered.html).toContain(
+      "A product-quality harness for tool-using agents."
+    );
+    expect(rendered.html).toContain(
+      "Harnesses make agent behavior observable before launch."
+    );
     expect(rendered.html).toContain("Misaya Yang");
     expect(rendered.html).toContain("2026-05-01T00:00:00.000Z");
-    expect(rendered.html).toContain('<link rel="canonical" href="https://example.com/post/agent-harness-engine" />');
-    expect(rendered.html).toContain('<meta property="og:type" content="article" />');
+    expect(rendered.html).toContain(
+      '<link rel="canonical" href="https://example.com/post/agent-harness-engine" />'
+    );
+    expect(rendered.html).toContain(
+      '<meta property="og:type" content="article" />'
+    );
     expect(rendered.html).toContain('"@type":"BlogPosting"');
   });
 
@@ -103,6 +115,40 @@ describe("client shell renderability", () => {
     expect(rendered.html).not.toContain("BlogPosting");
   });
 
+  it("injects canonical metadata into known client routes before hydration", async () => {
+    const rendered = await renderClientShellHtml({
+      baseUrl: "https://example.com",
+      rawHtml: baseHtml,
+      urlPath: "/archive",
+      loadArticle: async () => article,
+    });
+
+    expect(rendered.status).toBe(200);
+    expect(rendered.html).toContain(
+      '<link rel="canonical" href="https://example.com/archive" />'
+    );
+    expect(rendered.html).toContain(
+      '<meta property="og:url" content="https://example.com/archive" />'
+    );
+  });
+
+  it("keeps owner routes noindexed while still adding canonical metadata", async () => {
+    const rendered = await renderClientShellHtml({
+      baseUrl: "https://example.com",
+      rawHtml: baseHtml,
+      urlPath: "/manage/agent",
+      loadArticle: async () => article,
+    });
+
+    expect(rendered.status).toBe(200);
+    expect(rendered.html).toContain(
+      '<meta name="robots" content="noindex,nofollow" />'
+    );
+    expect(rendered.html).toContain(
+      '<link rel="canonical" href="https://example.com/manage/agent" />'
+    );
+  });
+
   it("returns a 404 shell with noindex metadata for unknown routes", async () => {
     const rendered = await renderClientShellHtml({
       baseUrl: "https://example.com",
@@ -112,8 +158,12 @@ describe("client shell renderability", () => {
     });
 
     expect(rendered.status).toBe(404);
-    expect(rendered.html).toContain('<meta name="robots" content="noindex,nofollow" />');
-    expect(rendered.html).toContain('<link rel="canonical" href="https://example.com/unknown/deep/path" />');
+    expect(rendered.html).toContain(
+      '<meta name="robots" content="noindex,nofollow" />'
+    );
+    expect(rendered.html).toContain(
+      '<link rel="canonical" href="https://example.com/unknown/deep/path" />'
+    );
   });
 
   it("renders a lightweight article snapshot without markdown syntax noise", () => {

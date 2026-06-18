@@ -24,6 +24,7 @@ import {
   MessageCircle,
   Paperclip,
   Send,
+  ShieldCheck,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -71,7 +72,7 @@ export function BlogAgentRoot() {
     () => buildRouteContext(location, language),
     [location, language]
   );
-  const hiddenOnRoute = /^\/(write|manage|login)(\/|$)/.test(location);
+  const hiddenOnRoute = isBlogAgentHiddenRoute(location);
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -788,6 +789,11 @@ export function AgentPanel({
         )}
       </div>
 
+      <AgentTrustBoundary
+        currentScope={currentScope}
+        attachedContextCount={attachedContextCount}
+      />
+
       {historyOpen && (
         <AgentHistoryPanel
           conversations={conversations}
@@ -1082,6 +1088,38 @@ function AgentContextDock({
   );
 }
 
+function AgentTrustBoundary({
+  currentScope,
+  attachedContextCount,
+}: {
+  currentScope: AgentScope;
+  attachedContextCount: number;
+}) {
+  const { t } = useLanguage();
+  const contextKey =
+    attachedContextCount > 0
+      ? "agent.trust.contextAttached"
+      : "agent.trust.contextPrivate";
+
+  return (
+    <div className="agent-trust-boundary border-b border-slate-800 px-4 py-2.5">
+      <div className="flex items-start gap-2.5 text-xs leading-5 text-slate-400">
+        <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-md border border-slate-700 bg-slate-950/45 text-slate-300">
+          <ShieldCheck className="h-3.5 w-3.5" />
+        </span>
+        <div className="min-w-0">
+          <p className="font-medium text-slate-300">
+            {t("agent.trust.publicScope", {
+              scope: scopeLabel(currentScope, t),
+            })}
+          </p>
+          <p className="mt-0.5 text-slate-500">{t(contextKey)}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
   const { t } = useLanguage();
   const [location, navigate] = useLocation();
@@ -1112,43 +1150,53 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
           const href = hasBlogLink ? getSourceHref(source) : undefined;
           const card = (
             <span className="agent-source-card block rounded-md border border-slate-700/80 bg-slate-950/30 px-2.5 py-2 transition hover:border-slate-500 hover:bg-slate-900/55">
-              <span className="flex items-start justify-between gap-3">
-                <span className="min-w-0">
-                  <span className="block truncate text-sm font-semibold text-slate-100">
-                    {section}
-                  </span>
-                  {source.postTitle && section !== title && (
-                    <span className="mt-0.5 block truncate text-[0.72rem] text-slate-500">
-                      {title}
-                    </span>
-                  )}
+              <span className="flex items-start gap-2.5">
+                <span
+                  className="agent-source-icon mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-md border"
+                  aria-hidden="true"
+                >
+                  <FileText className="h-3.5 w-3.5" />
                 </span>
-                <span className="inline-flex shrink-0 items-center gap-1">
-                  <span className="rounded border border-slate-700 bg-white/[0.025] px-1.5 py-0.5 text-[0.65rem] font-medium text-slate-400">
-                    {source.sourceType === "user_context"
-                      ? t("agent.sources.context")
-                      : t("agent.sources.blog")}
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-start justify-between gap-3">
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-semibold text-slate-100">
+                        {section}
+                      </span>
+                      {source.postTitle && section !== title && (
+                        <span className="mt-0.5 block truncate text-[0.72rem] text-slate-500">
+                          {title}
+                        </span>
+                      )}
+                    </span>
+                    <span className="inline-flex shrink-0 items-center gap-1">
+                      <span className="rounded border border-slate-700 bg-white/[0.025] px-1.5 py-0.5 text-[0.65rem] font-medium text-slate-400">
+                        {source.sourceType === "user_context"
+                          ? t("agent.sources.context")
+                          : t("agent.sources.blog")}
+                      </span>
+                      {currentPageSource && (
+                        <span className="rounded border border-slate-600/50 bg-slate-900 px-1.5 py-0.5 text-[0.65rem] font-medium text-slate-300">
+                          {t("agent.sources.currentPage")}
+                        </span>
+                      )}
+                      {hasBlogLink && (
+                        <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                      )}
+                    </span>
                   </span>
-                  {currentPageSource && (
-                    <span className="rounded border border-slate-600/50 bg-slate-900 px-1.5 py-0.5 text-[0.65rem] font-medium text-slate-300">
-                      {t("agent.sources.currentPage")}
+                  {excerpt && (
+                    <span className="mt-1 block line-clamp-2 text-xs leading-5 text-slate-500">
+                      {excerpt}
                     </span>
                   )}
-                  {hasBlogLink && (
-                    <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                  {relevanceReason && (
+                    <span className="mt-1 block line-clamp-2 text-[0.7rem] leading-5 text-slate-500">
+                      {t("agent.sources.reason")}: {relevanceReason}
+                    </span>
                   )}
                 </span>
               </span>
-              {excerpt && (
-                <span className="mt-1 block line-clamp-1 text-xs leading-5 text-slate-500">
-                  {excerpt}
-                </span>
-              )}
-              {relevanceReason && (
-                <span className="mt-1 block line-clamp-1 text-[0.7rem] leading-5 text-slate-500">
-                  {t("agent.sources.reason")}: {relevanceReason}
-                </span>
-              )}
             </span>
           );
 
@@ -1600,6 +1648,10 @@ function AgentQuotaCallout({
 
 function shouldShowQuotaCallout(quota: { remaining: number; tier: string }) {
   return quota.remaining <= 1 || quota.tier === "admin";
+}
+
+export function isBlogAgentHiddenRoute(path: string) {
+  return /^\/(write|manage|login)(\/|$)/.test(path);
 }
 
 function AgentNotice({

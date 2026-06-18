@@ -1,0 +1,934 @@
+{
+  "generatedAt": "2026-06-18T12:55:29.957Z",
+  "baseUrl": "http://localhost:3000",
+  "results": [
+    {
+      "scenario": "home",
+      "route": "/",
+      "viewport": {
+        "name": "desktop-1440",
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1440-home.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "AI Algorithms and Applications · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "archive",
+      "route": "/archive",
+      "viewport": {
+        "name": "desktop-1440",
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1440-archive.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Archive · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "search-zero",
+      "route": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": {
+        "name": "desktop-1440",
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1440-search-zero.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "post",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "name": "desktop-1440",
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1440-post.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "login",
+      "route": "/login",
+      "viewport": {
+        "name": "desktop-1440",
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1440-login.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Login · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": false,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": true,
+        "activeElement": "body",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px"
+      }
+    },
+    {
+      "scenario": "manage-guard",
+      "route": "/manage",
+      "viewport": {
+        "name": "desktop-1440",
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1440-manage-guard.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Content Dashboard · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": false,
+        "agentPanelVisible": false,
+        "authCardVisible": true,
+        "loginPanelVisible": false,
+        "activeElement": "body",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px"
+      }
+    },
+    {
+      "scenario": "manage-agent-guard",
+      "route": "/manage/agent",
+      "viewport": {
+        "name": "desktop-1440",
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1440-manage-agent-guard.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Agent Operations · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": false,
+        "agentPanelVisible": false,
+        "authCardVisible": true,
+        "loginPanelVisible": false,
+        "activeElement": "body",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px"
+      }
+    },
+    {
+      "scenario": "post-agent-open",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "name": "desktop-1440",
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1440-post-agent-open.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": true,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Post not found · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": true,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "home",
+      "route": "/",
+      "viewport": {
+        "name": "desktop-1280",
+        "width": 1280,
+        "height": 800
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1280-home.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "AI Algorithms and Applications · Misaya Notes",
+        "bodyScrollWidth": 1280,
+        "documentScrollWidth": 1280,
+        "viewportWidth": 1280,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "archive",
+      "route": "/archive",
+      "viewport": {
+        "name": "desktop-1280",
+        "width": 1280,
+        "height": 800
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1280-archive.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Archive · Misaya Notes",
+        "bodyScrollWidth": 1280,
+        "documentScrollWidth": 1280,
+        "viewportWidth": 1280,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "search-zero",
+      "route": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": {
+        "name": "desktop-1280",
+        "width": 1280,
+        "height": 800
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1280-search-zero.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes",
+        "bodyScrollWidth": 1280,
+        "documentScrollWidth": 1280,
+        "viewportWidth": 1280,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "post",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "name": "desktop-1280",
+        "width": 1280,
+        "height": 800
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1280-post.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes",
+        "bodyScrollWidth": 1280,
+        "documentScrollWidth": 1280,
+        "viewportWidth": 1280,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "login",
+      "route": "/login",
+      "viewport": {
+        "name": "desktop-1280",
+        "width": 1280,
+        "height": 800
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1280-login.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Login · Misaya Notes",
+        "bodyScrollWidth": 1280,
+        "documentScrollWidth": 1280,
+        "viewportWidth": 1280,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": false,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": true,
+        "activeElement": "body",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px"
+      }
+    },
+    {
+      "scenario": "manage-guard",
+      "route": "/manage",
+      "viewport": {
+        "name": "desktop-1280",
+        "width": 1280,
+        "height": 800
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1280-manage-guard.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Content Dashboard · Misaya Notes",
+        "bodyScrollWidth": 1280,
+        "documentScrollWidth": 1280,
+        "viewportWidth": 1280,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": false,
+        "agentPanelVisible": false,
+        "authCardVisible": true,
+        "loginPanelVisible": false,
+        "activeElement": "body",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px"
+      }
+    },
+    {
+      "scenario": "manage-agent-guard",
+      "route": "/manage/agent",
+      "viewport": {
+        "name": "desktop-1280",
+        "width": 1280,
+        "height": 800
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1280-manage-agent-guard.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Agent Operations · Misaya Notes",
+        "bodyScrollWidth": 1280,
+        "documentScrollWidth": 1280,
+        "viewportWidth": 1280,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": false,
+        "agentPanelVisible": false,
+        "authCardVisible": true,
+        "loginPanelVisible": false,
+        "activeElement": "body",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px"
+      }
+    },
+    {
+      "scenario": "post-agent-open",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "name": "desktop-1280",
+        "width": 1280,
+        "height": 800
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/desktop-1280-post-agent-open.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": true,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Post not found · Misaya Notes",
+        "bodyScrollWidth": 1280,
+        "documentScrollWidth": 1280,
+        "viewportWidth": 1280,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": true,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "home",
+      "route": "/",
+      "viewport": {
+        "name": "tablet-768",
+        "width": 768,
+        "height": 1024
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/tablet-768-home.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "AI Algorithms and Applications · Misaya Notes",
+        "bodyScrollWidth": 768,
+        "documentScrollWidth": 768,
+        "viewportWidth": 768,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "archive",
+      "route": "/archive",
+      "viewport": {
+        "name": "tablet-768",
+        "width": 768,
+        "height": 1024
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/tablet-768-archive.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Archive · Misaya Notes",
+        "bodyScrollWidth": 768,
+        "documentScrollWidth": 768,
+        "viewportWidth": 768,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "search-zero",
+      "route": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": {
+        "name": "tablet-768",
+        "width": 768,
+        "height": 1024
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/tablet-768-search-zero.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes",
+        "bodyScrollWidth": 768,
+        "documentScrollWidth": 768,
+        "viewportWidth": 768,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "post",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "name": "tablet-768",
+        "width": 768,
+        "height": 1024
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/tablet-768-post.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes",
+        "bodyScrollWidth": 768,
+        "documentScrollWidth": 768,
+        "viewportWidth": 768,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "login",
+      "route": "/login",
+      "viewport": {
+        "name": "tablet-768",
+        "width": 768,
+        "height": 1024
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/tablet-768-login.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Login · Misaya Notes",
+        "bodyScrollWidth": 768,
+        "documentScrollWidth": 768,
+        "viewportWidth": 768,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": false,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": true,
+        "activeElement": "body",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px"
+      }
+    },
+    {
+      "scenario": "manage-guard",
+      "route": "/manage",
+      "viewport": {
+        "name": "tablet-768",
+        "width": 768,
+        "height": 1024
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/tablet-768-manage-guard.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Content Dashboard · Misaya Notes",
+        "bodyScrollWidth": 768,
+        "documentScrollWidth": 768,
+        "viewportWidth": 768,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": false,
+        "agentPanelVisible": false,
+        "authCardVisible": true,
+        "loginPanelVisible": false,
+        "activeElement": "body",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px"
+      }
+    },
+    {
+      "scenario": "manage-agent-guard",
+      "route": "/manage/agent",
+      "viewport": {
+        "name": "tablet-768",
+        "width": 768,
+        "height": 1024
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/tablet-768-manage-agent-guard.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Agent Operations · Misaya Notes",
+        "bodyScrollWidth": 768,
+        "documentScrollWidth": 768,
+        "viewportWidth": 768,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": false,
+        "agentPanelVisible": false,
+        "authCardVisible": true,
+        "loginPanelVisible": false,
+        "activeElement": "body",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px"
+      }
+    },
+    {
+      "scenario": "post-agent-open",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "name": "tablet-768",
+        "width": 768,
+        "height": 1024
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/tablet-768-post-agent-open.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": true,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Post not found · Misaya Notes",
+        "bodyScrollWidth": 768,
+        "documentScrollWidth": 768,
+        "viewportWidth": 768,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": true,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "home",
+      "route": "/",
+      "viewport": {
+        "name": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/mobile-390-home.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "AI Algorithms and Applications · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "archive",
+      "route": "/archive",
+      "viewport": {
+        "name": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/mobile-390-archive.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Archive · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "search-zero",
+      "route": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": {
+        "name": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/mobile-390-search-zero.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "post",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "name": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/mobile-390-post.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    },
+    {
+      "scenario": "login",
+      "route": "/login",
+      "viewport": {
+        "name": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/mobile-390-login.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Login · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": false,
+        "agentPanelVisible": false,
+        "authCardVisible": false,
+        "loginPanelVisible": true,
+        "activeElement": "body",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px"
+      }
+    },
+    {
+      "scenario": "manage-guard",
+      "route": "/manage",
+      "viewport": {
+        "name": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/mobile-390-manage-guard.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Content Dashboard · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": false,
+        "agentPanelVisible": false,
+        "authCardVisible": true,
+        "loginPanelVisible": false,
+        "activeElement": "body",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px"
+      }
+    },
+    {
+      "scenario": "manage-agent-guard",
+      "route": "/manage/agent",
+      "viewport": {
+        "name": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/mobile-390-manage-agent-guard.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": false,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Agent Operations · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": false,
+        "agentPanelVisible": false,
+        "authCardVisible": true,
+        "loginPanelVisible": false,
+        "activeElement": "body",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px"
+      }
+    },
+    {
+      "scenario": "post-agent-open",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "name": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/mobile-390-post-agent-open.png",
+      "consoleIssues": [],
+      "failedNetwork": [],
+      "agentOpened": true,
+      "agentOpenError": null,
+      "metrics": {
+        "title": "Post not found · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "publicAgentLauncherVisible": true,
+        "agentPanelVisible": true,
+        "authCardVisible": false,
+        "loginPanelVisible": false,
+        "activeElement": "button",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px"
+      }
+    }
+  ]
+}

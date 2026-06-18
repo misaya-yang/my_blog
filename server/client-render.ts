@@ -24,7 +24,11 @@ type ClientResponse = {
   send(body: string): void;
 };
 type ClientNext = (error?: unknown) => void;
-type ClientMiddleware = (req: ClientRequest, res: ClientResponse, next: ClientNext) => void | Promise<void>;
+type ClientMiddleware = (
+  req: ClientRequest,
+  res: ClientResponse,
+  next: ClientNext
+) => void | Promise<void>;
 type ClientRouteRegistrar = {
   use(handler: ClientMiddleware): void;
 };
@@ -46,6 +50,11 @@ type RenderClientShellOptions = {
 type RenderedClientShell = {
   status: 200 | 404;
   html: string;
+};
+type KnownRouteMetadata = {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
 };
 
 type ClientRenderMiddlewareOptions = {
@@ -70,6 +79,41 @@ const dynamicKnownRoutePatterns = [
   new RegExp(`^/categories/${slugSegment}$`),
   new RegExp(`^/write/${slugSegment}$`),
 ];
+const knownRouteMetadata: Record<string, KnownRouteMetadata> = {
+  "/algorithms": {
+    title: "AI Algorithms",
+    description:
+      "Research notes on model mechanisms, generative modeling, positional encoding, long-context behavior, and residual stability.",
+  },
+  "/applications": {
+    title: "AI Applications",
+    description:
+      "Technical essays on agents, harness engines, RAG, context engineering, tool use, and evaluation loops.",
+  },
+  "/archive": {
+    title: "Archive",
+    description: "Browse Misaya Notes by month, category, and research signal.",
+  },
+  "/about": {
+    title: "About",
+    description:
+      "About Misaya Yang and the research notes collected in Misaya Notes.",
+  },
+  "/search": {
+    title: "Search",
+    description: "Search the Misaya Notes research index.",
+  },
+  "/login": {
+    title: "Login",
+    description: "Sign in to read or manage Misaya Notes.",
+    noindex: true,
+  },
+  "/404": {
+    title: "404",
+    description: "The requested page could not be found.",
+    noindex: true,
+  },
+};
 
 export function classifyClientRoute(urlPath: string): ClientRoute {
   const pathname = normalizePathname(urlPath);
@@ -78,7 +122,10 @@ export function classifyClientRoute(urlPath: string): ClientRoute {
     return { kind: "article", slug: decodeURIComponent(articleMatch[1]) };
   }
 
-  if (staticClientRoutes.has(pathname) || dynamicKnownRoutePatterns.some((pattern) => pattern.test(pathname))) {
+  if (
+    staticClientRoutes.has(pathname) ||
+    dynamicKnownRoutePatterns.some(pattern => pattern.test(pathname))
+  ) {
     return { kind: "known" };
   }
 
@@ -109,9 +156,7 @@ export async function renderClientShellHtml({
         noindex: true,
       })
     );
-  }
-
-  if (route.kind === "article") {
+  } else if (route.kind === "article") {
     const snapshot = await loadArticleSnapshot(
       route.slug,
       loadArticle,
@@ -156,17 +201,72 @@ export async function renderClientShellHtml({
         renderPublicArticleSnapshotMarkup(snapshot.article)
       );
     }
+  } else {
+    html = injectRouteMetadata(html, buildKnownRouteMetadata(baseUrl, urlPath));
   }
 
-  const transformedHtml = transformHtml ? await transformHtml(urlPath, html) : html;
+  const transformedHtml = transformHtml
+    ? await transformHtml(urlPath, html)
+    : html;
   return { status, html: transformedHtml };
 }
 
+function buildKnownRouteMetadata(baseUrl: string, urlPath: string) {
+  const url = new URL(urlPath, "http://local");
+  const pathname = normalizePathname(url.pathname);
+  const canonicalPath =
+    pathname === "/search" && url.search
+      ? `${pathname}${url.search}`
+      : pathname;
+  const staticMetadata = knownRouteMetadata[pathname];
+
+  if (staticMetadata) {
+    return buildRouteMetadata(baseUrl, {
+      ...staticMetadata,
+      path: canonicalPath,
+    });
+  }
+
+  if (pathname.startsWith("/manage") || pathname.startsWith("/write")) {
+    return buildRouteMetadata(baseUrl, {
+      title: "Owner tools",
+      description: "Owner-only Misaya Notes operational tools.",
+      path: canonicalPath,
+      noindex: true,
+    });
+  }
+
+  if (pathname.startsWith("/categories/")) {
+    return buildRouteMetadata(baseUrl, {
+      title: humanizeSlug(pathname.split("/").pop() ?? "category"),
+      description: "Public category index for Misaya Notes.",
+      path: canonicalPath,
+    });
+  }
+
+  if (pathname.startsWith("/tags/")) {
+    return buildRouteMetadata(baseUrl, {
+      title: humanizeSlug(pathname.split("/").pop() ?? "tag"),
+      description: "Public tag index for Misaya Notes.",
+      path: canonicalPath,
+    });
+  }
+
+  return buildRouteMetadata(baseUrl, { path: canonicalPath });
+}
+
 export function renderPublicArticleSnapshotMarkup(article: SeoPost) {
-  const publishedAt = article.publishedAt ? new Date(article.publishedAt).toISOString() : "";
-  const excerpt = article.excerpt || trimToLength(markdownToPlainText(article.content || ""), 220);
-  const bodyExcerpt = trimToLength(markdownToPlainText(article.content || ""), 900);
-  const tags = article.tags?.map((tag) => tag.name).join(", ") || "";
+  const publishedAt = article.publishedAt
+    ? new Date(article.publishedAt).toISOString()
+    : "";
+  const excerpt =
+    article.excerpt ||
+    trimToLength(markdownToPlainText(article.content || ""), 220);
+  const bodyExcerpt = trimToLength(
+    markdownToPlainText(article.content || ""),
+    900
+  );
+  const tags = article.tags?.map(tag => tag.name).join(", ") || "";
 
   return [
     '<article class="public-render-snapshot" data-public-render-snapshot>',
@@ -174,10 +274,14 @@ export function renderPublicArticleSnapshotMarkup(article: SeoPost) {
     `  <h1>${escapeHtml(article.title)}</h1>`,
     '  <p class="public-render-snapshot__meta">',
     `    <span>${escapeHtml(siteConfig.authorName)}</span>`,
-    publishedAt ? `    <time datetime="${escapeAttribute(publishedAt)}">${escapeHtml(publishedAt)}</time>` : "",
+    publishedAt
+      ? `    <time datetime="${escapeAttribute(publishedAt)}">${escapeHtml(publishedAt)}</time>`
+      : "",
     "  </p>",
     `  <p class="public-render-snapshot__excerpt">${escapeHtml(excerpt)}</p>`,
-    tags ? `  <p class="public-render-snapshot__tags">${escapeHtml(tags)}</p>` : "",
+    tags
+      ? `  <p class="public-render-snapshot__tags">${escapeHtml(tags)}</p>`
+      : "",
     `  <div class="public-render-snapshot__body">${escapeHtml(bodyExcerpt)}</div>`,
     "</article>",
   ]
@@ -185,13 +289,20 @@ export function renderPublicArticleSnapshotMarkup(article: SeoPost) {
     .join("\n");
 }
 
-export function createClientRenderMiddleware(options: ClientRenderMiddlewareOptions = {}) {
+export function createClientRenderMiddleware(
+  options: ClientRenderMiddlewareOptions = {}
+) {
   const indexHtmlPath =
-    options.indexHtmlPath ?? path.resolve(import.meta.dirname, "..", "dist", "public", "index.html");
+    options.indexHtmlPath ??
+    path.resolve(import.meta.dirname, "..", "dist", "public", "index.html");
 
   return async (req: ClientRequest, res: ClientResponse, next: ClientNext) => {
     if (req.method !== "GET" && req.method !== "HEAD") return next();
-    if (req.path.startsWith("/api/") || shouldBypassClientRender(req.originalUrl)) return next();
+    if (
+      req.path.startsWith("/api/") ||
+      shouldBypassClientRender(req.originalUrl)
+    )
+      return next();
 
     try {
       const rawHtml = options.prepareHtml
@@ -204,7 +315,10 @@ export function createClientRenderMiddleware(options: ClientRenderMiddlewareOpti
         transformHtml: options.transformHtml,
       });
 
-      res.status(rendered.status).set({ "Content-Type": "text/html; charset=utf-8" }).send(rendered.html);
+      res
+        .status(rendered.status)
+        .set({ "Content-Type": "text/html; charset=utf-8" })
+        .send(rendered.html);
     } catch (error) {
       next(error);
     }
@@ -231,7 +345,10 @@ async function loadArticleSnapshot(
   const timeout = Math.max(1, timeoutMs);
   const articleLoad = loadArticle(slug)
     .then(article => ({ status: "resolved" as const, article }))
-    .catch(() => ({ status: "unavailable" as const, reason: "error" as const }));
+    .catch(() => ({
+      status: "unavailable" as const,
+      reason: "error" as const,
+    }));
 
   try {
     return await Promise.race([
@@ -256,7 +373,10 @@ function humanizeSlug(slug: string) {
     .join(" ");
 }
 
-export function registerClientRenderRoutes(app: ClientRouteRegistrar, options: ClientRenderMiddlewareOptions = {}) {
+export function registerClientRenderRoutes(
+  app: ClientRouteRegistrar,
+  options: ClientRenderMiddlewareOptions = {}
+) {
   app.use(createClientRenderMiddleware(options));
 }
 
@@ -270,7 +390,9 @@ export function shouldBypassClientRender(urlPath: string) {
   return false;
 }
 
-async function loadPublicArticleSnapshot(slug: string): Promise<SeoPost | null> {
+async function loadPublicArticleSnapshot(
+  slug: string
+): Promise<SeoPost | null> {
   if (!ENV.isProduction) {
     const seedArticle = await getPublicSeedArticleBySlug(slug);
     if (seedArticle) return seedArticle;
@@ -281,7 +403,9 @@ async function loadPublicArticleSnapshot(slug: string): Promise<SeoPost | null> 
   if (post.status !== "published" || post.visibility !== "public") return null;
 
   const [category, tags] = await Promise.all([
-    post.categoryId ? db.getCategoryById(post.categoryId) : Promise.resolve(null),
+    post.categoryId
+      ? db.getCategoryById(post.categoryId)
+      : Promise.resolve(null),
     db.getPostTags(post.id),
   ]);
 
@@ -292,25 +416,62 @@ async function loadPublicArticleSnapshot(slug: string): Promise<SeoPost | null> 
   };
 }
 
-function injectRouteMetadata(html: string, metadata: RouteMetadata, jsonLd?: unknown) {
+function injectRouteMetadata(
+  html: string,
+  metadata: RouteMetadata,
+  jsonLd?: unknown
+) {
   let nextHtml = html;
   nextHtml = replaceTitle(nextHtml, metadata.fullTitle);
   nextHtml = upsertMeta(nextHtml, "name", "description", metadata.description);
-  nextHtml = upsertMeta(nextHtml, "name", "robots", metadata.noindex ? "noindex,nofollow" : "index,follow");
+  nextHtml = upsertMeta(
+    nextHtml,
+    "name",
+    "robots",
+    metadata.noindex ? "noindex,nofollow" : "index,follow"
+  );
   nextHtml = upsertMeta(nextHtml, "property", "og:title", metadata.title);
-  nextHtml = upsertMeta(nextHtml, "property", "og:description", metadata.description);
+  nextHtml = upsertMeta(
+    nextHtml,
+    "property",
+    "og:description",
+    metadata.description
+  );
   nextHtml = upsertMeta(nextHtml, "property", "og:type", metadata.type);
   nextHtml = upsertMeta(nextHtml, "property", "og:url", metadata.canonicalUrl);
   nextHtml = upsertMeta(nextHtml, "property", "og:image", metadata.image);
   nextHtml = upsertMeta(nextHtml, "name", "twitter:title", metadata.title);
-  nextHtml = upsertMeta(nextHtml, "name", "twitter:description", metadata.description);
+  nextHtml = upsertMeta(
+    nextHtml,
+    "name",
+    "twitter:description",
+    metadata.description
+  );
   nextHtml = upsertMeta(nextHtml, "name", "twitter:image", metadata.image);
   nextHtml = upsertLink(nextHtml, "canonical", metadata.canonicalUrl);
 
   if (metadata.type === "article") {
-    if (metadata.publishedAt) nextHtml = upsertMeta(nextHtml, "property", "article:published_time", metadata.publishedAt);
-    if (metadata.updatedAt) nextHtml = upsertMeta(nextHtml, "property", "article:modified_time", metadata.updatedAt);
-    if (metadata.category) nextHtml = upsertMeta(nextHtml, "property", "article:section", metadata.category);
+    if (metadata.publishedAt)
+      nextHtml = upsertMeta(
+        nextHtml,
+        "property",
+        "article:published_time",
+        metadata.publishedAt
+      );
+    if (metadata.updatedAt)
+      nextHtml = upsertMeta(
+        nextHtml,
+        "property",
+        "article:modified_time",
+        metadata.updatedAt
+      );
+    if (metadata.category)
+      nextHtml = upsertMeta(
+        nextHtml,
+        "property",
+        "article:section",
+        metadata.category
+      );
   }
 
   if (jsonLd) {
@@ -326,9 +487,15 @@ function injectRouteMetadata(html: string, metadata: RouteMetadata, jsonLd?: unk
 function injectRootSnapshot(html: string, snapshotMarkup: string) {
   const rootPattern = /<div id="root"[^>]*>[\s\S]*?<\/div>/i;
   if (rootPattern.test(html)) {
-    return html.replace(rootPattern, `<div id="root">\n${snapshotMarkup}\n</div>`);
+    return html.replace(
+      rootPattern,
+      `<div id="root">\n${snapshotMarkup}\n</div>`
+    );
   }
-  return html.replace("<body>", `<body>\n<div id="root">\n${snapshotMarkup}\n</div>`);
+  return html.replace(
+    "<body>",
+    `<body>\n<div id="root">\n${snapshotMarkup}\n</div>`
+  );
 }
 
 function replaceTitle(html: string, title: string) {
@@ -339,27 +506,40 @@ function replaceTitle(html: string, title: string) {
   return injectBeforeHeadEnd(html, titleTag);
 }
 
-function upsertMeta(html: string, attributeName: "name" | "property", key: string, content: string) {
+function upsertMeta(
+  html: string,
+  attributeName: "name" | "property",
+  key: string,
+  content: string
+) {
   const tag = `<meta ${attributeName}="${escapeAttribute(key)}" content="${escapeAttribute(content)}" />`;
-  const pattern = new RegExp(`<meta\\s+[^>]*${attributeName}=["']${escapeRegExp(key)}["'][^>]*>`, "i");
+  const pattern = new RegExp(
+    `<meta\\s+[^>]*${attributeName}=["']${escapeRegExp(key)}["'][^>]*>`,
+    "i"
+  );
   if (pattern.test(html)) return html.replace(pattern, tag);
   return injectBeforeHeadEnd(html, tag);
 }
 
 function upsertLink(html: string, rel: string, href: string) {
   const tag = `<link rel="${escapeAttribute(rel)}" href="${escapeAttribute(href)}" />`;
-  const pattern = new RegExp(`<link\\s+[^>]*rel=["']${escapeRegExp(rel)}["'][^>]*>`, "i");
+  const pattern = new RegExp(
+    `<link\\s+[^>]*rel=["']${escapeRegExp(rel)}["'][^>]*>`,
+    "i"
+  );
   if (pattern.test(html)) return html.replace(pattern, tag);
   return injectBeforeHeadEnd(html, tag);
 }
 
 function injectBeforeHeadEnd(html: string, tag: string) {
-  if (html.includes("</head>")) return html.replace("</head>", `    ${tag}\n  </head>`);
+  if (html.includes("</head>"))
+    return html.replace("</head>", `    ${tag}\n  </head>`);
   return `${tag}\n${html}`;
 }
 
 function normalizePathname(urlPath: string) {
-  const pathname = new URL(urlPath, "http://local").pathname.replace(/\/+$/, "") || "/";
+  const pathname =
+    new URL(urlPath, "http://local").pathname.replace(/\/+$/, "") || "/";
   return pathname;
 }
 

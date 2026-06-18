@@ -1,0 +1,358 @@
+{
+  "generatedAt": "2026-06-18T12:12:19.840Z",
+  "baseUrl": "http://localhost:3000",
+  "results": [
+    {
+      "name": "desktop-post-agent-initial",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-03/desktop-post-agent-initial.png",
+      "submitted": false,
+      "expectHidden": false,
+      "consoleIssues": [],
+      "metrics": {
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "launcherVisible": true,
+        "panelVisible": true,
+        "panelBackground": "linear-gradient(oklch(0.105 0.024 250), oklch(0.048 0.018 252))",
+        "panelRect": {
+          "top": 164,
+          "right": 1416,
+          "bottom": 804,
+          "left": 936,
+          "width": 480,
+          "height": 640
+        },
+        "trustBoundaryVisible": true,
+        "trustBoundaryText": "Answers cite public notes in this Current post scope.Private pasted or uploaded context stays conversation-local.",
+        "sourceCardCount": 0,
+        "sourceTexts": [],
+        "activeElement": "section",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px",
+        "textOverflowCandidates": []
+      }
+    },
+    {
+      "name": "desktop-post-agent-answer-state",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-03/desktop-post-agent-answer-state.png",
+      "submitted": true,
+      "finalState": {
+        "hasModelNotConfigured": false,
+        "hasCouldNotFinish": false,
+        "hasSources": true,
+        "hasPublicScopeCopy": true,
+        "stillStreaming": false,
+        "excerpt": "Blog Agent Grounded in public notes Current post 9 of 10 left today Current article context connected History Answers cite public notes in this Current post scope. Private pasted or uploaded context stays conversation-local. Explain the core abstraction in this article. Thought through(18s) The core abstraction in Goal Harness is a phase protocol that replaces a vague PRD with a formally executable contract. It has three pillars: Phase Contract – Each phase is a cold-start task with a structured"
+      },
+      "expectHidden": false,
+      "consoleIssues": [],
+      "metrics": {
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "launcherVisible": true,
+        "panelVisible": true,
+        "panelBackground": "linear-gradient(oklch(0.105 0.024 250), oklch(0.048 0.018 252))",
+        "panelRect": {
+          "top": 164,
+          "right": 1416,
+          "bottom": 804,
+          "left": 936,
+          "width": 480,
+          "height": 640
+        },
+        "trustBoundaryVisible": true,
+        "trustBoundaryText": "Answers cite public notes in this Current post scope.Private pasted or uploaded context stays conversation-local.",
+        "sourceCardCount": 3,
+        "sourceTexts": [
+          "1. PRD 不是执行协议Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议BlogCurrent pageAgent 为例，docs/agent prd 里已经有很多正确产品判断： - 只做右下角助手，不做全屏 /agent 工作台。 - 公开用户只能检索 public published posts。 - quota 必须先于 retrieval 和 model call。 - 匿名用户 2 次...Match basis: Matched: article, blog, public, all",
+          "3. Feature Oracle: 让“完成”变成可枚举对象Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议BlogCurrent pagere oracle： ```json [ { \"id\": \"AGENT-QA-001\", \"category\": \"retrieval\", \"given\": \"public article Agent Loop is indexed\", \"when\": \"visitor asks what A...Match basis: Matched: article, public, available, show",
+          "6. 回归不是最后一步，是每个 phase 的出口Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议BlogCurrent pageser Journey / Browser Check - Evidence Report ``` 对博客 Agent 来说，每次相关改动都应该至少问： - public user 是否仍然无法检索 hidden/admin/draft 内容？ - quota block 是否仍然发生在 re...Match basis: Matched: public, post, 文章"
+        ],
+        "activeElement": "body",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px",
+        "textOverflowCandidates": [
+          {
+            "tag": "span",
+            "text": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
+            "scrollWidth": 339,
+            "clientWidth": 311
+          },
+          {
+            "tag": "span",
+            "text": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
+            "scrollWidth": 339,
+            "clientWidth": 311
+          },
+          {
+            "tag": "span",
+            "text": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
+            "scrollWidth": 339,
+            "clientWidth": 311
+          }
+        ]
+      }
+    },
+    {
+      "name": "mobile-post-agent-open",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-03/mobile-post-agent-open.png",
+      "submitted": false,
+      "expectHidden": false,
+      "consoleIssues": [],
+      "metrics": {
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "launcherVisible": true,
+        "panelVisible": true,
+        "panelBackground": "linear-gradient(oklch(0.105 0.024 250), oklch(0.048 0.018 252))",
+        "panelRect": {
+          "top": 44,
+          "right": 378,
+          "bottom": 764,
+          "left": 12,
+          "width": 366,
+          "height": 720
+        },
+        "trustBoundaryVisible": true,
+        "trustBoundaryText": "Answers cite public notes in this Current post scope.Private pasted or uploaded context stays conversation-local.",
+        "sourceCardCount": 0,
+        "sourceTexts": [],
+        "activeElement": "section",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px",
+        "textOverflowCandidates": []
+      }
+    },
+    {
+      "name": "desktop-home-agent-open",
+      "route": "/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-03/desktop-home-agent-open.png",
+      "submitted": false,
+      "expectHidden": false,
+      "consoleIssues": [],
+      "metrics": {
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "launcherVisible": true,
+        "panelVisible": true,
+        "panelBackground": "linear-gradient(oklch(0.105 0.024 250), oklch(0.048 0.018 252))",
+        "panelRect": {
+          "top": 164,
+          "right": 1416,
+          "bottom": 804,
+          "left": 936,
+          "width": 480,
+          "height": 640
+        },
+        "trustBoundaryVisible": true,
+        "trustBoundaryText": "Answers cite public notes in this All notes scope.Private pasted or uploaded context stays conversation-local.",
+        "sourceCardCount": 0,
+        "sourceTexts": [],
+        "activeElement": "section",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px",
+        "textOverflowCandidates": []
+      }
+    },
+    {
+      "name": "desktop-archive-agent-open",
+      "route": "/archive",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-03/desktop-archive-agent-open.png",
+      "submitted": false,
+      "expectHidden": false,
+      "consoleIssues": [],
+      "metrics": {
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "launcherVisible": true,
+        "panelVisible": true,
+        "panelBackground": "linear-gradient(oklch(0.105 0.024 250), oklch(0.048 0.018 252))",
+        "panelRect": {
+          "top": 164,
+          "right": 1416,
+          "bottom": 804,
+          "left": 936,
+          "width": 480,
+          "height": 640
+        },
+        "trustBoundaryVisible": true,
+        "trustBoundaryText": "Answers cite public notes in this All notes scope.Private pasted or uploaded context stays conversation-local.",
+        "sourceCardCount": 0,
+        "sourceTexts": [],
+        "activeElement": "section",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px",
+        "textOverflowCandidates": []
+      }
+    },
+    {
+      "name": "desktop-search-agent-open",
+      "route": "/search?q=agent",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-03/desktop-search-agent-open.png",
+      "submitted": false,
+      "expectHidden": false,
+      "consoleIssues": [],
+      "metrics": {
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "launcherVisible": true,
+        "panelVisible": true,
+        "panelBackground": "linear-gradient(oklch(0.105 0.024 250), oklch(0.048 0.018 252))",
+        "panelRect": {
+          "top": 164,
+          "right": 1416,
+          "bottom": 804,
+          "left": 936,
+          "width": 480,
+          "height": 640
+        },
+        "trustBoundaryVisible": true,
+        "trustBoundaryText": "Answers cite public notes in this All notes scope.Private pasted or uploaded context stays conversation-local.",
+        "sourceCardCount": 0,
+        "sourceTexts": [],
+        "activeElement": "section",
+        "activeOutlineStyle": "none",
+        "activeOutlineWidth": "3px",
+        "textOverflowCandidates": []
+      }
+    },
+    {
+      "name": "desktop-manage-agent-hidden",
+      "route": "/manage",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-03/desktop-manage-agent-hidden.png",
+      "submitted": false,
+      "expectHidden": true,
+      "consoleIssues": [],
+      "metrics": {
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "launcherVisible": false,
+        "panelVisible": false,
+        "panelBackground": "",
+        "panelRect": null,
+        "trustBoundaryVisible": false,
+        "trustBoundaryText": "",
+        "sourceCardCount": 0,
+        "sourceTexts": [],
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "textOverflowCandidates": []
+      }
+    },
+    {
+      "name": "desktop-write-agent-hidden",
+      "route": "/write",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-03/desktop-write-agent-hidden.png",
+      "submitted": false,
+      "expectHidden": true,
+      "consoleIssues": [],
+      "metrics": {
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "launcherVisible": false,
+        "panelVisible": false,
+        "panelBackground": "",
+        "panelRect": null,
+        "trustBoundaryVisible": false,
+        "trustBoundaryText": "",
+        "sourceCardCount": 0,
+        "sourceTexts": [],
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "textOverflowCandidates": []
+      }
+    },
+    {
+      "name": "desktop-login-agent-hidden",
+      "route": "/login",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-03/desktop-login-agent-hidden.png",
+      "submitted": false,
+      "expectHidden": true,
+      "consoleIssues": [],
+      "metrics": {
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "launcherVisible": false,
+        "panelVisible": false,
+        "panelBackground": "",
+        "panelRect": null,
+        "trustBoundaryVisible": false,
+        "trustBoundaryText": "",
+        "sourceCardCount": 0,
+        "sourceTexts": [],
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "textOverflowCandidates": []
+      }
+    }
+  ]
+}

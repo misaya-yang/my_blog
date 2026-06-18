@@ -1,0 +1,315 @@
+{
+  "generatedAt": "2026-06-18T11:32:59.003Z",
+  "baseUrl": "http://localhost:3000",
+  "results": [
+    {
+      "name": "desktop-home",
+      "route": "/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "url": "http://localhost:3000/",
+      "status": 200,
+      "error": null,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-00/desktop-home.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "AI Algorithms and Applications · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "viewportHeight": 900,
+        "horizontalOverflow": false,
+        "activeElement": "a.flex.min-h-11.items-center",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "none",
+        "textOverflowCandidates": [],
+        "agentPanelVisible": false,
+        "guardLikelyVisible": true
+      }
+    },
+    {
+      "name": "desktop-archive",
+      "route": "/archive",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "url": "http://localhost:3000/archive",
+      "status": 200,
+      "error": null,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-00/desktop-archive.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "Archive · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "viewportHeight": 900,
+        "horizontalOverflow": false,
+        "activeElement": "a.flex.min-h-11.items-center",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "none",
+        "textOverflowCandidates": [],
+        "agentPanelVisible": false,
+        "guardLikelyVisible": true
+      }
+    },
+    {
+      "name": "desktop-search-zero",
+      "route": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "url": "http://localhost:3000/search?q=zzzz-no-hit-ui-audit",
+      "status": 200,
+      "error": null,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-00/desktop-search-zero.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "viewportHeight": 900,
+        "horizontalOverflow": false,
+        "activeElement": "a.flex.min-h-11.items-center",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "none",
+        "textOverflowCandidates": [],
+        "agentPanelVisible": false,
+        "guardLikelyVisible": true
+      }
+    },
+    {
+      "name": "desktop-post",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "url": "http://localhost:3000/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "error": null,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-00/desktop-post.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "viewportHeight": 900,
+        "horizontalOverflow": false,
+        "activeElement": "a.nav-ink.gap-2",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "oklch(0.66 0.038 156 / 0.2) 0px 0px 0px 4px",
+        "textOverflowCandidates": [],
+        "agentPanelVisible": false,
+        "guardLikelyVisible": true
+      }
+    },
+    {
+      "name": "desktop-manage-guard",
+      "route": "/manage",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "url": "http://localhost:3000/manage",
+      "status": 200,
+      "error": null,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-00/desktop-manage-guard.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "Content Dashboard · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "viewportHeight": 900,
+        "horizontalOverflow": false,
+        "activeElement": "a.nav-ink.gap-2",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "oklch(0.66 0.038 156 / 0.2) 0px 0px 0px 4px",
+        "textOverflowCandidates": [],
+        "agentPanelVisible": false,
+        "guardLikelyVisible": true
+      }
+    },
+    {
+      "name": "desktop-manage-agent-guard",
+      "route": "/manage/agent",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "url": "http://localhost:3000/manage/agent",
+      "status": 200,
+      "error": null,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-00/desktop-manage-agent-guard.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "Agent Operations · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "viewportHeight": 900,
+        "horizontalOverflow": false,
+        "activeElement": "a.nav-ink.gap-2",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "oklch(0.66 0.038 156 / 0.2) 0px 0px 0px 4px",
+        "textOverflowCandidates": [],
+        "agentPanelVisible": false,
+        "guardLikelyVisible": true
+      }
+    },
+    {
+      "name": "mobile-home",
+      "route": "/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "url": "http://localhost:3000/",
+      "status": 200,
+      "error": null,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-00/mobile-home.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "AI Algorithms and Applications · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "viewportHeight": 844,
+        "horizontalOverflow": false,
+        "activeElement": "a.flex.min-h-11.items-center",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "none",
+        "textOverflowCandidates": [],
+        "agentPanelVisible": false,
+        "guardLikelyVisible": true
+      }
+    },
+    {
+      "name": "mobile-archive",
+      "route": "/archive",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "url": "http://localhost:3000/archive",
+      "status": 200,
+      "error": null,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-00/mobile-archive.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "Archive · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "viewportHeight": 844,
+        "horizontalOverflow": false,
+        "activeElement": "a.flex.min-h-11.items-center",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "none",
+        "textOverflowCandidates": [],
+        "agentPanelVisible": false,
+        "guardLikelyVisible": true
+      }
+    },
+    {
+      "name": "mobile-search-zero",
+      "route": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "url": "http://localhost:3000/search?q=zzzz-no-hit-ui-audit",
+      "status": 200,
+      "error": null,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-00/mobile-search-zero.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "viewportHeight": 844,
+        "horizontalOverflow": false,
+        "activeElement": "a.flex.min-h-11.items-center",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "none",
+        "textOverflowCandidates": [],
+        "agentPanelVisible": false,
+        "guardLikelyVisible": true
+      }
+    },
+    {
+      "name": "mobile-post",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "url": "http://localhost:3000/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "error": null,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-00/mobile-post.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "viewportHeight": 844,
+        "horizontalOverflow": false,
+        "activeElement": "a.nav-ink.gap-2",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "oklch(0.66 0.038 156 / 0.2) 0px 0px 0px 4px",
+        "textOverflowCandidates": [],
+        "agentPanelVisible": false,
+        "guardLikelyVisible": true
+      }
+    },
+    {
+      "name": "mobile-post-agent-open",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "openAgent": true,
+      "url": "http://localhost:3000/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "error": null,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-00/mobile-post-agent-open.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "viewportHeight": 844,
+        "horizontalOverflow": false,
+        "activeElement": "button.grid.h-11.w-11",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "none",
+        "textOverflowCandidates": [],
+        "agentPanelVisible": true,
+        "guardLikelyVisible": true
+      }
+    }
+  ]
+}

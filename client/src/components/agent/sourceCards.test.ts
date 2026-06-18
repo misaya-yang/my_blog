@@ -37,6 +37,29 @@ describe("Agent source cards", () => {
     expect(excerpt).toContain("stream mean");
   });
 
+  it("prefers compact excerpts when retrieval provides one", () => {
+    expect(
+      formatSourceExcerpt({
+        ...source,
+        compactExcerpt: "Compact section summary.",
+        excerpt: "Longer raw source text.",
+      })
+    ).toBe("Compact section summary.");
+  });
+
+  it("does not create a blog href for conversation-local context cards", () => {
+    expect(
+      getSourceHref({
+        ...source,
+        sourceId: "context:attached-note",
+        sourceType: "user_context",
+        postTitle: "Attached note",
+        postSlug: "",
+        excerpt: "Private context should stay conversation-local.",
+      })
+    ).toBe("#");
+  });
+
   it("does not restore raw reasoning from persisted source metadata", () => {
     const message = toChatMessage({
       id: "assistant-1",

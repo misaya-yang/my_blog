@@ -1,0 +1,193 @@
+{
+  "generatedAt": "2026-06-18T11:44:37.082Z",
+  "baseUrl": "http://localhost:3000",
+  "results": [
+    {
+      "name": "desktop-home",
+      "route": "/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "url": "http://localhost:3000/",
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-01/desktop-home.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "AI Algorithms and Applications · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "none",
+        "reducedMotion": false,
+        "headerHeight": 69,
+        "brandWidth": 42.390625,
+        "brandRadius": "13.12px",
+        "inputHeight": 48,
+        "cardRadius": "12px",
+        "cardBorderColor": "oklch(0.82 0.035 238 / 0.14)",
+        "textOverflowCount": 0
+      }
+    },
+    {
+      "name": "mobile-home",
+      "route": "/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "url": "http://localhost:3000/",
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-01/mobile-home.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "AI Algorithms and Applications · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "none",
+        "reducedMotion": false,
+        "headerHeight": 69,
+        "brandWidth": 42.390625,
+        "brandRadius": "13.12px",
+        "inputHeight": 48,
+        "cardRadius": "12px",
+        "cardBorderColor": "oklch(0.82 0.035 238 / 0.14)",
+        "textOverflowCount": 0
+      }
+    },
+    {
+      "name": "desktop-archive",
+      "route": "/archive",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "url": "http://localhost:3000/archive",
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-01/desktop-archive.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "Archive · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "none",
+        "reducedMotion": false,
+        "headerHeight": 69,
+        "brandWidth": 42.390625,
+        "brandRadius": "13.12px",
+        "inputHeight": null,
+        "cardRadius": null,
+        "cardBorderColor": null,
+        "textOverflowCount": 0
+      }
+    },
+    {
+      "name": "desktop-search-zero",
+      "route": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "url": "http://localhost:3000/search?q=zzzz-no-hit-ui-audit",
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-01/desktop-search-zero.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes",
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "horizontalOverflow": false,
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "none",
+        "reducedMotion": false,
+        "headerHeight": 69,
+        "brandWidth": 42.390625,
+        "brandRadius": "13.12px",
+        "inputHeight": 44,
+        "cardRadius": null,
+        "cardBorderColor": null,
+        "textOverflowCount": 0
+      }
+    },
+    {
+      "name": "mobile-search-zero",
+      "route": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "url": "http://localhost:3000/search?q=zzzz-no-hit-ui-audit",
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-01/mobile-search-zero.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "0 results for “zzzz-no-hit-ui-audit” · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "2px",
+        "activeBoxShadow": "none",
+        "reducedMotion": false,
+        "headerHeight": 69,
+        "brandWidth": 42.390625,
+        "brandRadius": "13.12px",
+        "inputHeight": 44,
+        "cardRadius": null,
+        "cardBorderColor": null,
+        "textOverflowCount": 0
+      }
+    },
+    {
+      "name": "mobile-home-reduced-motion",
+      "route": "/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reducedMotion": true,
+      "url": "http://localhost:3000/",
+      "status": 200,
+      "screenshotPath": "docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-01/mobile-home-reduced-motion.png",
+      "consoleIssues": [],
+      "metrics": {
+        "title": "AI Algorithms and Applications · Misaya Notes",
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "horizontalOverflow": false,
+        "activeElement": "a",
+        "activeOutlineStyle": "solid",
+        "activeOutlineWidth": "3px",
+        "activeBoxShadow": "none",
+        "reducedMotion": true,
+        "headerHeight": 69,
+        "brandWidth": 42.390625,
+        "brandRadius": "13.12px",
+        "inputHeight": 48,
+        "cardRadius": "12px",
+        "cardBorderColor": "oklch(0.82 0.035 238 / 0.14)",
+        "textOverflowCount": 0
+      }
+    }
+  ]
+}

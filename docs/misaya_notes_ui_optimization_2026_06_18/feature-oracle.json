@@ -1,0 +1,105 @@
+{
+  "schema_version": "prd-phase-harness/feature-oracle/v1",
+  "instructions": {
+    "allowed_edits": "Coding agents may update only status, evidence, and notes fields unless the user explicitly changes scope.",
+    "completion_rule": "A feature is passing only after command, browser, screenshot, report, trace, or log evidence exists.",
+    "status_values": [
+      "failing",
+      "passing",
+      "blocked",
+      "waived"
+    ]
+  },
+  "features": [
+    {
+      "id": "MNUI-F001",
+      "phase_id": "MNUI-00",
+      "category": "baseline",
+      "description": "Capture current UI, design-system facts, validation commands, and visual risk inventory before implementation begins.",
+      "steps": [
+        "Open docs/misaya_notes_ui_optimization_2026_06_18/phase-00-baseline-design-audit.md and read only its PRIMARY_CONTEXT after runtime files.",
+        "Produce a design-source coverage table for the 79-file design package, separating content-bearing source, demo support, binary visual reference, compiled bundle, and filesystem metadata.",
+        "Execute MNUI-00 acceptance gates inside its edit boundary.",
+        "Write docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-00-baseline-design-audit-report.md with command output summaries, browser evidence, compliance notes, rollback notes, and handoff decision."
+      ],
+      "status": "passing",
+      "evidence": "docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-00-baseline-design-audit-report.md; docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-00-baseline-quick.json; docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-00-ui-layout-checks.json; docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-00/screenshot-metrics.json",
+      "notes": "MNUI-00 passed on 2026-06-18. Baseline evidence covers 79 design files, command results, 14 route checks, 11 screenshots, current UI risks, compliance notes, rollback notes, and MNUI-01 unlock decision."
+    },
+    {
+      "id": "MNUI-F002",
+      "phase_id": "MNUI-01",
+      "category": "design-system",
+      "description": "Align global tokens and shared UI primitives with the downloaded Misaya Notes design system without adding dependencies or changing public contracts.",
+      "steps": [
+        "Open docs/misaya_notes_ui_optimization_2026_06_18/phase-01-design-tokens-and-shared-primitives.md and read only its PRIMARY_CONTEXT after runtime files.",
+        "Produce a component contract matrix covering Button, Badge, Tag, SignalChip, Card, Avatar, BrandMark, SectionTitle, Input, and Textarea states plus the font/network decision.",
+        "Execute MNUI-01 acceptance gates inside its edit boundary.",
+        "Write docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-01-design-tokens-and-shared-primitives-report.md with command output summaries, browser evidence, compliance notes, rollback notes, and handoff decision."
+      ],
+      "status": "passing",
+      "evidence": "docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-01-design-tokens-and-shared-primitives-report.md; docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-01-ui-layout-checks.json; docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-01/screenshot-metrics.json",
+      "notes": "MNUI-01 passed on 2026-06-18. Evidence covers design-token aliases, shared primitive updates, component contract matrix, local-font-only network policy, validation commands, and desktop/mobile/reduced-motion screenshots."
+    },
+    {
+      "id": "MNUI-F003",
+      "phase_id": "MNUI-02",
+      "category": "reader-ui",
+      "description": "Apply the design-system reader model to Home, Archive, Search, Track, and Post surfaces with responsive evidence.",
+      "steps": [
+        "Open docs/misaya_notes_ui_optimization_2026_06_18/phase-02-public-reader-ia-and-responsive-surfaces.md and read only its PRIMARY_CONTEXT after runtime files.",
+        "Verify reader surfaces against UI kit shell, sample data, icons, imagery, thumbnails, and public route screenshots.",
+        "Execute MNUI-02 acceptance gates inside its edit boundary.",
+        "Write docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-02-public-reader-ia-and-responsive-surfaces-report.md with command output summaries, browser evidence, compliance notes, rollback notes, and handoff decision."
+      ],
+      "status": "passing",
+      "evidence": "docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-02-public-reader-ia-and-responsive-surfaces-report.md; docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-02-baseline-quick.json; docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-02/screenshot-metrics.json",
+      "notes": "MNUI-02 passed on 2026-06-18. Evidence covers Home hero asset usage, Archive/Search shared tag styling, public reader route screenshots, content boundary checks, required validation commands, and MNUI-03 unlock decision."
+    },
+    {
+      "id": "MNUI-F004",
+      "phase_id": "MNUI-03",
+      "category": "agent-ui",
+      "description": "Make the Blog Agent feel like a grounded article companion with clear source boundaries, mobile ergonomics, and evidence-backed answer states.",
+      "steps": [
+        "Open docs/misaya_notes_ui_optimization_2026_06_18/phase-03-blog-agent-and-trust-surface.md and read only its PRIMARY_CONTEXT after runtime files.",
+        "Verify launcher, panel, composer, source-card, route prompt, and mobile states against agent.jsx, sample data, icons, and Agent reference screenshots.",
+        "Execute MNUI-03 acceptance gates inside its edit boundary.",
+        "Write docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-03-blog-agent-and-trust-surface-report.md with command output summaries, browser evidence, compliance notes, rollback notes, and handoff decision."
+      ],
+      "status": "passing",
+      "evidence": "docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-03-blog-agent-and-trust-surface-report.md; docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-03-baseline-quick.json; docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-03/screenshot-metrics.json",
+      "notes": "MNUI-03 passed on 2026-06-18. Evidence covers Blog Agent trust copy, source-card hierarchy, hidden-route tests, live answer with 3 source cards, mobile/desktop screenshots, validation commands, and MNUI-04 unlock decision."
+    },
+    {
+      "id": "MNUI-F005",
+      "phase_id": "MNUI-04",
+      "category": "owner-ui",
+      "description": "Bring owner-only manage, write, login, and Agent Ops states into the same design language while preserving auth and content boundaries.",
+      "steps": [
+        "Open docs/misaya_notes_ui_optimization_2026_06_18/phase-04-owner-tools-and-system-states.md and read only its PRIMARY_CONTEXT after runtime files.",
+        "Map owner guard, table, editor, login, and Agent Ops states back to core.card.html, forms.card.html, and the manage screenshot.",
+        "Execute MNUI-04 acceptance gates inside its edit boundary.",
+        "Write docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-04-owner-tools-and-system-states-report.md with command output summaries, browser evidence, compliance notes, rollback notes, and handoff decision."
+      ],
+      "status": "passing",
+      "evidence": "docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-04-owner-tools-and-system-states-report.md; docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-04-baseline-quick.json; docs/misaya_notes_ui_optimization_2026_06_18/reports/screenshots/mnui-04/screenshot-metrics.json",
+      "notes": "MNUI-04 passed on 2026-06-18. Evidence covers owner/login CSS alignment, guard/login desktop and mobile screenshots, public Agent hidden on owner/auth routes, no data mutation, validation commands, and a documented authenticated owner-layout evidence limitation because the local session was unauthenticated."
+    },
+    {
+      "id": "MNUI-F006",
+      "phase_id": "MNUI-05",
+      "category": "release",
+      "description": "Create a complete local release evidence packet for the UI optimization without deploying or mutating production systems.",
+      "steps": [
+        "Open docs/misaya_notes_ui_optimization_2026_06_18/phase-05-release-evidence-and-design-regression-gates.md and read only its PRIMARY_CONTEXT after runtime files.",
+        "Produce final release evidence that covers manifest, adherence policy, tokens, guidelines, components, UI kit, assets, screenshots, accessibility, privacy, rollback, and font/network policy.",
+        "Execute MNUI-05 acceptance gates inside its edit boundary.",
+        "Write docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-05-release-evidence-and-design-regression-gates-report.md with command output summaries, browser evidence, compliance notes, rollback notes, and handoff decision."
+      ],
+      "status": "passing",
+      "evidence": "docs/misaya_notes_ui_optimization_2026_06_18/reports/mnui-05-release-evidence-and-design-regression-gates-report.md; docs/misaya_notes_ui_optimization_2026_06_18/reports/post-review-risk-resolution-and-deploy-readiness.md; docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/mnui-05-ui-layout-checks.json; docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/mnui-05-baseline-quick.json; docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/screenshots/screenshot-metrics.json; docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-ui-layout-checks.json; docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-baseline-quick.json; docs/misaya_notes_ui_optimization_2026_06_18/reports/release-evidence/post-review-screenshots/screenshot-metrics.json; docs/product_optimization/reports/po-08-publish-freshness-latest.json",
+      "notes": "MNUI-05 passed on 2026-06-18 and the post-review pass resolved the remaining local baseline/static metadata/content warning/CSS bleed risks. Evidence covers typecheck, full tests, build, content audit, publish freshness, UI audit, route baseline with 0 known gaps, 64 total release/post-review screenshots, design-source coverage audit, accessibility/privacy/rollback notes, and local-font network policy. Live Agent four-row evaluation remains blocked until approved runtime model credentials are configured; authenticated owner internals remain unavailable in the unauthenticated local session. Production deployment is now explicitly requested and remains incomplete until Vercel deploy plus public URL verification finish."
+    }
+  ]
+}

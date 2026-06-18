@@ -1,0 +1,710 @@
+{
+  "generatedAt": "2026-06-18T11:52:03.785Z",
+  "git": {
+    "branch": "codex/blog-agent-retrieval-rescue",
+    "commit": "4e10597",
+    "dirty": true
+  },
+  "commands": [],
+  "routes": [
+    {
+      "path": "/",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "home page shell and research index",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "Misaya Notes",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/algorithms",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "AI algorithm track page",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "Misaya Notes",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/applications",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "AI application engineering track page",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "Misaya Notes",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/login",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "visitor and admin login surface",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "Misaya Notes",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/archive",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "public archive route",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "Misaya Notes",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/categories/ai-applications",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "public AI Applications category route",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "Misaya Notes",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/tags/agent-systems",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "public Agent Systems tag route",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "Misaya Notes",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/404",
+      "audience": "utility",
+      "expectedStatus": 200,
+      "expectedContent": "client-rendered not found page",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "Misaya Notes",
+          "description": "Misaya Yang",
+          "canonical": null,
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
+            "type": "website",
+            "url": null
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "Misaya Notes",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/not-a-real-route",
+      "audience": "utility",
+      "expectedStatus": 404,
+      "expectedContent": "server-level not found status",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "checked",
+        "status": 404,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "404 · Misaya Notes",
+          "description": "The requested page could not be found.",
+          "canonical": "http://localhost:3000/not-a-real-route",
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "404",
+            "description": "The requested page could not be found.",
+            "image": "http://localhost:3000/og-default.svg",
+            "type": "website",
+            "url": "http://localhost:3000/not-a-real-route"
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "404",
+            "description": "The requested page could not be found.",
+            "image": "http://localhost:3000/og-default.svg"
+          },
+          "jsonLdTypes": []
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/post/isohc-fixed-vector-isometric-residual-mixing",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "public seeded algorithm article",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "IsoHC: Fixed-Vector Isometric Residual Mixing · Misaya Notes",
+          "description": "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
+          "canonical": "http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing",
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+            "description": "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
+            "image": "http://localhost:3000/og-default.svg",
+            "type": "article",
+            "url": "http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing"
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+            "description": "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
+            "image": "http://localhost:3000/og-default.svg"
+          },
+          "jsonLdTypes": [
+            "BlogPosting"
+          ]
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/post/agent-harness-engine-evaluating-tool-using-agents",
+      "audience": "public",
+      "expectedStatus": 200,
+      "expectedContent": "public seeded application article",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/html; charset=utf-8",
+        "metadata": {
+          "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context · Misaya Notes",
+          "description": "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 与 evaluator。",
+          "canonical": "http://localhost:3000/post/agent-harness-engine-evaluating-tool-using-agents",
+          "htmlLang": "en",
+          "openGraph": {
+            "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "description": "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 与 evaluator。",
+            "image": "http://localhost:3000/og-default.svg",
+            "type": "article",
+            "url": "http://localhost:3000/post/agent-harness-engine-evaluating-tool-using-agents"
+          },
+          "twitter": {
+            "card": "summary_large_image",
+            "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+            "description": "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 与 evaluator。",
+            "image": "http://localhost:3000/og-default.svg"
+          },
+          "jsonLdTypes": [
+            "BlogPosting"
+          ]
+        },
+        "error": null
+      }
+    },
+    {
+      "path": "/robots.txt",
+      "audience": "generated",
+      "expectedStatus": 200,
+      "expectedContent": "robots directives and sitemap pointer",
+      "requiresSeededDatabase": false,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "text/plain; charset=utf-8",
+        "metadata": null,
+        "error": null
+      }
+    },
+    {
+      "path": "/sitemap.xml",
+      "audience": "generated",
+      "expectedStatus": 200,
+      "expectedContent": "public route and article sitemap",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "application/xml; charset=utf-8",
+        "metadata": null,
+        "error": null
+      }
+    },
+    {
+      "path": "/rss.xml",
+      "audience": "generated",
+      "expectedStatus": 200,
+      "expectedContent": "public article feed",
+      "requiresSeededDatabase": true,
+      "statusResult": {
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "application/rss+xml; charset=utf-8",
+        "metadata": null,
+        "error": null
+      }
+    }
+  ],
+  "dist": {
+    "html": {
+      "file": "index.html",
+      "rawBytes": 1751,
+      "gzipBytes": 611
+    },
+    "javascript": [
+      {
+        "file": "assets/index-B-2DH7Xv.js",
+        "rawBytes": 437491,
+        "gzipBytes": 130157
+      },
+      {
+        "file": "assets/app-vendor-BdG3WRU2.js",
+        "rawBytes": 297880,
+        "gzipBytes": 90823
+      },
+      {
+        "file": "assets/index-CfFVPCaT.js",
+        "rawBytes": 210155,
+        "gzipBytes": 66716
+      },
+      {
+        "file": "assets/MarkdownRenderer-BZRd8v3K.js",
+        "rawBytes": 175955,
+        "gzipBytes": 53915
+      },
+      {
+        "file": "assets/knowledgeRefresh-B5ktmbkV.js",
+        "rawBytes": 50704,
+        "gzipBytes": 18036
+      },
+      {
+        "file": "assets/Manage-BCUPgQyr.js",
+        "rawBytes": 60671,
+        "gzipBytes": 15039
+      },
+      {
+        "file": "assets/Editor-DU9rK-Rs.js",
+        "rawBytes": 41005,
+        "gzipBytes": 11492
+      },
+      {
+        "file": "assets/index-CczHSCOW.js",
+        "rawBytes": 33427,
+        "gzipBytes": 9549
+      },
+      {
+        "file": "assets/PostDetail-B8hOREwF.js",
+        "rawBytes": 32657,
+        "gzipBytes": 9264
+      },
+      {
+        "file": "assets/ManageAgent-nPJKlRKt.js",
+        "rawBytes": 23553,
+        "gzipBytes": 6163
+      },
+      {
+        "file": "__manus__/debug-collector.js",
+        "rawBytes": 25168,
+        "gzipBytes": 5705
+      },
+      {
+        "file": "assets/Search-2m8VY3p5.js",
+        "rawBytes": 8937,
+        "gzipBytes": 3534
+      },
+      {
+        "file": "assets/Home-B9TFkqbt.js",
+        "rawBytes": 9638,
+        "gzipBytes": 3299
+      },
+      {
+        "file": "assets/tracks-IbFEXF3q.js",
+        "rawBytes": 6878,
+        "gzipBytes": 2038
+      },
+      {
+        "file": "assets/Login-BxrKMG7T.js",
+        "rawBytes": 6013,
+        "gzipBytes": 1996
+      },
+      {
+        "file": "assets/metadata-THd-82jJ.js",
+        "rawBytes": 4936,
+        "gzipBytes": 1867
+      },
+      {
+        "file": "assets/Track-DWEw0p2T.js",
+        "rawBytes": 4996,
+        "gzipBytes": 1851
+      },
+      {
+        "file": "assets/ArticleCard-CWRbH41l.js",
+        "rawBytes": 4101,
+        "gzipBytes": 1669
+      },
+      {
+        "file": "assets/Archive-Bkzff5bt.js",
+        "rawBytes": 3942,
+        "gzipBytes": 1640
+      },
+      {
+        "file": "assets/index-thiOKRav.js",
+        "rawBytes": 3524,
+        "gzipBytes": 1600
+      },
+      {
+        "file": "assets/tabs-CcQ5DUER.js",
+        "rawBytes": 3533,
+        "gzipBytes": 1512
+      },
+      {
+        "file": "assets/TaxonomyPage-BUzM8-dR.js",
+        "rawBytes": 3696,
+        "gzipBytes": 1467
+      },
+      {
+        "file": "assets/NotFound-K4vN86fn.js",
+        "rawBytes": 2234,
+        "gzipBytes": 995
+      },
+      {
+        "file": "assets/input-Cg_A75HV.js",
+        "rawBytes": 2115,
+        "gzipBytes": 901
+      },
+      {
+        "file": "assets/sonner-Bx36vPOY.js",
+        "rawBytes": 1291,
+        "gzipBytes": 809
+      },
+      {
+        "file": "assets/About-DjOrUVfu.js",
+        "rawBytes": 1850,
+        "gzipBytes": 745
+      },
+      {
+        "file": "assets/badge-B-zl-Sgk.js",
+        "rawBytes": 1466,
+        "gzipBytes": 692
+      },
+      {
+        "file": "assets/index-BuirTHQM.js",
+        "rawBytes": 1310,
+        "gzipBytes": 662
+      },
+      {
+        "file": "assets/shield-check-Bd4-ZisY.js",
+        "rawBytes": 1342,
+        "gzipBytes": 572
+      },
+      {
+        "file": "assets/publicArticles-Cr3iI0Mj.js",
+        "rawBytes": 748,
+        "gzipBytes": 565
+      },
+      {
+        "file": "assets/mail-Dha35lFV.js",
+        "rawBytes": 835,
+        "gzipBytes": 440
+      },
+      {
+        "file": "assets/AgentMarkdown-Du5qF4_C.js",
+        "rawBytes": 714,
+        "gzipBytes": 430
+      },
+      {
+        "file": "assets/tags-H2ir2zHw.js",
+        "rawBytes": 561,
+        "gzipBytes": 387
+      },
+      {
+        "file": "assets/calendar-CIZ_kMOW.js",
+        "rawBytes": 710,
+        "gzipBytes": 359
+      },
+      {
+        "file": "assets/network-sP1dKo21.js",
+        "rawBytes": 553,
+        "gzipBytes": 336
+      },
+      {
+        "file": "assets/git-branch-CVre0iO_.js",
+        "rawBytes": 443,
+        "gzipBytes": 319
+      },
+      {
+        "file": "assets/copy-CATb3zVK.js",
+        "rawBytes": 400,
+        "gzipBytes": 308
+      },
+      {
+        "file": "assets/eye-B9zBIE4P.js",
+        "rawBytes": 420,
+        "gzipBytes": 302
+      },
+      {
+        "file": "assets/route-DLgSjWMP.js",
+        "rawBytes": 418,
+        "gzipBytes": 302
+      },
+      {
+        "file": "assets/hash-DE2GgheW.js",
+        "rawBytes": 465,
+        "gzipBytes": 298
+      },
+      {
+        "file": "assets/folder-myfVfav5.js",
+        "rawBytes": 397,
+        "gzipBytes": 291
+      }
+    ],
+    "css": [
+      {
+        "file": "assets/index-CXOp0yza.css",
+        "rawBytes": 263776,
+        "gzipBytes": 46029
+      },
+      {
+        "file": "assets/katex-DvXFAOB1.css",
+        "rawBytes": 29193,
+        "gzipBytes": 8033
+      },
+      {
+        "file": "assets/github-dark-BSTcku12.css",
+        "rawBytes": 1316,
+        "gzipBytes": 615
+      }
+    ]
+  },
+  "accessibility": {
+    "hasReducedMotionRule": true,
+    "iconOnlyButtonPatternCount": 1
+  },
+  "browserSmoke": {
+    "state": "manual-required",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "routes": [
+      "/",
+      "/algorithms",
+      "/applications",
+      "/login",
+      "/tags/agent-systems"
+    ],
+    "note": "Use the Codex Browser plugin for rendered desktop/mobile checks; package script records the required viewport and route set."
+  },
+  "knownGaps": [
+    {
+      "id": "missing-robots",
+      "severity": "warning",
+      "summary": "No robots.txt is present.",
+      "evidence": "client/public/robots.txt not found"
+    },
+    {
+      "id": "missing-sitemap",
+      "severity": "warning",
+      "summary": "No sitemap.xml is present.",
+      "evidence": "client/public/sitemap.xml not found"
+    },
+    {
+      "id": "missing-rss",
+      "severity": "warning",
+      "summary": "No RSS feed is present.",
+      "evidence": "client/public/rss.xml not found"
+    },
+    {
+      "id": "missing-canonical",
+      "severity": "warning",
+      "summary": "One or more checked HTML routes are missing canonical URLs.",
+      "evidence": "/, /algorithms, /applications, /login, /archive, /categories/ai-applications, /tags/agent-systems, /404"
+    }
+  ]
+}

@@ -116,10 +116,10 @@
   }
 
   .brand-mark {
-    height: 2.65rem;
-    width: 2.65rem;
-    border-radius: 0.72rem;
-    border-color: oklch(0.76 0.16 235 / 42%);
+    height: var(--brand-mark-size, 2.65rem);
+    width: var(--brand-mark-size, 2.65rem);
+    border-radius: var(--radius-card);
+    border-color: var(--border-strong);
     background:
       linear-gradient(
         145deg,
@@ -130,16 +130,16 @@
     color: oklch(0.86 0.1 225);
     box-shadow:
       inset 0 1px 0 oklch(0.98 0.01 230 / 14%),
-      0 0 22px oklch(0.58 0.16 245 / 22%);
+      var(--glow-accent);
   }
 
   .nav-ink {
     height: 2.75rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     padding-inline: 1rem;
     color: oklch(0.78 0.03 235);
     font-size: 0.92rem;
-    font-weight: 650;
+    font-weight: var(--weight-semibold);
   }
 
   .nav-ink:hover {
@@ -168,17 +168,8 @@
   .track-series-card,
   .research-index-row {
     border-color: var(--glass-border);
-    background:
-      linear-gradient(
-        145deg,
-        oklch(0.13 0.026 248 / 94%),
-        oklch(0.065 0.018 252 / 96%)
-      ),
-      oklch(0.07 0.018 252 / 96%);
-    box-shadow:
-      inset 0 1px 0 oklch(0.98 0.012 235 / 7%),
-      inset 0 -1px 0 oklch(0.72 0.16 245 / 3%),
-      0 6px 8px oklch(0.018 0.018 255 / 18%);
+    background: var(--glass-bg), var(--surface-card);
+    box-shadow: var(--shadow-card);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
@@ -195,29 +186,21 @@
   }
 
   .glass-button {
-    border-color: oklch(0.84 0.08 235 / 20%);
-    background: linear-gradient(
-      145deg,
-      oklch(0.15 0.034 248 / 68%),
-      oklch(0.08 0.02 252 / 68%)
-    );
+    border-color: var(--glass-border);
+    background: var(--glass-bg);
     color: oklch(0.9 0.02 230);
-    border-radius: 0.72rem;
-    box-shadow: inset 0 1px 0 oklch(0.98 0.012 235 / 8%);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-xs);
   }
 
   .glass-button:hover {
-    border-color: oklch(0.78 0.16 235 / 44%);
-    background: linear-gradient(
-      145deg,
-      oklch(0.19 0.05 245 / 74%),
-      oklch(0.1 0.026 252 / 74%)
-    );
+    border-color: var(--glass-border-strong);
+    background: var(--surface-card-strong);
   }
 
   .signal-chip {
     min-height: 2.15rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     border-color: oklch(0.78 0.16 235 / 24%);
     background: oklch(0.13 0.036 248 / 62%);
     color: oklch(0.82 0.12 225);
@@ -390,7 +373,7 @@
 
   .home-track-card {
     min-height: 9.8rem;
-    border-radius: 0.95rem;
+    border-radius: var(--radius-panel);
     overflow: hidden;
   }
 
@@ -478,14 +461,14 @@
   .home-search-dock {
     grid-template-columns: auto auto minmax(20rem, 1fr);
     margin-top: 0;
-    border-radius: 0.95rem;
+    border-radius: var(--radius-panel);
     padding: 0.65rem 0.85rem;
   }
 
   .home-search-field {
     border-color: oklch(0.84 0.08 235 / 18%);
     background: oklch(0.07 0.018 252 / 64%);
-    border-radius: 0.82rem;
+    border-radius: var(--radius-card);
   }
 
   .home-search-submit {
@@ -578,7 +561,7 @@
     border-color: oklch(0.84 0.08 235 / 16%);
     background: oklch(0.13 0.026 248 / 44%);
     color: oklch(0.78 0.035 235);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
   }
 
   .article-tag-primary {
@@ -2941,10 +2924,10 @@
   }
 
   .brand-mark {
-    height: 2.45rem;
-    width: 2.45rem;
-    border-radius: 0.72rem;
-    border-color: oklch(0.72 0.12 230 / 32%);
+    height: var(--brand-mark-size, 2.45rem);
+    width: var(--brand-mark-size, 2.45rem);
+    border-radius: var(--radius-card);
+    border-color: var(--border-strong);
     background:
       linear-gradient(
         145deg,
@@ -2953,7 +2936,7 @@
       ),
       oklch(0.07 0.014 252);
     color: oklch(0.9 0.03 226);
-    box-shadow: inset 0 1px 0 oklch(0.98 0.01 230 / 10%);
+    box-shadow: var(--shadow-xs);
   }
 
   .nav-ink,
@@ -3710,12 +3693,46 @@
 @layer components {
   /* Two-track publication index. No orbit map, no third category node. */
   .home-index-spread {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     min-height: calc(100dvh - 72px);
     display: grid;
     align-items: center;
   }
 
+  .home-index-spread::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    z-index: -1;
+    right: max(-3rem, -4vw);
+    top: clamp(0.5rem, 4vh, 3rem);
+    width: min(48rem, 48vw);
+    aspect-ratio: 1672 / 941;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-panel);
+    background:
+      linear-gradient(
+        90deg,
+        oklch(0.055 0.018 252 / 56%),
+        oklch(0.055 0.018 252 / 8%) 48%,
+        oklch(0.055 0.018 252 / 64%)
+      ),
+      linear-gradient(
+        180deg,
+        transparent 0 56%,
+        oklch(0.055 0.018 252 / 68%)
+      ),
+      url("/images/research-orbit-hero.jpg") center / cover no-repeat;
+    box-shadow: var(--shadow-panel);
+    opacity: 0.56;
+    mask-image: linear-gradient(90deg, transparent 0, black 14%, black 82%, transparent 100%);
+  }
+
   .home-index-grid {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: minmax(21rem, 0.92fr) minmax(32rem, 1.08fr);
     gap: clamp(1rem, 2vw, 1.75rem);
@@ -5165,6 +5182,13 @@
   @media (max-width: 760px) {
     .home-index-spread {
       padding-top: 1rem !important;
+    }
+
+    .home-index-spread::before {
+      right: -7rem;
+      top: 0.25rem;
+      width: 30rem;
+      opacity: 0.3;
     }
 
     .home-intro-rail {
