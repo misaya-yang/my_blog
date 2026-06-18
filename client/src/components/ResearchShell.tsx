@@ -20,7 +20,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { Link } from "wouter";
-import type React from "react";
+import React from "react";
 
 type SiteHeaderProps = {
   active?:
@@ -226,20 +226,7 @@ export function SiteHeader({
               </span>
               <LogOut className="h-3.5 w-3.5 opacity-70" />
             </Button>
-          ) : (
-            <Link href="/login">
-              <Button
-                size="sm"
-                variant="outline"
-                className={cn(
-                  "glass-button hidden sm:inline-flex",
-                  active === "login" && "border-primary/70 text-white"
-                )}
-              >
-                {t("nav.login")}
-              </Button>
-            </Link>
-          )}
+          ) : null}
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -299,13 +286,7 @@ export function SiteHeader({
                       <LogOut className="h-3.5 w-3.5 opacity-70" />
                     </button>
                   </SheetClose>
-                ) : (
-                  <SheetClose asChild>
-                    <Link href="/login" className="nav-ink h-11 justify-start">
-                      {t("nav.login")}
-                    </Link>
-                  </SheetClose>
-                )}
+                ) : null}
               </div>
             </SheetContent>
           </Sheet>

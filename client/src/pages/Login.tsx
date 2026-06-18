@@ -6,15 +6,8 @@ import {
   SpaceBackdrop,
   Surface,
 } from "@/components/ResearchShell";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { trpc } from "@/lib/trpc";
-import {
-  KeyRound,
-  Library,
-  LockKeyhole,
-  Network,
-  UserRound,
-} from "lucide-react";
+import { BookOpen, KeyRound, LockKeyhole, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
@@ -24,14 +17,13 @@ import { buildRouteMetadata } from "@shared/metadata";
 
 export default function Login() {
   const [password, setPassword] = useState("");
-  const [nickname, setNickname] = useState("");
   const [, navigate] = useLocation();
   const utils = trpc.useUtils();
   const { t } = useLanguage();
   const siteUrl = getClientSiteUrl();
   useSeo(
     buildRouteMetadata(siteUrl, {
-      title: t("nav.login"),
+      title: t("login.seoTitle"),
       description: t("login.subtitle"),
       path: "/login",
       noindex: true,
@@ -49,26 +41,9 @@ export default function Login() {
     },
   });
 
-  const visitorLogin = trpc.auth.visitorLogin.useMutation({
-    onSuccess: async data => {
-      utils.auth.session.setData(undefined, data.session);
-      await utils.auth.session.invalidate();
-      toast.success(t("login.toast.visitorCreated"));
-      navigate("/");
-    },
-    onError: error => {
-      toast.error(error.message || t("login.toast.visitorFailed"));
-    },
-  });
-
   const handleAdminSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     adminLogin.mutate({ password });
-  };
-
-  const handleVisitorSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    visitorLogin.mutate({ nickname: nickname.trim() });
   };
 
   return (
@@ -81,22 +56,22 @@ export default function Login() {
         compact
       />
 
-      <main className="container relative z-10 grid min-h-[calc(100vh-68px)] grid-cols-1 items-start gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_440px] lg:items-center lg:py-12">
+      <main className="container relative z-10 grid min-h-[calc(100dvh-68px)] grid-cols-1 items-start gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center lg:py-12">
         <section className="page-hero login-copy max-w-2xl">
           <div className="signal-chip mb-7">
-            <Library className="h-3.5 w-3.5" />
+            <ShieldCheck className="h-3.5 w-3.5" />
             {t("login.chip")}
           </div>
           <h1 className="page-title max-w-xl">{t("login.title")}</h1>
           <p className="page-copy mt-5 max-w-xl">{t("login.subtitle")}</p>
           <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-2">
             <Surface as="div" density="compact">
-              <Network className="mb-3 h-5 w-5 text-sky-300" />
+              <BookOpen className="mb-3 h-5 w-5 text-sky-300" />
               <p className="text-sm font-medium text-white">
-                {t("login.visitorCardTitle")}
+                {t("login.readerOpenTitle")}
               </p>
               <p className="mt-2 text-xs leading-5 text-slate-400">
-                {t("login.visitorCardDesc")}
+                {t("login.readerOpenDesc")}
               </p>
             </Surface>
             <Surface as="div" density="compact">
@@ -114,92 +89,41 @@ export default function Login() {
         <Surface className="login-panel">
           <SectionHeader
             icon={<KeyRound className="h-4 w-4" />}
-            title={t("nav.login")}
+            title={t("login.panelTitle")}
           />
-          <Tabs defaultValue="visitor" className="w-full">
-            <TabsList className="mt-5 grid w-full grid-cols-2 border border-sky-200/10 bg-slate-950/45">
-              <TabsTrigger value="visitor" className="gap-2">
-                <UserRound className="h-4 w-4" />
-                {t("login.tabVisitor")}
-              </TabsTrigger>
-              <TabsTrigger value="admin" className="gap-2">
-                <KeyRound className="h-4 w-4" />
-                {t("login.tabAdmin")}
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="visitor" className="mt-6">
-              <form onSubmit={handleVisitorSubmit} className="space-y-5">
-                <div>
-                  <h2 className="text-xl font-semibold text-white">
-                    {t("login.visitorTitle")}
-                  </h2>
-                  <p className="mt-2 text-sm leading-6 text-slate-400">
-                    {t("login.visitorDesc")}
-                  </p>
-                </div>
-                <label className="sr-only" htmlFor="visitor-nickname">
-                  {t("login.visitorPlaceholder")}
-                </label>
-                <Input
-                  id="visitor-nickname"
-                  value={nickname}
-                  onChange={event => setNickname(event.target.value)}
-                  placeholder={t("login.visitorPlaceholder")}
-                  aria-label={t("login.visitorPlaceholder")}
-                  autoComplete="nickname"
-                  minLength={2}
-                  maxLength={40}
-                  className="border-sky-200/15 bg-slate-950/40 text-white placeholder:text-slate-500"
-                />
-                <Button
-                  type="submit"
-                  className="owner-primary-action w-full"
-                  disabled={visitorLogin.isPending}
-                >
-                  {visitorLogin.isPending
-                    ? t("login.visitorBtnLoading")
-                    : t("login.visitorBtn")}
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="admin" className="mt-6">
-              <form onSubmit={handleAdminSubmit} className="space-y-5">
-                <div>
-                  <h2 className="text-xl font-semibold text-white">
-                    {t("login.adminTitle")}
-                  </h2>
-                  <p className="mt-2 text-sm leading-6 text-slate-400">
-                    {t("login.adminDesc")}
-                  </p>
-                </div>
-                <label className="sr-only" htmlFor="admin-password">
-                  {t("login.adminPasswordPlaceholder")}
-                </label>
-                <Input
-                  id="admin-password"
-                  type="password"
-                  placeholder={t("login.adminPasswordPlaceholder")}
-                  value={password}
-                  onChange={event => setPassword(event.target.value)}
-                  required
-                  aria-label={t("login.adminPasswordPlaceholder")}
-                  autoComplete="current-password"
-                  className="border-sky-200/15 bg-slate-950/40 text-white placeholder:text-slate-500"
-                />
-                <Button
-                  type="submit"
-                  className="owner-primary-action w-full"
-                  disabled={adminLogin.isPending}
-                >
-                  {adminLogin.isPending
-                    ? t("login.adminBtnLoading")
-                    : t("login.adminBtn")}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+          <form onSubmit={handleAdminSubmit} className="mt-6 space-y-5">
+            <div>
+              <h2 className="text-xl font-semibold text-white">
+                {t("login.adminTitle")}
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-slate-400">
+                {t("login.adminDesc")}
+              </p>
+            </div>
+            <label className="sr-only" htmlFor="admin-password">
+              {t("login.adminPasswordPlaceholder")}
+            </label>
+            <Input
+              id="admin-password"
+              type="password"
+              placeholder={t("login.adminPasswordPlaceholder")}
+              value={password}
+              onChange={event => setPassword(event.target.value)}
+              required
+              aria-label={t("login.adminPasswordPlaceholder")}
+              autoComplete="current-password"
+              className="border-sky-200/15 bg-slate-950/40 text-white placeholder:text-slate-500"
+            />
+            <Button
+              type="submit"
+              className="owner-primary-action w-full"
+              disabled={adminLogin.isPending}
+            >
+              {adminLogin.isPending
+                ? t("login.adminBtnLoading")
+                : t("login.adminBtn")}
+            </Button>
+          </form>
         </Surface>
       </main>
     </div>
