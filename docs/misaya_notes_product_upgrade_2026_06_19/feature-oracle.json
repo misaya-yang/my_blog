@@ -1,0 +1,113 @@
+{
+  "schema_version": "prd-phase-harness/feature-oracle/v1",
+  "instructions": {
+    "allowed_edits": "Coding agents may update only status, evidence, and notes fields unless the user explicitly changes scope.",
+    "completion_rule": "A feature is passing only after end-to-end evidence exists.",
+    "status_values": [
+      "failing",
+      "passing",
+      "blocked",
+      "waived"
+    ]
+  },
+  "features": [
+    {
+      "id": "MNP-F001",
+      "phase_id": "MNP-00",
+      "category": "baseline",
+      "description": "The current product contract is documented with real repo paths, design-system facts, validation commands, and phase boundaries.",
+      "steps": [
+        "Open docs/misaya_notes_product_upgrade_2026_06_19/phase-00-current-product-contract-and-evidence-audit.md.",
+        "Inspect the current repo, prior harnesses, local design system, and parallel review findings.",
+        "Write docs/misaya_notes_product_upgrade_2026_06_19/reports/mnp-00-current-product-contract-and-evidence-audit-report.md with validation evidence."
+      ],
+      "status": "passing",
+      "evidence": "docs/misaya_notes_product_upgrade_2026_06_19/source-packet.md, phase-manifest.md, continuity-ledger.md, and reports/mnp-00-current-product-contract-and-evidence-audit-report.md updated on 2026-06-19.",
+      "notes": "MNP-00 unlocks downstream work as a planning baseline only; it does not mark UI/product implementation phases complete."
+    },
+    {
+      "id": "MNP-F002",
+      "phase_id": "MNP-01",
+      "category": "ui",
+      "description": "Public UI and owner tools no longer read as AI-template glass/space dashboards; dark and light modes remain readable and distinct.",
+      "steps": [
+        "Open docs/misaya_notes_product_upgrade_2026_06_19/phase-01-ui-anti-slop-visual-system.md.",
+        "Reduce gratuitous glow, glass, grid, chip density, and control-console composition.",
+        "Capture desktop/mobile screenshots for public dark/light and owner dark-lock routes."
+      ],
+      "status": "failing",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "MNP-F003",
+      "phase_id": "MNP-02",
+      "category": "reader",
+      "description": "Article detail pages expose readable content early and render mixed Markdown, KaTeX, code, images, and tables without layout breakage.",
+      "steps": [
+        "Open docs/misaya_notes_product_upgrade_2026_06_19/phase-02-reading-experience-and-format-rendering.md.",
+        "Add or refresh fixture coverage for rich article formatting and CJK/English reading time.",
+        "Verify article entry, guide, Agent prompt, and body order across desktop, tablet, and mobile."
+      ],
+      "status": "failing",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "MNP-F004",
+      "phase_id": "MNP-03",
+      "category": "agent",
+      "description": "Blog Agent answers preserve grounded-source trust through stable anchors, clear failure recovery, quota/context feedback, and useful admin evals.",
+      "steps": [
+        "Open docs/misaya_notes_product_upgrade_2026_06_19/phase-03-blog-agent-product-reliability.md.",
+        "Verify source-card anchors, no-source fallback, partial stream failure, cancel, timeout, low quota, and uploaded context limits.",
+        "Write unit/browser evidence without exposing hidden or draft content."
+      ],
+      "status": "failing",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "MNP-F005",
+      "phase_id": "MNP-04",
+      "category": "content",
+      "description": "Summaries, UI labels, introductions, and conclusions sound concrete and technical rather than generic or author-subjective.",
+      "steps": [
+        "Open docs/misaya_notes_product_upgrade_2026_06_19/phase-04-article-voice-and-quality-system.md.",
+        "Rewrite high-signal metadata and UI copy before touching technical claims.",
+        "Run content audit and reader screenshots; avoid changing slugs, formulas, code, dates, or hidden status without fresh evidence."
+      ],
+      "status": "failing",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "MNP-F006",
+      "phase_id": "MNP-05",
+      "category": "code",
+      "description": "High-risk UI and Agent code is simplified through scoped extraction, token consolidation, and tests instead of broad rewrites.",
+      "steps": [
+        "Open docs/misaya_notes_product_upgrade_2026_06_19/phase-05-code-simplification-and-css-architecture.md.",
+        "Remove contradictory CSS override conflicts and consolidate theme tokens where behavior is proven.",
+        "Extract pure logic from PostDetail/Search/Agent only with focused tests and behavior parity evidence."
+      ],
+      "status": "failing",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "MNP-F007",
+      "phase_id": "MNP-06",
+      "category": "release",
+      "description": "A selected implementation slice is checked, committed, pushed, deployed, smoke-tested in production, and documented with rollback notes.",
+      "steps": [
+        "Open docs/misaya_notes_product_upgrade_2026_06_19/phase-06-release-evidence-and-production-verification.md.",
+        "Run full checks and browser/production smoke appropriate to the changed slice.",
+        "Write docs/misaya_notes_product_upgrade_2026_06_19/reports/mnp-06-release-evidence-and-production-verification-report.md with deployment evidence."
+      ],
+      "status": "failing",
+      "evidence": "",
+      "notes": ""
+    }
+  ]
+}
