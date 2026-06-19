@@ -40,6 +40,8 @@ Used `reports/mnp-04-article-voice-and-quality-system-plan.md`. The implementati
 | Content audit | `pnpm content:audit` | passed | 14 Markdown files, 9 seed posts, 0 warnings, 0 failures. |
 | Content publish | `pnpm content:publish` | passed | 8 public posts, 1 hidden/draft excluded, 142 chunks reindexed, 0 blockers. Required because local production runtime still read old DB content after code-only build. |
 | Runtime smoke | Playwright against `http://localhost:4173` | passed | `reports/mnp-04-runtime/zh-copy-runtime-evidence.json` checked `/`, `/search?q=zzzz-no-hit-ui-audit`, and `/post/goal-harness-agent-phase-protocol` in zh; 3 routes checked, 0 failed. |
+| Production deploy | `npx vercel --prod --yes` | passed | Deployment `dpl_Gi2DggdB3L6ovnLQhYHY7icUtQn4` reached READY and aliased to `https://misaya.online`. |
+| Production smoke | `curl` plus Playwright against `https://misaya.online` | passed | `/`, `/post/goal-harness-agent-phase-protocol`, `/search?q=zzzz-no-hit-ui-audit`, and `/sitemap.xml` returned 200; `reports/mnp-04-runtime/prod-zh-copy-smoke.json` checked 3 zh routes, 0 failed. |
 
 ## Feature Oracle Updates
 
@@ -54,6 +56,7 @@ Append a generator/evaluator entry for MNP-04 and move the active handoff to MNP
 ## Screenshots, Logs, or Eval Tables
 
 - Runtime text evidence: `docs/misaya_notes_product_upgrade_2026_06_19/reports/mnp-04-runtime/zh-copy-runtime-evidence.json`
+- Production runtime text evidence: `docs/misaya_notes_product_upgrade_2026_06_19/reports/mnp-04-runtime/prod-zh-copy-smoke.json`
 - Publish freshness report: `docs/product_optimization/reports/po-08-publish-freshness-latest.json`
 - No screenshot artifact was required for this copy-focused slice; the runtime artifact records route status, required text, forbidden copy checks, and short page text samples.
 

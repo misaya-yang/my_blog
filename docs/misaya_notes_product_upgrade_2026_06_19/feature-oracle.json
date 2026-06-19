@@ -78,7 +78,7 @@
         "Run content audit and reader screenshots; avoid changing slugs, formulas, code, dates, or hidden status without fresh evidence."
       ],
       "status": "passing",
-      "evidence": "reports/mnp-04-article-voice-and-quality-system-report.md; reports/mnp-04-runtime/zh-copy-runtime-evidence.json; scripts/audit/content-quality.test.ts; client/src/i18n/copyVoice.test.ts; server/publicSeedPosts.test.ts; pnpm content:audit; pnpm check; pnpm test; pnpm build; pnpm content:publish.",
+      "evidence": "reports/mnp-04-article-voice-and-quality-system-report.md; reports/mnp-04-runtime/zh-copy-runtime-evidence.json; reports/mnp-04-runtime/prod-zh-copy-smoke.json; scripts/audit/content-quality.test.ts; client/src/i18n/copyVoice.test.ts; server/publicSeedPosts.test.ts; pnpm content:audit; pnpm check; pnpm test; pnpm build; pnpm content:publish; production deploy dpl_Gi2DggdB3L6ovnLQhYHY7icUtQn4.",
       "notes": "Passed for the MNP-04 content/copy slice: concrete public seed excerpts, localized UI/series labels, stale internal-copy regression guard, public seed fallback parity, selected public article heading/intro/conclusion rewrites, and DB publish/reindex evidence. It preserves slugs, dates, visibility, formulas, code listings, and the MNP-03 source-card anchor contract."
     },
     {
@@ -106,8 +106,8 @@
         "Write docs/misaya_notes_product_upgrade_2026_06_19/reports/mnp-06-release-evidence-and-production-verification-report.md with deployment evidence."
       ],
       "status": "passing",
-      "evidence": "reports/mnp-06-release-evidence-and-production-verification-report.md; MNP-01 commits 924ed85 and 67a9db6 pushed to origin/main; MNP-02 commit c8901f0 pushed to origin/main; MNP-03 commit eee35b3 pushed to origin/main; Vercel production deploys dpl_Jn9eGhQ9vfmkKzYjDnRs4cjG6KF9 and dpl_8zmvMPWjzReKme4XrQKhdYaxfNAA completed; https://misaya.online smoke returned 200 for /, reader articles, search, algorithms, applications, archive, rss.xml, sitemap.xml, and robots.txt; SSR metadata smoke passed for /post/goal-harness-agent-phase-protocol; production Chrome anchor smoke passed.",
-      "notes": "Passed for the MNP-01 UI release slice, MNP-02 reader-format release slice, and MNP-03 Agent reliability release slice. It does not mark MNP-04 content voice or MNP-05 CSS simplification complete."
+      "evidence": "reports/mnp-06-release-evidence-and-production-verification-report.md; MNP-01 commits 924ed85 and 67a9db6 pushed to origin/main; MNP-02 commit c8901f0 pushed to origin/main; MNP-03 commit eee35b3 pushed to origin/main; MNP-04 commit 680839e pushed to origin/main; Vercel production deploys dpl_Jn9eGhQ9vfmkKzYjDnRs4cjG6KF9, dpl_8zmvMPWjzReKme4XrQKhdYaxfNAA, and dpl_Gi2DggdB3L6ovnLQhYHY7icUtQn4 completed; https://misaya.online smoke returned 200 for /, reader articles, search, algorithms, applications, archive, rss.xml, sitemap.xml, and robots.txt; SSR metadata smoke passed for /post/goal-harness-agent-phase-protocol; production Chrome/Playwright copy and anchor smokes passed.",
+      "notes": "Passed for the MNP-01 UI release slice, MNP-02 reader-format release slice, MNP-03 Agent reliability release slice, and MNP-04 article voice/copy release slice. It does not mark MNP-05 CSS simplification complete."
     }
   ]
 }

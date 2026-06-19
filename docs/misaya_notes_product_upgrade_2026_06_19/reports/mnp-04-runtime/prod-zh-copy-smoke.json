@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-06-19T17:16:07.196Z",
+  "baseUrl": "https://misaya.online",
+  "deploymentId": "dpl_Gi2DggdB3L6ovnLQhYHY7icUtQn4",
+  "deploymentUrl": "https://my-blog-kcnpk5om2-zedpl28174-3992s-projects.vercel.app",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "language": "zh",
+  "results": [
+    {
+      "name": "home-zh",
+      "path": "/",
+      "status": 200,
+      "mustContain": [
+        "双轨研究笔记",
+        "Agent 运行时系统",
+        "阅读全文"
+      ],
+      "missing": [],
+      "mustNotContain": [
+        "Agent Runtime Systems",
+        "current query",
+        "核心抽象",
+        "同一张反馈系统地图"
+      ],
+      "unexpected": [],
+      "forbiddenMatches": [],
+      "textSample": "Misaya Notes\n首页\nAI 算法\nAI 应用\n归档\n关于\nEN\n\n双轨研究笔记\n\nAI 算法与 AI 应用\n\n记录模型机制、生成建模、长上下文行为、Agent 基础设施、RAG 与评测工程。\n\n搜索笔记...\n搜索\n从这里开始\n先读最新一篇，或按问题直接进入一条研究路径。\n最新文章\n应用路径\n算法路径\nAI 算法\n4 条路径 · 4 篇公开笔记\nAI 算法研究\n\n围绕模型架构、生成建模、位置编码、长上下文行为与残差稳定性展开研究记录。\n\n进入 AI 算法\n阅读路径\n大模型后训练与强化学习\n\n从 RLHF、偏好优化、可验证奖励到 Agent RL 的后训练路线图。\n\n大模型后训练与强化学习\n大模型强化学习：从 RLHF 到可验证奖励的后训练主线\n生成建模\nFlow Matching：从扩散噪声到确定性运输\nAI 应用\n1 条路径 · 4 篇公开笔记\nAI 应用工程\n\n记录 Agent 系统、Harness Engine、RAG、上下文工程、工具调用与评测循环。\n\n进入 AI 应用\n阅读路径\nAgent 运行时系统\n\n从受控评测走向可观测的多步 Agent 运行时。\n\nAgent 运行时系统\nGoal Harness: 让 Codex / Claude Code 持续完整工作的工程协议\nAgent 运行时系统\nAgent Loop: 从 ReAct 模式到可观测运行时\n最新一篇\n大模型强化学习：从 RLHF 到可验证奖励的后训练主线\n\n把后训练看成反馈系统设计：RLHF、DPO、RLAIF、RLVR、GRPO、PRM 与 verifier 分别解决奖励来源、策略更新、可验证反馈和 reward hacking 控制的问题。\n\n阅读全文\n更多笔记\n\n这里保留少量近期公开文章，完整列表在归档中。\n\n打开归档\n研究\nAI Algorithms\nFlow Matching：从"
+    },
+    {
+      "name": "search-empty-zh",
+      "path": "/search?q=zzzz-no-hit-ui-audit",
+      "status": 200,
+      "mustContain": [
+        "搜索公开笔记",
+        "当前搜索词",
+        "选题线索"
+      ],
+      "missing": [],
+      "mustNotContain": [
+        "current query",
+        "内容信号"
+      ],
+      "unexpected": [],
+      "forbiddenMatches": [],
+      "textSample": "Misaya Notes\n首页\nAI 算法\nAI 应用\n归档\n关于\nEN\n搜索公开笔记\n\n跨标题、摘要、正文、分类与标签搜索所有公开文章。\n\n搜索\nagent、RoPE、context engineering...\n“zzzz-no-hit-ui-audit” 的 0 个结果\n归档\n还没有直接命中\n\n“zzzz-no-hit-ui-audit” 暂时没有匹配公开笔记。可以试试相近主题、让阅读助手基于公开内容综合查找，或从阅读线索继续。\n\n助手会基于公开文章、标签、分类和当前搜索词检索。\n\n询问阅读助手\n清空搜索\n相近主题\nAgent 系统\n上下文工程\nRAG 与检索\nHarness Engine\n研究路径\nAI 应用\nAI 算法\n归档\n\n这次无结果搜索只会作为作者可见的选题线索保存，不包含邮箱、IP 或访客身份。\n\n博客助手"
+    },
+    {
+      "name": "post-goal-harness-zh",
+      "path": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "mustContain": [
+        "方向",
+        "这篇文章把这套执行协议称为 Goal Harness",
+        "执行协议缺失"
+      ],
+      "missing": [],
+      "mustNotContain": [
+        "核心抽象",
+        "Reader map",
+        "看起来到处都做了"
+      ],
+      "unexpected": [],
+      "forbiddenMatches": [],
+      "textSample": "返回\nEN\nGoal Harness: 让 Codex / Claude Code 持续完整工作的工程协议\nMisaya Yang\n学术\n邮箱\n2026年5月31日\n222 次阅读\n13 分钟阅读\nAI Applications\nAgent Systems\nGoal Harness\n+6 个标签\n\n阅读入口\n\n核心判断\n复盘一次博客 Agent 改造：schema、router、UI 和测试名都在，但文章感知、检索、source card、quota 与 trace 没有闭环。Goal Harness 把这些验收点编译成可交接的 phase、闸门和证据报告。\n\n有一类 Coding Agent 失败最难排查：代码能跑，提交也不少，但读者真正会走的路径仍然断着。\n\n一次博客 Agent 改造就暴露了这个问题。PRD 写得完整，仓库也出现了 schema、router、UI、测试名、后台页和看似合理的文案；但当读者在文章页发问时，Agent 没拿到当前页面上下文，口语问题会检索打偏，source card 也未必能定位到正在阅读的小节。\n\n把这个问题归因成“模型能力不够”太粗了。更根本的原因是执行协议缺失：长期目标交给了 Agent，却没有把工作拆成可冷启动、可验证、可回归、可交接的单元。于是代码痕迹很多，核心体验却没有闭环，内容边界、quota、retrieval、source card、mobile sheet、eval 和 admin trace 也没有被逐项锁住。\n\n这篇文章把这套执行协议称为 Goal Harness。\n\nGoal Harness 不靠新的框架，也不靠把 prompt 写得更长。它更像一套仓库内执行协议：把 PRD、Figma、代码库事实和测试要求编译成一个 phase folder，让新 Agent 可以在干净上下文里接手一个 phase，完成它，验"
+    }
+  ],
+  "summary": {
+    "checked": 3,
+    "failed": 0,
+    "passed": true
+  }
+}

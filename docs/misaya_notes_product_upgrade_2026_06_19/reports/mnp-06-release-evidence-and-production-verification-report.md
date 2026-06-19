@@ -2,7 +2,7 @@
 
 **Phase:** MNP-06 Release Evidence and Production Verification
 
-**Status:** passed for the MNP-01 UI slice, MNP-02 reader-format slice, and MNP-03 Agent reliability slice
+**Status:** passed for the MNP-01 UI slice, MNP-02 reader-format slice, MNP-03 Agent reliability slice, and MNP-04 article voice/copy slice
 
 **Date:** 2026-06-19
 
@@ -10,9 +10,9 @@
 
 ## Summary
 
-Committed, pushed, deployed, and smoke-tested the MNP-01 UI anti-slop implementation slice, the MNP-02 reader-format implementation slice, and the MNP-03 Agent reliability implementation slice. The deployed public alias is `https://misaya.online`.
+Committed, pushed, deployed, and smoke-tested the MNP-01 UI anti-slop implementation slice, the MNP-02 reader-format implementation slice, the MNP-03 Agent reliability implementation slice, and the MNP-04 article voice/copy implementation slice. The deployed public alias is `https://misaya.online`.
 
-This release evidence is scoped to MNP-01, MNP-02, and MNP-03. It does not mark MNP-04 content-voice work or MNP-05 CSS simplification as complete.
+This release evidence is scoped to MNP-01 through MNP-04. It does not mark MNP-05 CSS simplification as complete.
 
 ## MNP-01 Release Inputs
 
@@ -185,6 +185,62 @@ The production article route `/post/goal-harness-agent-phase-protocol` passed th
 - The changes are scoped to source-card anchor generation/persistence, Agent diagnostics, tests, and harness evidence; no schema, content seed, production data, or deployment config changes were made.
 - If source-card navigation regresses, first inspect `shared/heading-anchors.ts`, `client/src/pages/PostDetail.tsx`, `client/src/components/agent/BlogAgentRoot.tsx`, and `server/ai/model.ts`.
 
+## MNP-04 Release Inputs
+
+| Item | Value |
+| --- | --- |
+| Branch | `main` |
+| Implementation commit | `680839e feat: improve article voice and copy quality` |
+| Push target | `origin/main` |
+| Content publish command | `pnpm content:publish` |
+| Deployment command | `npx vercel --prod --yes` |
+| Production alias | `https://misaya.online` |
+| Deployment URL observed | `https://my-blog-kcnpk5om2-zedpl28174-3992s-projects.vercel.app` |
+| Deployment ID | `dpl_Gi2DggdB3L6ovnLQhYHY7icUtQn4` |
+
+## MNP-04 Local Verification Before Release
+
+| Gate | Result |
+| --- | --- |
+| `git diff --check` | passed |
+| Focused content/UI/source Vitest | passed, 6 files and 38 tests |
+| `pnpm content:audit` | passed, 14 Markdown files, 9 seed posts, 0 warnings, 0 failures |
+| `pnpm check` | passed |
+| `pnpm test` | passed, 39 files and 238 tests |
+| `pnpm build` | passed |
+| Harness validator | passed |
+| Local production browser copy smoke | passed; `reports/mnp-04-runtime/zh-copy-runtime-evidence.json` checked 3 zh routes, 0 failed |
+
+## MNP-04 Content Publish
+
+`pnpm content:publish` passed after code-only runtime smoke showed stale DB-backed article copy:
+
+| Check | Result |
+| --- | --- |
+| Public posts | 8 |
+| Hidden/draft excluded | 1 |
+| Knowledge chunks | 142 created, 142 deleted, 0 skipped |
+| Freshness blockers | 0 |
+
+## MNP-04 Production Smoke
+
+HTTP smoke was run against `https://misaya.online` after deployment:
+
+| Route | Status | Content Type |
+| --- | --- | --- |
+| `/` | 200 | `text/html; charset=utf-8` |
+| `/post/goal-harness-agent-phase-protocol` | 200 | `text/html; charset=utf-8` |
+| `/search?q=zzzz-no-hit-ui-audit` | 200 | `text/html; charset=utf-8` |
+| `/sitemap.xml` | 200 | `application/xml; charset=utf-8` |
+
+Playwright production copy smoke passed in zh mode; durable evidence is `reports/mnp-04-runtime/prod-zh-copy-smoke.json`.
+
+## MNP-04 Rollback Notes
+
+- Revert `680839e` if the copy/content slice causes a code regression.
+- Database-backed article text was already published through the existing seed/upsert flow. If article content needs rollback, restore the previous Markdown/seed text and run `pnpm content:publish` again after explicit approval.
+- If visible copy regresses, first inspect `client/src/i18n/home.ts`, `client/src/i18n/post.ts`, `client/src/i18n/agent.ts`, `client/src/components/ArticleCard.tsx`, `client/src/pages/Home.tsx`, `seed-blog.mjs`, and `server/publicSeedPosts.ts`.
+
 ## Feature Oracle Updates
 
 | Feature ID | Old Status | New Status | Evidence |
@@ -192,7 +248,8 @@ The production article route `/post/goal-harness-agent-phase-protocol` passed th
 | MNP-F007 | failing | passing | This report, pushed `origin/main`, Vercel production deploy, and production smoke checks. |
 | MNP-F007 | passing | passing | MNP-02 commit `c8901f0` pushed to `origin/main`, Vercel production deploy `dpl_Jn9eGhQ9vfmkKzYjDnRs4cjG6KF9`, production route smoke, and SSR metadata smoke. |
 | MNP-F007 | passing | passing | MNP-03 commit `eee35b3` pushed to `origin/main`, Vercel production deploy `dpl_8zmvMPWjzReKme4XrQKhdYaxfNAA`, production route smoke, SSR metadata smoke, and production browser anchor smoke. |
+| MNP-F007 | passing | passing | MNP-04 commit `680839e` pushed to `origin/main`, `pnpm content:publish`, Vercel production deploy `dpl_Gi2DggdB3L6ovnLQhYHY7icUtQn4`, production route smoke, and production browser copy smoke. |
 
 ## Handoff Notes
 
-Proceed to MNP-04. The production site is reachable, and the MNP-01 through MNP-03 release slices have rollback notes. MNP-04 and MNP-05 remain open.
+Proceed to MNP-05. The production site is reachable, and the MNP-01 through MNP-04 release slices have rollback notes. MNP-05 remains open.
