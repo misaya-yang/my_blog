@@ -15,6 +15,13 @@ export function createHeadingAnchorId(text: string, fallbackIndex?: number) {
   return null;
 }
 
+export function createSourceCardSemanticAnchorId(source: {
+  sectionTitle?: string | null;
+  heading?: string | null;
+}) {
+  return createHeadingAnchorId(source.sectionTitle ?? source.heading ?? "");
+}
+
 export function createUniqueHeadingAnchors(
   headings: Array<{ text: string; level: number }>
 ): HeadingAnchor[] {

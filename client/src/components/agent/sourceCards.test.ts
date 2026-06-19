@@ -40,6 +40,26 @@ describe("Agent source cards", () => {
     );
   });
 
+  it("uses section titles before headings for semantic anchors", () => {
+    expect(
+      getSourceAnchorId({
+        ...source,
+        sectionTitle: "2. Runtime Stack",
+        heading: "Fallback Heading",
+      })
+    ).toBe("2-runtime-stack");
+  });
+
+  it("falls back from blank persisted anchors to semantic anchors", () => {
+    expect(
+      getSourceAnchorId({
+        ...source,
+        anchorId: "   ",
+        sectionTitle: "Evidence Framing",
+      })
+    ).toBe("evidence-framing");
+  });
+
   it("keeps the old chunk-index fallback when no heading is available", () => {
     const fallbackSource = { ...source, heading: undefined };
 

@@ -652,74 +652,7 @@
 
 @layer components {
   /* Theme mode lock: mainstream neutral layering, not bright highlight cards. */
-  :root {
-    --public-bg: oklch(0.948 0.006 250);
-    --public-bg-lower: oklch(0.928 0.007 250);
-    --public-header-bg: oklch(0.966 0.005 250 / 92%);
-    --public-sheet-bg: oklch(0.972 0.004 250 / 98%);
-    --public-panel-bg:
-      linear-gradient(
-        180deg,
-        oklch(0.982 0.004 250 / 88%),
-        oklch(0.956 0.005 250 / 88%)
-      ),
-      oklch(0.968 0.005 250);
-    --public-inline-bg: oklch(0.92 0.006 250 / 74%);
-    --public-input-bg: oklch(0.982 0.004 250 / 94%);
-    --public-text: oklch(0.18 0.018 260);
-    --public-muted: oklch(0.43 0.018 250);
-    --public-faint: oklch(0.56 0.014 250);
-    --public-border: oklch(0.78 0.012 250 / 58%);
-    --public-border-strong: oklch(0.54 0.14 245 / 30%);
-    --public-divider: oklch(0.78 0.012 250 / 50%);
-    --public-accent: oklch(0.5 0.15 245);
-    --public-accent-bright: oklch(0.45 0.15 242);
-    --public-button-bg: oklch(0.52 0.16 248);
-    --public-button-text: oklch(0.99 0 0);
-    --ui-muted: var(--public-muted);
-    --ui-muted-low: oklch(0.52 0.014 250);
-    --ui-accent: var(--public-accent-bright);
-    --ui-accent-soft: oklch(0.5 0.15 245 / 12%);
-    --public-radius: 0.82rem;
-    --public-panel-shadow:
-      inset 0 1px 0 oklch(1 0 0 / 50%),
-      0 1px 2px oklch(0.3 0.018 250 / 8%),
-      0 8px 22px oklch(0.3 0.018 250 / 6%);
-  }
-
-  .dark {
-    --public-bg: oklch(0.105 0.013 252);
-    --public-bg-lower: oklch(0.086 0.012 252);
-    --public-header-bg: oklch(0.105 0.013 252 / 82%);
-    --public-sheet-bg: oklch(0.08 0.012 252 / 96%);
-    --public-panel-bg:
-      linear-gradient(
-        145deg,
-        oklch(0.16 0.022 248 / 78%),
-        oklch(0.07 0.014 252 / 88%)
-      ),
-      oklch(0.095 0.014 252);
-    --public-inline-bg: oklch(0.11 0.016 248 / 44%);
-    --public-input-bg: oklch(0.055 0.014 252 / 86%);
-    --public-text: oklch(0.94 0.008 240);
-    --public-muted: oklch(0.74 0.018 236);
-    --public-faint: oklch(0.58 0.016 236);
-    --public-border: oklch(0.85 0.04 240 / 10%);
-    --public-border-strong: oklch(0.72 0.15 245 / 28%);
-    --public-divider: oklch(0.85 0.04 240 / 10%);
-    --public-accent: oklch(0.72 0.15 245);
-    --public-accent-bright: oklch(0.84 0.13 210);
-    --public-button-bg: oklch(0.55 0.16 248);
-    --public-button-text: oklch(0.99 0 0);
-    --ui-muted: var(--public-muted);
-    --ui-muted-low: var(--public-faint);
-    --ui-accent: var(--public-accent-bright);
-    --ui-accent-soft: oklch(0.76 0.13 226 / 12%);
-    --public-panel-shadow:
-      inset 0 1px 0 oklch(1 0 0 / 7%),
-      0 22px 46px oklch(0.03 0.012 252 / 26%);
-  }
-
+  :root,
   .space-page {
     --public-bg: oklch(0.948 0.006 250);
     --public-bg-lower: oklch(0.928 0.007 250);
@@ -753,10 +686,9 @@
       inset 0 1px 0 oklch(1 0 0 / 50%),
       0 1px 2px oklch(0.3 0.018 250 / 8%),
       0 8px 22px oklch(0.3 0.018 250 / 6%);
-    background: linear-gradient(180deg, var(--public-bg), var(--public-bg-lower));
-    color: var(--public-text);
   }
 
+  .dark,
   .dark .space-page {
     --public-bg: oklch(0.105 0.013 252);
     --public-bg-lower: oklch(0.086 0.012 252);
@@ -788,6 +720,14 @@
     --public-panel-shadow:
       inset 0 1px 0 oklch(1 0 0 / 7%),
       0 22px 46px oklch(0.03 0.012 252 / 26%);
+  }
+
+  .space-page {
+    background: linear-gradient(180deg, var(--public-bg), var(--public-bg-lower));
+    color: var(--public-text);
+  }
+
+  .dark .space-page {
     background:
       radial-gradient(
         90% 70% at 12% -8%,

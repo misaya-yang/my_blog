@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-06-19T17:30:41.240Z",
+  "url": "http://localhost:3000/",
+  "light": {
+    "bg": "oklch(94.8% .006 250)",
+    "text": "oklch(18% .018 260)",
+    "border": "oklch(78% .012 250/.58)",
+    "accent": "oklch(50% .15 245)",
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "dark": {
+    "bg": "oklch(10.5% .013 252)",
+    "text": "oklch(94% .008 240)",
+    "border": "oklch(85% .04 240/.1)",
+    "accent": "oklch(72% .15 245)",
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  }
+}

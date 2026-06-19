@@ -91,9 +91,9 @@
         "Remove contradictory CSS override conflicts and consolidate theme tokens where behavior is proven.",
         "Extract pure logic from PostDetail/Search/Agent only with focused tests and behavior parity evidence."
       ],
-      "status": "failing",
-      "evidence": "",
-      "notes": ""
+      "status": "passing",
+      "evidence": "reports/mnp-05-code-simplification-and-css-architecture-report.md; reports/mnp-05-runtime/theme-token-smoke.json; docs/product_optimization/reports/ui-layout-checks-latest.json; focused source-card/heading/model Vitest passed with 42 tests; pnpm check, pnpm test, pnpm build, and pnpm audit:ui passed on 2026-06-20.",
+      "notes": "Passed for the MNP-05 simplification slice: Agent source-card pure helpers moved into sourceCardLinks.ts with BlogAgentRoot re-exports preserved, source-card semantic anchor generation is shared between client and server without persisting legacy heading-N fallbacks, owner-tools.css now owns public light/dark tokens through grouped :root/.space-page selectors, and visual-refresh.css no longer duplicates the global reduced-motion override."
     },
     {
       "id": "MNP-F007",

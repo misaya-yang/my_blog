@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   createHeadingAnchorId,
+  createSourceCardSemanticAnchorId,
   createUniqueHeadingAnchors,
 } from "./heading-anchors";
 
@@ -42,5 +43,24 @@ describe("heading anchors", () => {
 
   it("falls back to a numeric id for empty headings", () => {
     expect(createHeadingAnchorId("", 4)).toBe("heading-4");
+  });
+
+  it("creates source-card semantic anchors from section titles before headings", () => {
+    expect(
+      createSourceCardSemanticAnchorId({
+        sectionTitle: "2. Runtime Stack",
+        heading: "Fallback Heading",
+      })
+    ).toBe("2-runtime-stack");
+    expect(
+      createSourceCardSemanticAnchorId({
+        heading: "核心机制：从 ReAct 到运行时",
+      })
+    ).toBe("核心机制-从-react-到运行时");
+  });
+
+  it("does not create numeric fallback anchors for source cards without semantic text", () => {
+    expect(createSourceCardSemanticAnchorId({ heading: "" })).toBeNull();
+    expect(createSourceCardSemanticAnchorId({ sectionTitle: null })).toBeNull();
   });
 });

@@ -6,6 +6,7 @@ import {
   createNoPublicSourceAnswerForInput,
   normalizeAgentAnswer,
   parseMarkdownAnswerWithSourceMarker,
+  buildSourceCards,
 } from "./model";
 import type { KnowledgeSearchResult } from "./knowledge";
 import type { AgentSourceCard } from "./types";
@@ -265,5 +266,25 @@ describe("agent answer quality normalization", () => {
       sourceType: "blog",
       anchorId: "residual-stability",
     });
+  });
+
+  it("builds source-card anchors only from semantic section text", () => {
+    const [headingCard, emptyHeadingCard] = buildSourceCards([
+      {
+        ...isohcKnowledgeSource,
+        heading: "2. Runtime Stack",
+        sectionPath: "2. Runtime Stack",
+        sourceId: "post:isohc-fixed-vector-isometric-residual-mixing:2",
+      },
+      {
+        ...isohcKnowledgeSource,
+        heading: "",
+        sectionPath: "",
+        sourceId: "post:isohc-fixed-vector-isometric-residual-mixing:3",
+      },
+    ]);
+
+    expect(headingCard.anchorId).toBe("2-runtime-stack");
+    expect(emptyHeadingCard.anchorId).toBeUndefined();
   });
 });

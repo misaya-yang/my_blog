@@ -35,7 +35,10 @@ Misaya Notes should feel like a maintained research notebook with a useful groun
 - Main visual layers: `client/src/index.css`, `client/src/styles/public-components.css`, `visual-refresh.css`, `agent-surfaces.css`, and `owner-tools.css`. The import order in `client/src/main.tsx` makes late overrides powerful.
 - Article/content sources: top-level Markdown posts, `seed-blog.mjs`, `server/publicSeedPosts.ts`, `client/src/lib/publicArticles.ts`, and localized UI copy under `client/src/i18n`.
 - MNP-04 added content/copy guards in `scripts/audit/content-quality.ts`, `client/src/i18n/copyVoice.test.ts`, and `server/publicSeedPosts.test.ts`; localized series labels are resolved through `shared/content-series` in `ArticleCard.tsx` and `Home.tsx`.
-- Current risk evidence: `visual-refresh.css` is over 5,000 lines, `owner-tools.css` is over 1,300 lines, `PostDetail.tsx` is over 1,200 lines, and `BlogAgentRoot.tsx` is over 1,700 lines.
+- MNP-05 added `client/src/components/agent/sourceCardLinks.ts` so Agent source-card href, anchor, fallback, and excerpt formatting logic is testable outside the large `BlogAgentRoot.tsx` component while preserving the old named exports.
+- MNP-05 added `createSourceCardSemanticAnchorId` in `shared/heading-anchors.ts`; `server/ai/model.ts` uses it for persisted semantic anchors, while the client keeps legacy `heading-N` fallback only for old/no-heading cards.
+- MNP-05 consolidated final public light/dark token authority in `client/src/styles/owner-tools.css` by targeting `:root, .space-page` and `.dark, .dark .space-page`; `visual-refresh.css` still contains older token layers but is overridden by the later owner-tools import.
+- Current risk evidence: `visual-refresh.css` remains over 5,000 lines, `owner-tools.css` remains over 1,700 lines, `PostDetail.tsx` is near 1,200 lines, and `BlogAgentRoot.tsx` is still over 1,700 lines even after the scoped extraction. Further simplification should stay sliced and tested.
 
 ## Design or UI Facts
 
@@ -56,6 +59,7 @@ Misaya Notes should feel like a maintained research notebook with a useful groun
 - `MarkdownRenderer.tsx` now assigns TOC-compatible ids for h1-h6 headings; later Agent/source-anchor work should preserve those ids instead of inventing a second anchor scheme.
 - MNP-03 added `shared/heading-anchors.ts` so article TOC ids and Agent source-card anchors share the same semantic anchor generation. `PostDetail.tsx` now uses stable heading ids, `server/ai/model.ts` emits optional `anchorId`, and `BlogAgentRoot.tsx` prefers `anchorId` before falling back to legacy numeric source ids.
 - MNP-03 also split Agent diagnostics so model fallback runs preserve `model_not_configured`, stream timeouts map to `agent_stream_timeout`, and user aborts map to `agent_stream_aborted`.
+- MNP-05 keeps the MNP-03 source-card contract intact while simplifying it: explicit `anchorId` wins; semantic anchors come from `sectionTitle ?? heading`; server does not persist legacy numeric fallbacks; client URL-encodes anchors and keeps `heading-N` fallback for old cards.
 - Search currently needs pagination, hit explanation, and clearer zero-result recovery hierarchy before the archive grows.
 - Agent failure states should preserve user context and distinguish cancel, timeout, model failure, no-source fallback, and low quota.
 - Owner Agent diagnostics should eventually evaluate final-answer quality and citation coverage, not retrieval alone.
@@ -79,7 +83,7 @@ Misaya Notes should feel like a maintained research notebook with a useful groun
 - MNP-02 implemented the reader-format slice on 2026-06-19: shared reading-time logic, article duplicate-title normalization, rich Markdown fixture tests, h4-h6 heading anchors, language-less fenced code handling, and light/dark reader contrast repair.
 - MNP-03 implemented the Agent reliability slice on 2026-06-20: stable semantic source-card anchors, h1-h6 source lookup, persisted `anchorId` metadata, timeout-vs-abort diagnostics, model fallback telemetry, and context/quota regression coverage.
 - MNP-04 implemented the article voice and copy quality slice on 2026-06-20: concrete public seed excerpts, selected public article wording, localized UI/series labels, stale-copy tests, seed/fallback parity, `pnpm content:publish`, and local production runtime copy evidence.
-- MNP-05 remains future phase work; do not infer CSS-architecture/code-simplification completion from MNP-01 through MNP-04.
+- MNP-05 implemented the code simplification and CSS architecture slice on 2026-06-20: Agent source-card helper extraction, shared semantic source-card anchor helper, public theme-token selector consolidation, duplicate reduced-motion override removal, focused tests, full repo validation, UI layout audit, and runtime theme-token smoke.
 - The 2026-06-19 and 2026-06-20 sessions include explicit user approval to commit, push, and deploy the implemented slice.
 
 ## Risk Tags

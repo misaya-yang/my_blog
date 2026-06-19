@@ -9,7 +9,7 @@ import {
   isPublicInventoryQuery,
   type KnowledgeSearchResult,
 } from "./knowledge.js";
-import { createHeadingAnchorId } from "../../shared/heading-anchors.js";
+import { createSourceCardSemanticAnchorId } from "../../shared/heading-anchors.js";
 import type {
   AgentAnswer,
   AgentConversationMemoryTurn,
@@ -757,9 +757,10 @@ export function buildSourceCards(
     categorySlug: source.categorySlug ?? undefined,
     tagSlugs: source.tagSlugs,
     heading: source.heading ?? undefined,
-    anchorId: source.heading
-      ? (createHeadingAnchorId(source.heading) ?? undefined)
-      : undefined,
+    anchorId: createSourceCardSemanticAnchorId({
+      sectionTitle: source.heading,
+      heading: source.heading,
+    }) ?? undefined,
     excerpt: source.excerpt,
     compactExcerpt: compactSourceExcerpt(source.excerpt),
     sectionTitle: source.heading ?? undefined,

@@ -34,7 +34,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useIsMobile } from "@/hooks/useMobile";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
-import { createHeadingAnchorId } from "@shared/heading-anchors";
 import {
   buildRouteContext,
   BLOG_AGENT_OPEN_EVENT,
@@ -45,6 +44,12 @@ import {
   type AgentScope,
   type AgentRouteContext,
 } from "./routeContext";
+import {
+  formatSourceExcerpt,
+  getSourceAnchorId,
+  getSourceHref,
+  normalizeSourceText,
+} from "./sourceCardLinks";
 import { toChatMessage, upsertTraceEntry } from "./messageState";
 import {
   isAbortError,
@@ -63,6 +68,13 @@ import type {
 const AgentMarkdown = lazy(() =>
   import("./AgentMarkdown").then(module => ({ default: module.AgentMarkdown }))
 );
+
+export {
+  formatSourceExcerpt,
+  getSourceAnchorId,
+  getSourceFallbackAnchorId,
+  getSourceHref,
+} from "./sourceCardLinks";
 
 export function BlogAgentRoot() {
   const [location] = useLocation();
@@ -1222,53 +1234,6 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
   );
 }
 
-export function getSourceHref(source: SourceCard) {
-  if (!source.postSlug) return "#";
-  const anchorId = getSourceAnchorId(source);
-  return anchorId
-    ? `/post/${source.postSlug}#${encodeURIComponent(anchorId)}`
-    : `/post/${source.postSlug}`;
-}
-
-export function getSourceAnchorId(source: SourceCard) {
-  if (source.anchorId?.trim()) return source.anchorId.trim();
-  const stableAnchor = createHeadingAnchorId(
-    source.sectionTitle ?? source.heading ?? ""
-  );
-  return stableAnchor ?? getSourceFallbackAnchorId(source);
-}
-
-export function getSourceFallbackAnchorId(source: SourceCard) {
-  const chunkIndex = parseSourceChunkIndex(source.sourceId);
-  if (chunkIndex === null) return null;
-  return `heading-${Math.max(0, chunkIndex - 2)}`;
-}
-
-export function formatSourceExcerpt(source: SourceCard) {
-  if (source.compactExcerpt?.trim()) return source.compactExcerpt.trim();
-
-  const heading = source.heading ? normalizeSourceText(source.heading) : "";
-  let excerpt = source.excerpt
-    .replace(/```[\s\S]*?```/g, " ")
-    .replace(/`([^`]+)`/g, "$1")
-    .replace(/!\[[^\]]*]\([^)]*\)/g, " ")
-    .replace(/\[([^\]]+)]\([^)]*\)/g, "$1")
-    .replace(/#{1,6}\s+/g, " ")
-    .replace(/[*_>]+/g, " ")
-    .replace(/\$\$/g, "$")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  if (heading) {
-    const normalizedExcerpt = normalizeSourceText(excerpt);
-    if (normalizedExcerpt.startsWith(heading)) {
-      excerpt = excerpt.slice(source.heading?.length ?? 0).trim();
-    }
-  }
-
-  return excerpt.length > 150 ? `${excerpt.slice(0, 147).trim()}...` : excerpt;
-}
-
 function handleSourceLinkClick(
   event: MouseEvent<HTMLAnchorElement>,
   source: SourceCard,
@@ -1361,20 +1326,6 @@ function isCurrentPathSource(source: SourceCard, currentPath: string) {
 
 function normalizePathWithoutHash(value: string) {
   return value.split("#")[0].split("?")[0] || "/";
-}
-
-function parseSourceChunkIndex(sourceId: string) {
-  const match = /(?::|^)(\d+)$/.exec(sourceId);
-  if (!match) return null;
-  return Number.parseInt(match[1], 10);
-}
-
-function normalizeSourceText(value: string) {
-  return value
-    .replace(/[#*_`]/g, "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .toLowerCase();
 }
 
 function AgentReasoningTrace({ message }: { message: ChatMessage }) {

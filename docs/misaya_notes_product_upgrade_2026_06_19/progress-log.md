@@ -8,10 +8,10 @@
 
 ## Current State
 
-- Status: implementation in progress
-- Active phase: MNP-05
-- Active feature-oracle item: MNP-F006
-- Clean-state note: MNP-01, MNP-02, MNP-03, and MNP-04 are implemented and verified; MNP-05 remains open.
+- Status: release in progress
+- Active phase: MNP-06
+- Active feature-oracle item: MNP-F007
+- Clean-state note: MNP-01 through MNP-05 are implemented and verified; the current step is commit, push, deploy, and production smoke for the MNP-05 slice.
 
 ## Session Log
 
@@ -27,12 +27,13 @@
 | 2026-06-20 | releaser | MNP-06 | Pushed `main`, deployed the MNP-03 Agent reliability slice to Vercel production, and smoke-tested `https://misaya.online`. | `reports/mnp-06-release-evidence-and-production-verification-report.md`; commit `eee35b3`; deployment `dpl_8zmvMPWjzReKme4XrQKhdYaxfNAA`; smoke 200 for `/`, reader articles, search, algorithms, applications, archive, RSS, sitemap, robots; production browser anchor smoke | Continue with MNP-04 Article Voice and Quality System. |
 | 2026-06-20 | generator/evaluator | MNP-04 | Implemented article voice and copy quality slice: concrete public seed excerpts, localized UI/series labels, stale-copy guards, fallback parity, selected public article wording, and content publish/reindex. | `reports/mnp-04-article-voice-and-quality-system-report.md`; `reports/mnp-04-runtime/zh-copy-runtime-evidence.json`; `pnpm content:audit`; `pnpm check`; `pnpm test`; `pnpm build`; `pnpm content:publish` | Commit, push, deploy on explicit user request, then continue with MNP-05 Code Simplification and CSS Architecture. |
 | 2026-06-20 | releaser | MNP-06 | Pushed `main`, deployed the MNP-04 article voice/copy slice to Vercel production, and smoke-tested `https://misaya.online`. | `reports/mnp-06-release-evidence-and-production-verification-report.md`; commit `680839e`; deployment `dpl_Gi2DggdB3L6ovnLQhYHY7icUtQn4`; `pnpm content:publish`; smoke 200 for `/`, reader article, search, sitemap; production Playwright copy smoke | Continue with MNP-05 Code Simplification and CSS Architecture. |
+| 2026-06-20 | generator/evaluator | MNP-05 | Implemented code simplification and CSS architecture slice: Agent source-card pure helper extraction, shared semantic source-card anchors, canonical public theme-token selectors, and duplicate reduced-motion cleanup. | `reports/mnp-05-code-simplification-and-css-architecture-report.md`; `reports/mnp-05-runtime/theme-token-smoke.json`; `docs/product_optimization/reports/ui-layout-checks-latest.json`; focused Vitest 42 tests; `pnpm check`; `pnpm test`; `pnpm build`; `pnpm audit:ui` | Commit, push, deploy, smoke production, and update MNP-06 release evidence. |
 
 ## Known Blockers
 
-- MNP-05 remains failing until implementation and runtime evidence are produced.
+- MNP-05 is verified locally and awaits release evidence.
 - Authenticated owner screens were not logged into during MNP-01; they need a deeper owner-specific visual pass later.
-- MNP-F007 release evidence is passing for the MNP-01, MNP-02, and MNP-03 slices; it does not close the broader product-upgrade goal.
+- MNP-F007 release evidence is passing for the MNP-01 through MNP-04 slices; it still needs the MNP-05 deployment and production smoke entry.
 - Chrome DevTools screenshot capture timed out during MNP-02; MNP-02 browser evidence is an a11y snapshot plus measured DOM/CSS runtime values.
 
 ## Clean Exit Checklist

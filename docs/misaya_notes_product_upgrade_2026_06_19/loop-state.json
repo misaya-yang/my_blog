@@ -1,9 +1,9 @@
 {
   "schema_version": "prd-phase-harness/loop-state/v1",
-  "active_phase": "MNP-05",
-  "active_feature": "MNP-F006",
-  "iteration": 5,
+  "active_phase": "MNP-06",
+  "active_feature": "MNP-F007",
+  "iteration": 6,
   "status": "verified",
-  "last_decision": "MNP-04 implemented the article voice and copy quality slice: public seed excerpts, fallback parity, i18n copy guards, localized series labels, selected public article wording, content publish/reindex, full tests, build, and local production runtime copy smoke passed.",
-  "next_action": "Execute MNP-05 by following docs/misaya_notes_product_upgrade_2026_06_19/phase-05-code-simplification-and-css-architecture.md; simplify high-risk CSS and frontend/Agent code in small tested extractions while preserving MNP-02 reader contracts, MNP-03 source-card anchors, and MNP-04 copy guards."
+  "last_decision": "MNP-05 implemented and verified the code simplification/CSS architecture slice: Agent source-card pure helper extraction, shared semantic source-card anchors for client/server, canonical public theme tokens on owner-tools grouped selectors, duplicate reduced-motion override removal, full tests/build, UI audit, and runtime theme-token smoke passed.",
+  "next_action": "Commit and push the MNP-05 slice, deploy it to production, smoke-test https://misaya.online, and update MNP-06 release evidence without changing production data."
 }
