@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { createMemoryContextSourceStore, normalizeContextSourceInput } from "./contextSources";
+import {
+  createMemoryContextSourceStore,
+  normalizeContextSourceInput,
+} from "./contextSources";
 import type { AgentIdentity } from "./types";
 
 const owner: AgentIdentity = {
@@ -20,7 +23,8 @@ describe("AI conversation context sources", () => {
   it("normalizes pasted text and rejects binary-style uploads", () => {
     const pasted = normalizeContextSourceInput({
       kind: "pasted_text",
-      content: "  Harness note\n\nContext engines should preserve source boundaries.  ",
+      content:
+        "  Harness note\n\nContext engines should preserve source boundaries.  ",
     });
 
     expect(pasted).toMatchObject({
@@ -38,6 +42,15 @@ describe("AI conversation context sources", () => {
         content: "not allowed",
       })
     ).toThrow("Only pasted text, .txt, and .md context sources are supported");
+  });
+
+  it("rejects pasted context over the configured character limit", () => {
+    expect(() =>
+      normalizeContextSourceInput({
+        kind: "pasted_text",
+        content: "x".repeat(20_001),
+      })
+    ).toThrow("20000 characters or fewer");
   });
 
   it("stores sources per conversation owner and removes expired context", async () => {
@@ -58,10 +71,24 @@ describe("AI conversation context sources", () => {
 
     expect(source.sourceId).toMatch(/^context:/);
     expect(source.tokenEstimate).toBeGreaterThan(0);
-    expect(await store.listSources({ conversationId: "conversation-1", identity: owner, now })).toHaveLength(1);
-    expect(await store.listSources({ conversationId: "conversation-1", identity: other, now })).toHaveLength(0);
+    expect(
+      await store.listSources({
+        conversationId: "conversation-1",
+        identity: owner,
+        now,
+      })
+    ).toHaveLength(1);
+    expect(
+      await store.listSources({
+        conversationId: "conversation-1",
+        identity: other,
+        now,
+      })
+    ).toHaveLength(0);
 
-    const deleted = await store.cleanupExpired(new Date("2026-06-07T08:00:00.000Z"));
+    const deleted = await store.cleanupExpired(
+      new Date("2026-06-07T08:00:00.000Z")
+    );
 
     expect(deleted).toBe(1);
     expect(

@@ -38,6 +38,7 @@ export type SourceCard = {
   categorySlug?: string;
   tagSlugs: string[];
   heading?: string;
+  anchorId?: string;
   excerpt: string;
   compactExcerpt?: string;
   sectionTitle?: string;

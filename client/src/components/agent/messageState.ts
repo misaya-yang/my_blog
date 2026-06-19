@@ -56,6 +56,7 @@ function normalizeSourceCard(value: unknown): SourceCard | null {
       ? record.tagSlugs.filter((tag): tag is string => typeof tag === "string")
       : [],
     heading: typeof record.heading === "string" ? record.heading : undefined,
+    anchorId: typeof record.anchorId === "string" ? record.anchorId : undefined,
     excerpt: typeof record.excerpt === "string" ? record.excerpt : "",
     compactExcerpt:
       typeof record.compactExcerpt === "string"

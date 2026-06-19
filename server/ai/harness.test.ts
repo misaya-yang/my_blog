@@ -396,6 +396,15 @@ describe("AI agent harness", () => {
     expect(conversationStore.runs[0]).toMatchObject({
       status: "completed",
       retrievedChunkIds: [isohcSource.sourceId],
+      errorCode: "model_not_configured",
+    });
+
+    const radar = await service.adminQuestionRadar(adminContext(), {
+      limit: 20,
+    });
+    expect(radar.summary.failedRuns).toBe(1);
+    expect(radar.failedRuns[0]).toMatchObject({
+      errorCode: "model_not_configured",
     });
   });
 
@@ -835,6 +844,10 @@ describe("AI agent harness", () => {
         fallbackReason: "model_not_configured",
       }),
     });
+    expect(conversationStore.runs[0]).toMatchObject({
+      status: "completed",
+      errorCode: "model_not_configured",
+    });
   });
 
   it("streams no-source refusals without calling the model", async () => {
@@ -1032,6 +1045,56 @@ describe("AI agent harness", () => {
     expect(conversationStore.runs[0]).toMatchObject({
       status: "failed",
       errorCode: "agent_stream_aborted",
+    });
+  });
+
+  it("marks timed-out streaming model work distinctly from user aborts", async () => {
+    const timeoutError = Object.assign(new Error("stream timed out"), {
+      name: "TimeoutError",
+    });
+    const model: AgentModel = {
+      generate: vi.fn(async () => {
+        throw new Error("streaming path should use streamGenerate");
+      }),
+      streamGenerate: vi.fn(async () => {
+        throw timeoutError;
+      }),
+    };
+    const { service, conversationStore } = createHarness({ model });
+    const events: AgentStreamEvent[] = [];
+
+    const result = await service.streamMessage(
+      visitorContextWithId("visitor-stream-timeout"),
+      {
+        message: "Explain harness engines, but the model stalls",
+        routeContext,
+      },
+      event => events.push(event)
+    );
+
+    expect(result).toMatchObject({
+      status: "failed",
+      runStatus: "failed",
+      errorCode: "agent_stream_timeout",
+    });
+    expect(events).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "error",
+          message: "agent_stream_timeout",
+        }),
+        expect.objectContaining({
+          type: "final",
+          output: expect.objectContaining({
+            status: "failed",
+            errorCode: "agent_stream_timeout",
+          }),
+        }),
+      ])
+    );
+    expect(conversationStore.runs[0]).toMatchObject({
+      status: "failed",
+      errorCode: "agent_stream_timeout",
     });
   });
 

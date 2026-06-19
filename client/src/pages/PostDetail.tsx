@@ -21,6 +21,7 @@ import {
   buildArticleMetadata,
   buildRouteMetadata,
 } from "@shared/metadata";
+import { createUniqueHeadingAnchors } from "@shared/heading-anchors";
 import {
   estimateArticleReadingMinutes,
   stripMatchingMarkdownTitle,
@@ -489,11 +490,12 @@ export default function PostDetail() {
       );
       const headingRegex = /^(#{1,6})\s+(.+)$/gm;
       const matches = Array.from(articleContent.matchAll(headingRegex));
-      const extractedHeadings = matches.map((match, index) => ({
-        id: `heading-${index}`,
-        text: match[2].replace(/\*\*/g, ""),
-        level: match[1].length,
-      }));
+      const extractedHeadings = createUniqueHeadingAnchors(
+        matches.map(match => ({
+          text: match[2].replace(/\*\*/g, ""),
+          level: match[1].length,
+        }))
+      );
       setHeadings(extractedHeadings);
     }
   }, [post?.content, post?.title]);

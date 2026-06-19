@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   formatSourceExcerpt,
+  getSourceAnchorId,
   getSourceFallbackAnchorId,
   getSourceHref,
 } from "./BlogAgentRoot";
@@ -22,9 +23,41 @@ const source: SourceCard = {
 
 describe("Agent source cards", () => {
   it("links blog sources to the article section anchor", () => {
-    expect(getSourceFallbackAnchorId(source)).toBe("heading-2");
+    expect(getSourceAnchorId(source)).toBe("3-exact-invariants");
     expect(getSourceHref(source)).toBe(
+      "/post/isohc-fixed-vector-isometric-residual-mixing#3-exact-invariants"
+    );
+  });
+
+  it("prefers explicit source anchor ids from persisted cards", () => {
+    expect(
+      getSourceHref({
+        ...source,
+        anchorId: "exact-invariants",
+      })
+    ).toBe(
+      "/post/isohc-fixed-vector-isometric-residual-mixing#exact-invariants"
+    );
+  });
+
+  it("keeps the old chunk-index fallback when no heading is available", () => {
+    const fallbackSource = { ...source, heading: undefined };
+
+    expect(getSourceFallbackAnchorId(fallbackSource)).toBe("heading-2");
+    expect(getSourceAnchorId(fallbackSource)).toBe("heading-2");
+    expect(getSourceHref(fallbackSource)).toBe(
       "/post/isohc-fixed-vector-isometric-residual-mixing#heading-2"
+    );
+  });
+
+  it("encodes CJK anchors in source hrefs", () => {
+    expect(
+      getSourceHref({
+        ...source,
+        heading: "核心抽象：从 ReAct 到运行时",
+      })
+    ).toBe(
+      "/post/isohc-fixed-vector-isometric-residual-mixing#%E6%A0%B8%E5%BF%83%E6%8A%BD%E8%B1%A1-%E4%BB%8E-react-%E5%88%B0%E8%BF%90%E8%A1%8C%E6%97%B6"
     );
   });
 
@@ -66,12 +99,13 @@ describe("Agent source cards", () => {
       role: "assistant",
       content: "Grounded answer.",
       sourceJson: {
-        sourceCards: [source],
+        sourceCards: [{ ...source, anchorId: "3-exact-invariants" }],
         reasoningMarkdown: "private chain of thought should not render",
       },
     });
 
     expect(message).not.toHaveProperty("reasoningMarkdown");
     expect(message.sourceCards).toHaveLength(1);
+    expect(message.sourceCards?.[0]?.anchorId).toBe("3-exact-invariants");
   });
 });

@@ -9,6 +9,7 @@ import {
 } from "./routeContext";
 import { inferAnswerMode, isBlogAgentHiddenRoute } from "./BlogAgentRoot";
 import {
+  AGENT_STREAM_TIMEOUT_MS,
   isAbortError,
   isTimeoutError,
   streamAgentMessage,
@@ -299,6 +300,45 @@ describe("BlogAgent route context", () => {
     ).rejects.toThrow("agent_stream_incomplete");
 
     vi.unstubAllGlobals();
+  });
+
+  it("aborts stalled streams after the configured timeout", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("window", {
+      setTimeout,
+      clearTimeout,
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((_url: string, init?: RequestInit) => {
+        return new Promise((_resolve, reject) => {
+          init?.signal?.addEventListener(
+            "abort",
+            () => reject(init.signal?.reason),
+            { once: true }
+          );
+        });
+      })
+    );
+
+    try {
+      const promise = streamAgentMessage({
+        message: "Explain AgentLoop",
+        routeContext: buildRouteContext("/", "en"),
+        onStatus: vi.fn(),
+        onAnswerDelta: vi.fn(),
+        onFinal: vi.fn(),
+      });
+      const expectation = expect(promise).rejects.toMatchObject({
+        name: "TimeoutError",
+      });
+
+      await vi.advanceTimersByTimeAsync(AGENT_STREAM_TIMEOUT_MS);
+      await expectation;
+    } finally {
+      vi.useRealTimers();
+      vi.unstubAllGlobals();
+    }
   });
 
   it("distinguishes user cancellation from timeout cancellation", () => {

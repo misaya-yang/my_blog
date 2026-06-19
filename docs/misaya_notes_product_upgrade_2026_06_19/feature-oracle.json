@@ -63,9 +63,9 @@
         "Verify source-card anchors, no-source fallback, partial stream failure, cancel, timeout, low quota, and uploaded context limits.",
         "Write unit/browser evidence without exposing hidden or draft content."
       ],
-      "status": "failing",
-      "evidence": "",
-      "notes": ""
+      "status": "passing",
+      "evidence": "reports/mnp-03-blog-agent-product-reliability-report.md; shared/heading-anchors.test.ts; client/src/components/agent/sourceCards.test.ts; client/src/components/agent/BlogAgentRoot.test.ts; server/ai/harness.test.ts; server/ai/model.test.ts; server/ai/contextSources.test.ts; pnpm check, pnpm test, pnpm build; Chrome runtime evidence in reports/mnp-03-screenshots/post-goal-harness-anchor-runtime.json.",
+      "notes": "Passed for the MNP-03 Agent reliability slice: stable semantic source anchors, h1-h6 source lookup, persisted anchorId metadata, no-source/hidden/draft guard regression coverage, timeout versus abort diagnostics, model fallback error-code telemetry, quota/upload/context regression coverage. Final-answer judge scoring remains future owner diagnostics work."
     },
     {
       "id": "MNP-F005",

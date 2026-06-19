@@ -34,6 +34,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useIsMobile } from "@/hooks/useMobile";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
+import { createHeadingAnchorId } from "@shared/heading-anchors";
 import {
   buildRouteContext,
   BLOG_AGENT_OPEN_EVENT,
@@ -1223,10 +1224,18 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
 
 export function getSourceHref(source: SourceCard) {
   if (!source.postSlug) return "#";
-  const anchorId = getSourceFallbackAnchorId(source);
+  const anchorId = getSourceAnchorId(source);
   return anchorId
-    ? `/post/${source.postSlug}#${anchorId}`
+    ? `/post/${source.postSlug}#${encodeURIComponent(anchorId)}`
     : `/post/${source.postSlug}`;
+}
+
+export function getSourceAnchorId(source: SourceCard) {
+  if (source.anchorId?.trim()) return source.anchorId.trim();
+  const stableAnchor = createHeadingAnchorId(
+    source.sectionTitle ?? source.heading ?? ""
+  );
+  return stableAnchor ?? getSourceFallbackAnchorId(source);
 }
 
 export function getSourceFallbackAnchorId(source: SourceCard) {
@@ -1312,7 +1321,7 @@ function findSourceHeadingElement(source: SourceCard) {
   const heading = source.heading ? normalizeSourceText(source.heading) : "";
   const articleHeadings = Array.from(
     document.querySelectorAll<HTMLElement>(
-      ".article-prose h1[id], .article-prose h2[id], .article-prose h3[id]"
+      ".article-prose h1[id], .article-prose h2[id], .article-prose h3[id], .article-prose h4[id], .article-prose h5[id], .article-prose h6[id]"
     )
   );
 
@@ -1329,7 +1338,7 @@ function findSourceHeadingElement(source: SourceCard) {
     if (sectionMatch) return sectionMatch;
   }
 
-  const fallbackId = getSourceFallbackAnchorId(source);
+  const fallbackId = getSourceAnchorId(source);
   return fallbackId ? document.getElementById(fallbackId) : null;
 }
 

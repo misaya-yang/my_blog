@@ -9,9 +9,9 @@
 ## Current State
 
 - Status: implementation in progress
-- Active phase: MNP-03
-- Active feature-oracle item: MNP-F004
-- Clean-state note: MNP-01 and MNP-02 are implemented, verified, pushed, and production-smoked; MNP-03 through MNP-05 remain open.
+- Active phase: MNP-04
+- Active feature-oracle item: MNP-F005
+- Clean-state note: MNP-01 and MNP-02 are implemented, verified, pushed, and production-smoked; MNP-03 is implemented and locally verified; MNP-04 and MNP-05 remain open.
 
 ## Session Log
 
@@ -23,12 +23,13 @@
 | 2026-06-19 | releaser | MNP-06 | Pushed `main`, deployed the MNP-01 UI slice to Vercel production, and smoke-tested `https://misaya.online`. | `reports/mnp-06-release-evidence-and-production-verification-report.md`; Vercel production alias; smoke 200 for `/`, article, search, algorithms, RSS, sitemap, robots | Continue with MNP-02; keep release evidence scoped to this UI slice. |
 | 2026-06-19 | generator/evaluator | MNP-02 | Implemented reader-format slice: shared CJK/English reading time, article-aware duplicate-title stripping, rich Markdown fixture coverage, h4-h6 anchor parity, language-less fenced code handling, and light/dark reader contrast repair. | `reports/mnp-02-reading-experience-and-format-rendering-report.md`; `shared/reading-time.test.ts`; `client/src/components/MarkdownRenderer.test.tsx`; `pnpm check`; `pnpm test`; `pnpm build`; Chrome DevTools DOM/CSS checks; `reports/mnp-02-screenshots/post-goal-harness-390-dark-a11y-snapshot.txt` | Start MNP-03 Blog Agent Product Reliability. |
 | 2026-06-19 | releaser | MNP-06 | Pushed `main`, deployed the MNP-02 reader-format slice to Vercel production, and smoke-tested `https://misaya.online`. | `reports/mnp-06-release-evidence-and-production-verification-report.md`; commit `c8901f0`; deployment `dpl_Jn9eGhQ9vfmkKzYjDnRs4cjG6KF9`; smoke 200 for `/`, reader articles, search, algorithms, applications, archive, RSS, sitemap, robots; SSR metadata checks | Start MNP-03 Blog Agent Product Reliability. |
+| 2026-06-20 | generator/evaluator | MNP-03 | Implemented Agent reliability slice: stable semantic source-card anchors, h1-h6 source lookup, persisted `anchorId` metadata, timeout-vs-abort diagnostics, model fallback error-code telemetry, and context/quota regression coverage. | `reports/mnp-03-blog-agent-product-reliability-report.md`; `shared/heading-anchors.test.ts`; focused Agent Vitest; `pnpm check`; `pnpm test`; `pnpm build`; Chrome runtime DOM evidence | Commit, push, deploy on explicit user request, then continue with MNP-04 Article Voice and Quality System. |
 
 ## Known Blockers
 
-- MNP-03 through MNP-05 remain failing until implementation and runtime evidence are produced.
+- MNP-04 and MNP-05 remain failing until implementation and runtime evidence are produced.
 - Authenticated owner screens were not logged into during MNP-01; they need a deeper owner-specific visual pass later.
-- MNP-F007 release evidence is passing only for the MNP-01 and MNP-02 slices; it does not close the broader product-upgrade goal.
+- MNP-F007 release evidence is passing only for the MNP-01 and MNP-02 slices until the current MNP-03 deploy is recorded; it does not close the broader product-upgrade goal.
 - Chrome DevTools screenshot capture timed out during MNP-02; MNP-02 browser evidence is an a11y snapshot plus measured DOM/CSS runtime values.
 
 ## Clean Exit Checklist

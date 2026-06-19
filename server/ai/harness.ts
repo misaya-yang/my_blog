@@ -665,6 +665,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
               ...sources.map(source => source.sourceId),
               ...contextSources.map(source => source.sourceId),
             ],
+            errorCode,
           });
 
           return {
@@ -1037,6 +1038,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
               ...sources.map(source => source.sourceId),
               ...contextSources.map(source => source.sourceId),
             ],
+            errorCode,
           });
 
           const output: AgentSendMessageOutput = {
@@ -1526,6 +1528,7 @@ function throwIfAborted(signal: AbortSignal | undefined) {
 }
 
 function normalizeErrorCode(error: unknown) {
+  if (isTimeoutLikeError(error)) return "agent_stream_timeout";
   if (isAbortLikeError(error)) return "agent_stream_aborted";
   if (
     error instanceof Error &&
@@ -1549,7 +1552,12 @@ function shouldReturnSourceFallback(
 
 function isAbortLikeError(error: unknown) {
   if (error instanceof Error) {
-    return error.name === "AbortError" || error.name === "TimeoutError";
+    return error.name === "AbortError";
   }
+  return false;
+}
+
+function isTimeoutLikeError(error: unknown) {
+  if (error instanceof Error) return error.name === "TimeoutError";
   return false;
 }

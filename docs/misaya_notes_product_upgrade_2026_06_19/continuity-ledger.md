@@ -30,7 +30,8 @@ This file preserves cross-phase continuity for long-running agents. Treat it as 
 | UI/theme boundary | Preserve public dark/light switching and owner dark-lock while reducing visual noise. Do not remove existing routes or public theme APIs during MNP-01. | UI review synthesis | 2026-06-19 | MNP-01 |
 | MNP-01 implementation boundary | `Home.tsx` now places the featured note inside the home grid so CSS can order it before track panels on mobile; `Track.tsx` uses `SpaceBackdrop subtle`; owner auth/loading fallbacks use `owner-dark-scope`; the scoped MNP-01 CSS pass lives at the end of `owner-tools.css`. | `reports/mnp-01-ui-anti-slop-visual-system-report.md` | 2026-06-19 | MNP-01 |
 | MNP-02 reader-format boundary | Reading minutes now come from `shared/reading-time.ts` across discovery, article cards, post detail, and editor preview; `PostDetail.tsx` and server discovery use shared duplicate-title stripping; `MarkdownRenderer.tsx` assigns ids to h1-h6 headings and keeps language-less fenced code block-styled/copyable; light-mode reader panels must use public panel tokens, while dark reader styling is scoped to `.dark`. | `reports/mnp-02-reading-experience-and-format-rendering-report.md` | 2026-06-19 | MNP-02 |
-| Reading/Agent boundary | Source-card anchors, hidden-content guards, streaming failure paths, and CJK reading-time behavior are cross-phase contracts for MNP-02 and MNP-03. | function review synthesis | 2026-06-19 | MNP-02/MNP-03 |
+| MNP-03 Agent reliability boundary | Source-card anchors use shared heading-derived ids via `shared/heading-anchors.ts`; server source cards may carry `anchorId`; client source cards prefer `anchorId`, URL-encode hash fragments, search h1-h6 article headings, and keep numeric `heading-N` fallback only for old/no-heading source ids. Owner diagnostics distinguish `agent_stream_timeout`, `agent_stream_aborted`, and `model_not_configured` fallback telemetry. | `reports/mnp-03-blog-agent-product-reliability-report.md` | 2026-06-20 | MNP-03 |
+| Reading/Agent boundary | Source-card anchors, hidden-content guards, streaming failure paths, and CJK reading-time behavior are cross-phase contracts for MNP-02 and MNP-03. Preserve the MNP-03 `anchorId` contract during later content and simplification phases. | function review synthesis and MNP-03 report | 2026-06-20 | MNP-02/MNP-03 |
 | Content boundary | Copy edits must not alter slugs, formulas, code listings, publication dates, visibility, or benchmark claims without refreshed evidence. | article review synthesis | 2026-06-19 | MNP-04 |
 | Validation boundary | Use `pnpm check`, focused Vitest where possible, `pnpm test`, `pnpm build`, `pnpm content:audit`, harness validation, and route/browser smoke based on phase risk. | `package.json` and phase manifest | 2026-06-19 | MNP-00 |
 | Handoff boundary | Do not unlock a dependent implementation phase until report evidence, oracle evidence, progress log, and this ledger are updated. | phase report | 2026-06-19 | MNP-00 |
@@ -45,7 +46,7 @@ This file preserves cross-phase continuity for long-running agents. Treat it as 
 
 ## Current Continuity Status
 
-- Active phase: MNP-03
-- Active feature-oracle item: MNP-F004
-- Current decision: MNP-02 passed with shared reading-time logic, rich Markdown fixture coverage, reader light/dark contrast repair, tests, build, and Chrome DevTools runtime evidence. Chrome screenshot capture timed out, so MNP-02 uses an a11y snapshot plus measured DOM/CSS checks.
-- Next action: Execute MNP-03, focusing on Agent source-card anchors, no-source fallback, partial stream failure, cancel, timeout, low quota, and owner eval diagnostics before changing MNP-F004 to passing.
+- Active phase: MNP-04
+- Active feature-oracle item: MNP-F005
+- Current decision: MNP-03 passed with stable semantic Agent source anchors, persisted `anchorId` metadata, h1-h6 source lookup, timeout-vs-abort diagnostics, model fallback telemetry, tests, build, and Chrome runtime DOM evidence. Chrome screenshot capture timed out, so MNP-03 uses the saved DOM/runtime artifact plus test coverage.
+- Next action: Execute MNP-04, focusing on concrete article summaries, labels, introductions, and conclusions while preserving slugs, formulas, dates, visibility, hidden/draft status, and the MNP-03 `anchorId` contract.

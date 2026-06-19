@@ -263,6 +263,7 @@ describe("agent answer quality normalization", () => {
     expect(answer.sourceCards[0]).toMatchObject({
       postSlug: "isohc-fixed-vector-isometric-residual-mixing",
       sourceType: "blog",
+      anchorId: "residual-stability",
     });
   });
 });
