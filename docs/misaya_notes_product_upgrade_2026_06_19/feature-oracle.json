@@ -106,8 +106,8 @@
         "Write docs/misaya_notes_product_upgrade_2026_06_19/reports/mnp-06-release-evidence-and-production-verification-report.md with deployment evidence."
       ],
       "status": "passing",
-      "evidence": "reports/mnp-06-release-evidence-and-production-verification-report.md; implementation commit 924ed85 pushed to origin/main; docs commit 67a9db6 pushed to origin/main; Vercel production deploy completed; https://misaya.online smoke returned 200 for /, article, search, algorithms, rss.xml, sitemap.xml, and robots.txt.",
-      "notes": "Passed for the MNP-01 UI implementation slice release only. It does not mark MNP-02 reader work, MNP-03 Agent work, MNP-04 content voice, or MNP-05 CSS simplification complete."
+      "evidence": "reports/mnp-06-release-evidence-and-production-verification-report.md; MNP-01 commits 924ed85 and 67a9db6 pushed to origin/main; MNP-02 commit c8901f0 pushed to origin/main; Vercel production deploy dpl_Jn9eGhQ9vfmkKzYjDnRs4cjG6KF9 completed; https://misaya.online smoke returned 200 for /, reader articles, search, algorithms, applications, archive, rss.xml, sitemap.xml, and robots.txt; SSR metadata smoke passed for /post/goal-harness-agent-phase-protocol.",
+      "notes": "Passed for the MNP-01 UI release slice and MNP-02 reader-format release slice only. It does not mark MNP-03 Agent work, MNP-04 content voice, or MNP-05 CSS simplification complete."
     }
   ]
 }
