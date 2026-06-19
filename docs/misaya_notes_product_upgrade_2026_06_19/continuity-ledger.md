@@ -33,6 +33,7 @@ This file preserves cross-phase continuity for long-running agents. Treat it as 
 | Content boundary | Copy edits must not alter slugs, formulas, code listings, publication dates, visibility, or benchmark claims without refreshed evidence. | article review synthesis | 2026-06-19 | MNP-04 |
 | Validation boundary | Use `pnpm check`, focused Vitest where possible, `pnpm test`, `pnpm build`, `pnpm content:audit`, harness validation, and route/browser smoke based on phase risk. | `package.json` and phase manifest | 2026-06-19 | MNP-00 |
 | Handoff boundary | Do not unlock a dependent implementation phase until report evidence, oracle evidence, progress log, and this ledger are updated. | phase report | 2026-06-19 | MNP-00 |
+| Release boundary | MNP-01 UI slice was pushed and deployed to `https://misaya.online`; release evidence is scoped to that slice and does not close MNP-02 through MNP-05. | `reports/mnp-06-release-evidence-and-production-verification-report.md` | 2026-06-19 | MNP-06 |
 
 ## Code Summary Writeback Rules
 

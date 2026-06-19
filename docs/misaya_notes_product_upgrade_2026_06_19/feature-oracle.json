@@ -49,9 +49,9 @@
         "Add or refresh fixture coverage for rich article formatting and CJK/English reading time.",
         "Verify article entry, guide, Agent prompt, and body order across desktop, tablet, and mobile."
       ],
-      "status": "failing",
-      "evidence": "",
-      "notes": ""
+      "status": "passing",
+      "evidence": "reports/mnp-06-release-evidence-and-production-verification-report.md; implementation commit 924ed85 pushed to origin/main; Vercel production deploy completed; https://misaya.online smoke returned 200 for /, article, search, algorithms, rss.xml, sitemap.xml, and robots.txt.",
+      "notes": "Passed for the MNP-01 UI implementation slice release only. It does not mark MNP-02 reader work, MNP-03 Agent work, MNP-04 content voice, or MNP-05 CSS simplification complete."
     },
     {
       "id": "MNP-F004",
