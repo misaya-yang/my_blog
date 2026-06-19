@@ -5,9 +5,9 @@ Use this prompt to start a fresh Codex, Claude Code, or Agent Skills-compatible 
 ```text
 Use $prd-phase-harness to continue the harness at `docs/misaya_notes_product_upgrade_2026_06_19`.
 
-Target phase: MNP-02
-Target phase file: `docs/misaya_notes_product_upgrade_2026_06_19/phase-02-reading-experience-and-format-rendering.md`
-Target feature-oracle item: MNP-F003
+Target phase: MNP-03
+Target phase file: `docs/misaya_notes_product_upgrade_2026_06_19/phase-03-blog-agent-product-reliability.md`
+Target feature-oracle item: MNP-F004
 
 Cold-start protocol:
 1. Open `docs/misaya_notes_product_upgrade_2026_06_19/README.md`.
@@ -27,6 +27,6 @@ Execution rule:
 - Run the required validation and runtime checks.
 - Summarize code facts back into the source packet and continuity ledger before handoff.
 - Update the phase report, progress log, handoff file, continuity ledger, and oracle evidence before claiming completion.
-- Start from the MNP-00 and MNP-01 reports and source packet. The next real work is reader/format rendering implementation and verification, not another planning pass.
+- Start from the MNP-00, MNP-01, and MNP-02 reports and source packet. The next real work is Blog Agent product reliability implementation and verification, not another planning pass.
 - Stop and document blockers instead of guessing when credentials, production systems, destructive commands, or out-of-scope edits are required.
 ```

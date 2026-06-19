@@ -23,9 +23,9 @@ import {
   tags,
   users 
 } from "../drizzle/schema.js";
+import { estimateArticleReadingMinutes } from "../shared/reading-time.js";
 import { ENV } from './_core/env.js';
 import {
-  estimateReadingMinutes,
   filterPostsByCategory,
   filterPostsByTag,
   getAdjacentPosts,
@@ -713,7 +713,7 @@ async function attachPostTaxonomy(postRows: Post[]): Promise<DiscoveryPost[]> {
     ...post,
     category: post.categoryId ? categoriesById.get(post.categoryId) ?? null : null,
     tags: tagsByPostId.get(post.id) ?? [],
-    readingMinutes: estimateReadingMinutes(post.content),
+    readingMinutes: estimateArticleReadingMinutes(post),
   }));
 }
 

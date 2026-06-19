@@ -1,4 +1,5 @@
 import { ArrowRight, BookOpen, Calendar, Eye } from "lucide-react";
+import { estimateReadingMinutes } from "@shared/reading-time";
 import { Link } from "wouter";
 
 export type ArticleTrack = "algorithms" | "applications";
@@ -54,12 +55,6 @@ const ARTICLE_THUMBNAILS: Record<ArticleVisualTheme, string> = {
   packet: "/images/article-thumbs/context-compiler-packet.jpg",
   harness: "/images/article-thumbs/evaluation-harness-loop.jpg",
 };
-
-function readingTime(content: string): number {
-  const chinese = (content.match(/[\u4e00-\u9fa5]/g) || []).length;
-  const english = (content.match(/[a-zA-Z]+/g) || []).length;
-  return Math.max(1, Math.ceil((chinese + english) / 320));
-}
 
 function formatDate(
   value: string | Date | null | undefined,
@@ -231,7 +226,8 @@ export function ArticleCard({
           </span>
           <span className="inline-flex items-center gap-1.5">
             <BookOpen className="h-3.5 w-3.5" />
-            {post.readingMinutes || readingTime(post.content || "")}{" "}
+            {post.readingMinutes ||
+              estimateReadingMinutes(post.content || "")}{" "}
             {t("home.minRead")}
           </span>
           <span className="inline-flex items-center gap-1.5">

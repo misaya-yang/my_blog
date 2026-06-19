@@ -1596,6 +1596,20 @@
   }
 
   .paper-reader-main.reading-surface {
+    --reader-ink: var(--public-text);
+    --reader-ink-soft: var(--public-muted);
+    --reader-ink-quiet: var(--public-faint);
+    --reader-rule: var(--public-border);
+    background: var(--public-panel-bg) !important;
+    color: var(--public-text) !important;
+    box-shadow: var(--public-panel-shadow) !important;
+  }
+
+  .dark .paper-reader-main.reading-surface {
+    --reader-ink: oklch(0.885 0.012 238);
+    --reader-ink-soft: oklch(0.82 0.014 238);
+    --reader-ink-quiet: oklch(0.74 0.016 238);
+    --reader-rule: oklch(0.78 0.12 235 / 18%);
     background:
       linear-gradient(180deg, oklch(0.115 0.014 250 / 98%), oklch(0.084 0.012 252 / 98%)),
       oklch(0.084 0.012 252) !important;

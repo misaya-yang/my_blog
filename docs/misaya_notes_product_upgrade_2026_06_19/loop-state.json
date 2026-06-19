@@ -1,9 +1,9 @@
 {
   "schema_version": "prd-phase-harness/loop-state/v1",
-  "active_phase": "MNP-02",
-  "active_feature": "MNP-F003",
-  "iteration": 2,
+  "active_phase": "MNP-03",
+  "active_feature": "MNP-F004",
+  "iteration": 3,
   "status": "verified",
-  "last_decision": "MNP-01 implemented the first UI anti-slop slice and passed local checks, full tests, build, and Chrome DevTools screenshot/runtime verification.",
-  "next_action": "Execute MNP-02 by following docs/misaya_notes_product_upgrade_2026_06_19/phase-02-reading-experience-and-format-rendering.md; focus on article format fixtures, body ordering, CJK reading-time consistency, and Markdown/KaTeX/table/code rendering evidence."
+  "last_decision": "MNP-02 implemented shared reading-time estimation, rich Markdown renderer fixture coverage, TOC/code rendering fixes, and light/dark reader contrast repair; it passed focused Vitest, pnpm check, pnpm test, pnpm build, and Chrome DevTools runtime checks.",
+  "next_action": "Execute MNP-03 by following docs/misaya_notes_product_upgrade_2026_06_19/phase-03-blog-agent-product-reliability.md; focus on source-card anchors, no-source fallback, partial stream failure, cancel, timeout, low quota, and owner eval diagnostics."
 }

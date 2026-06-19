@@ -29,6 +29,7 @@ This file preserves cross-phase continuity for long-running agents. Treat it as 
 | Code entrypoints | Public reader files live in `client/src/pages/*`, shared shell/components in `client/src/components`, visual layers in `client/src/index.css` and `client/src/styles/*`, Agent client/server in `BlogAgentRoot.tsx` and `server/ai/*`, content in Markdown plus seed/public article files. | `source-packet.md` | 2026-06-19 | MNP-00 |
 | UI/theme boundary | Preserve public dark/light switching and owner dark-lock while reducing visual noise. Do not remove existing routes or public theme APIs during MNP-01. | UI review synthesis | 2026-06-19 | MNP-01 |
 | MNP-01 implementation boundary | `Home.tsx` now places the featured note inside the home grid so CSS can order it before track panels on mobile; `Track.tsx` uses `SpaceBackdrop subtle`; owner auth/loading fallbacks use `owner-dark-scope`; the scoped MNP-01 CSS pass lives at the end of `owner-tools.css`. | `reports/mnp-01-ui-anti-slop-visual-system-report.md` | 2026-06-19 | MNP-01 |
+| MNP-02 reader-format boundary | Reading minutes now come from `shared/reading-time.ts` across discovery, article cards, post detail, and editor preview; `PostDetail.tsx` and server discovery use shared duplicate-title stripping; `MarkdownRenderer.tsx` assigns ids to h1-h6 headings and keeps language-less fenced code block-styled/copyable; light-mode reader panels must use public panel tokens, while dark reader styling is scoped to `.dark`. | `reports/mnp-02-reading-experience-and-format-rendering-report.md` | 2026-06-19 | MNP-02 |
 | Reading/Agent boundary | Source-card anchors, hidden-content guards, streaming failure paths, and CJK reading-time behavior are cross-phase contracts for MNP-02 and MNP-03. | function review synthesis | 2026-06-19 | MNP-02/MNP-03 |
 | Content boundary | Copy edits must not alter slugs, formulas, code listings, publication dates, visibility, or benchmark claims without refreshed evidence. | article review synthesis | 2026-06-19 | MNP-04 |
 | Validation boundary | Use `pnpm check`, focused Vitest where possible, `pnpm test`, `pnpm build`, `pnpm content:audit`, harness validation, and route/browser smoke based on phase risk. | `package.json` and phase manifest | 2026-06-19 | MNP-00 |
@@ -44,7 +45,7 @@ This file preserves cross-phase continuity for long-running agents. Treat it as 
 
 ## Current Continuity Status
 
-- Active phase: MNP-02
-- Active feature-oracle item: MNP-F003
-- Current decision: MNP-01 passed for the implemented anti-slop UI slice with screenshot and test/build evidence; authenticated owner screens still need a later dedicated pass.
-- Next action: Execute MNP-02, focusing on article format rendering, body ordering, mobile reader behavior, and CJK reading-time evidence before changing MNP-F003 to passing.
+- Active phase: MNP-03
+- Active feature-oracle item: MNP-F004
+- Current decision: MNP-02 passed with shared reading-time logic, rich Markdown fixture coverage, reader light/dark contrast repair, tests, build, and Chrome DevTools runtime evidence. Chrome screenshot capture timed out, so MNP-02 uses an a11y snapshot plus measured DOM/CSS checks.
+- Next action: Execute MNP-03, focusing on Agent source-card anchors, no-source fallback, partial stream failure, cancel, timeout, low quota, and owner eval diagnostics before changing MNP-F004 to passing.

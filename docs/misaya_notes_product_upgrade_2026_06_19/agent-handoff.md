@@ -11,11 +11,11 @@
 - Source packet: `docs/misaya_notes_product_upgrade_2026_06_19/source-packet.md`
 - Feature oracle: `docs/misaya_notes_product_upgrade_2026_06_19/feature-oracle.json`
 - Continuity ledger: `docs/misaya_notes_product_upgrade_2026_06_19/continuity-ledger.md`
-- Current target phase: `MNP-02`
-- Current target phase file: `docs/misaya_notes_product_upgrade_2026_06_19/phase-02-reading-experience-and-format-rendering.md`
-- Current feature-oracle item: `MNP-F003`
+- Current target phase: `MNP-03`
+- Current target phase file: `docs/misaya_notes_product_upgrade_2026_06_19/phase-03-blog-agent-product-reliability.md`
+- Current feature-oracle item: `MNP-F004`
 - Baseline evidence: `reports/mnp-00-current-product-contract-and-evidence-audit-report.md`
-- Latest implementation evidence: `reports/mnp-01-ui-anti-slop-visual-system-report.md`
+- Latest implementation evidence: `reports/mnp-02-reading-experience-and-format-rendering-report.md`
 
 ## Generator Notes
 
@@ -23,18 +23,20 @@
 - Stay inside the phase `LIKELY_EDIT_PATHS`.
 - Summarize inspected code facts into `docs/misaya_notes_product_upgrade_2026_06_19/source-packet.md`.
 - Update `docs/misaya_notes_product_upgrade_2026_06_19/progress-log.md`, `docs/misaya_notes_product_upgrade_2026_06_19/continuity-ledger.md`, and the phase report before handoff.
-- MNP-01 passed for the implemented public UI and owner fallback slice. Preserve its hierarchy decisions unless a screenshot proves a regression.
-- For MNP-02, focus on article body visibility, mixed Markdown/KaTeX/table/code rendering, mobile TOC behavior, and CJK-aware reading-time consistency.
+- MNP-01 passed for the implemented public UI and owner fallback slice. Preserve its hierarchy decisions unless a runtime check proves a regression.
+- MNP-02 passed with shared CJK/English reading-time helpers, article-aware duplicate-title stripping, rich Markdown renderer fixture coverage, h4-h6 TOC anchor parity, language-less fenced code block handling, and a light-mode reader contrast repair.
+- For MNP-03, focus on Blog Agent source-card anchors, no-source fallback, partial stream failure, cancel, timeout, low quota, and owner eval diagnostics.
 
 ## Evaluator Notes
 
 - Read the phase report, changed files, validation output, and oracle evidence.
 - Reject `passing` status when evidence is missing, superficial, or outside the target phase.
 - Write findings as actionable file/line or command/check notes.
+- For MNP-02 evidence, note that Chrome screenshot capture timed out; acceptance rests on tests, build, a11y snapshot, and measured DOM/CSS runtime checks.
 
 ## Next Handoff
 
 - Active role: generator
-- Active phase: MNP-02
-- Active feature-oracle item: MNP-F003
-- Required evidence before unlock: rich article fixture or representative pages, desktop/tablet/mobile reader screenshots, format-rendering regression tests, check/test/build evidence, oracle update, progress-log entry, continuity-ledger update, and an MNP-02 phase report.
+- Active phase: MNP-03
+- Active feature-oracle item: MNP-F004
+- Required evidence before unlock: Agent source-card anchor checks, no-source fallback, partial stream failure, cancel/timeout/low-quota state coverage, owner eval diagnostics, check/test/build evidence, oracle update, progress-log entry, continuity-ledger update, and an MNP-03 phase report.

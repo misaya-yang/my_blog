@@ -50,6 +50,9 @@ Misaya Notes should feel like a maintained research notebook with a useful groun
 - Agent source cards need stable section anchors, not inferred chunk/heading indexes.
 - Markdown rendering needs a kitchen-sink regression fixture for GFM tables, KaTeX, code blocks, images, blockquotes, and mixed Chinese/English content.
 - Reading minutes should be consistent between discovery/search/archive/detail surfaces and CJK-aware.
+- MNP-02 made reading minutes a shared contract in `shared/reading-time.ts`: discovery, article cards, post detail, and editor preview now use CJK/English readable-unit counting, and article surfaces strip duplicated Markdown titles through the same helper.
+- MNP-02 added rich Markdown renderer regression coverage for GFM tables, KaTeX, highlighted code, language-less fenced code, images, links, copy affordance, and h2/h4 heading IDs.
+- `MarkdownRenderer.tsx` now assigns TOC-compatible ids for h1-h6 headings; later Agent/source-anchor work should preserve those ids instead of inventing a second anchor scheme.
 - Search currently needs pagination, hit explanation, and clearer zero-result recovery hierarchy before the archive grows.
 - Agent failure states should preserve user context and distinguish cancel, timeout, model failure, no-source fallback, and low quota.
 - Owner Agent diagnostics should eventually evaluate final-answer quality and citation coverage, not retrieval alone.
@@ -68,7 +71,8 @@ Misaya Notes should feel like a maintained research notebook with a useful groun
 - UI work must prioritize typography, density, contrast, and content hierarchy over additional effects.
 - Code work must favor small extractions and tests over wholesale CSS or component rewrites.
 - MNP-01 implemented the first UI anti-slop slice on 2026-06-19: public space/glass effects were reduced, home mobile latest-note ordering was fixed, track/search density was lowered, article body appeared earlier, and owner auth/loading states were dark-locked.
-- MNP-02 through MNP-05 remain future phase work; do not infer full reader, Agent, content-voice, or CSS-architecture completion from MNP-01.
+- MNP-02 implemented the reader-format slice on 2026-06-19: shared reading-time logic, article duplicate-title normalization, rich Markdown fixture tests, h4-h6 heading anchors, language-less fenced code handling, and light/dark reader contrast repair.
+- MNP-03 through MNP-05 remain future phase work; do not infer Agent reliability, content voice, or CSS-architecture completion from MNP-01/MNP-02.
 - The 2026-06-19 session includes explicit user approval to commit, push, and deploy the implemented slice.
 
 ## Risk Tags

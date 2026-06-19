@@ -44,6 +44,10 @@ import { trpc } from "@/lib/trpc";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
 import { buildRouteMetadata } from "@shared/metadata";
 import {
+  countReadableUnits,
+  estimateReadingMinutes,
+} from "@shared/reading-time";
+import {
   ArrowLeft,
   Bold,
   Italic,
@@ -221,18 +225,13 @@ export default function Editor() {
   const saveVersion = trpc.posts.saveVersion.useMutation();
   const restoreVersion = trpc.posts.restoreVersion.useMutation();
 
-  // 字数统计
   const wordCount = useMemo(() => {
-    const text = content.replace(/[#*`\[\]()>-_~|]/g, "").trim();
-    const chinese = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
-    const english = (text.match(/[a-zA-Z]+/g) || []).length;
-    return chinese + english;
+    return countReadableUnits(content);
   }, [content]);
 
-  // 预计阅读时间（假设每分钟阅读300字）
   const readingTime = useMemo(() => {
-    return Math.max(1, Math.ceil(wordCount / 300));
-  }, [wordCount]);
+    return estimateReadingMinutes(content);
+  }, [content]);
 
   const equationCount = useMemo(() => {
     return (content.match(/\$\$[\s\S]*?\$\$|\$[^$\n]+\$/g) || []).length;

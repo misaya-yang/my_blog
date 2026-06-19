@@ -22,6 +22,10 @@ import {
   buildRouteMetadata,
 } from "@shared/metadata";
 import {
+  estimateArticleReadingMinutes,
+  stripMatchingMarkdownTitle,
+} from "@shared/reading-time";
+import {
   ArrowLeft,
   ArrowRight,
   BookOpen,
@@ -380,26 +384,6 @@ function truncateText(value: string, maxLength: number) {
     : value;
 }
 
-function stripMatchingMarkdownTitle(content: string, title: string) {
-  const lines = content.split(/\r?\n/);
-  const firstContentIndex = lines.findIndex(line => line.trim().length > 0);
-  if (firstContentIndex < 0) return content;
-
-  const match = /^#\s+(.+?)\s*$/.exec(lines[firstContentIndex]);
-  if (!match) return content;
-
-  const markdownTitle = normalizeText(match[1].replace(/\*\*/g, ""));
-  const pageTitle = normalizeText(title);
-  if (!markdownTitle || markdownTitle !== pageTitle) return content;
-
-  const nextLines = [...lines];
-  nextLines.splice(firstContentIndex, 1);
-  if (nextLines[firstContentIndex]?.trim() === "") {
-    nextLines.splice(firstContentIndex, 1);
-  }
-  return nextLines.join("\n").trimStart();
-}
-
 function MobileToc({
   headings,
   t,
@@ -600,13 +584,6 @@ export default function PostDetail() {
     [copyToClipboard, t]
   );
 
-  // Calculate reading time
-  const calculateReadingTime = (content: string) => {
-    const words = content.split(/\s+/).length;
-    const minutes = Math.ceil(words / 200);
-    return minutes;
-  };
-
   if (isLoading) {
     return <ArticleLoadingState t={t} />;
   }
@@ -637,7 +614,7 @@ export default function PostDetail() {
     articlePost.title
   );
   const articlePostForReading = { ...articlePost, content: readableContent };
-  const readingTime = calculateReadingTime(readableContent);
+  const readingTime = estimateArticleReadingMinutes(articlePost);
   const postTags = Array.isArray(articlePost.tags) ? articlePost.tags : [];
   const visibleHeaderTags = postTags.slice(0, 2);
   const remainingHeaderTagCount = Math.max(

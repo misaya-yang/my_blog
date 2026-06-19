@@ -39,13 +39,36 @@ export default function MarkdownRenderer({
       remarkPlugins={[remarkGfm, remarkMath]}
       rehypePlugins={[rehypeKatex, rehypeHighlight]}
       components={{
-        h1: createHeadingComponent("h1", headingIdResolver, "mb-5 mt-12 text-3xl font-semibold"),
+        h1: createHeadingComponent(
+          "h1",
+          headingIdResolver,
+          "mb-5 mt-12 text-3xl font-semibold"
+        ),
         h2: createHeadingComponent(
           "h2",
           headingIdResolver,
           "mb-4 mt-10 border-b border-white/10 pb-2 text-2xl font-semibold"
         ),
-        h3: createHeadingComponent("h3", headingIdResolver, "mb-3 mt-8 text-xl font-semibold"),
+        h3: createHeadingComponent(
+          "h3",
+          headingIdResolver,
+          "mb-3 mt-8 text-xl font-semibold"
+        ),
+        h4: createHeadingComponent(
+          "h4",
+          headingIdResolver,
+          "mb-2 mt-7 text-lg font-semibold"
+        ),
+        h5: createHeadingComponent(
+          "h5",
+          headingIdResolver,
+          "mb-2 mt-6 text-base font-semibold"
+        ),
+        h6: createHeadingComponent(
+          "h6",
+          headingIdResolver,
+          "mb-2 mt-5 text-sm font-semibold"
+        ),
         img: ({ node: _node, alt, ...props }: any) => (
           <img
             {...props}
@@ -82,14 +105,25 @@ export default function MarkdownRenderer({
           );
         },
         table: ({ node: _node, children, ...props }: any) => (
-          <div className="technical-table-wrap" role="region" aria-label="Scrollable table" tabIndex={0}>
+          <div
+            className="technical-table-wrap"
+            role="region"
+            aria-label="Scrollable table"
+            tabIndex={0}
+          >
             <table {...props}>{children}</table>
           </div>
         ),
         code: ({ node: _node, className, children, ...props }: any) => {
-          const isInline = !/language-(\w+)/.test(className || "");
+          const codeText = String(children ?? "");
+          const isBlock =
+            /language-(\w+)/.test(className || "") || codeText.includes("\n");
+          const isInline = !isBlock;
           return isInline ? (
-            <code className="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-sm" {...props}>
+            <code
+              className="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-sm"
+              {...props}
+            >
               {children}
             </code>
           ) : (
@@ -106,7 +140,7 @@ export default function MarkdownRenderer({
 }
 
 function createHeadingComponent(
-  Tag: "h1" | "h2" | "h3",
+  Tag: "h1" | "h2" | "h3" | "h4" | "h5" | "h6",
   resolveHeadingId: (text: string) => string | undefined,
   className: string
 ) {
@@ -126,7 +160,7 @@ function createHeadingIdResolver(headings: MarkdownHeading[]) {
   return (text: string) => {
     const occurrence = occurrences.get(text) ?? 0;
     occurrences.set(text, occurrence + 1);
-    const matchingHeadings = headings.filter((heading) => heading.text === text);
+    const matchingHeadings = headings.filter(heading => heading.text === text);
     return matchingHeadings[occurrence]?.id;
   };
 }

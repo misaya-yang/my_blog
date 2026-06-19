@@ -1,4 +1,5 @@
 import type { Category, Post, Tag } from "../drizzle/schema";
+export { estimateReadingMinutes } from "../shared/reading-time.js";
 
 export type DiscoveryPost = Post & {
   category: Category | null;
@@ -23,13 +24,6 @@ type Pagination = {
   limit?: number;
   offset?: number;
 };
-
-export function estimateReadingMinutes(content: string | null | undefined) {
-  const text = content ?? "";
-  const chinese = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
-  const english = (text.match(/[a-zA-Z]+/g) || []).length;
-  return Math.max(1, Math.ceil((chinese + english) / 320));
-}
 
 export function searchDiscoveryPosts(
   posts: DiscoveryPost[],

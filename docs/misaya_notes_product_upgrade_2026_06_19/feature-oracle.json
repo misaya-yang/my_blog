@@ -50,8 +50,8 @@
         "Verify article entry, guide, Agent prompt, and body order across desktop, tablet, and mobile."
       ],
       "status": "passing",
-      "evidence": "reports/mnp-06-release-evidence-and-production-verification-report.md; implementation commit 924ed85 pushed to origin/main; Vercel production deploy completed; https://misaya.online smoke returned 200 for /, article, search, algorithms, rss.xml, sitemap.xml, and robots.txt.",
-      "notes": "Passed for the MNP-01 UI implementation slice release only. It does not mark MNP-02 reader work, MNP-03 Agent work, MNP-04 content voice, or MNP-05 CSS simplification complete."
+      "evidence": "reports/mnp-02-reading-experience-and-format-rendering-report.md; shared/reading-time.test.ts; client/src/components/MarkdownRenderer.test.tsx; focused Vitest passed with 3 files and 13 tests; pnpm check, pnpm test, and pnpm build passed on 2026-06-19; Chrome DevTools runtime checks passed for 390 dark, 768 dark, 1024 dark, and 1024 light reader states.",
+      "notes": "Passed for reader-format rendering and reading-time consistency. Screenshot capture timed out in Chrome DevTools, so durable browser evidence is the MNP-02 report, a11y snapshot, and measured DOM/CSS runtime values. MNP-03 Agent reliability remains failing."
     },
     {
       "id": "MNP-F004",
@@ -105,9 +105,9 @@
         "Run full checks and browser/production smoke appropriate to the changed slice.",
         "Write docs/misaya_notes_product_upgrade_2026_06_19/reports/mnp-06-release-evidence-and-production-verification-report.md with deployment evidence."
       ],
-      "status": "failing",
-      "evidence": "",
-      "notes": ""
+      "status": "passing",
+      "evidence": "reports/mnp-06-release-evidence-and-production-verification-report.md; implementation commit 924ed85 pushed to origin/main; docs commit 67a9db6 pushed to origin/main; Vercel production deploy completed; https://misaya.online smoke returned 200 for /, article, search, algorithms, rss.xml, sitemap.xml, and robots.txt.",
+      "notes": "Passed for the MNP-01 UI implementation slice release only. It does not mark MNP-02 reader work, MNP-03 Agent work, MNP-04 content voice, or MNP-05 CSS simplification complete."
     }
   ]
 }
