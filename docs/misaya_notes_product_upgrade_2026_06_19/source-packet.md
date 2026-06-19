@@ -34,6 +34,7 @@ Misaya Notes should feel like a maintained research notebook with a useful groun
 - Agent entrypoints: `client/src/components/agent/BlogAgentRoot.tsx`, `server/ai/harness.ts`, `server/ai/contextSources.ts`, `server/ai/knowledge*.ts`, and owner diagnostics in `client/src/pages/ManageAgent.tsx`.
 - Main visual layers: `client/src/index.css`, `client/src/styles/public-components.css`, `visual-refresh.css`, `agent-surfaces.css`, and `owner-tools.css`. The import order in `client/src/main.tsx` makes late overrides powerful.
 - Article/content sources: top-level Markdown posts, `seed-blog.mjs`, `server/publicSeedPosts.ts`, `client/src/lib/publicArticles.ts`, and localized UI copy under `client/src/i18n`.
+- MNP-04 added content/copy guards in `scripts/audit/content-quality.ts`, `client/src/i18n/copyVoice.test.ts`, and `server/publicSeedPosts.test.ts`; localized series labels are resolved through `shared/content-series` in `ArticleCard.tsx` and `Home.tsx`.
 - Current risk evidence: `visual-refresh.css` is over 5,000 lines, `owner-tools.css` is over 1,300 lines, `PostDetail.tsx` is over 1,200 lines, and `BlogAgentRoot.tsx` is over 1,700 lines.
 
 ## Design or UI Facts
@@ -65,6 +66,8 @@ Misaya Notes should feel like a maintained research notebook with a useful groun
 - Good target voice: concrete misconception or problem first, then technical abstraction; fewer grand conclusions and fewer repeated section labels.
 - Preserve technical terms that are clearer in English, but avoid unnecessary English labels in reader-facing Chinese UI.
 - Editing scope should avoid slugs, publication dates, visibility, hidden/draft status, formulas, code listings, and benchmark claims unless evidence is refreshed.
+- MNP-04 rewrote the highest-risk public seed excerpts, selected public article intros/headings/conclusions, and stale UI labels. Follow-up content edits must update both `seed-blog.mjs` and `server/publicSeedPosts.ts` or the parity test will fail.
+- Code-only deploys do not refresh database-backed article content. When public article text or seed metadata changes need to reach production, run the project-owned publish flow (`pnpm content:publish`) after explicit approval so database rows and Agent knowledge chunks are updated.
 
 ## Assumptions and Decisions
 
@@ -75,8 +78,9 @@ Misaya Notes should feel like a maintained research notebook with a useful groun
 - MNP-01 implemented the first UI anti-slop slice on 2026-06-19: public space/glass effects were reduced, home mobile latest-note ordering was fixed, track/search density was lowered, article body appeared earlier, and owner auth/loading states were dark-locked.
 - MNP-02 implemented the reader-format slice on 2026-06-19: shared reading-time logic, article duplicate-title normalization, rich Markdown fixture tests, h4-h6 heading anchors, language-less fenced code handling, and light/dark reader contrast repair.
 - MNP-03 implemented the Agent reliability slice on 2026-06-20: stable semantic source-card anchors, h1-h6 source lookup, persisted `anchorId` metadata, timeout-vs-abort diagnostics, model fallback telemetry, and context/quota regression coverage.
-- MNP-04 and MNP-05 remain future phase work; do not infer content voice or CSS-architecture completion from MNP-01 through MNP-03.
-- The 2026-06-19 session includes explicit user approval to commit, push, and deploy the implemented slice.
+- MNP-04 implemented the article voice and copy quality slice on 2026-06-20: concrete public seed excerpts, selected public article wording, localized UI/series labels, stale-copy tests, seed/fallback parity, `pnpm content:publish`, and local production runtime copy evidence.
+- MNP-05 remains future phase work; do not infer CSS-architecture/code-simplification completion from MNP-01 through MNP-04.
+- The 2026-06-19 and 2026-06-20 sessions include explicit user approval to commit, push, and deploy the implemented slice.
 
 ## Risk Tags
 

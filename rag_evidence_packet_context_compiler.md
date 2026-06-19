@@ -1,6 +1,6 @@
 # Evidence Packet: Agentic RAG 的上下文编译接口
 
-RAG 很容易被理解成一条直线：用户问一句话，系统把相似 chunk 找出来，塞进 prompt，模型回答。这个版本当然能跑 demo，但一旦接到真正的 Assistant 里，问题就开始变得难看。
+RAG 很容易被理解成一条直线：用户问一句话，系统把相似 chunk 找出来，塞进 prompt，模型回答。这个版本能跑 demo，但接到真实 Assistant 流程后，问题会立刻暴露。
 
 模型会问：这些 chunk 为什么进来了？
 
@@ -10,7 +10,7 @@ RAG 很容易被理解成一条直线：用户问一句话，系统把相似 chu
 
 这些问题都不是“再换一个向量库”能解决的。Agentic RAG 的关键不只是“如何检索到相关 chunk”，而是“如何把知识库结果变成 Agent 可以稳定消费、可以引用、可以复盘的上下文对象”。
 
-这里从一个很小的接口切进去：**Evidence Packet**。它是 Assistant 与 KB 之间的结构化中间表示。KB 不再只是向量搜索服务，而是一个面向 Agent 的 **Context Compiler**：把原始文档、召回信号、来源元数据、token 预算和引用约束编译成可执行上下文。
+一个更可落地的切口是 **Evidence Packet**。它是 Assistant 与 KB 之间的结构化中间表示。KB 不再只是向量搜索服务，而是一个面向 Agent 的 **Context Compiler**：把原始文档、召回信号、来源元数据、token 预算和引用约束编译成可执行上下文。
 
 这条链路可以压成：
 
@@ -20,7 +20,7 @@ Raw Knowledge -> Retrieval Signals -> Evidence Packet -> Compiled Context -> Age
 
 重点不是发明新的检索算法，而是把 RAG 从“搜索结果列表”提升为“Agent runtime 的上下文接口”。
 
-## 先把边界放在桌面上
+## 先限定边界
 
 Evidence Packet 不是“已经做完一套企业级 RAG 平台”的包装词。它更像一个工程接口：当博客 Agent、文档助手或通用 Assistant 从原型走向产品时，知识如何被检索、裁剪、授权、引用和评测。
 
@@ -123,7 +123,7 @@ type EvidenceItem = {
 
 这与现代 agent 工程的方向是一致的。Anthropic 强调 agentic systems 应优先使用简单、可组合、透明的 workflow；OpenAI Agents SDK 把 tracing 和 guardrails 作为运行时一等概念。Evidence Packet 把同样的原则应用到 RAG 上下文层：让知识进入 Agent 之前先成为可观察对象。
 
-## 4. Stack Map
+## 4. RAG Pipeline Layers
 
 围绕 Evidence Packet，参考技术栈可以被整理成几层。每一层都可以按产品阶段裁剪：博客 Agent 首版可以先从文章索引、会话历史和权限过滤开始，后续再扩展上传文件、混合检索和更细的评测。
 
@@ -192,7 +192,7 @@ $$
 
 如果这些阶段都被塞进一次 `searchAndPrompt()`，系统无法做 ablation，也无法解释质量变化。
 
-## 7. Reference Architecture Mapping
+## 7. Where Evidence Packet Sits
 
 在博客 Agent 或通用 Assistant 的后续实现中，Evidence Packet 可以作为 RAG 和 Agent Loop 之间的边界对象。
 
@@ -215,9 +215,9 @@ Chunking / Metadata
   -> Agent Runtime
 ```
 
-## 8. Evaluation Surface
+## 8. What to Measure Before the Answer
 
-Evidence Packet 还提供了比最终答案更细的评测面。一个 Agentic RAG 系统至少可以评估五类信号：
+Evidence Packet 还提供了比最终答案更细的评测视角。一个 Agentic RAG 系统至少可以评估五类信号：
 
 - **Evidence recall:** 正确来源是否进入候选集。
 - **Source precision:** 进入上下文的证据是否来自正确文档和章节。
@@ -239,7 +239,7 @@ Evidence Packet 不是新的向量数据库，也不是替代 reranker 的模型
 
 它适合任务类型多、知识源复杂、需要引用和审计，并且上下文策略会长期迭代的 Assistant。
 
-## 10. Core Takeaway
+## 10. What Evidence Packet Changes
 
 Agentic RAG 不应停留在“把向量库接到聊天框”。更可靠的做法是让 KB 输出一份可调试的上下文包：
 

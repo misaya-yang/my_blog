@@ -163,7 +163,7 @@ isometry: relative energy does not leak
 
 换句话说，IsoHC 不是在消灭混合，而是在给混合加几何护栏。
 
-## 7. Implementation Mapping
+## 7. From Constraint to Code
 
 一个概念化实现可以写成：
 
@@ -219,7 +219,7 @@ IsoHC 则放弃非负性，换来正交等距：
 
 这张表也说明了边界：IsoHC 不是“更自然的概率混合”，而是“更硬的几何约束”。
 
-## 10. Evidence Framing
+## 10. What the Evidence Can and Cannot Claim
 
 这类方法最容易被写坏的地方，是把稳定性机制写成性能宣言。
 
@@ -233,7 +233,7 @@ IsoHC 则放弃非负性，换来正交等距：
 
 这不是谦虚用语，而是工程事实。一个约束可以非常漂亮，但最终仍要面对训练速度、数值误差、任务分布、模型规模和实现成本。
 
-## 11. Core Takeaway
+## 11. What IsoHC Preserves
 
 IsoHC 的核心可以压成一句话：
 

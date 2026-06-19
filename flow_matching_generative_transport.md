@@ -1,6 +1,6 @@
 # Flow Matching：从扩散噪声到确定性运输
 
-Flow Matching 最容易被讲成“比 Diffusion 更快的新训练目标”。这个说法有一点道理，但太窄。它真正有意思的地方，是把生成模型从“反向去噪”改写成“分布运输”：先选一条从噪声分布走向数据分布的概率路径，再学习路径上每个位置应该移动的速度场。
+Flow Matching 最容易被讲成“比 Diffusion 更快的新训练目标”。这个说法有一点道理，但太窄。更关键的转向，是把生成模型从“反向去噪”改写成“分布运输”：先选一条从噪声分布走向数据分布的概率路径，再学习路径上每个位置应该移动的速度场。
 
 换句话说，模型不再只回答“这个 noisy sample 里原图是什么”，而是在回答一个更动力系统的问题：
 
@@ -267,7 +267,7 @@ $$
 
 这个改写很有价值。它让 CNF、Diffusion、Probability Flow ODE、Rectified Flow、Optimal Transport、Schroedinger Bridge、Stochastic Interpolants、Riemannian Flow 和 Discrete Flow Matching 都能放进“路径、速度场、采样器”的框架里讨论。
 
-对这条路线的判断很简单：Flow Matching 的核心不是“比 Diffusion 快”这么单一，而是把生成模型重新理解为一个可设计、可优化、可扩展的分布运输问题。速度场只是表面，真正值得研究的是路径怎么选、样本怎么配、采样怎么做、条件怎么对齐，以及这些选择如何进入真实的多模态系统。
+对这条路线的判断很简单：Flow Matching 的核心不是“比 Diffusion 快”这么单一，而是把生成模型重新理解为一个可设计、可优化、可扩展的分布运输问题。速度场只是入口，更值得研究的是路径怎么选、样本怎么配、采样怎么做、条件怎么对齐，以及这些选择如何进入真实的多模态系统。
 
 ## References
 

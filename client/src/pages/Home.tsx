@@ -16,6 +16,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
 import { buildHomeJsonLd, buildRouteMetadata } from "@shared/metadata";
+import { getContentSeriesBySlug } from "@shared/content-series";
 import {
   ArrowRight,
   FileText,
@@ -141,6 +142,17 @@ function getPanelPathSummary(
   return t("home.algorithmsPathSummary");
 }
 
+function getPostSeriesLabel(
+  post: ArticleCardPost,
+  fallback: string,
+  t: (key: string, vars?: Record<string, string | number>) => string
+) {
+  const series = post.seriesSlug
+    ? getContentSeriesBySlug(post.seriesSlug)
+    : null;
+  return series ? t(series.titleKey) : post.seriesTitle ?? fallback;
+}
+
 function FeaturedNote({
   post,
   isLoading,
@@ -250,7 +262,7 @@ function TrackPanel({
             {model.posts.length > 0 ? (
               model.posts.map(post => (
                 <Link key={post.id} href={`/post/${post.slug}`}>
-                  <span>{post.seriesTitle ?? model.label}</span>
+                  <span>{getPostSeriesLabel(post, model.label, t)}</span>
                   <strong>{post.title}</strong>
                 </Link>
               ))

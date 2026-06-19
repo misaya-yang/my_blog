@@ -99,6 +99,98 @@ describe("content quality audit", () => {
     );
   });
 
+  it("flags vague seed excerpts without inspecting article claims", async () => {
+    const root = await createTempProject();
+    await writeFile(
+      join(root, "seed-blog.mjs"),
+      `
+      const posts = [
+        {
+          title: "Voice",
+          slug: "voice-note",
+          contentPath: "./voice.md",
+          status: "published",
+          visibility: "public",
+          excerpt: "一篇面向后训练技术栈的系统梳理：把方法放进同一张技术地图。",
+        },
+      ];
+      `
+    );
+    await writeFile(join(root, "voice.md"), "# Voice\n\nBody.");
+
+    const report = await runContentQualityAudit(root);
+
+    expect(report.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          severity: "warning",
+          code: "seed.generic_excerpt_voice",
+          evidence: expect.stringContaining("系统梳理"),
+        }),
+        expect.objectContaining({
+          severity: "warning",
+          code: "seed.generic_excerpt_voice",
+          evidence: expect.stringContaining("技术地图"),
+        }),
+      ])
+    );
+  });
+
+  it("keeps hidden draft excerpts out of public voice warnings", async () => {
+    const root = await createTempProject();
+    await writeFile(
+      join(root, "seed-blog.mjs"),
+      `
+      const posts = [
+        {
+          title: "Draft Voice",
+          slug: "draft-voice",
+          contentPath: "./draft-voice.md",
+          status: "draft",
+          visibility: "hidden",
+          excerpt: "一篇面向内部实验的系统梳理：把草稿放进同一张技术地图。",
+        },
+      ];
+      `
+    );
+    await writeFile(join(root, "draft-voice.md"), "# Draft Voice\n\nBody.");
+
+    const report = await runContentQualityAudit(root);
+
+    expect(
+      report.issues.filter(issue => issue.code === "seed.generic_excerpt_voice")
+    ).toEqual([]);
+  });
+
+  it("allows technical caveat phrases inside math-heavy derivation prose", async () => {
+    const root = await createTempProject();
+    await writeFile(
+      join(root, "seed-blog.mjs"),
+      `
+      const posts = [
+        {
+          title: "Derivation",
+          slug: "derivation",
+          contentPath: "./derivation.md",
+          status: "published",
+          visibility: "public",
+          excerpt: "Concrete derivation note.",
+        },
+      ];
+      `
+    );
+    await writeFile(
+      join(root, "derivation.md"),
+      "# Derivation\n\n需要注意的是，$Q^TQ=I$ 只约束残差子空间。"
+    );
+
+    const report = await runContentQualityAudit(root);
+
+    expect(
+      report.issues.filter(issue => issue.code === "content.aiish_phrase")
+    ).toEqual([]);
+  });
+
   it("flags malformed prose markers without flagging normal bold labels or code", async () => {
     const root = await createTempProject();
     await writeFile(

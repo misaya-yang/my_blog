@@ -1,9 +1,9 @@
 {
   "schema_version": "prd-phase-harness/loop-state/v1",
-  "active_phase": "MNP-04",
-  "active_feature": "MNP-F005",
-  "iteration": 4,
+  "active_phase": "MNP-05",
+  "active_feature": "MNP-F006",
+  "iteration": 5,
   "status": "verified",
-  "last_decision": "MNP-03 implemented stable Agent source-card anchors, h1-h6 heading lookup, persisted anchorId metadata, model fallback error-code telemetry, timeout-versus-abort diagnostics, and context/quota regression coverage; it passed focused Vitest, pnpm check, pnpm test, pnpm build, and Chrome runtime DOM checks.",
-  "next_action": "Execute MNP-04 by following docs/misaya_notes_product_upgrade_2026_06_19/phase-04-article-voice-and-quality-system.md; focus on concrete technical summaries, labels, introductions, and conclusions without changing slugs, formulas, dates, visibility, or hidden content."
+  "last_decision": "MNP-04 implemented the article voice and copy quality slice: public seed excerpts, fallback parity, i18n copy guards, localized series labels, selected public article wording, content publish/reindex, full tests, build, and local production runtime copy smoke passed.",
+  "next_action": "Execute MNP-05 by following docs/misaya_notes_product_upgrade_2026_06_19/phase-05-code-simplification-and-css-architecture.md; simplify high-risk CSS and frontend/Agent code in small tested extractions while preserving MNP-02 reader contracts, MNP-03 source-card anchors, and MNP-04 copy guards."
 }

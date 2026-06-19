@@ -63,6 +63,24 @@ const MALFORMED_MARKDOWN_PATTERNS: Array<{
   },
 ];
 
+const GENERIC_EXCERPT_PATTERNS: Array<{
+  pattern: RegExp;
+  message: string;
+}> = [
+  {
+    pattern: /一篇面向|系统梳理/,
+    message: "Seed excerpt should lead with the concrete technical problem.",
+  },
+  {
+    pattern: /同一张[^，。]*地图|技术地图|研究地图/,
+    message: "Seed excerpt should avoid vague map metaphors.",
+  },
+  {
+    pattern: /看起来跑完了|看似正确/,
+    message: "Seed excerpt should describe the observable failure directly.",
+  },
+];
+
 const LINK_PATTERN = /\[[^\]]+]\(([^)]+)\)/g;
 
 export async function runContentQualityAudit(
@@ -161,6 +179,19 @@ function auditSeedPosts(
           `Missing excerpt for ${post.slug}.`
         )
       );
+    } else if (post.status === "published" && post.visibility === "public") {
+      for (const { pattern, message } of GENERIC_EXCERPT_PATTERNS) {
+        if (!pattern.test(post.excerpt)) continue;
+        issues.push(
+          warning(
+            "seed.generic_excerpt_voice",
+            "seed-blog.mjs",
+            `${message} Slug: ${post.slug}`,
+            undefined,
+            post.excerpt
+          )
+        );
+      }
     }
     if (!post.contentPath.trim()) {
       issues.push(
@@ -293,6 +324,7 @@ function auditMarkdownFile(
 
     for (const phrase of AIISH_PHRASES) {
       if (!line.includes(phrase)) continue;
+      if (isTechnicalCaveatPhrase(phrase, line)) continue;
       issues.push(
         warning(
           "content.aiish_phrase",
@@ -340,6 +372,11 @@ function auditMarkdownFile(
   }
 
   return issues;
+}
+
+function isTechnicalCaveatPhrase(phrase: string, line: string) {
+  if (phrase !== "需要注意的是" && phrase !== "值得注意的是") return false;
+  return /[$`]|\\[a-zA-Z]+/.test(line);
 }
 
 function hasUnbalancedBoldMarkers(line: string) {

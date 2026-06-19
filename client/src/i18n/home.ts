@@ -14,7 +14,7 @@ const home: TranslationDict = {
     en: "Two-track research notebook",
     zh: "双轨研究笔记",
   },
-  "home.chip1": { en: "working notes", zh: "working notes" },
+  "home.chip1": { en: "working notes", zh: "工作笔记" },
   "home.chip2": { en: "model mechanisms", zh: "模型机制" },
   "home.chip3": { en: "system notes", zh: "系统笔记" },
 
@@ -84,7 +84,7 @@ const home: TranslationDict = {
   "home.tagLatest": { en: "Latest", zh: "最新" },
   "home.tagResearch": { en: "Research", zh: "研究" },
   "home.tagRoPE": { en: "RoPE", zh: "RoPE" },
-  "home.tagResidualMixing": { en: "Residual Mixing", zh: "Residual Mixing" },
+  "home.tagResidualMixing": { en: "Residual Mixing", zh: "残差混合" },
 
   // Research Index sidebar
   "home.researchIndex": { en: "Notebook index", zh: "笔记索引" },
@@ -147,7 +147,7 @@ const home: TranslationDict = {
   // Footer
   "home.footerTagline": {
     en: "Misaya Yang. Transformer systems and long-context mechanisms.",
-    zh: "Misaya Yang。Transformer systems 与长上下文机制。",
+    zh: "Misaya Yang。Transformer 系统与长上下文机制。",
   },
 
   // Archive placeholder
@@ -172,8 +172,8 @@ const home: TranslationDict = {
   "discovery.updated": { en: "Updated {date}", zh: "更新于 {date}" },
   "discovery.searchKicker": { en: "Full-site search", zh: "全站搜索" },
   "discovery.searchTitle": {
-    en: "Search the research index",
-    zh: "搜索研究索引",
+    en: "Search public notes",
+    zh: "搜索公开笔记",
   },
   "discovery.searchSubtitle": {
     en: "Search public articles across titles, excerpts, body text, categories, and tags.",
@@ -221,8 +221,8 @@ const home: TranslationDict = {
     zh: "询问阅读助手",
   },
   "discovery.recoveryAssistantScope": {
-    en: "The assistant searches public articles, tags, categories, and the current query.",
-    zh: "助手会基于公开文章、标签、分类和当前 query 检索。",
+    en: "The assistant searches public articles, tags, categories, and the current search.",
+    zh: "助手会基于公开文章、标签、分类和当前搜索词检索。",
   },
   "discovery.clearSearch": {
     en: "Clear search",
@@ -241,8 +241,8 @@ const home: TranslationDict = {
     zh: "研究路径",
   },
   "discovery.recoverySignal": {
-    en: "This zero-result query is kept as an owner-only content signal, without email, IP, or visitor details.",
-    zh: "这个无结果查询会作为仅作者可见的内容信号保存，不包含邮箱、IP 或访客身份。",
+    en: "This no-result search is saved as an author-only topic cue, without email, IP, or visitor details.",
+    zh: "这次无结果搜索只会作为作者可见的选题线索保存，不包含邮箱、IP 或访客身份。",
   },
   "discovery.tagKicker": { en: "Tag index", zh: "标签索引" },
   "discovery.categoryKicker": { en: "Category index", zh: "分类索引" },
@@ -279,7 +279,7 @@ const home: TranslationDict = {
   },
   "about.focus3": {
     en: "RAG, context engineering, and retrieval boundaries",
-    zh: "RAG、Context Engineering 与检索边界",
+    zh: "RAG、上下文工程与检索边界",
   },
   "about.focus4": {
     en: "Evaluation loops for production AI systems",
@@ -301,14 +301,14 @@ const home: TranslationDict = {
     en: "Start with the path, then use the note index below for lookup.",
     zh: "先读路径，再用下方笔记索引查找细节。",
   },
-  "track.researchMap": { en: "Research index", zh: "研究索引" },
+  "track.researchMap": { en: "Topic index", zh: "主题索引" },
   "track.algorithms.mapNote": {
-    en: "Read by mechanism: modeled signal, shaping constraint, and implementation cost.",
-    zh: "按机制阅读：建模信号、约束来源和实现代价。",
+    en: "Read by mechanism: what is being modeled, what constrains it, and what it costs to implement.",
+    zh: "按机制阅读：它建模什么、受什么约束、实现代价在哪里。",
   },
   "track.applications.mapNote": {
-    en: "Read by runtime: context boundary, observable trace, and evaluation loop.",
-    zh: "按运行时阅读：上下文边界、可观测 trace 和评测循环。",
+    en: "Read by runtime: context boundaries, traces, and evaluation loops.",
+    zh: "按运行时阅读：上下文边界、调用轨迹和评测循环。",
   },
   "track.algorithms.chip1": { en: "Mechanisms", zh: "机制" },
   "track.algorithms.chip2": { en: "Scaling", zh: "扩展" },
@@ -320,7 +320,7 @@ const home: TranslationDict = {
   },
   "track.algorithms.overview": {
     en: "This track keeps the mathematical and architectural side of the blog: hypotheses, derivations, generative objectives, invariants, and implementation implications for deep learning systems.",
-    zh: "这个技术区保留博客中偏数学和架构机制的一侧：假设、推导、生成目标、不变量，以及它们对深度学习系统实现的影响。",
+    zh: "这个方向整理偏数学和架构机制的笔记：假设、推导、生成目标、不变量，以及它们如何影响深度学习系统实现。",
   },
   "track.algorithms.topicTitle": { en: "Algorithm Index", zh: "算法索引" },
   "track.applications.chip1": { en: "Agents", zh: "Agent" },
@@ -332,7 +332,7 @@ const home: TranslationDict = {
   },
   "track.applications.subtitle": {
     en: "Technical essays on agents, harness engines, RAG, context engineering, tool use, and evaluation loops.",
-    zh: "记录 Agent、Harness Engine、RAG、Context Engineering、工具调用与评测循环。",
+    zh: "记录 Agent 系统、Harness Engine、RAG、上下文工程、工具调用与评测循环。",
   },
   "track.applications.overview": {
     en: "This track is written as engineering analysis rather than product marketing: system boundaries, protocols, trade-offs, evaluation loops, and lessons from building AI application infrastructure.",
@@ -344,7 +344,7 @@ const home: TranslationDict = {
   "track.applications.focus3": { en: "RAG & Retrieval", zh: "RAG 与检索" },
   "track.applications.focus4": {
     en: "Context Engineering",
-    zh: "Context Engineering",
+    zh: "上下文工程",
   },
   "track.applications.focus5": { en: "Fine-tuning", zh: "微调" },
   "track.applications.focus6": { en: "Evaluation", zh: "评测" },
@@ -382,10 +382,10 @@ const home: TranslationDict = {
   "track.topic.harnessEngine": { en: "Harness Engine", zh: "Harness Engine" },
   "track.topic.evaluation": { en: "Evaluation", zh: "评测" },
   "track.topic.ragRetrieval": { en: "RAG & Retrieval", zh: "RAG 与检索" },
-  "track.topic.grounding": { en: "Grounding", zh: "接地" },
+  "track.topic.grounding": { en: "Grounding", zh: "来源约束" },
   "track.topic.contextEngineering": {
     en: "Context Engineering",
-    zh: "Context Engineering",
+    zh: "上下文工程",
   },
   "track.topic.memory": { en: "Memory", zh: "记忆" },
   "track.topic.fineTuning": { en: "Fine-tuning", zh: "微调" },
@@ -394,27 +394,27 @@ const home: TranslationDict = {
   "track.topic.reliability": { en: "Reliability", zh: "可靠性" },
   "series.agentRuntime.title": {
     en: "Agent Runtime Systems",
-    zh: "Agent Runtime Systems",
+    zh: "Agent 运行时系统",
   },
   "series.agentRuntime.promise": {
     en: "From controlled evaluation to observable multi-step agent runtimes.",
     zh: "从受控评测走向可观测的多步 Agent 运行时。",
   },
   "series.agentRuntime.next1": { en: "Tool ABI", zh: "Tool ABI" },
-  "series.agentRuntime.next2": { en: "Context Budget", zh: "Context Budget" },
+  "series.agentRuntime.next2": { en: "Context Budget", zh: "上下文预算" },
   "series.agenticRag.title": {
     en: "Agentic RAG Infrastructure",
-    zh: "Agentic RAG Infrastructure",
+    zh: "Agentic RAG 基础设施",
   },
   "series.agenticRag.promise": {
     en: "How retrieval becomes governed, citable context for agents.",
     zh: "检索如何变成可治理、可引用的 Agent 上下文。",
   },
-  "series.agenticRag.next1": { en: "Hybrid Retrieval", zh: "Hybrid Retrieval" },
-  "series.agenticRag.next2": { en: "Retrieval Eval", zh: "Retrieval Eval" },
+  "series.agenticRag.next1": { en: "Hybrid Retrieval", zh: "混合检索" },
+  "series.agenticRag.next2": { en: "Retrieval Eval", zh: "检索评测" },
   "series.longContext.title": {
     en: "Long Context and Position Encoding",
-    zh: "Long Context and Position Encoding",
+    zh: "长上下文与位置编码",
   },
   "series.longContext.promise": {
     en: "Mechanistic notes on RoPE, spectral allocation, and long-context behavior.",
@@ -422,15 +422,15 @@ const home: TranslationDict = {
   },
   "series.longContext.next1": {
     en: "RoPE spectral budget",
-    zh: "RoPE spectral budget",
+    zh: "RoPE 频谱预算",
   },
   "series.longContext.next2": {
     en: "Extrapolation failures",
-    zh: "Extrapolation failures",
+    zh: "外推失败模式",
   },
   "series.residualStability.title": {
     en: "Residual Stability",
-    zh: "Residual Stability",
+    zh: "残差稳定性",
   },
   "series.residualStability.promise": {
     en: "Residual stream mixing, invariants, and stability constraints.",
@@ -438,11 +438,11 @@ const home: TranslationDict = {
   },
   "series.residualStability.next1": {
     en: "Residual diagnostics",
-    zh: "Residual diagnostics",
+    zh: "残差诊断",
   },
   "series.residualStability.next2": {
     en: "Orthogonal constraints",
-    zh: "Orthogonal constraints",
+    zh: "正交约束",
   },
   "series.feedForward.title": {
     en: "Feed-Forward Mechanisms",

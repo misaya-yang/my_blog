@@ -1,4 +1,5 @@
 import { ArrowRight, BookOpen, Calendar, Eye } from "lucide-react";
+import { getContentSeriesBySlug } from "@shared/content-series";
 import { estimateReadingMinutes } from "@shared/reading-time";
 import { Link } from "wouter";
 
@@ -78,6 +79,16 @@ function topicLabel(
   return fallbackTopicLabel(post, t, track);
 }
 
+function seriesLabel(
+  post: ArticleCardPost,
+  t: (key: string, vars?: Record<string, string | number>) => string
+) {
+  const series = post.seriesSlug
+    ? getContentSeriesBySlug(post.seriesSlug)
+    : null;
+  return series ? t(series.titleKey) : post.seriesTitle;
+}
+
 function fallbackTopicLabel(
   post: ArticleCardPost,
   t: (key: string, vars?: Record<string, string | number>) => string,
@@ -151,7 +162,7 @@ export function ArticleCard({
   featured = false,
 }: ArticleCardProps) {
   const visibleTags = Array.isArray(post.tags) ? post.tags.slice(0, 1) : [];
-  const topic = topicLabel(post, t, track);
+  const series = seriesLabel(post, t);
   const theme = visualTheme(post, track);
   const thumbnailSrc = ARTICLE_THUMBNAILS[theme];
   const locale = language === "zh" ? "zh-CN" : "en-US";
@@ -198,13 +209,13 @@ export function ArticleCard({
           ) : (
             <span className="article-tag">{topicLabel(post, t, track)}</span>
           )}
-          {post.seriesTitle && (
+          {series && (
             <span className="article-tag">
-              {post.seriesTitle}
+              {series}
               {post.seriesOrder ? ` #${post.seriesOrder}` : ""}
             </span>
           )}
-          {!post.seriesTitle &&
+          {!series &&
             visibleTags.map(tag => (
               <Link
                 key={tag.slug}
@@ -235,7 +246,7 @@ export function ArticleCard({
             {post.viewCount || 0} {t("home.reads")}
           </span>
           <Link href={`/post/${post.slug}`} className="article-read-link">
-            {featured ? t("home.readMore") : topic}{" "}
+            {t("home.readMore")}{" "}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>

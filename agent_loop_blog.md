@@ -14,7 +14,7 @@ while (!done) {
 
 但真正要上线时，这段伪代码会让人紧张。AgentLoop 从来不是 `while true` 调模型。它更像一个小型操作系统：状态由谁保存，工具调用如何治理，什么时候停止，失败如何恢复，预算如何消耗，人工确认在哪里插入，trace 如何复盘。
 
-这里讨论一个更窄的抽象：
+本文讨论一个更窄的运行时抽象：
 
 > AgentLoop 是围绕随机模型决策构建的确定性运行时。
 
@@ -28,7 +28,7 @@ State -> Context -> Model Decision -> Action -> Observation -> Reducer -> Checkp
 
 ## 先把边界说清楚
 
-这里的 Agent Loop 指运行时抽象，不是某个已经完整商品化的产品声明。讨论重点放在架构边界、状态转移、工具治理、会话恢复和评测面上。
+文中的 Agent Loop 指运行时抽象，不是某个已经完整商品化的产品声明。讨论重点放在架构边界、状态转移、工具治理、会话恢复和评测边界上。
 
 在博客 Agent、文档助手、工具型 Assistant 等场景里，这个抽象可以逐步落地：先保存会话和 trace，再引入受控工具，最后扩展到文件、权限、限流和人工确认。复杂度应该随着真实任务需求增加，而不是一开始就堆叠多 Agent 或重型编排。
 
@@ -394,7 +394,7 @@ AgentLoop 的失败最好提前命名，否则所有问题都会被归因成“�
 
 这个 taxonomy 会直接影响 eval 和 observability。一个好的 AgentLoop 不只是减少失败，而是让失败可分类、可复现、可修复。
 
-## 14. Evaluation Surface
+## 14. What to Measure in the Loop
 
 AgentLoop 的评测不应该只看最终答案。至少要拆出六类指标：
 
@@ -419,7 +419,7 @@ AgentLoop 不是越复杂越好。
 
 Anthropic 对 agent 的建议很克制：优先选择最简单可行的方案，只在任务确实需要灵活决策和多步行动时增加复杂度。AgentLoop 也应该遵守这个原则。
 
-## 16. Core Takeaway
+## 16. The Runtime Contract
 
 AgentLoop 的核心不是“让模型循环思考”，而是为模型行动提供受控运行时：
 

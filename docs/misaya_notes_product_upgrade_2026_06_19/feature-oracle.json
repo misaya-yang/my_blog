@@ -77,9 +77,9 @@
         "Rewrite high-signal metadata and UI copy before touching technical claims.",
         "Run content audit and reader screenshots; avoid changing slugs, formulas, code, dates, or hidden status without fresh evidence."
       ],
-      "status": "failing",
-      "evidence": "",
-      "notes": ""
+      "status": "passing",
+      "evidence": "reports/mnp-04-article-voice-and-quality-system-report.md; reports/mnp-04-runtime/zh-copy-runtime-evidence.json; scripts/audit/content-quality.test.ts; client/src/i18n/copyVoice.test.ts; server/publicSeedPosts.test.ts; pnpm content:audit; pnpm check; pnpm test; pnpm build; pnpm content:publish.",
+      "notes": "Passed for the MNP-04 content/copy slice: concrete public seed excerpts, localized UI/series labels, stale internal-copy regression guard, public seed fallback parity, selected public article heading/intro/conclusion rewrites, and DB publish/reindex evidence. It preserves slugs, dates, visibility, formulas, code listings, and the MNP-03 source-card anchor contract."
     },
     {
       "id": "MNP-F006",

@@ -110,7 +110,7 @@ const publicSeedPosts: PublicSeedPost[] = [
     featuredRank: 7,
     pinnedTrack: "algorithms",
     excerpt:
-      "一篇面向后训练技术栈的系统梳理：把 RLHF、DPO、RLAIF、RLVR、GRPO、PRM、Verifier 与 Agent RL 放进同一张反馈系统地图。",
+      "把后训练看成反馈系统设计：RLHF、DPO、RLAIF、RLVR、GRPO、PRM 与 verifier 分别解决奖励来源、策略更新、可验证反馈和 reward hacking 控制的问题。",
     tags: [
       { id: 38, name: "RLHF", slug: "rlhf" },
       { id: 39, name: "Reinforcement Learning", slug: "reinforcement-learning" },
@@ -198,7 +198,7 @@ const publicSeedPosts: PublicSeedPost[] = [
     featuredRank: 0,
     pinnedTrack: "applications",
     excerpt:
-      "一次“看起来跑完了”的 Coding Agent 失败复盘：PRD 如何被编译成 phase、验收闸门和证据报告。",
+      "复盘一次博客 Agent 改造：schema、router、UI 和测试名都在，但文章感知、检索、source card、quota 与 trace 没有闭环。Goal Harness 把这些验收点编译成可交接的 phase、闸门和证据报告。",
     tags: [
       { id: 13, name: "Agent Systems", slug: "agent-systems" },
       { id: 29, name: "Goal Harness", slug: "goal-harness" },

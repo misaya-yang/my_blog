@@ -1,4 +1,6 @@
+import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
+import { parseSeedPosts } from "../scripts/audit/content-quality";
 import { getPublicSeedArticleBySlug } from "./publicSeedPosts";
 
 describe("public seed fallback posts", () => {
@@ -34,5 +36,22 @@ describe("public seed fallback posts", () => {
     });
     expect(article?.content).toContain("## 三、当前技术路线");
     expect(article?.tags.map(tag => tag.slug)).toContain("rlhf");
+  });
+
+  it("keeps public fallback titles and excerpts in sync with seed-blog.mjs", async () => {
+    const seedSource = await readFile("seed-blog.mjs", "utf-8");
+    const publicSeedPosts = parseSeedPosts(seedSource).filter(
+      post => post.status === "published" && post.visibility === "public"
+    );
+
+    expect(publicSeedPosts.length).toBeGreaterThan(0);
+
+    for (const seedPost of publicSeedPosts) {
+      const article = await getPublicSeedArticleBySlug(seedPost.slug);
+      expect(article, seedPost.slug).toMatchObject({
+        title: seedPost.title,
+        excerpt: seedPost.excerpt,
+      });
+    }
   });
 });

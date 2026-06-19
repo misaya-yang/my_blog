@@ -207,7 +207,7 @@ describe("BlogAgent route context", () => {
 
     await expect(
       streamAgentMessage({
-        message: "解释这篇文章里的核心抽象。",
+        message: "解释这篇文章里的核心机制。",
         routeContext: buildRouteContext("/", "zh"),
         onStatus: vi.fn(),
         onAnswerDelta: vi.fn(),

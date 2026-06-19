@@ -54,10 +54,10 @@ describe("Agent source cards", () => {
     expect(
       getSourceHref({
         ...source,
-        heading: "核心抽象：从 ReAct 到运行时",
+        heading: "核心机制：从 ReAct 到运行时",
       })
     ).toBe(
-      "/post/isohc-fixed-vector-isometric-residual-mixing#%E6%A0%B8%E5%BF%83%E6%8A%BD%E8%B1%A1-%E4%BB%8E-react-%E5%88%B0%E8%BF%90%E8%A1%8C%E6%97%B6"
+      "/post/isohc-fixed-vector-isometric-residual-mixing#%E6%A0%B8%E5%BF%83%E6%9C%BA%E5%88%B6-%E4%BB%8E-react-%E5%88%B0%E8%BF%90%E8%A1%8C%E6%97%B6"
     );
   });
 

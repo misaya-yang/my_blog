@@ -106,8 +106,8 @@ const agent: TranslationDict = {
     zh: "带着伴读理解这篇文章",
   },
   "agent.welcome.postBody": {
-    en: "Ask for the core abstraction, prerequisites, implementation implications, or a reading checklist grounded in public posts.",
-    zh: "可以询问核心抽象、前置知识、实现含义，或生成基于公开文章的阅读清单。",
+    en: "Ask for the core mechanism, prerequisites, implementation takeaways, or a checklist grounded in public posts.",
+    zh: "可以询问核心机制、前置知识、实现要点，或生成基于公开文章的阅读清单。",
   },
   "agent.welcome.trackTitle": {
     en: "Explore this research track",
@@ -202,12 +202,12 @@ const agent: TranslationDict = {
     zh: "从技术角度总结这篇文章。",
   },
   "agent.prompts.postAbstraction": {
-    en: "Explain the core abstraction in this article.",
-    zh: "解释这篇文章里的核心抽象。",
+    en: "Explain the core mechanism in this article.",
+    zh: "解释这篇文章里的核心机制。",
   },
   "agent.prompts.postImplementation": {
-    en: "What implementation implications should I take away?",
-    zh: "这篇文章对实现有什么启发？",
+    en: "What implementation takeaways matter here?",
+    zh: "这篇文章里哪些实现要点最重要？",
   },
   "agent.prompts.postChecklist": {
     en: "Generate a reading checklist for this article.",
@@ -250,16 +250,16 @@ const agent: TranslationDict = {
     zh: "比较 Harness Engine、Evidence Packet 和 Agent Loop。",
   },
   "agent.prompts.applicationsMap": {
-    en: "Explain the AI Applications topic map.",
-    zh: "解释 AI 应用技术地图。",
+    en: "Explain how the AI Applications notes connect.",
+    zh: "说明 AI 应用笔记之间怎么连接。",
   },
   "agent.prompts.algorithmsFirst": {
     en: "Which AI Algorithms note should I read first?",
     zh: "AI 算法方向应该先读哪篇？",
   },
   "agent.prompts.algorithmsMap": {
-    en: "Explain the AI Algorithms research map.",
-    zh: "解释 AI 算法研究地图。",
+    en: "Explain how the AI Algorithms notes connect.",
+    zh: "说明 AI 算法笔记之间怎么连接。",
   },
   "agent.prompts.algorithmsCompare": {
     en: "Compare residual stability and long-context mechanisms.",
@@ -286,8 +286,8 @@ const agent: TranslationDict = {
     zh: "按研究系列整理归档文章。",
   },
   "agent.prompts.topicMap": {
-    en: "Map this topic using public posts.",
-    zh: "用公开文章梳理这个主题。",
+    en: "Trace this topic across public posts.",
+    zh: "沿着公开文章梳理这个主题。",
   },
   "agent.prompts.topicCompare": {
     en: "Compare the main ideas inside this topic.",
