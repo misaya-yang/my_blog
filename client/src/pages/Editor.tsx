@@ -766,7 +766,7 @@ export default function Editor() {
   // 认证检查
   if (authLoading || postLoading) {
     return (
-      <div className="space-page grid min-h-screen place-items-center px-4">
+      <div className="space-page owner-dark-scope grid min-h-screen place-items-center px-4">
         <SpaceBackdrop subtle />
         <LoadingState
           title={t("common.loadingNotes")}

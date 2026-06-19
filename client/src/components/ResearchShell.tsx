@@ -540,7 +540,7 @@ export function AuthRequiredState({
   backLabel: string;
 }) {
   return (
-    <div className="space-page min-h-screen">
+    <div className="space-page owner-dark-scope min-h-screen">
       <SpaceBackdrop subtle />
       <SiteHeader active="login" backHref="/" backLabel={backLabel} compact />
       <main className="auth-required-shell container relative z-10 px-4 sm:px-6">

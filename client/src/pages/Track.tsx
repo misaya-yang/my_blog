@@ -65,7 +65,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
 
   return (
     <div className="space-page">
-      <SpaceBackdrop />
+      <SpaceBackdrop subtle />
       <SiteHeader active={config.active} />
 
       <main className="relative z-10">

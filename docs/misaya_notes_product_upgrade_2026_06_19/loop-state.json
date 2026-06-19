@@ -1,9 +1,9 @@
 {
   "schema_version": "prd-phase-harness/loop-state/v1",
-  "active_phase": "MNP-01",
-  "active_feature": "MNP-F002",
-  "iteration": 1,
+  "active_phase": "MNP-02",
+  "active_feature": "MNP-F003",
+  "iteration": 2,
   "status": "verified",
-  "last_decision": "MNP-00 baseline planning evidence was written from current repo inspection, design-system review, prior harnesses, and parallel read-only reviews.",
-  "next_action": "Execute MNP-01 by following docs/misaya_notes_product_upgrade_2026_06_19/phase-01-ui-anti-slop-visual-system.md; do not claim UI implementation complete until route screenshots and checks are attached."
+  "last_decision": "MNP-01 implemented the first UI anti-slop slice and passed local checks, full tests, build, and Chrome DevTools screenshot/runtime verification.",
+  "next_action": "Execute MNP-02 by following docs/misaya_notes_product_upgrade_2026_06_19/phase-02-reading-experience-and-format-rendering.md; focus on article format fixtures, body ordering, CJK reading-time consistency, and Markdown/KaTeX/table/code rendering evidence."
 }

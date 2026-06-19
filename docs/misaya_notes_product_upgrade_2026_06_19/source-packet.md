@@ -67,7 +67,9 @@ Misaya Notes should feel like a maintained research notebook with a useful groun
 - MNP-00 baseline evidence is sufficient to unlock planning and implementation phases, but downstream phases still need their own runtime evidence.
 - UI work must prioritize typography, density, contrast, and content hierarchy over additional effects.
 - Code work must favor small extractions and tests over wholesale CSS or component rewrites.
-- Deployment in this session is limited to committing and pushing this harness update; product UI changes remain future phase work.
+- MNP-01 implemented the first UI anti-slop slice on 2026-06-19: public space/glass effects were reduced, home mobile latest-note ordering was fixed, track/search density was lowered, article body appeared earlier, and owner auth/loading states were dark-locked.
+- MNP-02 through MNP-05 remain future phase work; do not infer full reader, Agent, content-voice, or CSS-architecture completion from MNP-01.
+- The 2026-06-19 session includes explicit user approval to commit, push, and deploy the implemented slice.
 
 ## Risk Tags
 

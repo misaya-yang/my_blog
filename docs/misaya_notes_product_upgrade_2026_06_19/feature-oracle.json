@@ -35,9 +35,9 @@
         "Reduce gratuitous glow, glass, grid, chip density, and control-console composition.",
         "Capture desktop/mobile screenshots for public dark/light and owner dark-lock routes."
       ],
-      "status": "failing",
-      "evidence": "",
-      "notes": ""
+      "status": "passing",
+      "evidence": "reports/mnp-01-ui-anti-slop-visual-system-report.md plus screenshots in reports/mnp-01-screenshots; verified with git diff --check, pnpm check, focused Vitest, pnpm test, pnpm build, and Chrome DevTools runtime checks on 2026-06-19.",
+      "notes": "Passed for the MNP-01 implemented UI slice: public home/track/search/reader hierarchy and owner unauth/loading dark-lock. Authenticated owner screens still need a dedicated deeper pass; MNP-02 through MNP-05 remain failing."
     },
     {
       "id": "MNP-F003",

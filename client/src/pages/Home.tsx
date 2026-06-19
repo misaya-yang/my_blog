@@ -435,14 +435,6 @@ export default function Home() {
               </form>
 
               <StartHerePath featuredPost={featuredPost} t={t} />
-
-              <FeaturedNote
-                post={featuredPost}
-                isLoading={isLoading}
-                showSlowLoading={showSlowLoading}
-                t={t}
-                isAdmin={isAdmin}
-              />
             </section>
 
             <section
@@ -453,6 +445,16 @@ export default function Home() {
                 <TrackPanel key={model.track} model={model} t={t} />
               ))}
             </section>
+
+            <div className="home-featured-band">
+              <FeaturedNote
+                post={featuredPost}
+                isLoading={isLoading}
+                showSlowLoading={showSlowLoading}
+                t={t}
+                isAdmin={isAdmin}
+              />
+            </div>
           </div>
         </section>
 
