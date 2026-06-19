@@ -2,7 +2,7 @@
 
 **Phase:** MNP-06 Release Evidence and Production Verification
 
-**Status:** passed for the MNP-01 UI slice, MNP-02 reader-format slice, MNP-03 Agent reliability slice, and MNP-04 article voice/copy slice
+**Status:** passed for the MNP-01 UI slice, MNP-02 reader-format slice, MNP-03 Agent reliability slice, MNP-04 article voice/copy slice, and MNP-05 code simplification/CSS architecture slice
 
 **Date:** 2026-06-19
 
@@ -10,9 +10,9 @@
 
 ## Summary
 
-Committed, pushed, deployed, and smoke-tested the MNP-01 UI anti-slop implementation slice, the MNP-02 reader-format implementation slice, the MNP-03 Agent reliability implementation slice, and the MNP-04 article voice/copy implementation slice. The deployed public alias is `https://misaya.online`.
+Committed, pushed, deployed, and smoke-tested the MNP-01 UI anti-slop implementation slice, the MNP-02 reader-format implementation slice, the MNP-03 Agent reliability implementation slice, the MNP-04 article voice/copy implementation slice, and the MNP-05 code simplification/CSS architecture slice. The deployed public alias is `https://misaya.online`.
 
-This release evidence is scoped to MNP-01 through MNP-04. It does not mark MNP-05 CSS simplification as complete.
+This release evidence now covers the full MNP-00 through MNP-06 harness chain.
 
 ## MNP-01 Release Inputs
 
@@ -241,6 +241,56 @@ Playwright production copy smoke passed in zh mode; durable evidence is `reports
 - Database-backed article text was already published through the existing seed/upsert flow. If article content needs rollback, restore the previous Markdown/seed text and run `pnpm content:publish` again after explicit approval.
 - If visible copy regresses, first inspect `client/src/i18n/home.ts`, `client/src/i18n/post.ts`, `client/src/i18n/agent.ts`, `client/src/components/ArticleCard.tsx`, `client/src/pages/Home.tsx`, `seed-blog.mjs`, and `server/publicSeedPosts.ts`.
 
+## MNP-05 Release Inputs
+
+| Item | Value |
+| --- | --- |
+| Branch | `main` |
+| Implementation commit | `27ed04d feat: simplify agent anchors and theme tokens` |
+| Push target | `origin/main` |
+| Deployment command | `npx vercel --prod --yes` |
+| Production alias | `https://misaya.online` |
+| Deployment URL observed | `https://my-blog-hfl697a36-zedpl28174-3992s-projects.vercel.app` |
+| Deployment ID | `dpl_9SrWHNY7ESr1UKu7uYCyWfjqDUaJ` |
+
+## MNP-05 Local Verification Before Release
+
+| Gate | Result |
+| --- | --- |
+| `git diff --check` | passed |
+| Focused Agent/source/anchor Vitest | passed, 4 files and 42 tests |
+| `pnpm check` | passed |
+| `pnpm test` | passed, 39 files and 243 tests |
+| `pnpm build` | passed |
+| `pnpm audit:ui` | passed after starting the production build locally on port 3000 |
+| Harness validator | passed, quality score 100 |
+| Local runtime theme-token smoke | passed; evidence at `reports/mnp-05-runtime/theme-token-smoke.json` |
+
+## MNP-05 Production Smoke
+
+HTTP smoke was run against `https://misaya.online` after deployment:
+
+| Route | Status |
+| --- | --- |
+| `/` | 200 |
+| `/post/goal-harness-agent-phase-protocol` | 200 |
+| `/search?q=zzzz-no-hit-ui-audit` | 200 |
+| `/algorithms` | 200 on retry and Playwright |
+| `/applications` | 200 |
+| `/archive` | 200 |
+| `/rss.xml` | 200 |
+| `/sitemap.xml` | 200 |
+| `/robots.txt` | 200 |
+
+Playwright production smoke passed for `/`, `/algorithms`, `/applications`, `/archive`, `/post/goal-harness-agent-phase-protocol`, and `/search?q=zzzz-no-hit-ui-audit` at 390px width with no horizontal overflow. Production light/dark public theme tokens matched the canonical MNP-05 values. Durable evidence is `reports/mnp-06-runtime/mnp-05-prod-smoke.json`.
+
+## MNP-05 Rollback Notes
+
+- Revert `27ed04d` if the source-card helper extraction or theme-token consolidation causes a production regression.
+- No schema, data, content publish, or deployment configuration changes were made in MNP-05.
+- If source-card navigation regresses, first inspect `client/src/components/agent/sourceCardLinks.ts`, `client/src/components/agent/BlogAgentRoot.tsx`, `shared/heading-anchors.ts`, and `server/ai/model.ts`.
+- If public light/dark tokens regress, first inspect the final `:root, .space-page` and `.dark, .dark .space-page` token blocks in `client/src/styles/owner-tools.css`, then check older legacy token declarations in `client/src/styles/visual-refresh.css`.
+
 ## Feature Oracle Updates
 
 | Feature ID | Old Status | New Status | Evidence |
@@ -249,7 +299,8 @@ Playwright production copy smoke passed in zh mode; durable evidence is `reports
 | MNP-F007 | passing | passing | MNP-02 commit `c8901f0` pushed to `origin/main`, Vercel production deploy `dpl_Jn9eGhQ9vfmkKzYjDnRs4cjG6KF9`, production route smoke, and SSR metadata smoke. |
 | MNP-F007 | passing | passing | MNP-03 commit `eee35b3` pushed to `origin/main`, Vercel production deploy `dpl_8zmvMPWjzReKme4XrQKhdYaxfNAA`, production route smoke, SSR metadata smoke, and production browser anchor smoke. |
 | MNP-F007 | passing | passing | MNP-04 commit `680839e` pushed to `origin/main`, `pnpm content:publish`, Vercel production deploy `dpl_Gi2DggdB3L6ovnLQhYHY7icUtQn4`, production route smoke, and production browser copy smoke. |
+| MNP-F007 | passing | passing | MNP-05 commit `27ed04d` pushed to `origin/main`, Vercel production deploy `dpl_9SrWHNY7ESr1UKu7uYCyWfjqDUaJ`, production route smoke, and production browser theme-token smoke. |
 
 ## Handoff Notes
 
-Proceed to MNP-05. The production site is reachable, and the MNP-01 through MNP-04 release slices have rollback notes. MNP-05 remains open.
+The MNP-00 through MNP-06 harness chain is complete for the implemented product-upgrade slices. The production site is reachable, and MNP-01 through MNP-05 release slices have rollback notes.

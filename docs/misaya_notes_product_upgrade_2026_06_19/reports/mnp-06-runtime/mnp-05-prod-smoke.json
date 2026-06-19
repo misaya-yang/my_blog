@@ -1,0 +1,63 @@
+{
+  "generatedAt": "2026-06-19T17:37:06.053Z",
+  "deployment": {
+    "id": "dpl_9SrWHNY7ESr1UKu7uYCyWfjqDUaJ",
+    "url": "https://my-blog-hfl697a36-zedpl28174-3992s-projects.vercel.app",
+    "alias": "https://misaya.online",
+    "commit": "27ed04d"
+  },
+  "pages": [
+    {
+      "route": "/",
+      "status": 200,
+      "title": "Misaya Notes",
+      "scrollWidth": 390,
+      "viewportWidth": 390
+    },
+    {
+      "route": "/algorithms",
+      "status": 200,
+      "title": "AI Algorithms · Misaya Notes",
+      "scrollWidth": 390,
+      "viewportWidth": 390
+    },
+    {
+      "route": "/applications",
+      "status": 200,
+      "title": "AI Applications · Misaya Notes",
+      "scrollWidth": 390,
+      "viewportWidth": 390
+    },
+    {
+      "route": "/archive",
+      "status": 200,
+      "title": "Archive · Misaya Notes",
+      "scrollWidth": 390,
+      "viewportWidth": 390
+    },
+    {
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议 · Misaya Notes",
+      "scrollWidth": 390,
+      "viewportWidth": 390
+    },
+    {
+      "route": "/search?q=zzzz-no-hit-ui-audit",
+      "status": 200,
+      "title": "Search · Misaya Notes",
+      "scrollWidth": 390,
+      "viewportWidth": 390
+    }
+  ],
+  "lightTokens": {
+    "bg": "oklch(94.8% .006 250)",
+    "text": "oklch(18% .018 260)",
+    "accent": "oklch(50% .15 245)"
+  },
+  "darkTokens": {
+    "bg": "oklch(10.5% .013 252)",
+    "text": "oklch(94% .008 240)",
+    "accent": "oklch(72% .15 245)"
+  }
+}

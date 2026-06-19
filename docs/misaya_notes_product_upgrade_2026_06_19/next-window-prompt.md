@@ -5,7 +5,7 @@ Use this prompt to start a fresh Codex, Claude Code, or Agent Skills-compatible 
 ```text
 Use $prd-phase-harness to continue the harness at `docs/misaya_notes_product_upgrade_2026_06_19`.
 
-Target phase: MNP-06
+Target phase: none active
 Target phase file: `docs/misaya_notes_product_upgrade_2026_06_19/phase-06-release-evidence-and-production-verification.md`
 Target feature-oracle item: MNP-F007
 
@@ -27,9 +27,10 @@ Execution rule:
 - Run the required validation and runtime checks.
 - Summarize code facts back into the source packet and continuity ledger before handoff.
 - Update the phase report, progress log, handoff file, continuity ledger, and oracle evidence before claiming completion.
-- Start from the MNP-00 through MNP-05 reports and source packet. The next real work is release evidence for the MNP-05 slice, not another planning pass.
+- Start from the MNP-00 through MNP-06 reports and source packet. The harness chain is complete for the implemented product-upgrade slices; new work should start a new scoped phase rather than reopening a completed one.
 - Preserve the MNP-03 `anchorId` Agent source-card contract while editing content or UI copy.
 - Preserve the MNP-04 seed/fallback parity, i18n copy guard, and localized series-label behavior while simplifying code.
 - Preserve the MNP-05 boundary: server source cards persist only semantic anchors, client source cards keep legacy `heading-N` fallback, and `owner-tools.css` remains the final public theme-token authority.
+- MNP-06 production release evidence for MNP-05 is recorded in `reports/mnp-06-runtime/mnp-05-prod-smoke.json` and `reports/mnp-06-release-evidence-and-production-verification-report.md`.
 - Stop and document blockers instead of guessing when credentials, production systems, destructive commands, or out-of-scope edits are required.
 ```

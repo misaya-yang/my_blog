@@ -4,6 +4,6 @@
   "active_feature": "MNP-F007",
   "iteration": 6,
   "status": "verified",
-  "last_decision": "MNP-05 implemented and verified the code simplification/CSS architecture slice: Agent source-card pure helper extraction, shared semantic source-card anchors for client/server, canonical public theme tokens on owner-tools grouped selectors, duplicate reduced-motion override removal, full tests/build, UI audit, and runtime theme-token smoke passed.",
-  "next_action": "Commit and push the MNP-05 slice, deploy it to production, smoke-test https://misaya.online, and update MNP-06 release evidence without changing production data."
+  "last_decision": "MNP-05 was committed as 27ed04d, pushed to origin/main, deployed to Vercel production dpl_9SrWHNY7ESr1UKu7uYCyWfjqDUaJ, aliased to https://misaya.online, and production route plus Playwright theme-token smoke passed.",
+  "next_action": "No active harness phase remains for the MNP-00 through MNP-06 product-upgrade chain; future work should start a new scoped phase or follow the optional follow-up simplification notes."
 }

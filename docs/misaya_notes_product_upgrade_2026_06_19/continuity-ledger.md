@@ -36,7 +36,7 @@ This file preserves cross-phase continuity for long-running agents. Treat it as 
 | MNP-05 code simplification boundary | Agent source-card helper logic now lives in `client/src/components/agent/sourceCardLinks.ts` and is re-exported from `BlogAgentRoot.tsx`; semantic source-card anchor generation is shared through `shared/heading-anchors.ts`; server cards persist only semantic anchors while client keeps `heading-N` fallback for legacy/no-heading cards; final public theme tokens are owned by `owner-tools.css` grouped selectors after older `visual-refresh.css` layers. | `reports/mnp-05-code-simplification-and-css-architecture-report.md` | 2026-06-20 | MNP-05 |
 | Validation boundary | Use `pnpm check`, focused Vitest where possible, `pnpm test`, `pnpm build`, `pnpm content:audit`, harness validation, and route/browser smoke based on phase risk. | `package.json` and phase manifest | 2026-06-19 | MNP-00 |
 | Handoff boundary | Do not unlock a dependent implementation phase until report evidence, oracle evidence, progress log, and this ledger are updated. | phase report | 2026-06-19 | MNP-00 |
-| Release boundary | MNP-01 UI slice was pushed and deployed to `https://misaya.online`; release evidence is scoped to that slice and does not close MNP-02 through MNP-05. | `reports/mnp-06-release-evidence-and-production-verification-report.md` | 2026-06-19 | MNP-06 |
+| Release boundary | MNP-01 through MNP-05 slices were pushed and deployed to `https://misaya.online`; MNP-05 release commit is `27ed04d` and production deployment is `dpl_9SrWHNY7ESr1UKu7uYCyWfjqDUaJ`. Release evidence includes route smoke, Playwright mobile overflow checks, and production theme-token smoke. | `reports/mnp-06-release-evidence-and-production-verification-report.md` | 2026-06-20 | MNP-06 |
 
 ## Code Summary Writeback Rules
 
@@ -49,5 +49,5 @@ This file preserves cross-phase continuity for long-running agents. Treat it as 
 
 - Active phase: MNP-06
 - Active feature-oracle item: MNP-F007
-- Current decision: MNP-05 passed with Agent source-card helper extraction, shared client/server semantic source-card anchors, final public theme-token consolidation in `owner-tools.css`, duplicate reduced-motion override cleanup, focused tests, full validation, UI audit, and runtime theme-token smoke.
-- Next action: Commit and push the MNP-05 slice, deploy it to production, smoke-test `https://misaya.online`, and update release evidence without changing production data.
+- Current decision: MNP-05 passed and was released: commit `27ed04d` was pushed, Vercel production deployment `dpl_9SrWHNY7ESr1UKu7uYCyWfjqDUaJ` was aliased to `https://misaya.online`, and production route plus Playwright theme-token smoke passed.
+- Next action: No active harness phase remains for this chain. Future work should start a new scoped phase, with optional follow-ups from the subagent reviews: PostDetail heading/link helper extraction, stream message reducer extraction, and launcher `!important` cleanup.

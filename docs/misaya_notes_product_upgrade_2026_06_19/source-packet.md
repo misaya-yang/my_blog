@@ -38,6 +38,7 @@ Misaya Notes should feel like a maintained research notebook with a useful groun
 - MNP-05 added `client/src/components/agent/sourceCardLinks.ts` so Agent source-card href, anchor, fallback, and excerpt formatting logic is testable outside the large `BlogAgentRoot.tsx` component while preserving the old named exports.
 - MNP-05 added `createSourceCardSemanticAnchorId` in `shared/heading-anchors.ts`; `server/ai/model.ts` uses it for persisted semantic anchors, while the client keeps legacy `heading-N` fallback only for old/no-heading cards.
 - MNP-05 consolidated final public light/dark token authority in `client/src/styles/owner-tools.css` by targeting `:root, .space-page` and `.dark, .dark .space-page`; `visual-refresh.css` still contains older token layers but is overridden by the later owner-tools import.
+- MNP-06 deployed the MNP-05 slice from commit `27ed04d` to Vercel production deployment `dpl_9SrWHNY7ESr1UKu7uYCyWfjqDUaJ`, aliased to `https://misaya.online`, with route smoke and Playwright theme-token evidence in `reports/mnp-06-runtime/mnp-05-prod-smoke.json`.
 - Current risk evidence: `visual-refresh.css` remains over 5,000 lines, `owner-tools.css` remains over 1,700 lines, `PostDetail.tsx` is near 1,200 lines, and `BlogAgentRoot.tsx` is still over 1,700 lines even after the scoped extraction. Further simplification should stay sliced and tested.
 
 ## Design or UI Facts
@@ -84,6 +85,7 @@ Misaya Notes should feel like a maintained research notebook with a useful groun
 - MNP-03 implemented the Agent reliability slice on 2026-06-20: stable semantic source-card anchors, h1-h6 source lookup, persisted `anchorId` metadata, timeout-vs-abort diagnostics, model fallback telemetry, and context/quota regression coverage.
 - MNP-04 implemented the article voice and copy quality slice on 2026-06-20: concrete public seed excerpts, selected public article wording, localized UI/series labels, stale-copy tests, seed/fallback parity, `pnpm content:publish`, and local production runtime copy evidence.
 - MNP-05 implemented the code simplification and CSS architecture slice on 2026-06-20: Agent source-card helper extraction, shared semantic source-card anchor helper, public theme-token selector consolidation, duplicate reduced-motion override removal, focused tests, full repo validation, UI layout audit, and runtime theme-token smoke.
+- MNP-06 released the MNP-05 slice on 2026-06-20: commit `27ed04d` pushed to `origin/main`, Vercel production deploy `dpl_9SrWHNY7ESr1UKu7uYCyWfjqDUaJ`, production alias `https://misaya.online`, public route smoke, and production Playwright theme-token smoke.
 - The 2026-06-19 and 2026-06-20 sessions include explicit user approval to commit, push, and deploy the implemented slice.
 
 ## Risk Tags

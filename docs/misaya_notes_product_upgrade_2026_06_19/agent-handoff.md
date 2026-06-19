@@ -28,7 +28,7 @@
 - MNP-03 passed with stable semantic source-card anchors, h1-h6 source lookup, persisted `anchorId` metadata, timeout-vs-abort diagnostics, model fallback error-code telemetry, and context/quota regression coverage.
 - MNP-04 passed with concrete public seed excerpts, seed/fallback parity, stale UI-copy guards, localized series labels, selected public article wording, and content publish/reindex evidence.
 - MNP-05 passed with Agent source-card pure helper extraction, shared client/server semantic source-card anchors, final public theme-token selectors in `owner-tools.css`, duplicate reduced-motion cleanup, full validation, UI layout audit, and runtime theme-token smoke.
-- For MNP-06, commit and push the MNP-05 slice, deploy it to production, smoke-test the public site, and update release evidence. Do not mutate production data.
+- MNP-06 passed for MNP-05: commit `27ed04d` was pushed, production deploy `dpl_9SrWHNY7ESr1UKu7uYCyWfjqDUaJ` was aliased to `https://misaya.online`, route smoke passed, and Playwright mobile/theme-token smoke evidence is saved in `reports/mnp-06-runtime/mnp-05-prod-smoke.json`.
 
 ## Evaluator Notes
 
@@ -42,7 +42,7 @@
 
 ## Next Handoff
 
-- Active role: releaser
+- Active role: none
 - Active phase: MNP-06
 - Active feature-oracle item: MNP-F007
-- Required evidence before close: git commit and push, production deployment ID or URL, production smoke for `https://misaya.online`, release report update, progress-log entry, oracle evidence update, and a clean or intentionally documented working tree.
+- Required evidence before close: complete. Future work should start a new scoped phase or continue one of the optional follow-ups documented in `continuity-ledger.md`.

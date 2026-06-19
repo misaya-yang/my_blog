@@ -106,8 +106,8 @@
         "Write docs/misaya_notes_product_upgrade_2026_06_19/reports/mnp-06-release-evidence-and-production-verification-report.md with deployment evidence."
       ],
       "status": "passing",
-      "evidence": "reports/mnp-06-release-evidence-and-production-verification-report.md; MNP-01 commits 924ed85 and 67a9db6 pushed to origin/main; MNP-02 commit c8901f0 pushed to origin/main; MNP-03 commit eee35b3 pushed to origin/main; MNP-04 commit 680839e pushed to origin/main; Vercel production deploys dpl_Jn9eGhQ9vfmkKzYjDnRs4cjG6KF9, dpl_8zmvMPWjzReKme4XrQKhdYaxfNAA, and dpl_Gi2DggdB3L6ovnLQhYHY7icUtQn4 completed; https://misaya.online smoke returned 200 for /, reader articles, search, algorithms, applications, archive, rss.xml, sitemap.xml, and robots.txt; SSR metadata smoke passed for /post/goal-harness-agent-phase-protocol; production Chrome/Playwright copy and anchor smokes passed.",
-      "notes": "Passed for the MNP-01 UI release slice, MNP-02 reader-format release slice, MNP-03 Agent reliability release slice, and MNP-04 article voice/copy release slice. It does not mark MNP-05 CSS simplification complete."
+      "evidence": "reports/mnp-06-release-evidence-and-production-verification-report.md; MNP-05 commit 27ed04d pushed to origin/main; Vercel production deploy dpl_9SrWHNY7ESr1UKu7uYCyWfjqDUaJ aliased to https://misaya.online; production route smoke and Playwright theme-token smoke passed with evidence in reports/mnp-06-runtime/mnp-05-prod-smoke.json.",
+      "notes": "Passing for the MNP-01 through MNP-05 implemented slices. MNP-05 release used npx vercel --prod --yes, no production data mutation, and no schema/config migration. /algorithms had one transient curl 000 during the first batch smoke but passed immediate curl retry and Playwright status/title/overflow checks."
     }
   ]
 }

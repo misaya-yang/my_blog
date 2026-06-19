@@ -8,10 +8,10 @@
 
 ## Current State
 
-- Status: release in progress
+- Status: release verified
 - Active phase: MNP-06
 - Active feature-oracle item: MNP-F007
-- Clean-state note: MNP-01 through MNP-05 are implemented and verified; the current step is commit, push, deploy, and production smoke for the MNP-05 slice.
+- Clean-state note: MNP-01 through MNP-05 are implemented, verified, committed, pushed, deployed, and smoke-tested in production.
 
 ## Session Log
 
@@ -28,12 +28,13 @@
 | 2026-06-20 | generator/evaluator | MNP-04 | Implemented article voice and copy quality slice: concrete public seed excerpts, localized UI/series labels, stale-copy guards, fallback parity, selected public article wording, and content publish/reindex. | `reports/mnp-04-article-voice-and-quality-system-report.md`; `reports/mnp-04-runtime/zh-copy-runtime-evidence.json`; `pnpm content:audit`; `pnpm check`; `pnpm test`; `pnpm build`; `pnpm content:publish` | Commit, push, deploy on explicit user request, then continue with MNP-05 Code Simplification and CSS Architecture. |
 | 2026-06-20 | releaser | MNP-06 | Pushed `main`, deployed the MNP-04 article voice/copy slice to Vercel production, and smoke-tested `https://misaya.online`. | `reports/mnp-06-release-evidence-and-production-verification-report.md`; commit `680839e`; deployment `dpl_Gi2DggdB3L6ovnLQhYHY7icUtQn4`; `pnpm content:publish`; smoke 200 for `/`, reader article, search, sitemap; production Playwright copy smoke | Continue with MNP-05 Code Simplification and CSS Architecture. |
 | 2026-06-20 | generator/evaluator | MNP-05 | Implemented code simplification and CSS architecture slice: Agent source-card pure helper extraction, shared semantic source-card anchors, canonical public theme-token selectors, and duplicate reduced-motion cleanup. | `reports/mnp-05-code-simplification-and-css-architecture-report.md`; `reports/mnp-05-runtime/theme-token-smoke.json`; `docs/product_optimization/reports/ui-layout-checks-latest.json`; focused Vitest 42 tests; `pnpm check`; `pnpm test`; `pnpm build`; `pnpm audit:ui` | Commit, push, deploy, smoke production, and update MNP-06 release evidence. |
+| 2026-06-20 | releaser | MNP-06 | Pushed `main`, deployed the MNP-05 code simplification/CSS architecture slice to Vercel production, and smoke-tested `https://misaya.online`. | `reports/mnp-06-release-evidence-and-production-verification-report.md`; `reports/mnp-06-runtime/mnp-05-prod-smoke.json`; commit `27ed04d`; deployment `dpl_9SrWHNY7ESr1UKu7uYCyWfjqDUaJ`; smoke 200 for public routes; Playwright mobile overflow and theme-token smoke | Harness chain complete for MNP-00 through MNP-06. Future work should start a new scoped phase. |
 
 ## Known Blockers
 
-- MNP-05 is verified locally and awaits release evidence.
+- No active blockers remain for the MNP-00 through MNP-06 implemented slices.
 - Authenticated owner screens were not logged into during MNP-01; they need a deeper owner-specific visual pass later.
-- MNP-F007 release evidence is passing for the MNP-01 through MNP-04 slices; it still needs the MNP-05 deployment and production smoke entry.
+- MNP-F007 release evidence is passing for the MNP-01 through MNP-05 slices.
 - Chrome DevTools screenshot capture timed out during MNP-02; MNP-02 browser evidence is an a11y snapshot plus measured DOM/CSS runtime values.
 
 ## Clean Exit Checklist
