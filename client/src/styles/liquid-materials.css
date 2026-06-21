@@ -358,10 +358,14 @@
     min-width: 2.5rem;
     height: 2.5rem !important;
     border: 1px solid transparent !important;
-    border-radius: var(--v2-radius-dock) !important;
+    border-radius: 0.72rem !important;
     background: transparent !important;
     color: var(--v2-muted) !important;
     box-shadow: none !important;
+  }
+
+  .nav-icon-button {
+    border-radius: 0.62rem !important;
   }
 
   .nav-ink:hover,
@@ -557,8 +561,8 @@
     grid-template-columns: auto minmax(0, 1fr) !important;
     align-items: center !important;
     gap: 0.65rem 1rem !important;
-    width: min(100%, 56rem) !important;
-    max-width: 56rem !important;
+    width: min(100%, 42rem) !important;
+    max-width: 42rem !important;
     padding: 0.42rem 0.5rem 0.42rem 0.85rem !important;
     border-radius: 1.05rem !important;
   }
@@ -580,6 +584,8 @@
   }
 
   .search-page .home-search-field {
+    grid-template-columns: minmax(12rem, 1fr) auto !important;
+    gap: 0.65rem !important;
     min-height: 2.85rem !important;
     padding: 0 0 0 0.1rem !important;
   }
