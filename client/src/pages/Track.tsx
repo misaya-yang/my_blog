@@ -3,6 +3,7 @@ import {
   SiteHeader,
   SpaceBackdrop,
   StatTile,
+  EmptyState,
 } from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -160,7 +161,10 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                   }`}
                 >
                   {publicSeries.map(series => (
-                    <section key={series.slug} className="track-series-card">
+                    <section
+                      key={series.slug}
+                      className="track-series-card open-group"
+                    >
                       <div className="mb-4 flex items-start justify-between gap-4">
                         <div>
                           <span className="series-card-track">
@@ -203,7 +207,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
           id="research-index"
           className="container research-grid track-index-layout px-4 pb-16 sm:px-6"
         >
-          <div className="glass-panel research-section-panel track-article-ledger">
+          <div className="open-group research-section-panel track-article-ledger hairline-list">
             <div className="section-heading-row">
               <h2 className="section-title">{t("track.articles")}</h2>
               <Button
@@ -239,9 +243,10 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                 ))}
               </div>
             ) : (
-              <div className="py-16 text-center text-sm text-slate-400">
-                {t("home.noArticles")}
-              </div>
+              <EmptyState
+                icon={<FileText className="h-4 w-4" />}
+                title={t("home.noArticles")}
+              />
             )}
           </div>
 

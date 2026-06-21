@@ -529,7 +529,7 @@ export default function Manage() {
           </div>
         </div>
 
-        <Surface as="div" className="owner-command-strip mb-6">
+        <Surface as="div" className="owner-command-strip mb-6" variant="floating">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input

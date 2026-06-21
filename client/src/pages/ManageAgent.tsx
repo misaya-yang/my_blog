@@ -211,8 +211,8 @@ export default function ManageAgent() {
         compact
       />
 
-      <main className="container relative z-10 px-4 py-8 sm:px-6">
-        <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <main className="agent-console-page container relative z-10 px-4 py-8 sm:px-6">
+        <div className="agent-console-hero mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <div className="signal-chip mb-5">
               <Bot className="h-4 w-4" />
@@ -238,7 +238,7 @@ export default function ManageAgent() {
         </div>
 
         <Tabs defaultValue="index" className="agent-console-tabs">
-          <TabsList className="w-full border border-sky-200/15 bg-slate-950/60">
+          <TabsList className="agent-console-tab-list glass-dock w-full">
             <TabsTrigger value="index">
               <Database className="mr-2 h-4 w-4" />
               {t("agentOps.index.title")}
@@ -261,7 +261,7 @@ export default function ManageAgent() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="index" className="research-surface">
+          <TabsContent value="index" className="research-surface agent-console-panel">
             <IndexStatusPanel
               loading={indexStatus.isLoading}
               error={indexStatus.isError}
@@ -269,7 +269,7 @@ export default function ManageAgent() {
             />
           </TabsContent>
 
-          <TabsContent value="debug" className="research-surface">
+          <TabsContent value="debug" className="research-surface agent-console-panel">
             <SectionHeader
               icon={<FileSearch className="h-4 w-4" />}
               title={t("agentOps.debug.title")}
@@ -302,7 +302,7 @@ export default function ManageAgent() {
             )}
           </TabsContent>
 
-          <TabsContent value="evals" className="research-surface">
+          <TabsContent value="evals" className="research-surface agent-console-panel">
             <SectionHeader
               icon={<Play className="h-4 w-4" />}
               title={t("agentOps.evals.title")}
@@ -382,7 +382,7 @@ export default function ManageAgent() {
             </div>
           </TabsContent>
 
-          <TabsContent value="traces" className="research-surface">
+          <TabsContent value="traces" className="research-surface agent-console-panel">
             <SectionHeader
               icon={<Route className="h-4 w-4" />}
               title={t("agentOps.traces.title")}
@@ -444,7 +444,7 @@ export default function ManageAgent() {
             </div>
           </TabsContent>
 
-          <TabsContent value="ideas" className="research-surface">
+          <TabsContent value="ideas" className="research-surface agent-console-panel">
             <QuestionRadarPanel
               loading={questionRadar.isLoading}
               error={questionRadar.isError}

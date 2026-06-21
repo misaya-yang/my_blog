@@ -144,7 +144,7 @@ export default function Search() {
 
         <form
           onSubmit={handleSubmit}
-          className="home-search-dock mt-9 max-w-4xl"
+          className="home-search-dock glass-dock mt-9 max-w-4xl"
         >
           <div className="home-search-dock-title">
             <SearchIcon className="h-5 w-5" />
@@ -174,7 +174,10 @@ export default function Search() {
           </div>
         </form>
 
-        <Surface className="mt-8" density={query ? "compact" : "normal"}>
+        <Surface
+          className="mt-8 hairline-list"
+          density={query ? "compact" : "normal"}
+        >
           <SectionHeader
             title={
               isLoading && query
@@ -191,20 +194,19 @@ export default function Search() {
           />
 
           {isLoading ? (
-            <div>
+            query && showSlowSearchRecovery ? (
+              <SearchRecoveryPanel
+                query={query}
+                topics={suggestedTopics}
+                onAskAgent={askAgent}
+              />
+            ) : (
               <LoadingState
                 title={t("common.loadingNotes")}
                 description={t("common.loadingHint")}
                 className="mt-5"
               />
-              {query && showSlowSearchRecovery ? (
-                <SearchRecoveryPanel
-                  query={query}
-                  topics={suggestedTopics}
-                  onAskAgent={askAgent}
-                />
-              ) : null}
-            </div>
+            )
           ) : isError ? (
             query ? (
               <div>
@@ -255,7 +257,7 @@ export default function Search() {
           ) : data?.results?.length ? (
             <div className="mt-5 divide-y divide-sky-200/10">
               {data.results.map((post: any) => (
-                <article key={post.id} className="py-5">
+                <article key={post.id} className="search-result-row py-5">
                   <Link
                     href={`/post/${post.slug}`}
                     className="text-xl font-semibold leading-8 text-white hover:text-slate-200"

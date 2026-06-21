@@ -77,7 +77,10 @@ export function SubscriptionForm({
 
   return (
     <section
-      className={cn(embedded ? "space-y-4" : "glass-panel p-5", className)}
+      className={cn(
+        embedded ? "space-y-4" : "glass-panel liquid-panel p-5",
+        className
+      )}
       aria-label={t("engagement.subscribe.title")}
     >
       <div className="flex items-start justify-between gap-4">

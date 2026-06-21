@@ -24,6 +24,8 @@ type AgentStreamFinalEvent = {
   type: "final";
   output: AgentSendMessageResponse;
   elapsedMs: number;
+  outcome?: "blocked" | "completed" | "failed" | "no_source";
+  reason?: string;
 };
 
 type AgentSendMessageResponse =
@@ -38,6 +40,8 @@ type AgentSendMessageResponse =
       messageId: string;
       answer: {
         answerMarkdown: string;
+        answerType?: string;
+        refusalReason?: string;
       };
       sourceCards: SourceCard[];
       relatedQuestions: string[];

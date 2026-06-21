@@ -3,6 +3,8 @@ import {
   createHeadingAnchorId,
   createSourceCardSemanticAnchorId,
   createUniqueHeadingAnchors,
+  extractMarkdownHeadingAnchors,
+  extractMarkdownHeadings,
 } from "./heading-anchors";
 
 describe("heading anchors", () => {
@@ -62,5 +64,43 @@ describe("heading anchors", () => {
   it("does not create numeric fallback anchors for source cards without semantic text", () => {
     expect(createSourceCardSemanticAnchorId({ heading: "" })).toBeNull();
     expect(createSourceCardSemanticAnchorId({ sectionTitle: null })).toBeNull();
+  });
+
+  it("extracts markdown headings without treating fenced code comments as headings", () => {
+    const markdown = [
+      "# Overview",
+      "",
+      "```python",
+      "# x: tensor shape note",
+      "print(x)",
+      "```",
+      "",
+      "## Implementation Notes ##",
+      "",
+      "~~~ts",
+      "### not a real heading",
+      "~~~",
+      "",
+      "### Implementation Notes",
+    ].join("\n");
+
+    expect(extractMarkdownHeadings(markdown)).toEqual([
+      { text: "Overview", level: 1 },
+      { text: "Implementation Notes", level: 2 },
+      { text: "Implementation Notes", level: 3 },
+    ]);
+    expect(extractMarkdownHeadingAnchors(markdown)).toEqual([
+      { id: "overview", text: "Overview", level: 1 },
+      {
+        id: "implementation-notes",
+        text: "Implementation Notes",
+        level: 2,
+      },
+      {
+        id: "implementation-notes-2",
+        text: "Implementation Notes",
+        level: 3,
+      },
+    ]);
   });
 });

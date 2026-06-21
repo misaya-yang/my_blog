@@ -17,6 +17,7 @@ type MarkdownRendererProps = {
   headings?: MarkdownHeading[];
   copiedCode?: string | null;
   copyCodeLabel?: string;
+  tableLabel?: string;
   onCopyCode?: (code: string, id: string) => void;
 };
 
@@ -25,6 +26,7 @@ export default function MarkdownRenderer({
   headings = [],
   copiedCode,
   copyCodeLabel = "Copy code",
+  tableLabel = "Scrollable table",
   onCopyCode,
 }: MarkdownRendererProps) {
   useEffect(() => {
@@ -108,7 +110,7 @@ export default function MarkdownRenderer({
           <div
             className="technical-table-wrap"
             role="region"
-            aria-label="Scrollable table"
+            aria-label={tableLabel}
             tabIndex={0}
           >
             <table {...props}>{children}</table>

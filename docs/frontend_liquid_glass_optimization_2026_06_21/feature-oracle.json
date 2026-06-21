@@ -1,0 +1,113 @@
+{
+  "schema_version": "prd-phase-harness/feature-oracle/v1",
+  "instructions": {
+    "allowed_edits": "Coding agents may update only status, evidence, and notes fields unless the user explicitly changes scope.",
+    "completion_rule": "A feature is passing only after evidence exists.",
+    "status_values": [
+      "failing",
+      "passing",
+      "blocked",
+      "waived"
+    ]
+  },
+  "features": [
+    {
+      "id": "FLG-F001",
+      "phase_id": "FLG-00",
+      "category": "baseline",
+      "description": "The harness records every route group, style entrypoint, command gate, source reference, dirty-tree risk, and design-system boundary before implementation continues.",
+      "steps": [
+        "Inspect client/src/App.tsx, client/src/main.tsx, package.json, and the style entrypoints.",
+        "Record the full page matrix and validation commands in source-packet.md.",
+        "Write reports/flg-00-baseline-all-page-audit-report.md with command and inventory evidence."
+      ],
+      "status": "passing",
+      "evidence": "reports/flg-00-baseline-all-page-audit-report.md records git status, route inventory, style line counts, and harness validator output.",
+      "notes": "FLG-01 is unlocked to replace the broad material layer with compact utilities."
+    },
+    {
+      "id": "FLG-F002",
+      "phase_id": "FLG-01",
+      "category": "foundation",
+      "description": "The material foundation uses compact tokens and reusable classes instead of a broad page-specific cascade, with fallbacks for reduced transparency and motion.",
+      "steps": [
+        "Replace the overgrown liquid-materials.css behavior with a compact material utility layer.",
+        "Preserve import order and existing component contracts.",
+        "Verify pnpm check, pnpm test, pnpm build, and targeted browser screenshots."
+      ],
+      "status": "passing",
+      "evidence": "reports/flg-01-design-system-foundation-report.md records compact material foundation, pnpm check, pnpm test, pnpm build, audit:ui, audit:baseline:quick, and Playwright screenshots under .cache/flg-01-qa.",
+      "notes": "liquid-materials.css was reduced from 973 lines to 258 lines and no longer owns page layouts."
+    },
+    {
+      "id": "FLG-F003",
+      "phase_id": "FLG-02",
+      "category": "public-pages",
+      "description": "Public navigation, home, track, search, archive, taxonomy, about, login, and NotFound pages share the material language without duplicate CTA intent.",
+      "steps": [
+        "Apply material utilities through shared public components and page-scoped classes.",
+        "Check header height, mobile stacking, empty states, loading states, and focus states.",
+        "Capture screenshots for public routes across the required viewports."
+      ],
+      "status": "passing",
+      "evidence": "reports/flg-02-public-navigation-and-home-report.md records public component/page material adoption, pnpm check, pnpm test, pnpm build, audit:ui, audit:baseline:quick, 40 public-route screenshots under .cache/flg-02-qa, and reduced-preference checks.",
+      "notes": "Home Start here and taxonomy desktop rail/list layout regressions were caught in screenshots and fixed. FLG-03 is unlocked for reader and agent companion work."
+    },
+    {
+      "id": "FLG-F004",
+      "phase_id": "FLG-03",
+      "category": "reader-agent",
+      "description": "Article reader, discovery cards, TOC/actions, and agent companion gain layered material surfaces while prose, code, tables, formulas, and source cards remain readable.",
+      "steps": [
+        "Apply material utilities to reader rails, summary surfaces, action controls, and agent shell.",
+        "Keep markdown content, source cards, and long-form reading surfaces high contrast.",
+        "Capture reader and agent-open screenshots across the required viewports."
+      ],
+      "status": "passing",
+      "evidence": "reports/flg-03-reader-discovery-and-agent-report.md records reader/agent material adoption, pnpm check, pnpm test, pnpm build, audit:ui, audit:baseline:quick, 32 reader/agent screenshot states under .cache/flg-03-qa, source-card fixture screenshots, and reduced-preference checks.",
+      "notes": "A wide-screen left reader rail attempt was rejected because it compressed the article column. The final reader keeps the main column readable and uses the TOC rail plus in-article guide as the reader rail system."
+    },
+    {
+      "id": "FLG-F005",
+      "phase_id": "FLG-04",
+      "category": "owner-tools",
+      "description": "Manage, ManageAgent, and Editor receive dense Apple-grade surfaces without allowing owner CSS to override public pages.",
+      "steps": [
+        "Audit owner-tools.css selectors for public-page bleed.",
+        "Apply material utilities to dashboards, forms, tables, editor toolbar, and editor canvas boundaries.",
+        "Capture owner and editor screenshots with keyboard focus checks."
+      ],
+      "status": "passing",
+      "evidence": "reports/flg-04-owner-tools-and-editor-report.md records owner/editor material adoption, pnpm check, pnpm test, pnpm build, audit:ui, audit:baseline:quick, and 17 owner/editor/public-regression screenshot states under .cache/flg-04-qa.",
+      "notes": "Local browser state was not admin-authenticated, so owner visual QA used Playwright tRPC fixtures for frontend-only data states. Public / was captured without owner fixtures and reported no owner CSS bleed."
+    },
+    {
+      "id": "FLG-F006",
+      "phase_id": "FLG-05",
+      "category": "effects-accessibility-performance",
+      "description": "Motion, route transitions, scroll progress, content rendering, container behavior, and transparency preferences are progressive and accessible.",
+      "steps": [
+        "Add feature-detected route and scroll effects using existing platform APIs.",
+        "Verify reduced motion, reduced transparency, no horizontal overflow, focus visibility, and blur-disabled contrast.",
+        "Record performance and accessibility evidence in the phase report."
+      ],
+      "status": "passing",
+      "evidence": "reports/flg-05-motion-performance-accessibility-report.md records route effect controller, compact global effects layer, pnpm check, pnpm test, pnpm build, audit:ui, audit:baseline:quick, and 40 preference-state screenshots under .cache/flg-05-qa.",
+      "notes": "Reduced motion route animation measured none, reduced transparency and data-solid-surfaces fallback measured all sampled backdrop filters none, focus outlines remained visible, and max horizontal overflow was 0px."
+    },
+    {
+      "id": "FLG-F007",
+      "phase_id": "FLG-06",
+      "category": "final-qa",
+      "description": "The complete site passes command gates, route screenshots, audit scripts, and handoff documentation.",
+      "steps": [
+        "Run pnpm check, pnpm test, pnpm build, audit:ui, and audit:baseline:quick.",
+        "Capture the full route matrix screenshots at all required viewports.",
+        "Update final report, continuity ledger, progress log, and handoff."
+      ],
+      "status": "passing",
+      "evidence": "reports/flg-06-final-qa-and-handoff-report.md records pnpm check, pnpm test, pnpm build, audit:ui, audit:baseline:quick, 92 screenshots under .cache/flg-06-qa, and final handoff closure.",
+      "notes": "Final QA covered 14 routes across 4 viewports plus Agent open, light mode, reduced motion, reduced transparency, and solid fallback states. Automated failures were 0, max overflow was 0px, and max non-editor header height was 72px."
+    }
+  ]
+}

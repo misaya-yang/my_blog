@@ -95,8 +95,11 @@ describe("BlogAgent route context", () => {
   it("hides the public Blog Agent on owner and auth routes only", () => {
     expect(isBlogAgentHiddenRoute("/manage")).toBe(true);
     expect(isBlogAgentHiddenRoute("/manage/agent")).toBe(true);
+    expect(isBlogAgentHiddenRoute("/manage?tab=index")).toBe(true);
     expect(isBlogAgentHiddenRoute("/write")).toBe(true);
+    expect(isBlogAgentHiddenRoute("/write?draft=1")).toBe(true);
     expect(isBlogAgentHiddenRoute("/login")).toBe(true);
+    expect(isBlogAgentHiddenRoute("/login?reason=expired")).toBe(true);
 
     expect(isBlogAgentHiddenRoute("/")).toBe(false);
     expect(isBlogAgentHiddenRoute("/archive")).toBe(false);
@@ -262,6 +265,101 @@ describe("BlogAgent route context", () => {
       String((fetchMock.mock.calls[0][1] as RequestInit).body)
     );
     expect(requestBody.answerMode).toBe("compare");
+
+    vi.unstubAllGlobals();
+  });
+
+  it("passes explicit quota block stream outcome to final handlers", async () => {
+    const onFinal = vi.fn();
+    const encoder = new TextEncoder();
+    const body = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          encoder.encode(
+            [
+              'data: {"type":"final","elapsedMs":7,"outcome":"blocked","reason":"quota","output":{"status":"blocked","reason":"quota","quota":{"limit":10,"used":10,"remaining":0,"resetAt":"2026-06-06T16:00:00.000Z","tier":"anonymous","allowed":false}}}',
+              "",
+            ].join("\n")
+          )
+        );
+        controller.close();
+      },
+    });
+    vi.stubGlobal("window", {
+      setTimeout,
+      clearTimeout,
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(body, { status: 200 }))
+    );
+
+    await streamAgentMessage({
+      message: "Explain AgentLoop",
+      routeContext: buildRouteContext("/", "en"),
+      onStatus: vi.fn(),
+      onAnswerDelta: vi.fn(),
+      onFinal,
+    });
+
+    expect(onFinal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        outcome: "blocked",
+        reason: "quota",
+        output: expect.objectContaining({ status: "blocked" }),
+      })
+    );
+
+    vi.unstubAllGlobals();
+  });
+
+  it("passes explicit no-source stream outcome to final handlers", async () => {
+    const onFinal = vi.fn();
+    const encoder = new TextEncoder();
+    const body = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          encoder.encode(
+            [
+              'data: {"type":"status","stage":"sources","elapsedMs":3,"sourceCount":0}',
+              "",
+              'data: {"type":"final","elapsedMs":11,"outcome":"no_source","reason":"no_public_source","output":{"status":"completed","conversationId":"conv-1","messageId":"msg-1","answer":{"answerMarkdown":"No public source found.","answerType":"refusal","refusalReason":"no_public_source"},"sourceCards":[],"relatedQuestions":[],"quota":{"limit":10,"used":1,"remaining":9,"resetAt":"2026-06-06T16:00:00.000Z","tier":"anonymous","allowed":true},"runStatus":"completed"}}',
+              "",
+            ].join("\n")
+          )
+        );
+        controller.close();
+      },
+    });
+    vi.stubGlobal("window", {
+      setTimeout,
+      clearTimeout,
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(body, { status: 200 }))
+    );
+
+    await streamAgentMessage({
+      message: "Explain hidden notes",
+      routeContext: buildRouteContext("/", "en"),
+      onStatus: vi.fn(),
+      onAnswerDelta: vi.fn(),
+      onFinal,
+    });
+
+    expect(onFinal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        outcome: "no_source",
+        reason: "no_public_source",
+        output: expect.objectContaining({
+          answer: expect.objectContaining({
+            refusalReason: "no_public_source",
+          }),
+          sourceCards: [],
+        }),
+      })
+    );
 
     vi.unstubAllGlobals();
   });

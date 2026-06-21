@@ -4,8 +4,9 @@ import {
   getSourceAnchorId,
   getSourceFallbackAnchorId,
   getSourceHref,
+  getVisibleSourceCards,
 } from "./BlogAgentRoot";
-import { toChatMessage } from "./messageState";
+import { markAssistantMessageRecoverable, toChatMessage } from "./messageState";
 import type { SourceCard } from "./types";
 
 const source: SourceCard = {
@@ -127,5 +128,99 @@ describe("Agent source cards", () => {
     expect(message).not.toHaveProperty("reasoningMarkdown");
     expect(message.sourceCards).toHaveLength(1);
     expect(message.sourceCards?.[0]?.anchorId).toBe("3-exact-invariants");
+  });
+
+  it("restores persisted related questions from source metadata", () => {
+    const message = toChatMessage({
+      id: "assistant-1",
+      role: "assistant",
+      content: "Grounded answer.",
+      sourceJson: {
+        sourceCards: [{ ...source, anchorId: "3-exact-invariants" }],
+        relatedQuestions: [
+          "What should I read next?",
+          "",
+          "How does this connect to Agent loops?",
+        ],
+      },
+    });
+
+    expect(message.relatedQuestions).toEqual([
+      "What should I read next?",
+      "How does this connect to Agent loops?",
+    ]);
+  });
+
+  it("preserves failed user turns and partial assistant content", () => {
+    const messages = [
+      {
+        id: "user-1",
+        role: "user" as const,
+        content: "Explain source trust.",
+      },
+      {
+        id: "assistant-1",
+        role: "assistant" as const,
+        content: "Partial grounded answer.",
+        streaming: true,
+      },
+    ];
+
+    const next = markAssistantMessageRecoverable(messages, "assistant-1", {
+      content: "The assistant timed out.",
+      state: "timeout",
+      recoveryPrompt: "Explain source trust.",
+    });
+
+    expect(next).toHaveLength(2);
+    expect(next[0]).toMatchObject({
+      id: "user-1",
+      content: "Explain source trust.",
+    });
+    expect(next[1]).toMatchObject({
+      id: "assistant-1",
+      content: "Partial grounded answer.",
+      recoveryMessage: "The assistant timed out.",
+      recoveryPrompt: "Explain source trust.",
+      state: "timeout",
+      streaming: false,
+    });
+  });
+
+  it("uses recovery copy as assistant content when no partial answer exists", () => {
+    const next = markAssistantMessageRecoverable(
+      [
+        {
+          id: "assistant-1",
+          role: "assistant" as const,
+          content: "",
+          streaming: true,
+        },
+      ],
+      "assistant-1",
+      {
+        content: "Anonymous limit reached.",
+        state: "quota_blocked",
+        recoveryPrompt: "Explain source trust.",
+        quotaTier: "anonymous",
+      }
+    );
+
+    expect(next[0]).toMatchObject({
+      content: "Anonymous limit reached.",
+      recoveryMessage: "Anonymous limit reached.",
+      state: "quota_blocked",
+      quotaTier: "anonymous",
+    });
+  });
+
+  it("collapses source cards to three and expands to all", () => {
+    const sources = Array.from({ length: 5 }, (_, index) => ({
+      ...source,
+      sourceId: `source-${index}`,
+    }));
+
+    expect(getVisibleSourceCards(sources, false)).toHaveLength(3);
+    expect(getVisibleSourceCards(sources, true)).toHaveLength(5);
   });
 });

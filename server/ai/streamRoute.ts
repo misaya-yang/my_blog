@@ -62,9 +62,12 @@ export function registerAgentStreamRoute(app: RouteRegistrar) {
         signal: streamAbortController.signal,
       });
     } catch (error) {
+      const code = normalizeStreamError(error);
       emit({
         type: "error",
-        message: normalizeStreamError(error),
+        message: code,
+        code,
+        terminal: true,
         elapsedMs: 0,
       });
     } finally {

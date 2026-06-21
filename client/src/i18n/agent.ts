@@ -141,6 +141,14 @@ const agent: TranslationDict = {
     en: "Retry",
     zh: "重试",
   },
+  "agent.bootstrap.unavailable": {
+    en: "Assistant unavailable",
+    zh: "助手暂不可用",
+  },
+  "agent.bootstrap.retry": {
+    en: "Reload assistant",
+    zh: "重新加载助手",
+  },
   "agent.context.title": {
     en: "Conversation context",
     zh: "会话上下文",
@@ -301,6 +309,18 @@ const agent: TranslationDict = {
     en: "{count} shown",
     zh: "{count} 个",
   },
+  "agent.sources.countDetailed": {
+    en: "{shown}/{total} shown",
+    zh: "已显示 {shown}/{total}",
+  },
+  "agent.sources.showAll": {
+    en: "Show {count} more",
+    zh: "展开剩余 {count} 个",
+  },
+  "agent.sources.showLess": {
+    en: "Show fewer",
+    zh: "收起来源",
+  },
   "agent.sources.open": {
     en: "Open source",
     zh: "打开来源",
@@ -409,6 +429,18 @@ const agent: TranslationDict = {
     en: "Visitor limit reached. Please continue after the daily reset.",
     zh: "游客额度已用完，请在每日重置后继续。",
   },
+  "agent.quota.continueAsVisitor": {
+    en: "Continue as visitor",
+    zh: "以游客身份继续",
+  },
+  "agent.quota.visitorReady": {
+    en: "Visitor identity is ready. The preserved question is back in the composer.",
+    zh: "游客身份已就绪，保留的问题已放回输入框。",
+  },
+  "agent.quota.visitorError": {
+    en: "Visitor identity could not be started. Try again later.",
+    zh: "暂时无法启用游客身份，请稍后再试。",
+  },
   "agent.quota.lowDetail": {
     en: "You are almost out of daily questions. Visitor identity gives a larger daily allowance when anonymous quota is low.",
     zh: "今日提问额度快用完了；匿名额度不足时，可使用游客身份获得更高每日额度。",
@@ -444,6 +476,26 @@ const agent: TranslationDict = {
   "agent.error.noPublicContext": {
     en: "Not enough public blog context was found for this question.",
     zh: "没有找到足够的公开博客上下文来回答这个问题。",
+  },
+  "agent.recovery.failed": {
+    en: "The question is still visible here. Retry when the assistant is available, or edit the preserved draft below.",
+    zh: "这个问题仍保留在对话里。助手恢复后可重试，也可以编辑下方保留的草稿。",
+  },
+  "agent.recovery.cancelled": {
+    en: "Generation was stopped. The partial turn stays visible so you can retry or revise the question.",
+    zh: "生成已停止；这轮对话会保留，可直接重试或修改问题。",
+  },
+  "agent.recovery.timeout": {
+    en: "The run timed out. The question is preserved and can be retried.",
+    zh: "这次运行超时；问题已保留，可重新尝试。",
+  },
+  "agent.recovery.quota": {
+    en: "The quota boundary stopped this run before retrieval. The question remains available here.",
+    zh: "本轮在检索前被额度限制拦截；问题仍保留在这里。",
+  },
+  "agent.recovery.noSource": {
+    en: "This is a public-source boundary, not a hidden answer. Try a topic from the public posts or attach conversation context.",
+    zh: "这是公开来源边界，不是隐藏答案。可以改问公开文章里的主题，或添加会话上下文。",
   },
   "agent.refusal.hidden": {
     en: "Answers are limited to public posts; hidden or admin-only material is not available.",

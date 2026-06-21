@@ -200,6 +200,45 @@ describe("AI public knowledge chunks", () => {
     );
   });
 
+  it("does not treat fenced code comments as markdown section headings", () => {
+    const chunks = buildPublicKnowledgeChunks([
+      post({
+        id: 30,
+        title: "Flow Matching Shape Notes",
+        slug: "flow-matching-shape-notes",
+        content: [
+          "## Runtime Shape",
+          "The implementation keeps tensor shape notes with the section.",
+          "",
+          "```python",
+          "# x: [batch, token, hidden]",
+          "# cond: optional conditioning vector",
+          "velocity = model(x, cond)",
+          "```",
+          "",
+          "## Evidence Boundary",
+          "The conclusion stays scoped to the measured path.",
+        ].join("\n"),
+      }),
+    ]);
+    const postChunks = chunks.filter(
+      chunk => chunk.postSlug === "flow-matching-shape-notes"
+    );
+
+    expect(postChunks.map(chunk => chunk.heading)).toEqual(
+      expect.arrayContaining(["Metadata", "Runtime Shape", "Evidence Boundary"])
+    );
+    expect(postChunks.map(chunk => chunk.heading)).not.toEqual(
+      expect.arrayContaining([
+        "x: [batch, token, hidden]",
+        "cond: optional conditioning vector",
+      ])
+    );
+    expect(
+      postChunks.some(chunk => chunk.content.includes("# x: [batch, token, hidden]"))
+    ).toBe(true);
+  });
+
   it("answers Chinese public article inventory questions from the site overview", () => {
     const chunks = buildPublicKnowledgeChunks(posts);
     const analysis = analyzeKnowledgeQuery("都有哪几篇文章啊");

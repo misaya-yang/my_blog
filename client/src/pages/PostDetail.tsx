@@ -21,7 +21,7 @@ import {
   buildArticleMetadata,
   buildRouteMetadata,
 } from "@shared/metadata";
-import { createUniqueHeadingAnchors } from "@shared/heading-anchors";
+import { extractMarkdownHeadingAnchors } from "@shared/heading-anchors";
 import {
   estimateArticleReadingMinutes,
   stripMatchingMarkdownTitle,
@@ -395,11 +395,11 @@ function MobileToc({
   if (headings.length === 0) return null;
 
   return (
-    <details className="mobile-toc-shell mb-7 rounded-lg border border-white/10 bg-slate-950/35 p-4 lg:hidden">
+    <details className="mobile-toc-shell glass-dock mb-7 rounded-lg p-4 lg:hidden">
       <summary className="cursor-pointer text-sm font-semibold text-white">
         {t("post.toc")}
       </summary>
-      <nav className="mt-3 grid gap-2">
+      <nav className="mobile-toc-nav mt-3 grid gap-2">
         {headings.map(heading => (
           <a
             key={heading.id}
@@ -417,13 +417,27 @@ function MobileToc({
   );
 }
 
+function scrollToArticleHeading(id: string, updateHash = false) {
+  const element = document.getElementById(id);
+  if (!element) return;
+
+  if (updateHash) {
+    window.history.pushState(null, "", `#${encodeURIComponent(id)}`);
+  }
+
+  element.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+}
+
 function ArticleLoadingState({ t }: { t: Translate }) {
   return (
     <div className="space-page text-foreground">
       <SpaceBackdrop subtle />
       <SiteHeader backHref="/" backLabel={t("nav.back")} compact />
       <main className="container relative z-10 max-w-7xl px-4 py-8 sm:px-6 md:py-12">
-        <section className="glass-panel reading-surface article-loading-surface">
+        <section className="solid-reading reading-surface article-loading-surface">
           <div className="article-loading-header">
             <p className="technical-label">{t("post.loadingKicker")}</p>
             <h1>{t("post.loadingTitle")}</h1>
@@ -488,15 +502,7 @@ export default function PostDetail() {
         post.content,
         post.title
       );
-      const headingRegex = /^(#{1,6})\s+(.+)$/gm;
-      const matches = Array.from(articleContent.matchAll(headingRegex));
-      const extractedHeadings = createUniqueHeadingAnchors(
-        matches.map(match => ({
-          text: match[2].replace(/\*\*/g, ""),
-          level: match[1].length,
-        }))
-      );
-      setHeadings(extractedHeadings);
+      setHeadings(extractMarkdownHeadingAnchors(articleContent));
     }
   }, [post?.content, post?.title]);
 
@@ -505,10 +511,7 @@ export default function PostDetail() {
 
     const targetId = decodeURIComponent(window.location.hash.slice(1));
     window.requestAnimationFrame(() => {
-      document.getElementById(targetId)?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+      scrollToArticleHeading(targetId);
     });
   }, [headings, post?.slug]);
 
@@ -704,7 +707,7 @@ export default function PostDetail() {
       <div className="paper-reader-container container relative z-10 max-w-7xl px-4 py-8 sm:px-6 md:py-12">
         <div className="paper-reader-cockpit">
           <aside className="paper-brief-rail hidden xl:block">
-            <div className="paper-brief-card sticky top-24">
+            <div className="paper-brief-card glass-dock sticky top-24">
               <p className="technical-label">{t("post.readerMap")}</p>
               <h2>{t("post.entry.kicker")}</h2>
               <dl className="paper-brief-stats">
@@ -753,7 +756,7 @@ export default function PostDetail() {
           </aside>
 
           {/* Main Content */}
-          <article className="glass-panel reading-surface paper-reader-main p-5 sm:p-8 lg:p-10">
+          <article className="reading-surface solid-reading paper-reader-main p-5 sm:p-8 lg:p-10">
             {/* Post Header */}
             <div className="article-reading-header">
               <h1 className="article-page-title mb-5">{post.title}</h1>
@@ -840,7 +843,7 @@ export default function PostDetail() {
 
               {(primaryEntryItem || seriesContext) && (
                 <section
-                  className="article-entry-layer"
+                  className="article-entry-layer glass-dock"
                   aria-labelledby="article-entry-title"
                 >
                   <div className="article-entry-brief">
@@ -900,7 +903,7 @@ export default function PostDetail() {
                   )}
 
                   <div
-                    className="article-agent-prompts"
+                    className="article-agent-prompts glass-dock"
                     aria-label={t("post.agentCompanion.title")}
                   >
                     <div className="article-agent-prompts-heading">
@@ -953,13 +956,14 @@ export default function PostDetail() {
                   headings={headings}
                   copiedCode={copiedCode}
                   copyCodeLabel={t("post.copyCode")}
+                  tableLabel={t("post.scrollableTable")}
                   onCopyCode={copyCode}
                 />
               </Suspense>
             </div>
 
             <div
-              className="article-secondary-actions"
+              className="article-secondary-actions glass-dock"
               aria-label={t("post.share")}
             >
               <span className="article-secondary-label">{t("post.share")}</span>
@@ -1066,7 +1070,7 @@ export default function PostDetail() {
                     {postContext.previous && (
                       <Link
                         href={`/post/${postContext.previous.slug}`}
-                        className="rounded-lg border border-white/10 bg-slate-950/35 p-4 transition hover:border-sky-300/35"
+                        className="article-nav-card glass-control rounded-lg p-4 transition"
                       >
                         <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
                           <ArrowLeft className="h-3.5 w-3.5" />
@@ -1080,7 +1084,7 @@ export default function PostDetail() {
                     {postContext.next && (
                       <Link
                         href={`/post/${postContext.next.slug}`}
-                        className="rounded-lg border border-white/10 bg-slate-950/35 p-4 text-right transition hover:border-sky-300/35"
+                        className="article-nav-card glass-control rounded-lg p-4 text-right transition"
                       >
                         <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
                           {t("post.next")}
@@ -1104,7 +1108,7 @@ export default function PostDetail() {
                       <Link
                         key={related.id}
                         href={`/post/${related.slug}`}
-                        className="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-slate-950/30 px-4 py-3 text-sm text-slate-200 transition hover:border-sky-300/35 hover:text-white"
+                        className="article-related-link glass-control flex items-center justify-between gap-4 rounded-lg px-4 py-3 text-sm text-slate-200 transition hover:text-white"
                       >
                         <span className="line-clamp-1">{related.title}</span>
                         <ArrowRight className="h-4 w-4 shrink-0 text-sky-200" />
@@ -1165,7 +1169,7 @@ export default function PostDetail() {
 
           {/* Table of Contents */}
           <aside className="paper-toc-rail hidden lg:block">
-            <div className="glass-panel toc-surface sticky top-24 p-5">
+            <div className="toc-surface glass-dock sticky top-24 p-5">
               <h3 className="section-title mb-4">{t("post.toc")}</h3>
               <nav className="space-y-2">
                 {headings.map(heading => (
@@ -1180,10 +1184,7 @@ export default function PostDetail() {
                     style={{ paddingLeft: `${(heading.level - 1) * 0.75}rem` }}
                     onClick={e => {
                       e.preventDefault();
-                      document.getElementById(heading.id)?.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start",
-                      });
+                      scrollToArticleHeading(heading.id, true);
                     }}
                   >
                     {heading.text}

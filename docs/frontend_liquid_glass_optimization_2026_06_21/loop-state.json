@@ -1,0 +1,9 @@
+{
+  "schema_version": "prd-phase-harness/loop-state/v1",
+  "active_phase": "FLG-06",
+  "active_feature": "FLG-F007",
+  "iteration": 6,
+  "status": "verified",
+  "last_decision": "FLG-06 passed; the full command suite, audits, 92-screenshot final matrix, preference checks, and handoff docs are complete.",
+  "next_action": "Harness closed. Any deployment or production smoke should be a separate approved task."
+}

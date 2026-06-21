@@ -1,4 +1,9 @@
-import type { AgentTraceEntry, ChatMessage, SourceCard } from "./types";
+import type {
+  AgentTraceEntry,
+  ChatMessage,
+  ChatMessageState,
+  SourceCard,
+} from "./types";
 
 export function upsertTraceEntry(
   entries: AgentTraceEntry[] | undefined,
@@ -9,6 +14,33 @@ export function upsertTraceEntry(
   if (index === -1) return [...current, next];
   return current.map((entry, entryIndex) =>
     entryIndex === index ? { ...entry, ...next } : entry
+  );
+}
+
+export function markAssistantMessageRecoverable(
+  messages: ChatMessage[],
+  assistantMessageId: string,
+  input: {
+    content: string;
+    state: ChatMessageState;
+    recoveryPrompt: string;
+    messageId?: string;
+    quotaTier?: string;
+  }
+) {
+  return messages.map(message =>
+    message.id === assistantMessageId
+      ? {
+          ...message,
+          id: input.messageId ?? message.id,
+          content: message.content || input.content,
+          streaming: false,
+          state: input.state,
+          recoveryMessage: input.content,
+          recoveryPrompt: input.recoveryPrompt,
+          quotaTier: input.quotaTier,
+        }
+      : message
   );
 }
 
@@ -23,7 +55,20 @@ export function toChatMessage(message: {
     role: message.role === "assistant" ? "assistant" : "user",
     content: message.content,
     sourceCards: extractSourceCards(message.sourceJson),
+    relatedQuestions: extractRelatedQuestions(message.sourceJson),
   };
+}
+
+function extractRelatedQuestions(
+  sourceJson: Record<string, unknown> | null | undefined
+): string[] | undefined {
+  const relatedQuestions = sourceJson?.relatedQuestions;
+  if (!Array.isArray(relatedQuestions)) return undefined;
+  const normalized = relatedQuestions.filter(
+    (question): question is string =>
+      typeof question === "string" && question.trim().length > 0
+  );
+  return normalized.length > 0 ? normalized : undefined;
 }
 
 function extractSourceCards(

@@ -171,8 +171,8 @@ export function ArticleCard({
     <article
       className={
         featured
-          ? "article-card article-card-featured group"
-          : "article-card group"
+          ? "article-card article-card-featured liquid-surface group"
+          : "article-card liquid-surface group"
       }
     >
       <Link href={`/post/${post.slug}`} aria-label={post.title}>

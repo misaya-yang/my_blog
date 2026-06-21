@@ -294,6 +294,39 @@ describe("AI agent harness", () => {
     expect(model.generate).toHaveBeenCalledTimes(10);
   });
 
+  it("streams quota blocks as an explicit terminal outcome", async () => {
+    const { service, retrieve, model } = createHarness();
+    const ctx = anonymousContext("203.0.113.29");
+    for (let index = 0; index < 10; index += 1) {
+      await service.sendMessage(ctx, {
+        message: `Question ${index + 1}`,
+        routeContext,
+      });
+    }
+
+    const events: AgentStreamEvent[] = [];
+    const result = await service.streamMessage(
+      ctx,
+      {
+        message: "Question 11",
+        routeContext,
+      },
+      event => events.push(event)
+    );
+
+    expect(result.status).toBe("blocked");
+    expect(retrieve).toHaveBeenCalledTimes(10);
+    expect(model.generate).toHaveBeenCalledTimes(10);
+    expect(events).toEqual([
+      expect.objectContaining({
+        type: "final",
+        outcome: "blocked",
+        reason: "quota",
+        output: expect.objectContaining({ status: "blocked" }),
+      }),
+    ]);
+  });
+
   it("blocks visitor readers after thirty messages", async () => {
     const { service, retrieve, model } = createHarness();
     const ctx = visitorContext();
@@ -888,11 +921,21 @@ describe("AI agent harness", () => {
     expect(events).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
+          type: "status",
+          stage: "answer",
+        }),
+        expect.objectContaining({
+          type: "status",
+          stage: "saving",
+        }),
+        expect.objectContaining({
           type: "answer_delta",
           delta: result.answer.answerMarkdown,
         }),
         expect.objectContaining({
           type: "final",
+          outcome: "no_source",
+          reason: "no_public_source",
           output: expect.objectContaining({
             status: "completed",
             sourceCards: [],
@@ -905,7 +948,7 @@ describe("AI agent harness", () => {
     ).toMatchObject({
       status: "completed",
       content: result.answer.answerMarkdown,
-      sourceJson: { sourceCards: [] },
+      sourceJson: expect.objectContaining({ sourceCards: [] }),
     });
   });
 
@@ -980,6 +1023,8 @@ describe("AI agent harness", () => {
         }),
         expect.objectContaining({
           type: "final",
+          outcome: "no_source",
+          reason: "no_public_source",
           output: expect.objectContaining({
             status: "completed",
             sourceCards: [],
@@ -1029,6 +1074,8 @@ describe("AI agent harness", () => {
         }),
         expect.objectContaining({
           type: "final",
+          outcome: "failed",
+          reason: "agent_stream_aborted",
           output: expect.objectContaining({
             status: "failed",
             errorCode: "agent_stream_aborted",
@@ -1085,6 +1132,8 @@ describe("AI agent harness", () => {
         }),
         expect.objectContaining({
           type: "final",
+          outcome: "failed",
+          reason: "agent_stream_timeout",
           output: expect.objectContaining({
             status: "failed",
             errorCode: "agent_stream_timeout",

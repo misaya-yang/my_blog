@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -95,6 +95,67 @@ function AnalyticsRouteTracker() {
   return null;
 }
 
+function getRouteKind(location: string) {
+  const pathname = location.split(/[?#]/)[0] || "/";
+
+  if (pathname === "/") return "home";
+  if (pathname.startsWith("/post/")) return "reader";
+  if (pathname.startsWith("/write")) return "editor";
+  if (pathname.startsWith("/manage")) return "owner";
+  if (
+    pathname === "/archive" ||
+    pathname === "/search" ||
+    pathname === "/about" ||
+    pathname === "/algorithms" ||
+    pathname === "/applications" ||
+    pathname.startsWith("/tags/") ||
+    pathname.startsWith("/categories/")
+  ) {
+    return "public";
+  }
+
+  return "system";
+}
+
+function RouteEffectController() {
+  const [location] = useLocation();
+  const didMount = useRef(false);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const reducedMotion =
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+
+    root.dataset.routeKind = getRouteKind(location);
+    root.dataset.viewTransitionSupport =
+      "startViewTransition" in document ? "true" : "false";
+
+    if (!didMount.current) {
+      didMount.current = true;
+      delete root.dataset.routeMotion;
+      return;
+    }
+
+    if (reducedMotion) {
+      delete root.dataset.routeMotion;
+      return;
+    }
+
+    root.dataset.routeMotion = "enter";
+    const timer = window.setTimeout(() => {
+      if (root.dataset.routeMotion === "enter") {
+        delete root.dataset.routeMotion;
+      }
+    }, 320);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [location]);
+
+  return null;
+}
+
 // NOTE: About Theme
 // - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
 //   to keep consistent foreground/background color across components
@@ -110,6 +171,7 @@ function App() {
             <Toaster />
           </Suspense>
           <AnalyticsRouteTracker />
+          <RouteEffectController />
           <Router />
           <BlogAgentRoot />
         </ErrorBoundary>

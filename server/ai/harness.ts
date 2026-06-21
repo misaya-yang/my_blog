@@ -158,7 +158,10 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
       role: "assistant",
       status: "completed",
       content: input.answer.answerMarkdown,
-      sourceJson: { sourceCards },
+      sourceJson: {
+        sourceCards,
+        relatedQuestions: input.answer.relatedQuestions,
+      },
       usageJson: {
         inputTokens: 0,
         outputTokens: 0,
@@ -596,7 +599,10 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           role: "assistant",
           status: "completed",
           content: answer.answerMarkdown,
-          sourceJson: { sourceCards: answer.sourceCards },
+          sourceJson: {
+            sourceCards: answer.sourceCards,
+            relatedQuestions: answer.relatedQuestions,
+          },
           usageJson: {
             inputTokens: modelResult.inputTokens ?? 0,
             outputTokens: modelResult.outputTokens ?? 0,
@@ -645,6 +651,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
             content: answer.answerMarkdown,
             sourceJson: {
               sourceCards: answer.sourceCards,
+              relatedQuestions: answer.relatedQuestions,
               fallbackReason: errorCode,
             },
             usageJson: {
@@ -735,7 +742,13 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           reason: "quota",
           quota,
         };
-        emit({ type: "final", output, elapsedMs: elapsedMs() });
+        emit({
+          type: "final",
+          output,
+          elapsedMs: elapsedMs(),
+          outcome: "blocked",
+          reason: "quota",
+        });
         return output;
       }
 
@@ -790,7 +803,13 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
             retrievedChunkIds: [],
             model: null,
           });
-          emit({ type: "final", output, elapsedMs: elapsedMs() });
+          emit({
+            type: "final",
+            output,
+            elapsedMs: elapsedMs(),
+            outcome: "no_source",
+            reason: "no_public_source",
+          });
           return output;
         }
         emit({ type: "status", stage: "retrieval", elapsedMs: elapsedMs() });
@@ -836,12 +855,20 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
             retrievedChunkIds: [],
             model: null,
           });
+          emit({ type: "status", stage: "answer", elapsedMs: elapsedMs() });
           emit({
             type: "answer_delta",
             delta: answer.answerMarkdown,
             elapsedMs: elapsedMs(),
           });
-          emit({ type: "final", output, elapsedMs: elapsedMs() });
+          emit({ type: "status", stage: "saving", elapsedMs: elapsedMs() });
+          emit({
+            type: "final",
+            output,
+            elapsedMs: elapsedMs(),
+            outcome: "no_source",
+            reason: "no_public_source",
+          });
           return output;
         }
         const inventoryAnswer = createPublicInventoryAnswerForInput({
@@ -867,7 +894,12 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
             retrievedChunkIds: sources.map(source => source.sourceId),
             model: "deterministic_inventory",
           });
-          emit({ type: "final", output, elapsedMs: elapsedMs() });
+          emit({
+            type: "final",
+            output,
+            elapsedMs: elapsedMs(),
+            outcome: "completed",
+          });
           return output;
         }
         const findPostAnswer = createFindPostAnswerForInput({
@@ -893,7 +925,12 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
             retrievedChunkIds: sources.map(source => source.sourceId),
             model: "deterministic_find_post",
           });
-          emit({ type: "final", output, elapsedMs: elapsedMs() });
+          emit({
+            type: "final",
+            output,
+            elapsedMs: elapsedMs(),
+            outcome: "completed",
+          });
           return output;
         }
 
@@ -951,6 +988,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           content: answer.answerMarkdown,
           sourceJson: {
             sourceCards: answer.sourceCards,
+            relatedQuestions: answer.relatedQuestions,
           },
           usageJson: {
             inputTokens: modelResult.inputTokens ?? 0,
@@ -986,6 +1024,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           type: "final",
           output,
           elapsedMs: elapsedMs(),
+          outcome: "completed",
         });
         return output;
       } catch (error) {
@@ -1018,6 +1057,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
             content: answer.answerMarkdown,
             sourceJson: {
               sourceCards: answer.sourceCards,
+              relatedQuestions: answer.relatedQuestions,
               fallbackReason: errorCode,
             },
             usageJson: {
@@ -1051,7 +1091,13 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
             quota,
             runStatus: "completed",
           };
-          emit({ type: "final", output, elapsedMs: elapsedMs() });
+          emit({
+            type: "final",
+            output,
+            elapsedMs: elapsedMs(),
+            outcome: "completed",
+            reason: errorCode,
+          });
           return output;
         }
 
@@ -1079,7 +1125,13 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           errorCode,
         };
         emit({ type: "error", message: errorCode, elapsedMs: elapsedMs() });
-        emit({ type: "final", output, elapsedMs: elapsedMs() });
+        emit({
+          type: "final",
+          output,
+          elapsedMs: elapsedMs(),
+          outcome: "failed",
+          reason: errorCode,
+        });
         return output;
       }
     },

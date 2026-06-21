@@ -21,7 +21,7 @@ Product Intent
   -> Next Phase
 ```
 
-目标很直接：让一次开发不只留下“已跑完”的印象，而是留下可交付、可回放、可继续的证据。
+目标很直接：让一次开发留下可复核的命令、截图、报告和交接状态，而不是只留下“已跑完”的印象。
 
 ## Design Boundary
 
@@ -58,9 +58,9 @@ Initializer Agent 只做准备，不追求马上把功能写完。它应该把�
 
 Coding Agent 的职责刚好相反：它不重新发明全局计划，只在既有 harness 里做一小段增量。每个 session 读取进度日志和当前 failing feature，完成一组有限任务，跑验证，然后把结构化结果写回日志。完成之后留下的不是一句“已完成”，而是：改了什么、跑了什么、哪些 feature 从 failing 变成 passing、哪些 blocker 仍然存在、下一个 session 从哪里继续。
 
-### 面试加分点
+### 工程要点
 
-这个模式的亮点不在“用了多 Agent”，而在把长任务从聊天流搬进仓库状态。面试里如果只说“让 Claude Code 先规划再编码”，信息量不够；更有区分度的说法是：
+这个模式的亮点不在“用了多 Agent”，而在把长任务从聊天流搬进仓库状态。只说“让 Claude Code 先规划再编码”并不够，真正需要落到这些工程细节：
 
 - Initializer Agent 负责把自然语言需求编译成可执行测试簿，避免后续 session 被空泛 PRD 牵着走。
 - `failing -> passing` 的 feature list 是轻量 acceptance test registry，不依赖模型主观判断。
@@ -347,7 +347,7 @@ python3 scripts/validate_harness_prd.py docs/<topic> --strict --quality-score
 
 ## Engineering Takeaway
 
-Codex、Claude Code 这类 Agent 已经足够强，强到可以一次读很多文件、写很多代码、跑很多命令。问题是它们也足够强，强到会在没有边界时把复杂任务做成一堆“看起来完成”的半成品。
+Codex、Claude Code 这类 Agent 已经可以一次读很多文件、写很多代码、跑很多命令。真正的风险是：如果没有边界和验收，它们很容易把复杂任务推进成一堆“看起来完成”的半成品。
 
 Goal Harness 的核心不是限制 Agent，而是给它一条持续工作的轨道：
 
@@ -371,6 +371,6 @@ Write the phase report.
 Do not unlock AGENT-03 until acceptance gates pass.
 ```
 
-这听起来没有“一句话让 AI 做完整产品”那么浪漫，但它更接近真实软件工程。
+这比“一句话让 AI 做完整产品”更克制，但也更接近真实软件工程。
 
 真正解放 Agent 的不是给它无限大的任务，而是给它一套可以连续完成任务的环境。

@@ -105,13 +105,15 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --font-sans:
-    "Misaya UI", "Albert Sans", "SF Pro Text", -apple-system, BlinkMacSystemFont,
-    "Segoe UI Variable Text", "Aptos", "Helvetica Neue", "PingFang SC",
-    "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Misaya UI", "Albert Sans", "Segoe UI Variable Text", "Aptos",
+    "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    system-ui, sans-serif;
   --font-display:
-    "Misaya Display", "Albert Sans", "SF Pro Display", "Avenir Next",
-    "Segoe UI Variable Display", "Aptos Display", "Helvetica Neue",
-    "PingFang SC", "Source Han Sans SC", "Noto Sans CJK SC", sans-serif;
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Misaya Display", "Albert Sans", "Avenir Next", "Segoe UI Variable Display",
+    "Aptos Display", "Helvetica Neue", "PingFang SC", "Source Han Sans SC",
+    "Noto Sans CJK SC", sans-serif;
   --font-serif:
     "Misaya Reading", "Source Serif 4", "Iowan Old Style", Charter, "Songti SC", "STSong",
     "Source Han Serif SC", "Noto Serif CJK SC", Georgia, serif;
@@ -119,12 +121,12 @@
     "Misaya Reading", "Source Serif 4", "Iowan Old Style", Charter, "Songti SC", "STSong",
     "Source Han Serif SC", "Noto Serif CJK SC", Georgia, serif;
   --font-caption:
-    "Misaya UI", "Albert Sans", "SF Pro Text", -apple-system, BlinkMacSystemFont,
-    "Segoe UI Variable Text", "Aptos", "PingFang SC", "Hiragino Sans GB",
-    system-ui, sans-serif;
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Misaya UI",
+    "Albert Sans", "Segoe UI Variable Text", "Aptos", "PingFang SC",
+    "Hiragino Sans GB", system-ui, sans-serif;
   --font-mono:
-    "SF Mono", "JetBrains Mono", "Cascadia Code", "Fira Code", ui-monospace,
-    monospace;
+    "SF Mono", "SFMono-Regular", "JetBrains Mono", "Cascadia Code",
+    "Fira Code", ui-monospace, monospace;
 }
 
 :root {
@@ -148,6 +150,43 @@
   --dur-reveal: 420ms;
   --ease-standard: ease;
   --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+  --liquid-surface-tint: oklch(0.99 0.004 220 / 66%);
+  --liquid-panel-tint: oklch(0.975 0.006 215 / 82%);
+  --liquid-readable-tint: oklch(0.985 0.004 230 / 96%);
+  --liquid-control-tint: oklch(0.98 0.006 210 / 76%);
+  --liquid-solid-surface: oklch(0.985 0.006 225);
+  --liquid-solid-panel: oklch(0.955 0.006 225);
+  --liquid-border: oklch(0.88 0.012 220 / 48%);
+  --liquid-border-strong: oklch(0.72 0.045 190 / 38%);
+  --liquid-highlight: oklch(1 0 0 / 78%);
+  --liquid-highlight-soft: oklch(0.98 0.014 180 / 28%);
+  --liquid-specular: oklch(0.96 0.05 175 / 42%);
+  --liquid-shadow-soft:
+    inset 0 1px 0 oklch(1 0 0 / 58%),
+    inset 0 -1px 0 oklch(0.72 0.045 190 / 9%),
+    0 12px 32px oklch(0.32 0.025 220 / 12%);
+  --liquid-shadow-panel:
+    inset 0 1px 0 oklch(1 0 0 / 64%),
+    inset 0 -1px 0 oklch(0.72 0.045 190 / 12%),
+    0 18px 46px oklch(0.28 0.026 220 / 16%);
+  --liquid-shadow-float:
+    inset 0 1px 0 oklch(1 0 0 / 72%),
+    0 16px 48px oklch(0.24 0.03 220 / 22%),
+    0 0 28px oklch(0.7 0.08 175 / 12%);
+  --liquid-blur-xs: 10px;
+  --liquid-blur-sm: 16px;
+  --liquid-blur-md: 24px;
+  --liquid-blur-lg: 36px;
+  --liquid-radius-control: 999px;
+  --liquid-radius-surface: 1.15rem;
+  --liquid-radius-panel: 1.45rem;
+  --liquid-radius-reader: 1.05rem;
+  --liquid-motion-fast: 180ms;
+  --liquid-motion-base: 260ms;
+  --liquid-motion-slow: 520ms;
+  --liquid-saturate: 148%;
+  --liquid-reduced-bg: oklch(0.96 0.006 225);
+  --liquid-reduced-border: oklch(0.76 0.018 210);
   --container: 72rem;
   --header-h: 72px;
   --bg: oklch(0.965 0.012 250);
@@ -224,24 +263,24 @@
   --card-foreground: var(--fg);
   --popover: oklch(0.115 0.013 252);
   --popover-foreground: var(--fg);
-  --primary: oklch(0.55 0.16 248);
+  --primary: oklch(0.67 0.12 188);
   --primary-foreground: oklch(0.985 0.012 235);
-  --primary-hover: oklch(0.5 0.15 248);
+  --primary-hover: oklch(0.62 0.11 188);
   --secondary: oklch(0.18 0.026 250);
   --secondary-foreground: oklch(0.9 0.012 235);
   --muted: oklch(0.17 0.022 248);
   --muted-foreground: oklch(0.7 0.018 235);
-  --accent: oklch(0.78 0.16 225);
+  --accent: oklch(0.78 0.11 170);
   --accent-foreground: oklch(0.96 0.012 235);
-  --accent-soft: oklch(0.72 0.13 235 / 42%);
-  --accent-bright: oklch(0.84 0.13 210);
+  --accent-soft: oklch(0.74 0.09 172 / 30%);
+  --accent-bright: oklch(0.86 0.09 168);
   --destructive: oklch(0.52 0.14 25);
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.34 0.025 250);
   --border-faint: oklch(0.85 0.04 240 / 10%);
-  --border-strong: oklch(0.78 0.14 235 / 30%);
+  --border-strong: oklch(0.78 0.07 176 / 28%);
   --input: oklch(0.34 0.025 250);
-  --ring: oklch(0.74 0.16 245);
+  --ring: oklch(0.78 0.1 180);
   --success: oklch(0.62 0.1 165);
   --warning: oklch(0.72 0.13 75);
   --chart-1: oklch(0.72 0.15 245);
@@ -254,7 +293,7 @@
   --sidebar-accent: oklch(0.2 0.034 248);
   --sidebar-accent-foreground: oklch(0.9 0.012 235);
   --sidebar-border: oklch(0.31 0.035 248);
-  --sidebar-ring: oklch(0.72 0.15 245);
+  --sidebar-ring: oklch(0.78 0.1 180);
   --glass-bg: linear-gradient(
     150deg,
     oklch(0.17 0.018 250 / 80%),
@@ -267,10 +306,10 @@
   --surface-primary: oklch(0.155 0.016 250 / 94%);
   --surface-secondary: oklch(0.115 0.013 252 / 82%);
   --surface-border: oklch(0.84 0.08 235 / 15%);
-  --surface-border-strong: oklch(0.74 0.16 245 / 28%);
-  --surface-focus: oklch(0.76 0.16 245);
-  --blue-accent: oklch(0.78 0.16 235);
-  --blue-accent-soft: oklch(0.72 0.13 235 / 42%);
+  --surface-border-strong: oklch(0.78 0.07 176 / 28%);
+  --surface-focus: oklch(0.78 0.1 180);
+  --blue-accent: var(--accent-bright);
+  --blue-accent-soft: var(--accent-soft);
   --shadow-xs: inset 0 1px 0 oklch(0.98 0.012 235 / 7%);
   --shadow-sm: 0 4px 8px oklch(0.02 0.018 255 / 14%);
   --shadow-card:
@@ -280,8 +319,34 @@
   --shadow-panel:
     inset 0 1px 0 oklch(0.98 0.012 235 / 10%),
     0 12px 14px oklch(0.015 0.018 255 / 42%);
-  --glow-accent: 0 0 22px oklch(0.58 0.16 245 / 22%);
-  --glow-focus: 0 0 0 3px oklch(0.74 0.16 245 / 35%);
+  --glow-accent: 0 0 22px oklch(0.72 0.1 174 / 18%);
+  --glow-focus: 0 0 0 3px oklch(0.78 0.1 180 / 32%);
+  --liquid-surface-tint: oklch(0.135 0.008 230 / 64%);
+  --liquid-panel-tint: oklch(0.105 0.008 230 / 78%);
+  --liquid-readable-tint: oklch(0.083 0.006 235 / 97%);
+  --liquid-control-tint: oklch(0.16 0.009 215 / 66%);
+  --liquid-solid-surface: oklch(0.105 0.007 230);
+  --liquid-solid-panel: oklch(0.075 0.006 235);
+  --liquid-border: oklch(0.92 0.006 210 / 14%);
+  --liquid-border-strong: oklch(0.78 0.07 175 / 24%);
+  --liquid-highlight: oklch(1 0 0 / 11%);
+  --liquid-highlight-soft: oklch(0.96 0.014 180 / 8%);
+  --liquid-specular: oklch(0.9 0.05 168 / 16%);
+  --liquid-shadow-soft:
+    inset 0 1px 0 oklch(1 0 0 / 9%),
+    inset 0 -1px 0 oklch(0.72 0.08 180 / 4%),
+    0 12px 26px oklch(0.015 0.01 235 / 25%);
+  --liquid-shadow-panel:
+    inset 0 1px 0 oklch(1 0 0 / 12%),
+    inset 0 -1px 0 oklch(0.72 0.08 180 / 5%),
+    0 18px 42px oklch(0.012 0.01 235 / 42%);
+  --liquid-shadow-float:
+    inset 0 1px 0 oklch(1 0 0 / 14%),
+    0 18px 54px oklch(0.01 0.01 235 / 56%),
+    0 0 34px oklch(0.72 0.08 174 / 7%);
+  --liquid-saturate: 156%;
+  --liquid-reduced-bg: oklch(0.082 0.006 235);
+  --liquid-reduced-border: oklch(0.34 0.018 220);
 }
 
 @layer base {

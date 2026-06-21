@@ -5,8 +5,12 @@
     border-color: var(--glass-border);
     background: linear-gradient(
       145deg,
-      color-mix(in oklch, var(--surface-raised) 78%, var(--accent) 10%),
-      color-mix(in oklch, var(--surface-base) 86%, black 10%)
+      color-mix(
+        in oklch,
+        var(--surface-primary, var(--surface-card)) 78%,
+        var(--accent) 10%
+      ),
+      color-mix(in oklch, var(--surface-secondary, var(--bg)) 86%, black 10%)
     );
     box-shadow:
       inset 0 1px 0 oklch(0.98 0.012 235 / 12%),
@@ -67,7 +71,7 @@
         color-mix(in oklch, var(--accent) 10%, transparent),
         transparent 46%
       ),
-      color-mix(in oklch, var(--surface-base) 74%, transparent);
+      color-mix(in oklch, var(--surface-secondary, var(--bg)) 74%, transparent);
   }
 
   .agent-source-card {
@@ -78,7 +82,7 @@
         color-mix(in oklch, var(--accent) 7%, transparent),
         transparent 46%
       ),
-      color-mix(in oklch, var(--surface-base) 74%, transparent);
+      color-mix(in oklch, var(--surface-secondary, var(--bg)) 74%, transparent);
   }
 
   .agent-source-card:hover {
@@ -89,7 +93,11 @@
         color-mix(in oklch, var(--accent) 11%, transparent),
         transparent 54%
       ),
-      color-mix(in oklch, var(--surface-raised) 70%, transparent);
+      color-mix(
+        in oklch,
+        var(--surface-primary, var(--surface-card)) 70%,
+        transparent
+      );
   }
 
   .agent-source-icon {
@@ -99,11 +107,136 @@
   }
 
   .agent-source-card:focus-within {
-    outline: 2px solid var(--focus-ring);
+    outline: 2px solid var(--focus-ring, var(--surface-focus));
     outline-offset: 2px;
   }
 
   .agent-source-card .line-clamp-1 {
     max-height: 1.25rem;
+  }
+
+  /* FLG-03 agent layering: compact pill, readable panel, opaque sources. */
+  body .agent-liquid-launcher {
+    position: fixed;
+    overflow: hidden;
+    min-width: 2.9rem;
+    border-color: var(--liquid-border);
+    background:
+      radial-gradient(circle at 22% 10%, var(--liquid-specular), transparent 34%),
+      linear-gradient(180deg, var(--liquid-panel-tint), var(--liquid-control-tint));
+    color: var(--fg);
+    box-shadow: var(--liquid-shadow-float);
+  }
+
+  body .agent-liquid-launcher::before {
+    content: "";
+    position: absolute;
+    inset: 1px 1.5rem auto 1.5rem;
+    height: 1px;
+    background: var(--liquid-highlight);
+    pointer-events: none;
+  }
+
+  body .agent-liquid-launcher .agent-launcher-orb {
+    border-color: var(--liquid-border-strong);
+    background:
+      radial-gradient(circle at 35% 22%, var(--liquid-highlight), transparent 44%),
+      color-mix(in oklch, var(--accent) 12%, var(--liquid-solid-panel));
+    color: var(--fg);
+  }
+
+  body .agent-liquid-panel {
+    position: relative;
+    border-color: var(--liquid-border);
+    border-radius: clamp(1rem, 2vw, 1.35rem);
+    background:
+      radial-gradient(circle at 20% 0%, var(--liquid-specular), transparent 26%),
+      linear-gradient(180deg, oklch(0.1 0.012 242 / 96%), oklch(0.055 0.01 242 / 97%));
+    box-shadow: var(--liquid-shadow-float);
+  }
+
+  body .agent-liquid-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(145deg, var(--liquid-highlight-soft), transparent 36%);
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  body .agent-liquid-panel > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  body .agent-liquid-panel header,
+  body .agent-liquid-panel form,
+  body .agent-liquid-panel .border-b,
+  body .agent-liquid-panel .border-t {
+    border-color: var(--liquid-border);
+  }
+
+  body .agent-liquid-panel article > div {
+    border-color: color-mix(in oklch, var(--liquid-border) 78%, transparent);
+    background: color-mix(in oklch, var(--liquid-solid-panel) 78%, transparent);
+  }
+
+  body .agent-liquid-panel textarea,
+  body .agent-liquid-panel input {
+    background: transparent;
+    color: var(--fg);
+  }
+
+  body .agent-trust-boundary {
+    background:
+      linear-gradient(90deg, var(--liquid-highlight-soft), transparent 42%),
+      color-mix(in oklch, var(--liquid-solid-panel) 72%, transparent);
+  }
+
+  body .agent-source-card {
+    border-color: color-mix(in oklch, var(--liquid-border-strong) 72%, transparent);
+    background:
+      linear-gradient(145deg, var(--liquid-highlight-soft), transparent 36%),
+      oklch(0.068 0.01 242 / 97%);
+    color: var(--fg);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  body .agent-source-card:hover {
+    border-color: var(--liquid-border-strong);
+    background:
+      linear-gradient(145deg, var(--liquid-highlight-soft), transparent 42%),
+      oklch(0.078 0.012 242 / 98%);
+  }
+
+  body .agent-source-card .text-slate-500,
+  body .agent-source-card .text-slate-600 {
+    color: color-mix(in oklch, var(--fg-muted) 88%, white 12%);
+  }
+
+  body .agent-source-icon {
+    border-color: var(--liquid-border);
+    background: color-mix(in oklch, var(--accent) 12%, var(--liquid-solid-panel));
+    color: var(--accent-bright);
+  }
+
+  @media (max-width: 640px) {
+    body .agent-liquid-panel {
+      border-radius: 1rem;
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    body .agent-liquid-launcher,
+    body .agent-liquid-panel,
+    body .agent-source-card,
+    body .agent-trust-boundary {
+      background: var(--liquid-reduced-bg) !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
   }
 }

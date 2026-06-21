@@ -58,7 +58,7 @@ export default function Login() {
 
       <main className="login-access-shell container relative z-10 px-4 sm:px-6">
         <section
-          className="login-access-card"
+          className="login-access-card open-group"
           aria-labelledby="owner-access-title"
         >
           <div className="login-access-copy">
@@ -89,7 +89,7 @@ export default function Login() {
             </div>
           </div>
 
-          <Surface className="login-panel login-access-form">
+          <Surface className="login-panel login-access-form" variant="popover">
             <SectionHeader
               icon={<KeyRound className="h-4 w-4" />}
               title={t("login.panelTitle")}

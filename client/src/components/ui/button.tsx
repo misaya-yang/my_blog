@@ -5,22 +5,22 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius)] text-sm font-[650] leading-none transition-[background,border-color,color,box-shadow,transform] duration-[var(--dur-fast)] ease-[var(--ease-standard)] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/35 focus-visible:ring-[3px] active:translate-y-px aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius)] border border-transparent text-sm font-[650] leading-none transition-[background,border-color,color,box-shadow,transform] duration-[var(--dur-fast)] ease-[var(--ease-standard)] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/35 focus-visible:ring-[3px] active:translate-y-px aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
         default:
-          "border border-transparent bg-primary text-primary-foreground shadow-[var(--shadow-xs)] hover:bg-[var(--primary-hover)]",
+          "bg-primary text-primary-foreground shadow-[var(--shadow-xs)] hover:bg-[var(--primary-hover)]",
         destructive:
-          "border border-transparent bg-destructive text-white shadow-[var(--shadow-xs)] hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
+          "bg-destructive text-white shadow-[var(--shadow-xs)] hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
         outline:
-          "border border-border bg-transparent text-foreground shadow-[var(--shadow-xs)] hover:border-[color:var(--border-strong)] hover:bg-[var(--surface-inline)]",
+          "bg-transparent text-foreground hover:border-[color:var(--border-strong)] hover:bg-[var(--surface-inline)]",
         secondary:
-          "border border-[color:var(--border-faint)] bg-[var(--surface-card-strong)] text-foreground shadow-[var(--shadow-xs)] hover:border-[color:var(--border-strong)] hover:bg-[var(--surface-inline)]",
+          "bg-[var(--surface-card-strong)] text-foreground shadow-[var(--shadow-xs)] hover:border-[color:var(--border-strong)] hover:bg-[var(--surface-inline)]",
         ghost:
           "text-muted-foreground hover:bg-[var(--surface-inline)] hover:text-foreground",
         glass:
-          "border border-[color:var(--glass-border)] bg-[image:var(--glass-bg)] text-foreground shadow-[var(--shadow-xs)] hover:border-[color:var(--glass-border-strong)] hover:bg-[var(--surface-card-strong)]",
+          "glass-control text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {

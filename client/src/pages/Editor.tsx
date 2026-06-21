@@ -796,7 +796,7 @@ export default function Editor() {
       >
         <SpaceBackdrop subtle />
         {/* 顶部工具栏 */}
-        <header className="owner-toolbar relative z-10 flex h-14 shrink-0 items-center justify-between border-b px-4">
+        <header className="owner-toolbar owner-editor-topbar glass-dock relative z-10 flex h-14 shrink-0 items-center justify-between px-4">
           <div className="flex items-center gap-4">
             <RouterLink href="/">
               <Button
@@ -891,7 +891,7 @@ export default function Editor() {
                   <Settings className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent className="w-[400px] border-primary/15 bg-slate-950 text-slate-100 sm:w-[540px]">
+              <SheetContent className="owner-editor-settings-sheet w-[400px] border-primary/15 bg-slate-950 text-slate-100 sm:w-[540px]">
                 <SheetHeader>
                   <SheetTitle>{t("editor.settingsTitle")}</SheetTitle>
                   <SheetDescription>
@@ -1114,7 +1114,7 @@ export default function Editor() {
         </header>
 
         {/* 格式工具栏 */}
-        <div className="owner-toolbar relative z-10 flex h-12 shrink-0 items-center gap-1 overflow-x-auto border-b px-4">
+        <div className="owner-toolbar owner-editor-formatbar glass-dock relative z-10 flex h-12 shrink-0 items-center gap-1 overflow-x-auto px-4">
           <ToolbarButton
             onClick={() => insertBlock("# ", t("editor.placeholder.heading"))}
             tooltip={t("editor.toolbar.heading1")}
@@ -1238,7 +1238,7 @@ export default function Editor() {
 
         {/* 主编辑区域 */}
         <div className="owner-writer-workbench relative z-10 flex flex-1 overflow-hidden">
-          <aside className="owner-editor-pane hidden w-64 shrink-0 border-r p-4 xl:block">
+          <aside className="owner-editor-pane owner-editor-snippet-rail hidden w-64 shrink-0 p-4 xl:block">
             <div className="mb-4">
               <p className="text-sm font-semibold text-white">
                 {t("editor.snippetsTitle")}
@@ -1342,7 +1342,7 @@ export default function Editor() {
 
         {/* 链接对话框 */}
         <Dialog open={showLinkDialog} onOpenChange={setShowLinkDialog}>
-          <DialogContent className="border-primary/15 bg-slate-950 text-slate-100">
+          <DialogContent className="owner-editor-dialog border-primary/15 bg-slate-950 text-slate-100">
             <DialogHeader>
               <DialogTitle>{t("editor.linkDialogTitle")}</DialogTitle>
               <DialogDescription>
@@ -1381,7 +1381,7 @@ export default function Editor() {
 
         {/* 图片对话框 */}
         <Dialog open={showImageDialog} onOpenChange={setShowImageDialog}>
-          <DialogContent className="border-primary/15 bg-slate-950 text-slate-100">
+          <DialogContent className="owner-editor-dialog border-primary/15 bg-slate-950 text-slate-100">
             <DialogHeader>
               <DialogTitle>{t("editor.imageDialogTitle")}</DialogTitle>
               <DialogDescription>

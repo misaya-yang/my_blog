@@ -168,7 +168,7 @@ function FeaturedNote({
 }) {
   return (
     <section
-      className="home-featured-note article-card"
+      className="home-featured-note article-card open-group"
       aria-label={t("home.latestNote")}
     >
       <div className="home-featured-note-head">
@@ -213,7 +213,7 @@ function FeaturedNote({
           </Link>
         </div>
       ) : (
-        <div className="article-empty-state">
+        <div className="article-empty-state state-surface liquid-surface">
           <h3>{t("home.noArticles")}</h3>
           <p>{t("home.noArticlesRecovery")}</p>
         </div>
@@ -230,7 +230,9 @@ function TrackPanel({
   t: (key: string, vars?: Record<string, string | number>) => string;
 }) {
   return (
-    <section className={`home-track-panel home-track-panel-${model.track}`}>
+    <section
+      className={`home-track-panel home-track-panel-${model.track} open-group`}
+    >
       <div className="home-track-panel-head">
         <span>{model.label}</span>
         <strong>{model.meta}</strong>
@@ -267,7 +269,9 @@ function TrackPanel({
                 </Link>
               ))
             ) : (
-              <div className="home-track-empty">{t("home.emptyTrack")}</div>
+              <div className="home-track-empty state-surface liquid-surface">
+                {t("home.emptyTrack")}
+              </div>
             )}
           </div>
         </div>
@@ -284,7 +288,10 @@ function StartHerePath({
   t: (key: string, vars?: Record<string, string | number>) => string;
 }) {
   return (
-    <nav className="home-start-path" aria-label={t("home.startHere")}>
+    <nav
+      className="home-start-path glass-dock"
+      aria-label={t("home.startHere")}
+    >
       <div className="home-start-path-copy">
         <Route className="h-4 w-4 text-sky-200" aria-hidden="true" />
         <div>
@@ -413,7 +420,7 @@ export default function Home() {
       <main className="relative z-10">
         <section className="home-index-spread container px-4 py-8 sm:px-6 lg:py-10">
           <div className="home-index-grid">
-            <section className="home-intro-rail">
+            <section className="home-intro-rail open-group">
               <p className="home-index-kicker">{t("home.kicker")}</p>
               <h1 className="home-title text-white">
                 {renderHeroTitle(language)}
@@ -424,7 +431,7 @@ export default function Home() {
 
               <form
                 onSubmit={submitSearch}
-                className="home-index-search home-search-dock"
+                className="home-index-search home-search-dock glass-dock"
               >
                 <label className="sr-only" htmlFor="home-search-query">
                   {t("home.searchPlaceholder")}
@@ -472,7 +479,7 @@ export default function Home() {
 
         <section
           id="research-index"
-          className="home-more-notes container px-4 pb-16 sm:px-6"
+          className="home-more-notes open-group hairline-list container px-4 pb-16 sm:px-6"
         >
           <div className="home-more-notes-head">
             <div>
@@ -510,7 +517,7 @@ export default function Home() {
               ))}
             </div>
           ) : (
-            <div className="article-empty-state">
+            <div className="article-empty-state state-surface liquid-surface">
               <h3>{t("home.noArticles")}</h3>
               <p>{t("home.noArticlesRecovery")}</p>
               <div>

@@ -6,7 +6,7 @@ Flow Matching 最容易被讲成“比 Diffusion 更快的新训练目标”。�
 
 > 当前点处在生成轨迹的哪个阶段，下一步应该往哪个方向走？
 
-这个视角把很多看似分散的路线放到同一张图里：Continuous Normalizing Flow、Probability Flow ODE、Diffusion、Rectified Flow、Optimal Transport、Stochastic Interpolants，甚至离散数据和几何空间上的生成模型。Flow Matching 不只是一个 loss，而是一种重新组织生成建模问题的语言。
+这个视角把很多看似分散的路线统一到同一套连续时间和分布运输框架里：Continuous Normalizing Flow、Probability Flow ODE、Diffusion、Rectified Flow、Optimal Transport、Stochastic Interpolants，甚至离散数据和几何空间上的生成模型。Flow Matching 不只是一个 loss，而是一种重新组织生成建模问题的语言。
 
 ## 1. 从去噪到运输
 

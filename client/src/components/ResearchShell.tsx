@@ -160,7 +160,7 @@ export function SiteHeader({
   );
 
   return (
-    <header className="site-header">
+    <header className="site-header liquid-nav glass-dock">
       <div className="container flex h-[68px] items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-3">
           {backHref ? (
@@ -229,7 +229,7 @@ export function SiteHeader({
           />
           <button
             type="button"
-            className="nav-ink px-3"
+            className="nav-ink px-3 glass-control"
             onClick={toggleLanguage}
           >
             {language === "en" ? t("nav.switchToZh") : t("nav.switchToEn")}
@@ -238,7 +238,7 @@ export function SiteHeader({
             <Button
               variant="outline"
               size="sm"
-              className="glass-button hidden gap-2 sm:inline-flex"
+              className="glass-button glass-control hidden gap-2 sm:inline-flex"
               onClick={logout}
             >
               <UserRound className="h-4 w-4" />
@@ -254,13 +254,13 @@ export function SiteHeader({
                 type="button"
                 variant="outline"
                 size="icon"
-                className="glass-button lg:hidden"
+                className="glass-button glass-control lg:hidden"
                 aria-label={t("nav.menu")}
               >
                 <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="site-mobile-sheet w-[20rem] p-0">
+            <SheetContent className="site-mobile-sheet glass-popover w-[20rem] p-0">
               <SheetHeader className="site-mobile-sheet-header p-5">
                 <SheetTitle className="site-mobile-sheet-title flex items-center gap-3">
                   <BrandMark />
@@ -287,7 +287,7 @@ export function SiteHeader({
                 {canToggleTheme ? (
                   <button
                     type="button"
-                    className="nav-ink h-11 justify-start gap-2"
+                    className="nav-ink glass-control h-11 justify-start gap-2"
                     onClick={toggleTheme}
                     aria-pressed={theme === "dark"}
                   >
@@ -297,7 +297,7 @@ export function SiteHeader({
                 ) : null}
                 <button
                   type="button"
-                  className="nav-ink h-11 justify-start"
+                  className="nav-ink glass-control h-11 justify-start"
                   onClick={toggleLanguage}
                 >
                   {language === "en"
@@ -308,7 +308,7 @@ export function SiteHeader({
                   <SheetClose asChild>
                     <button
                       type="button"
-                      className="nav-ink h-11 justify-start gap-2"
+                      className="nav-ink glass-control h-11 justify-start gap-2"
                       onClick={logout}
                     >
                       <UserRound className="h-4 w-4" />
@@ -397,17 +397,24 @@ export function Surface({
   as: Component = "section",
   className,
   density = "normal",
+  variant = "open",
   children,
 }: {
   as?: "section" | "article" | "aside" | "div";
   className?: string;
   density?: "normal" | "compact";
+  variant?: "open" | "floating" | "popover" | "data" | "reading";
   children: React.ReactNode;
 }) {
   return (
     <Component
       className={cn(
         "research-surface",
+        variant === "open" && "surface-open open-group",
+        variant === "floating" && "glass-dock",
+        variant === "popover" && "glass-popover",
+        variant === "data" && "solid-data",
+        variant === "reading" && "solid-reading",
         density === "compact" && "research-surface-compact",
         className
       )}

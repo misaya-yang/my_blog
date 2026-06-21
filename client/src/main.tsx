@@ -11,6 +11,7 @@ import "./styles/public-components.css";
 import "./styles/visual-refresh.css";
 import "./styles/agent-surfaces.css";
 import "./styles/owner-tools.css";
+import "./styles/liquid-materials.css";
 import { initAnalytics } from "./lib/analytics";
 
 const queryClient = new QueryClient();

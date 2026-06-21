@@ -19,6 +19,10 @@ const post: TranslationDict = {
   },
   "post.codeCopied": { en: "Code copied", zh: "代码已复制" },
   "post.copyCode": { en: "Copy code", zh: "复制代码" },
+  "post.scrollableTable": {
+    en: "Scrollable article table",
+    zh: "可横向滚动的文章表格",
+  },
   "post.edit": { en: "Edit", zh: "编辑" },
   "post.editSoon": { en: "Edit feature coming soon", zh: "编辑功能即将上线" },
   "post.unpublished": { en: "Unpublished", zh: "未发布" },

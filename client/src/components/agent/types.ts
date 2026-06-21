@@ -6,7 +6,18 @@ export type ChatMessage = {
   relatedQuestions?: string[];
   traceEntries?: AgentTraceEntry[];
   streaming?: boolean;
+  state?: ChatMessageState;
+  recoveryMessage?: string;
+  recoveryPrompt?: string;
+  quotaTier?: string;
 };
+
+export type ChatMessageState =
+  | "cancelled"
+  | "failed"
+  | "no_source"
+  | "quota_blocked"
+  | "timeout";
 
 export type AgentTraceEntry = {
   stage: AgentTraceStage;

@@ -21,8 +21,8 @@ import {
   History,
   Loader2,
   LogIn,
-  MessageCircle,
   Paperclip,
+  RotateCcw,
   Send,
   ShieldCheck,
   X,
@@ -50,7 +50,11 @@ import {
   getSourceHref,
   normalizeSourceText,
 } from "./sourceCardLinks";
-import { toChatMessage, upsertTraceEntry } from "./messageState";
+import {
+  markAssistantMessageRecoverable,
+  toChatMessage,
+  upsertTraceEntry,
+} from "./messageState";
 import {
   isAbortError,
   isTimeoutError,
@@ -60,6 +64,7 @@ import {
 import type {
   AgentTraceEntry,
   ChatMessage,
+  ChatMessageState,
   ConversationItem,
   QuotaInfo,
   SourceCard,
@@ -135,7 +140,9 @@ export function BlogAgentRoot() {
   );
   const sendMessage = trpc.agent.sendMessage.useMutation();
   const addContext = trpc.agent.addContext.useMutation();
+  const visitorLogin = trpc.auth.visitorLogin.useMutation();
   const identityKey = getAgentSessionKey(session);
+  const pendingVisitorRetryPromptRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (bootstrap.data?.quota) setQuota(bootstrap.data.quota);
@@ -150,19 +157,27 @@ export function BlogAgentRoot() {
 
     previousIdentityKeyRef.current = identityKey;
     streamAbortRef.current?.abort();
-    setDraft("");
+    const pendingVisitorRetryPrompt = pendingVisitorRetryPromptRef.current;
+    pendingVisitorRetryPromptRef.current = null;
+
+    setDraft(pendingVisitorRetryPrompt ?? "");
     setMessages([]);
     setConversationId(undefined);
     setSelectedConversationId(undefined);
-    setNotice(null);
+    setNotice(
+      pendingVisitorRetryPrompt ? t("agent.quota.visitorReady") : null
+    );
     setContextDraft("");
     setContextOpen(false);
     setAttachedContextCount(0);
     setHistoryOpen(false);
     setStreaming(false);
     setQuota(null);
+    if (pendingVisitorRetryPrompt) {
+      setComposerFocusToken(token => token + 1);
+    }
     void utils.agent.listConversations.invalidate();
-  }, [identityKey, utils.agent.listConversations]);
+  }, [identityKey, t, utils.agent.listConversations]);
 
   useEffect(() => {
     if (!conversationDetail.data) return;
@@ -233,7 +248,13 @@ export function BlogAgentRoot() {
 
   async function handleSubmit(message: string) {
     const trimmed = message.trim();
-    if (!trimmed || sendMessage.isPending || streaming || conversationSwitching)
+    if (
+      !trimmed ||
+      sendMessage.isPending ||
+      streaming ||
+      conversationSwitching ||
+      bootstrap.isError
+    )
       return;
 
     const timestamp = Date.now();
@@ -296,32 +317,28 @@ export function BlogAgentRoot() {
           setQuota(response.quota);
 
           if (response.status === "blocked") {
-            setMessages(current =>
-              current.filter(
-                item =>
-                  item.id !== userMessage.id && item.id !== assistantMessageId
-              )
-            );
             setDraft(trimmed);
-            setNotice(getQuotaBlockedNotice(response.quota.tier, t));
+            setMessages(current =>
+              markAssistantMessageRecoverable(current, assistantMessageId, {
+                content: getQuotaBlockedNotice(response.quota.tier, t),
+                state: "quota_blocked",
+                recoveryPrompt: trimmed,
+                quotaTier: response.quota.tier,
+              })
+            );
             return;
           }
 
           if (response.status === "failed") {
             const failureNotice = getAgentFailureNotice(response.errorCode, t);
             setDraft(trimmed);
-            setNotice(failureNotice);
             setMessages(current =>
-              current.map(item =>
-                item.id === assistantMessageId
-                  ? {
-                      ...item,
-                      id: response.messageId,
-                      content: failureNotice,
-                      streaming: false,
-                    }
-                  : item
-              )
+              markAssistantMessageRecoverable(current, assistantMessageId, {
+                messageId: response.messageId,
+                content: failureNotice,
+                state: getAgentFailureState(response.errorCode),
+                recoveryPrompt: trimmed,
+              })
             );
             return;
           }
@@ -338,6 +355,7 @@ export function BlogAgentRoot() {
                     sourceCards: response.sourceCards,
                     relatedQuestions: response.relatedQuestions,
                     streaming: false,
+                    state: getCompletedMessageState(response),
                   }
                 : item
             )
@@ -345,21 +363,15 @@ export function BlogAgentRoot() {
         },
       });
     } catch (error) {
-      setMessages(current =>
-        current.filter(
-          item => item.id !== userMessage.id && item.id !== assistantMessageId
-        )
-      );
       setDraft(trimmed);
-      if (isTimeoutError(error)) {
-        setNotice(t("agent.error.timeout"));
-      } else {
-        setNotice(
-          isAbortError(error)
-            ? t("agent.error.cancelled")
-            : t("agent.error.send")
-        );
-      }
+      const failure = getClientStreamFailure(error, t);
+      setMessages(current =>
+        markAssistantMessageRecoverable(current, assistantMessageId, {
+          content: failure.content,
+          state: failure.state,
+          recoveryPrompt: trimmed,
+        })
+      );
     } finally {
       if (streamAbortRef.current === controller) {
         streamAbortRef.current = null;
@@ -370,6 +382,25 @@ export function BlogAgentRoot() {
 
   function handleCancelStreaming() {
     streamAbortRef.current?.abort();
+  }
+
+  async function handleContinueAsVisitor(recoveryPrompt?: string) {
+    const prompt = recoveryPrompt?.trim() || draft.trim();
+    pendingVisitorRetryPromptRef.current = prompt || null;
+
+    try {
+      await visitorLogin.mutateAsync({ nickname: "Reader" });
+      await utils.auth.session.invalidate();
+      await utils.agent.bootstrap.invalidate();
+      setNotice(t("agent.quota.visitorReady"));
+      if (prompt) {
+        setDraft(prompt);
+        setComposerFocusToken(token => token + 1);
+      }
+    } catch {
+      pendingVisitorRetryPromptRef.current = null;
+      setNotice(t("agent.quota.visitorError"));
+    }
   }
 
   function closeAgent() {
@@ -510,6 +541,7 @@ export function BlogAgentRoot() {
             panelRef={panelRef}
             draftInputRef={draftInputRef}
             bootstrapping={bootstrap.isLoading}
+            bootstrapRetrying={bootstrap.isFetching}
             bootstrapError={bootstrap.isError}
             currentScope={currentScope}
             draft={draft}
@@ -532,7 +564,9 @@ export function BlogAgentRoot() {
             welcomeTitle={welcomeCopy.title}
             welcomeBody={welcomeCopy.body}
             sending={sendMessage.isPending || streaming}
+            visitorLoading={visitorLogin.isPending}
             onClose={closeAgent}
+            onRetryBootstrap={() => void bootstrap.refetch()}
             onPanelKeyDown={handlePanelKeyDown}
             onDraftChange={setDraft}
             onContextDraftChange={setContextDraft}
@@ -549,6 +583,7 @@ export function BlogAgentRoot() {
             onPrompt={handleSubmit}
             onSubmit={handleSubmit}
             onCancel={handleCancelStreaming}
+            onContinueAsVisitor={handleContinueAsVisitor}
             messageEndRef={messageEndRef}
           />
           <input
@@ -637,6 +672,7 @@ export function AgentPanel({
   panelRef,
   draftInputRef,
   bootstrapping,
+  bootstrapRetrying,
   bootstrapError,
   currentScope,
   draft,
@@ -657,7 +693,9 @@ export function AgentPanel({
   welcomeTitle,
   welcomeBody,
   sending,
+  visitorLoading,
   onClose,
+  onRetryBootstrap,
   onPanelKeyDown,
   onDraftChange,
   onContextDraftChange,
@@ -669,6 +707,7 @@ export function AgentPanel({
   onPrompt,
   onSubmit,
   onCancel,
+  onContinueAsVisitor,
   messageEndRef,
 }: {
   isMobile: boolean;
@@ -677,6 +716,7 @@ export function AgentPanel({
   panelRef: RefObject<HTMLElement | null>;
   draftInputRef: RefObject<HTMLTextAreaElement | null>;
   bootstrapping: boolean;
+  bootstrapRetrying: boolean;
   bootstrapError: boolean;
   currentScope: AgentScope;
   draft: string;
@@ -702,7 +742,9 @@ export function AgentPanel({
   welcomeTitle: string;
   welcomeBody: string;
   sending: boolean;
+  visitorLoading: boolean;
   onClose: () => void;
+  onRetryBootstrap: () => void;
   onPanelKeyDown: (event: ReactKeyboardEvent<HTMLElement>) => void;
   onDraftChange: (value: string) => void;
   onContextDraftChange: (value: string) => void;
@@ -714,13 +756,14 @@ export function AgentPanel({
   onPrompt: (message: string) => void;
   onSubmit: (message: string) => void;
   onCancel: () => void;
+  onContinueAsVisitor: (recoveryPrompt?: string) => void;
   messageEndRef: RefObject<HTMLDivElement | null>;
 }) {
   const { t } = useLanguage();
   const hasStreamingAssistant = messages.some(
     message => message.role === "assistant" && message.streaming
   );
-  const inputDisabled = bootstrapping || conversationSwitching;
+  const inputDisabled = bootstrapping || bootstrapError || conversationSwitching;
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -824,11 +867,14 @@ export function AgentPanel({
           </div>
         )}
 
-        {bootstrapError && (
-          <AgentNotice tone="error" message={t("agent.error.bootstrap")} />
+        {!bootstrapping && bootstrapError && (
+          <AgentBootstrapUnavailable
+            retrying={bootstrapRetrying}
+            onRetry={onRetryBootstrap}
+          />
         )}
 
-        {!bootstrapping && messages.length === 0 && (
+        {!bootstrapping && !bootstrapError && messages.length === 0 && (
           <div className="flex min-h-full flex-col justify-start gap-4 py-2">
             <div>
               <div className="mb-3 grid h-11 w-11 place-items-center rounded-md border border-slate-700 bg-slate-950/55 text-slate-300">
@@ -914,6 +960,15 @@ export function AgentPanel({
                         onPrompt={onPrompt}
                       />
                     )}
+                  {message.role === "assistant" && message.state && (
+                    <AgentMessageRecovery
+                      message={message}
+                      disabled={sending || inputDisabled}
+                      visitorLoading={visitorLoading}
+                      onRetry={onPrompt}
+                      onContinueAsVisitor={onContinueAsVisitor}
+                    />
+                  )}
                 </div>
               </article>
             ))}
@@ -1136,20 +1191,23 @@ function AgentTrustBoundary({
 export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
   const { t } = useLanguage();
   const [location, navigate] = useLocation();
+  const [expanded, setExpanded] = useState(false);
   const currentPath = normalizePathWithoutHash(location);
+  const visibleSources = getVisibleSourceCards(sources, expanded);
 
   return (
     <div className="agent-sources mt-3 border-t border-slate-800/80 pt-3">
       <div className="mb-2 flex items-center justify-between gap-2 text-xs font-semibold text-slate-500">
         <span>{t("agent.sources.title")}</span>
         <span className="text-slate-600">
-          {t("agent.sources.count", {
-            count: Math.min(sources.length, 3),
+          {t("agent.sources.countDetailed", {
+            shown: visibleSources.length,
+            total: sources.length,
           })}
         </span>
       </div>
       <div className="grid gap-2">
-        {sources.slice(0, 3).map(source => {
+        {visibleSources.map(source => {
           const title = source.postTitle || t("agent.sources.site");
           const hasBlogLink =
             source.sourceType !== "user_context" && Boolean(source.postSlug);
@@ -1230,8 +1288,26 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
           );
         })}
       </div>
+      {sources.length > 3 && (
+        <button
+          type="button"
+          aria-expanded={expanded}
+          onClick={() => setExpanded(value => !value)}
+          className="mt-2 inline-flex min-h-9 items-center gap-1.5 rounded-md border border-slate-700 bg-white/[0.025] px-2.5 py-1.5 text-xs font-medium text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 hover:text-slate-100"
+        >
+          {expanded
+            ? t("agent.sources.showLess")
+            : t("agent.sources.showAll", {
+                count: sources.length - visibleSources.length,
+              })}
+        </button>
+      )}
     </div>
   );
+}
+
+export function getVisibleSourceCards<T>(sources: T[], expanded: boolean) {
+  return expanded ? sources : sources.slice(0, 3);
 }
 
 function handleSourceLinkClick(
@@ -1611,7 +1687,8 @@ function shouldShowQuotaCallout(quota: { remaining: number; tier: string }) {
 }
 
 export function isBlogAgentHiddenRoute(path: string) {
-  return /^\/(write|manage|login)(\/|$)/.test(path);
+  const pathname = path.split(/[?#]/, 1)[0] || "/";
+  return /^\/(write|manage|login)(\/|$)/.test(pathname);
 }
 
 function AgentNotice({
@@ -1636,6 +1713,116 @@ function AgentNotice({
   );
 }
 
+function AgentBootstrapUnavailable({
+  retrying,
+  onRetry,
+}: {
+  retrying: boolean;
+  onRetry: () => void;
+}) {
+  const { t } = useLanguage();
+
+  return (
+    <div className="grid min-h-full place-items-center py-8">
+      <div className="w-full rounded-md border border-red-300/25 bg-red-950/20 p-4 text-sm leading-6 text-red-100">
+        <div className="mb-3 flex items-start gap-2.5">
+          <AlertCircle className="mt-1 h-4 w-4 shrink-0" />
+          <div>
+            <p className="font-semibold">{t("agent.bootstrap.unavailable")}</p>
+            <p className="mt-1 text-red-100/75">{t("agent.error.bootstrap")}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          disabled={retrying}
+          onClick={onRetry}
+          className="inline-flex min-h-10 items-center gap-2 rounded-md border border-red-200/25 bg-red-100/10 px-3 py-2 text-xs font-semibold text-red-50 transition hover:bg-red-100/15 disabled:opacity-60"
+        >
+          {retrying ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <RotateCcw className="h-3.5 w-3.5" />
+          )}
+          {t("agent.bootstrap.retry")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function AgentMessageRecovery({
+  message,
+  disabled,
+  visitorLoading,
+  onRetry,
+  onContinueAsVisitor,
+}: {
+  message: ChatMessage;
+  disabled: boolean;
+  visitorLoading: boolean;
+  onRetry: (message: string) => void;
+  onContinueAsVisitor: (recoveryPrompt?: string) => void;
+}) {
+  const { t } = useLanguage();
+  const state = message.state;
+  if (!state) return null;
+
+  const canRetry =
+    Boolean(message.recoveryPrompt) &&
+    (state === "cancelled" || state === "failed" || state === "timeout");
+  const canUseVisitor =
+    state === "quota_blocked" && message.quotaTier === "anonymous";
+
+  return (
+    <div className="not-prose mt-3 rounded-md border border-slate-700 bg-slate-950/45 px-3 py-2 text-xs leading-5 text-slate-300">
+      {message.recoveryMessage && (
+        <p className="font-medium text-slate-200">{message.recoveryMessage}</p>
+      )}
+      <p className={message.recoveryMessage ? "mt-1 text-slate-400" : ""}>
+        {t(getRecoveryMessageKey(state))}
+      </p>
+      {(canRetry || canUseVisitor) && (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {canRetry && (
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => onRetry(message.recoveryPrompt ?? "")}
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-slate-600 bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-slate-950 transition hover:bg-white disabled:opacity-60"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              {t("agent.input.retry")}
+            </button>
+          )}
+          {canUseVisitor && (
+            <button
+              type="button"
+              disabled={visitorLoading}
+              onClick={() => onContinueAsVisitor(message.recoveryPrompt)}
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-slate-600 bg-white/[0.025] px-2.5 py-1.5 text-xs font-semibold text-slate-200 transition hover:bg-slate-900 disabled:opacity-60"
+            >
+              {visitorLoading ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <LogIn className="h-3.5 w-3.5" />
+              )}
+              {t("agent.quota.continueAsVisitor")}
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function getRecoveryMessageKey(state: ChatMessageState) {
+  if (state === "cancelled") return "agent.recovery.cancelled";
+  if (state === "timeout") return "agent.recovery.timeout";
+  if (state === "quota_blocked") return "agent.recovery.quota";
+  if (state === "no_source") return "agent.recovery.noSource";
+  return "agent.recovery.failed";
+}
+
 function scopeLabel(scope: AgentScope, t: (key: string) => string) {
   return t(`agent.scope.${scope.type}`);
 }
@@ -1646,10 +1833,44 @@ function getQuotaBlockedNotice(tier: string, t: (key: string) => string) {
     : t("agent.quota.blockedVisitor");
 }
 
+function getClientStreamFailure(
+  error: unknown,
+  t: (key: string) => string
+): { content: string; state: ChatMessageState } {
+  if (isTimeoutError(error)) {
+    return { content: t("agent.error.timeout"), state: "timeout" };
+  }
+  if (isAbortError(error)) {
+    return { content: t("agent.error.cancelled"), state: "cancelled" };
+  }
+  return { content: t("agent.error.send"), state: "failed" };
+}
+
 function getAgentFailureNotice(errorCode: string, t: (key: string) => string) {
+  if (errorCode === "agent_stream_aborted") return t("agent.error.cancelled");
+  if (errorCode === "agent_stream_timeout") return t("agent.error.timeout");
   return errorCode === "model_not_configured"
     ? t("agent.error.modelNotConfigured")
     : t("agent.error.send");
+}
+
+function getAgentFailureState(errorCode: string): ChatMessageState {
+  if (errorCode === "agent_stream_aborted") return "cancelled";
+  if (errorCode === "agent_stream_timeout") return "timeout";
+  return "failed";
+}
+
+function getCompletedMessageState(response: {
+  answer: { refusalReason?: string };
+  sourceCards: SourceCard[];
+}): ChatMessageState | undefined {
+  if (
+    response.sourceCards.length === 0 &&
+    response.answer.refusalReason === "no_public_source"
+  ) {
+    return "no_source";
+  }
+  return undefined;
 }
 
 function getAgentSessionKey(session: ReturnType<typeof useAuth>["session"]) {

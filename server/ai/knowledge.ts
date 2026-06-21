@@ -500,6 +500,7 @@ function splitMarkdownSections(markdown: string) {
   const sections: Array<{ heading: string | null; content: string }> = [];
   let heading: string | null = null;
   let buffer: string[] = [];
+  let fence: { marker: "`" | "~"; length: number } | null = null;
 
   const flush = () => {
     const content = buffer.join("\n").trim();
@@ -508,10 +509,23 @@ function splitMarkdownSections(markdown: string) {
   };
 
   for (const line of lines) {
-    const match = /^(#{1,4})\s+(.+)$/.exec(line.trim());
+    const fenceMatch = /^ {0,3}(`{3,}|~{3,})/.exec(line);
+    if (fenceMatch) {
+      const marker = fenceMatch[1][0] as "`" | "~";
+      const length = fenceMatch[1].length;
+      if (!fence) {
+        fence = { marker, length };
+      } else if (fence.marker === marker && length >= fence.length) {
+        fence = null;
+      }
+      buffer.push(line);
+      continue;
+    }
+
+    const match = fence ? null : /^(#{1,4})\s+(.+)$/.exec(line.trim());
     if (match) {
       flush();
-      heading = match[2].trim();
+      heading = match[2].replace(/\s+#+\s*$/, "").trim();
       buffer.push(line);
     } else {
       buffer.push(line);

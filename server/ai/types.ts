@@ -366,11 +366,15 @@ export type AgentStreamEvent =
       type: "final";
       output: AgentSendMessageOutput;
       elapsedMs: number;
+      outcome?: "blocked" | "completed" | "failed" | "no_source";
+      reason?: string;
     }
   | {
       type: "error";
       message: string;
       elapsedMs: number;
+      code?: string;
+      terminal?: boolean;
     };
 
 export type RequestLike = {

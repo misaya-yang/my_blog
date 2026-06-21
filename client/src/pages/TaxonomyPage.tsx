@@ -73,9 +73,8 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
             description={t("common.loadingHint")}
           />
         ) : taxonomy ? (
-          <>
-            <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-              <div className="page-hero">
+          <div className="taxonomy-layout">
+            <section className="taxonomy-hero page-hero">
                 <div className="signal-chip mb-6">
                   {kind === "tag" ? (
                     <Hash className="h-4 w-4" />
@@ -93,9 +92,9 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
                 <p className="mt-5 text-sm text-slate-400">
                   {t("discovery.articlesCount", { count: data.total })}
                 </p>
-              </div>
+              </section>
 
-              <Surface as="aside">
+              <Surface as="aside" className="taxonomy-side-panel" variant="floating">
                 <SectionHeader
                   icon={<Tags className="h-4 w-4" />}
                   title={t("discovery.siblingTags")}
@@ -140,9 +139,8 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
                   </div>
                 )}
               </Surface>
-            </section>
 
-            <Surface className="mt-9">
+            <Surface className="taxonomy-notes-surface hairline-list">
               <SectionHeader
                 title={t("track.articles")}
                 action={
@@ -176,7 +174,7 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
                 />
               )}
             </Surface>
-          </>
+          </div>
         ) : (
           <EmptyState
             icon={<Folder className="h-4 w-4" />}

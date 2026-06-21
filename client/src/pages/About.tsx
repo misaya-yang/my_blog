@@ -25,7 +25,7 @@ export default function About() {
 
       <main className="container relative z-10 px-4 py-10 sm:px-6 md:py-14">
         <section className="about-spread">
-          <article className="about-letter">
+          <article className="about-letter open-group">
             <div className="signal-chip mb-6">
               <BookOpen className="h-4 w-4" />
               {t("about.kicker")}
@@ -35,7 +35,7 @@ export default function About() {
             <p className="about-note">{t("about.focusBody")}</p>
           </article>
 
-          <aside className="about-links-rail">
+          <aside className="about-links-rail glass-dock">
             <div>
               <p>{t("about.linksTitle")}</p>
               <div className="about-link-list">
@@ -60,7 +60,10 @@ export default function About() {
           </aside>
         </section>
 
-        <section className="about-focus-ledger" aria-labelledby="about-focus">
+        <section
+          className="about-focus-ledger open-group hairline-list"
+          aria-labelledby="about-focus"
+        >
           <h2 id="about-focus">{t("about.focusTitle")}</h2>
           <div>
             {[

@@ -72,7 +72,7 @@ export default function Archive() {
           </p>
         </section>
 
-        <Surface className="mt-10">
+        <Surface className="mt-10 hairline-list">
           {isLoading ? (
             <LoadingState
               title={t("common.loadingNotes")}
@@ -97,7 +97,7 @@ export default function Archive() {
                     {group.posts.map((post: any) => (
                       <article
                         key={post.id}
-                        className="grid gap-3 py-4 md:grid-cols-[5.5rem_minmax(0,1fr)_auto]"
+                        className="archive-post-row grid gap-3 py-4 md:grid-cols-[5.5rem_minmax(0,1fr)_auto]"
                       >
                         <time className="text-sm font-medium text-sky-200">
                           {formatDay(post.publishedAt, locale)}
