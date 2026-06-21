@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-06-21T15:14:51.152Z",
+  "generatedAt": "2026-06-21T15:56:30.255Z",
   "git": {
     "branch": "main",
-    "commit": "1af280c",
+    "commit": "1177622",
     "dirty": true
   },
   "commands": [],
@@ -435,7 +435,7 @@
     "html": {
       "file": "index.html",
       "rawBytes": 1974,
-      "gzipBytes": 673
+      "gzipBytes": 672
     },
     "javascript": [
       {
@@ -449,29 +449,29 @@
         "gzipBytes": 90823
       },
       {
-        "file": "assets/index-DCXw6WAp.js",
+        "file": "assets/index-CcOFHyUF.js",
         "rawBytes": 222424,
-        "gzipBytes": 70219
+        "gzipBytes": 70221
       },
       {
-        "file": "assets/MarkdownRenderer-C23rqcVg.js",
+        "file": "assets/MarkdownRenderer-jR4SaV5M.js",
         "rawBytes": 176165,
-        "gzipBytes": 53981
+        "gzipBytes": 53980
       },
       {
-        "file": "assets/knowledgeRefresh-cSaDexWL.js",
+        "file": "assets/knowledgeRefresh-FZD9wR98.js",
         "rawBytes": 50704,
-        "gzipBytes": 18036
+        "gzipBytes": 18035
       },
       {
-        "file": "assets/Manage-CUhvUYmU.js",
+        "file": "assets/Manage-CKJVMOpI.js",
         "rawBytes": 60654,
         "gzipBytes": 15028
       },
       {
-        "file": "assets/Editor-DAxl8kRv.js",
+        "file": "assets/Editor-ZesJiJhe.js",
         "rawBytes": 40733,
-        "gzipBytes": 11415
+        "gzipBytes": 11419
       },
       {
         "file": "assets/index-CczHSCOW.js",
@@ -479,14 +479,14 @@
         "gzipBytes": 9549
       },
       {
-        "file": "assets/PostDetail-BBsphIbi.js",
+        "file": "assets/PostDetail-CdFRN489.js",
         "rawBytes": 32300,
-        "gzipBytes": 9201
+        "gzipBytes": 9196
       },
       {
-        "file": "assets/ManageAgent-BJqBLmWy.js",
+        "file": "assets/ManageAgent-BnKtpoqG.js",
         "rawBytes": 27023,
-        "gzipBytes": 7405
+        "gzipBytes": 7409
       },
       {
         "file": "__manus__/debug-collector.js",
@@ -494,14 +494,14 @@
         "gzipBytes": 5705
       },
       {
-        "file": "assets/Search-xuYQBUe0.js",
-        "rawBytes": 9590,
-        "gzipBytes": 3684
+        "file": "assets/Search-CceYBhvX.js",
+        "rawBytes": 9614,
+        "gzipBytes": 3680
       },
       {
-        "file": "assets/Home-B6KH9ThN.js",
+        "file": "assets/Home-DzX5dJoV.js",
         "rawBytes": 9998,
-        "gzipBytes": 3409
+        "gzipBytes": 3407
       },
       {
         "file": "assets/tracks-CnqXGhEu.js",
@@ -509,14 +509,14 @@
         "gzipBytes": 2055
       },
       {
-        "file": "assets/index-Coy82tv7.js",
+        "file": "assets/index-C0J9YEo5.js",
         "rawBytes": 4386,
         "gzipBytes": 1976
       },
       {
-        "file": "assets/Track-BdqEXbbR.js",
+        "file": "assets/Track-BVNOJiFo.js",
         "rawBytes": 5052,
-        "gzipBytes": 1892
+        "gzipBytes": 1890
       },
       {
         "file": "assets/metadata-THd-82jJ.js",
@@ -524,37 +524,37 @@
         "gzipBytes": 1867
       },
       {
-        "file": "assets/ArticleCard-Cui0bTRE.js",
+        "file": "assets/ArticleCard-BtnEniMt.js",
         "rawBytes": 4134,
         "gzipBytes": 1675
       },
       {
-        "file": "assets/Archive-BarYHUZ5.js",
+        "file": "assets/Archive-Bm6oi1W_.js",
         "rawBytes": 3973,
         "gzipBytes": 1657
       },
       {
-        "file": "assets/TaxonomyPage--gyozL4C.js",
+        "file": "assets/TaxonomyPage-HsjCW72r.js",
         "rawBytes": 3766,
-        "gzipBytes": 1482
+        "gzipBytes": 1480
       },
       {
-        "file": "assets/Login-wEhXxZmv.js",
+        "file": "assets/Login-CIO4lOEp.js",
         "rawBytes": 3659,
-        "gzipBytes": 1467
+        "gzipBytes": 1463
       },
       {
-        "file": "assets/index-Dd4EAzZJ.js",
+        "file": "assets/index-DSSOAzpa.js",
         "rawBytes": 2689,
         "gzipBytes": 1233
       },
       {
-        "file": "assets/NotFound-CgOUnsG_.js",
+        "file": "assets/NotFound-CQTqDYxJ.js",
         "rawBytes": 2245,
         "gzipBytes": 1000
       },
       {
-        "file": "assets/input-DYq8QltD.js",
+        "file": "assets/input-CAyNCbh-.js",
         "rawBytes": 2115,
         "gzipBytes": 901
       },
@@ -564,7 +564,7 @@
         "gzipBytes": 809
       },
       {
-        "file": "assets/About-Bb5ZhHMi.js",
+        "file": "assets/About-Dq6i8J3c.js",
         "rawBytes": 1897,
         "gzipBytes": 774
       },
@@ -579,7 +579,7 @@
         "gzipBytes": 565
       },
       {
-        "file": "assets/mail-D2SI461X.js",
+        "file": "assets/mail-CR6hJJHd.js",
         "rawBytes": 835,
         "gzipBytes": 441
       },
@@ -589,56 +589,56 @@
         "gzipBytes": 430
       },
       {
-        "file": "assets/tags-fUEte2vP.js",
+        "file": "assets/tags-5nxoaXqO.js",
         "rawBytes": 561,
-        "gzipBytes": 388
+        "gzipBytes": 387
       },
       {
-        "file": "assets/calendar-DHO3Dmrq.js",
+        "file": "assets/calendar-54tsMA65.js",
         "rawBytes": 710,
         "gzipBytes": 359
       },
       {
-        "file": "assets/network-CS-83R2Y.js",
+        "file": "assets/network-BTkDikHV.js",
         "rawBytes": 553,
-        "gzipBytes": 338
+        "gzipBytes": 337
       },
       {
-        "file": "assets/git-branch-CCB0R-IX.js",
+        "file": "assets/git-branch-DERXEanI.js",
         "rawBytes": 443,
-        "gzipBytes": 320
+        "gzipBytes": 319
       },
       {
-        "file": "assets/copy-BnDFEUWW.js",
+        "file": "assets/copy-Cd2YxTlf.js",
         "rawBytes": 400,
         "gzipBytes": 309
       },
       {
-        "file": "assets/eye-C68Bp9en.js",
+        "file": "assets/eye-CTk-P2iR.js",
         "rawBytes": 420,
-        "gzipBytes": 303
+        "gzipBytes": 302
       },
       {
-        "file": "assets/route-Ba2tJmFz.js",
+        "file": "assets/route-Dc7iwLRD.js",
         "rawBytes": 418,
-        "gzipBytes": 303
+        "gzipBytes": 301
       },
       {
-        "file": "assets/hash-DKDkS5xJ.js",
+        "file": "assets/hash-BWi-prGq.js",
         "rawBytes": 465,
-        "gzipBytes": 298
+        "gzipBytes": 297
       },
       {
-        "file": "assets/folder-14vWlHTh.js",
+        "file": "assets/folder-Cxahxe8R.js",
         "rawBytes": 397,
-        "gzipBytes": 292
+        "gzipBytes": 291
       }
     ],
     "css": [
       {
-        "file": "assets/index-Bk8VaYlz.css",
-        "rawBytes": 372182,
-        "gzipBytes": 62628
+        "file": "assets/index-1-AY_Qvd.css",
+        "rawBytes": 381592,
+        "gzipBytes": 63482
       },
       {
         "file": "assets/katex-DvXFAOB1.css",

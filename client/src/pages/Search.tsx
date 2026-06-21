@@ -128,7 +128,13 @@ export default function Search() {
   };
 
   return (
-    <div className={query ? "space-page search-page-has-query" : "space-page"}>
+    <div
+      className={
+        query
+          ? "space-page search-page search-page-has-query"
+          : "space-page search-page"
+      }
+    >
       <SpaceBackdrop subtle />
       <SiteHeader active="search" />
 
@@ -183,8 +189,11 @@ export default function Search() {
               isLoading && query
                 ? t("discovery.searchingFor", { query })
                 : query
-                ? t("discovery.resultsFor", { query, count: data?.total ?? 0 })
-                : t("discovery.latestPublic")
+                  ? t("discovery.resultsFor", {
+                      query,
+                      count: data?.total ?? 0,
+                    })
+                  : t("discovery.latestPublic")
             }
             action={
               <Link href="/archive" className="nav-ink">
