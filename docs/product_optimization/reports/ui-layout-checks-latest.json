@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-22T04:46:21.982Z",
+  "generatedAt": "2026-06-22T14:08:09.058Z",
   "baseUrl": "http://localhost:3001",
   "passed": true,
   "results": [
@@ -11,7 +11,7 @@
         "height": 844
       },
       "measurements": {
-        "firstArticleY": 684.734375,
+        "firstArticleY": 735.5625,
         "headerHeight": 72,
         "searchDockY": 394.578125,
         "bodyScrollWidth": 390,
@@ -33,7 +33,7 @@
         "height": 1000
       },
       "measurements": {
-        "firstArticleY": 846.8125,
+        "firstArticleY": 848.71875,
         "headerHeight": 72,
         "searchDockY": 560.5625,
         "bodyScrollWidth": 1440,
@@ -99,8 +99,8 @@
         "height": 844
       },
       "measurements": {
-        "recoveryY": 512.328125,
-        "actionY": 512.328125,
+        "recoveryY": 511.328125,
+        "actionY": 511.328125,
         "clearExists": true,
         "bodyScrollWidth": 390,
         "documentScrollWidth": 390,

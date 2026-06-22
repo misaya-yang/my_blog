@@ -628,9 +628,9 @@ export function AgentLauncher({
       aria-label={label}
       title={tooltip}
       onClick={onClick}
-      className="agent-liquid-launcher fixed bottom-5 right-5 z-[60] inline-flex h-11 items-center gap-2.5 rounded-full border px-3 text-sm font-semibold text-slate-100 transition hover:border-slate-400/35 sm:bottom-6 sm:right-6 sm:px-4"
+      className="agent-liquid-launcher fixed bottom-5 right-5 z-[60] inline-flex h-11 items-center gap-2.5 rounded-[0.82rem] border border-transparent px-3 text-sm font-semibold transition sm:bottom-6 sm:right-6 sm:px-4"
     >
-      <span className="agent-launcher-orb grid h-8 w-8 place-items-center rounded-full text-slate-200">
+      <span className="agent-launcher-orb grid h-8 w-8 place-items-center rounded-[0.62rem]">
         {open ? <X className="h-4 w-4" /> : <BookOpen className="h-4 w-4" />}
       </span>
       <span className="hidden sm:inline">{label}</span>
