@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-21T16:06:58.091Z",
+  "generatedAt": "2026-06-22T04:46:21.982Z",
   "baseUrl": "http://localhost:3001",
   "passed": true,
   "results": [
@@ -11,9 +11,9 @@
         "height": 844
       },
       "measurements": {
-        "firstArticleY": 747.203125,
+        "firstArticleY": 684.734375,
         "headerHeight": 72,
-        "searchDockY": 366.875,
+        "searchDockY": 394.578125,
         "bodyScrollWidth": 390,
         "documentScrollWidth": 390,
         "viewportWidth": 390
@@ -33,9 +33,9 @@
         "height": 1000
       },
       "measurements": {
-        "firstArticleY": 774.3125,
+        "firstArticleY": 846.8125,
         "headerHeight": 72,
-        "searchDockY": 474.546875,
+        "searchDockY": 560.5625,
         "bodyScrollWidth": 1440,
         "documentScrollWidth": 1440,
         "viewportWidth": 1440
@@ -56,7 +56,7 @@
       },
       "measurements": {
         "headerHeight": 72,
-        "proseY": 669.703125,
+        "proseY": 705.703125,
         "entryHeight": 104.09375,
         "bodyScrollWidth": 390,
         "documentScrollWidth": 390,

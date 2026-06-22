@@ -177,10 +177,10 @@
   --liquid-blur-sm: 16px;
   --liquid-blur-md: 24px;
   --liquid-blur-lg: 36px;
-  --liquid-radius-control: 999px;
-  --liquid-radius-surface: 1.15rem;
-  --liquid-radius-panel: 1.45rem;
-  --liquid-radius-reader: 1.05rem;
+  --liquid-radius-control: 0.72rem;
+  --liquid-radius-surface: 0.82rem;
+  --liquid-radius-panel: 1rem;
+  --liquid-radius-reader: 0.9rem;
   --liquid-motion-fast: 180ms;
   --liquid-motion-base: 260ms;
   --liquid-motion-slow: 520ms;

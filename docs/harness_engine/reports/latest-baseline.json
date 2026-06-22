@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-06-21T16:07:24.573Z",
+  "generatedAt": "2026-06-22T04:46:17.760Z",
   "git": {
     "branch": "main",
-    "commit": "41b981e",
+    "commit": "0782090",
     "dirty": true
   },
   "commands": [],
@@ -17,24 +17,24 @@
         "state": "checked",
         "status": 200,
         "ok": true,
-        "contentType": "text/html; charset=utf-8",
+        "contentType": "text/html; charset=UTF-8",
         "metadata": {
           "title": "Misaya Notes",
-          "description": "Misaya Yang's working notes on model mechanisms, long-context behavior, retrieval, agent systems, and reliable applied AI engineering.",
-          "canonical": "http://localhost:3001/",
+          "description": "Misaya Yang",
+          "canonical": "https://misaya.online/",
           "htmlLang": "en",
           "openGraph": {
             "title": "Misaya Notes",
-            "description": "Misaya Yang's working notes on model mechanisms, long-context behavior, retrieval, agent systems, and reliable applied AI engineering.",
-            "image": "http://localhost:3001/og-default.svg",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
             "type": "website",
-            "url": "http://localhost:3001/"
+            "url": "https://misaya.online/"
           },
           "twitter": {
             "card": "summary_large_image",
             "title": "Misaya Notes",
-            "description": "Misaya Yang's working notes on model mechanisms, long-context behavior, retrieval, agent systems, and reliable applied AI engineering.",
-            "image": "http://localhost:3001/og-default.svg"
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
           },
           "jsonLdTypes": []
         },
@@ -407,12 +407,12 @@
       "expectedContent": "public route and article sitemap",
       "requiresSeededDatabase": true,
       "statusResult": {
-        "state": "error",
-        "status": null,
-        "ok": false,
-        "contentType": null,
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "application/xml; charset=utf-8",
         "metadata": null,
-        "error": "The operation was aborted due to timeout"
+        "error": null
       }
     },
     {
@@ -422,12 +422,12 @@
       "expectedContent": "public article feed",
       "requiresSeededDatabase": true,
       "statusResult": {
-        "state": "error",
-        "status": null,
-        "ok": false,
-        "contentType": null,
+        "state": "checked",
+        "status": 200,
+        "ok": true,
+        "contentType": "application/rss+xml; charset=utf-8",
         "metadata": null,
-        "error": "The operation was aborted due to timeout"
+        "error": null
       }
     }
   ],
@@ -435,7 +435,7 @@
     "html": {
       "file": "index.html",
       "rawBytes": 1974,
-      "gzipBytes": 674
+      "gzipBytes": 671
     },
     "javascript": [
       {
@@ -449,29 +449,29 @@
         "gzipBytes": 90823
       },
       {
-        "file": "assets/index-M8lJE9FZ.js",
+        "file": "assets/index-B2i85SEj.js",
         "rawBytes": 222424,
-        "gzipBytes": 70220
+        "gzipBytes": 70227
       },
       {
-        "file": "assets/MarkdownRenderer-BUaA_Fjd.js",
+        "file": "assets/MarkdownRenderer-6shXi6ae.js",
         "rawBytes": 176165,
-        "gzipBytes": 53981
+        "gzipBytes": 53982
       },
       {
-        "file": "assets/knowledgeRefresh-L46AuWXX.js",
+        "file": "assets/knowledgeRefresh-DELNkHx4.js",
         "rawBytes": 50704,
         "gzipBytes": 18037
       },
       {
-        "file": "assets/Manage-DKGfChyk.js",
+        "file": "assets/Manage-umLTgpyh.js",
         "rawBytes": 60654,
         "gzipBytes": 15031
       },
       {
-        "file": "assets/Editor-DzdfLJrp.js",
+        "file": "assets/Editor-CdlAKUmD.js",
         "rawBytes": 40733,
-        "gzipBytes": 11419
+        "gzipBytes": 11416
       },
       {
         "file": "assets/index-CczHSCOW.js",
@@ -479,14 +479,14 @@
         "gzipBytes": 9549
       },
       {
-        "file": "assets/PostDetail-5inemgBC.js",
+        "file": "assets/PostDetail-B2oQWcTb.js",
         "rawBytes": 32300,
-        "gzipBytes": 9199
+        "gzipBytes": 9197
       },
       {
-        "file": "assets/ManageAgent-BsIcQLr3.js",
+        "file": "assets/ManageAgent-CfYdh1_w.js",
         "rawBytes": 27023,
-        "gzipBytes": 7409
+        "gzipBytes": 7408
       },
       {
         "file": "__manus__/debug-collector.js",
@@ -494,14 +494,14 @@
         "gzipBytes": 5705
       },
       {
-        "file": "assets/Search-BKVVqaxJ.js",
+        "file": "assets/Search-CK4N-Oak.js",
         "rawBytes": 9614,
-        "gzipBytes": 3681
+        "gzipBytes": 3683
       },
       {
-        "file": "assets/Home-BKgVZyDx.js",
+        "file": "assets/Home-Bz_KQFhN.js",
         "rawBytes": 9998,
-        "gzipBytes": 3408
+        "gzipBytes": 3411
       },
       {
         "file": "assets/tracks-CnqXGhEu.js",
@@ -509,14 +509,14 @@
         "gzipBytes": 2055
       },
       {
-        "file": "assets/index-umRgcXDp.js",
+        "file": "assets/index-Boaj10jk.js",
         "rawBytes": 4386,
         "gzipBytes": 1977
       },
       {
-        "file": "assets/Track-C_xLSJYj.js",
+        "file": "assets/Track-DF1xHXYj.js",
         "rawBytes": 5052,
-        "gzipBytes": 1890
+        "gzipBytes": 1893
       },
       {
         "file": "assets/metadata-THd-82jJ.js",
@@ -524,39 +524,39 @@
         "gzipBytes": 1867
       },
       {
-        "file": "assets/ArticleCard-Ce5DBvC2.js",
+        "file": "assets/ArticleCard-kIOlZz1J.js",
         "rawBytes": 4134,
-        "gzipBytes": 1675
+        "gzipBytes": 1677
       },
       {
-        "file": "assets/Archive-DQE16uvs.js",
+        "file": "assets/Archive-Hhh0mHL9.js",
         "rawBytes": 3973,
         "gzipBytes": 1657
       },
       {
-        "file": "assets/TaxonomyPage-vCetn-bT.js",
+        "file": "assets/TaxonomyPage-CjI-WpKc.js",
         "rawBytes": 3766,
-        "gzipBytes": 1481
+        "gzipBytes": 1485
       },
       {
-        "file": "assets/Login-ozzd6Y7f.js",
+        "file": "assets/Login-DeuW9Uyq.js",
         "rawBytes": 3659,
         "gzipBytes": 1464
       },
       {
-        "file": "assets/index-DREVTdJj.js",
+        "file": "assets/index-D_qLPIqR.js",
         "rawBytes": 2689,
-        "gzipBytes": 1233
+        "gzipBytes": 1232
       },
       {
-        "file": "assets/NotFound-CLyc3CnZ.js",
+        "file": "assets/NotFound-2TgZWlq9.js",
         "rawBytes": 2245,
-        "gzipBytes": 1001
+        "gzipBytes": 998
       },
       {
-        "file": "assets/input-BEaRKa3W.js",
+        "file": "assets/input-DQlBy7p2.js",
         "rawBytes": 2115,
-        "gzipBytes": 901
+        "gzipBytes": 900
       },
       {
         "file": "assets/sonner-Bx36vPOY.js",
@@ -564,9 +564,9 @@
         "gzipBytes": 809
       },
       {
-        "file": "assets/About-ZGMSPFoG.js",
+        "file": "assets/About-BJREOunr.js",
         "rawBytes": 1897,
-        "gzipBytes": 774
+        "gzipBytes": 773
       },
       {
         "file": "assets/reading-time-ChpY5_2v.js",
@@ -579,9 +579,9 @@
         "gzipBytes": 565
       },
       {
-        "file": "assets/mail-B3VnTwbl.js",
+        "file": "assets/mail-lzRLjR3_.js",
         "rawBytes": 835,
-        "gzipBytes": 440
+        "gzipBytes": 438
       },
       {
         "file": "assets/AgentMarkdown-Du5qF4_C.js",
@@ -589,56 +589,56 @@
         "gzipBytes": 430
       },
       {
-        "file": "assets/tags-CetlTvur.js",
+        "file": "assets/tags-qN3W9iLr.js",
         "rawBytes": 561,
-        "gzipBytes": 386
+        "gzipBytes": 385
       },
       {
-        "file": "assets/calendar-ZZimgXJi.js",
+        "file": "assets/calendar-Jn7XU5WY.js",
         "rawBytes": 710,
-        "gzipBytes": 360
+        "gzipBytes": 357
       },
       {
-        "file": "assets/network-_LJMnnvn.js",
+        "file": "assets/network-DWB8FpBf.js",
         "rawBytes": 553,
-        "gzipBytes": 338
+        "gzipBytes": 336
       },
       {
-        "file": "assets/git-branch-DtREgGnq.js",
+        "file": "assets/git-branch-DVACc8Jm.js",
         "rawBytes": 443,
-        "gzipBytes": 319
+        "gzipBytes": 318
       },
       {
-        "file": "assets/copy-CuSOY_Ol.js",
+        "file": "assets/copy-CarNFU2i.js",
         "rawBytes": 400,
-        "gzipBytes": 308
+        "gzipBytes": 307
       },
       {
-        "file": "assets/eye-5GAdIY8v.js",
-        "rawBytes": 420,
-        "gzipBytes": 302
-      },
-      {
-        "file": "assets/route-DlIywY8N.js",
+        "file": "assets/route-yU3FYGE7.js",
         "rawBytes": 418,
         "gzipBytes": 301
       },
       {
-        "file": "assets/hash-DgUe7c7s.js",
-        "rawBytes": 465,
-        "gzipBytes": 298
+        "file": "assets/eye-mBTG8PyT.js",
+        "rawBytes": 420,
+        "gzipBytes": 300
       },
       {
-        "file": "assets/folder-DE-Jbb4P.js",
+        "file": "assets/hash-CTQ5_wDG.js",
+        "rawBytes": 465,
+        "gzipBytes": 296
+      },
+      {
+        "file": "assets/folder-CoIRW6iD.js",
         "rawBytes": 397,
         "gzipBytes": 291
       }
     ],
     "css": [
       {
-        "file": "assets/index-CWdJvq6y.css",
-        "rawBytes": 381701,
-        "gzipBytes": 63505
+        "file": "assets/index-C8_rp8cr.css",
+        "rawBytes": 395028,
+        "gzipBytes": 65585
       },
       {
         "file": "assets/katex-DvXFAOB1.css",
@@ -671,18 +671,5 @@
     ],
     "note": "Use the Codex Browser plugin for rendered desktop/mobile checks; package script records the required viewport and route set."
   },
-  "knownGaps": [
-    {
-      "id": "missing-sitemap",
-      "severity": "warning",
-      "summary": "No sitemap.xml is present.",
-      "evidence": "client/public/sitemap.xml not found"
-    },
-    {
-      "id": "missing-rss",
-      "severity": "warning",
-      "summary": "No RSS feed is present.",
-      "evidence": "client/public/rss.xml not found"
-    }
-  ]
+  "knownGaps": []
 }
