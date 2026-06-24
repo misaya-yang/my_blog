@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-06-22T14:08:07.964Z",
+  "generatedAt": "2026-06-24T14:45:29.796Z",
   "git": {
     "branch": "main",
-    "commit": "f5cb1fb",
+    "commit": "a920aa4",
     "dirty": true
   },
   "commands": [],
@@ -435,7 +435,7 @@
     "html": {
       "file": "index.html",
       "rawBytes": 1974,
-      "gzipBytes": 672
+      "gzipBytes": 670
     },
     "javascript": [
       {
@@ -449,29 +449,29 @@
         "gzipBytes": 90823
       },
       {
-        "file": "assets/index-eo1-K_6n.js",
-        "rawBytes": 222397,
-        "gzipBytes": 70217
+        "file": "assets/index-DNioIYUj.js",
+        "rawBytes": 222354,
+        "gzipBytes": 70127
       },
       {
-        "file": "assets/MarkdownRenderer-DIQj31op.js",
+        "file": "assets/MarkdownRenderer-B9hk_P9e.js",
         "rawBytes": 176165,
-        "gzipBytes": 53980
+        "gzipBytes": 53979
       },
       {
-        "file": "assets/knowledgeRefresh-CTyKWFoL.js",
+        "file": "assets/knowledgeRefresh-HAbkBbN8.js",
         "rawBytes": 50704,
-        "gzipBytes": 18036
+        "gzipBytes": 18034
       },
       {
-        "file": "assets/Manage-zINxcOny.js",
+        "file": "assets/Manage-CBVIREP4.js",
         "rawBytes": 60654,
-        "gzipBytes": 15030
+        "gzipBytes": 15029
       },
       {
-        "file": "assets/Editor-uaFn9TW4.js",
+        "file": "assets/Editor-Bdja1ZeC.js",
         "rawBytes": 40733,
-        "gzipBytes": 11416
+        "gzipBytes": 11417
       },
       {
         "file": "assets/index-CczHSCOW.js",
@@ -479,14 +479,14 @@
         "gzipBytes": 9549
       },
       {
-        "file": "assets/PostDetail-DArwQgRN.js",
+        "file": "assets/PostDetail-TIx9lEsI.js",
         "rawBytes": 32300,
-        "gzipBytes": 9203
+        "gzipBytes": 9201
       },
       {
-        "file": "assets/ManageAgent-Ddy6PZj_.js",
+        "file": "assets/ManageAgent-Duf5fb-Z.js",
         "rawBytes": 27023,
-        "gzipBytes": 7406
+        "gzipBytes": 7404
       },
       {
         "file": "__manus__/debug-collector.js",
@@ -494,14 +494,14 @@
         "gzipBytes": 5705
       },
       {
-        "file": "assets/Search-JxlMe6uG.js",
+        "file": "assets/Search-Dd1BgdCt.js",
         "rawBytes": 9614,
-        "gzipBytes": 3683
+        "gzipBytes": 3681
       },
       {
-        "file": "assets/Home-Dbk0-u3n.js",
+        "file": "assets/Home-CQcvRmCY.js",
         "rawBytes": 9998,
-        "gzipBytes": 3409
+        "gzipBytes": 3406
       },
       {
         "file": "assets/tracks-CnqXGhEu.js",
@@ -509,14 +509,14 @@
         "gzipBytes": 2055
       },
       {
-        "file": "assets/index-B8WpnUQN.js",
+        "file": "assets/index-BRu2dBvv.js",
         "rawBytes": 4386,
         "gzipBytes": 1975
       },
       {
-        "file": "assets/Track-B9ge6Gzu.js",
+        "file": "assets/Track-n6ubIxbp.js",
         "rawBytes": 5052,
-        "gzipBytes": 1891
+        "gzipBytes": 1890
       },
       {
         "file": "assets/metadata-THd-82jJ.js",
@@ -524,39 +524,39 @@
         "gzipBytes": 1867
       },
       {
-        "file": "assets/ArticleCard-DeIe2VV7.js",
+        "file": "assets/Archive-CJkcsIEO.js",
+        "rawBytes": 4100,
+        "gzipBytes": 1690
+      },
+      {
+        "file": "assets/ArticleCard-TVpuGEXo.js",
         "rawBytes": 4134,
-        "gzipBytes": 1674
+        "gzipBytes": 1676
       },
       {
-        "file": "assets/Archive-BHEONyki.js",
-        "rawBytes": 3973,
-        "gzipBytes": 1655
-      },
-      {
-        "file": "assets/TaxonomyPage-C1uFQIb6.js",
+        "file": "assets/TaxonomyPage-D881UyaB.js",
         "rawBytes": 3766,
-        "gzipBytes": 1481
+        "gzipBytes": 1482
       },
       {
-        "file": "assets/Login-CmHLr_P7.js",
+        "file": "assets/Login-ksxhLjRI.js",
         "rawBytes": 3659,
-        "gzipBytes": 1463
+        "gzipBytes": 1465
       },
       {
-        "file": "assets/index-CVOmc2AV.js",
+        "file": "assets/index-DRSElkXi.js",
         "rawBytes": 2689,
-        "gzipBytes": 1231
+        "gzipBytes": 1232
       },
       {
-        "file": "assets/NotFound-CWfuAL4N.js",
+        "file": "assets/NotFound-winrR-NA.js",
         "rawBytes": 2245,
-        "gzipBytes": 998
+        "gzipBytes": 1000
       },
       {
-        "file": "assets/input-DdPaH9hw.js",
+        "file": "assets/input-BAVSwpV2.js",
         "rawBytes": 2115,
-        "gzipBytes": 898
+        "gzipBytes": 900
       },
       {
         "file": "assets/sonner-Bx36vPOY.js",
@@ -564,9 +564,9 @@
         "gzipBytes": 809
       },
       {
-        "file": "assets/About-Pup9C6yq.js",
+        "file": "assets/About-D1XlmyTb.js",
         "rawBytes": 1897,
-        "gzipBytes": 773
+        "gzipBytes": 768
       },
       {
         "file": "assets/reading-time-ChpY5_2v.js",
@@ -579,9 +579,9 @@
         "gzipBytes": 565
       },
       {
-        "file": "assets/mail-COJ7u9_t.js",
+        "file": "assets/mail-CWcyMYXo.js",
         "rawBytes": 835,
-        "gzipBytes": 438
+        "gzipBytes": 440
       },
       {
         "file": "assets/AgentMarkdown-Du5qF4_C.js",
@@ -589,56 +589,56 @@
         "gzipBytes": 430
       },
       {
-        "file": "assets/tags-DjjxluAz.js",
+        "file": "assets/tags-CvVfeyuh.js",
         "rawBytes": 561,
-        "gzipBytes": 385
+        "gzipBytes": 388
       },
       {
-        "file": "assets/calendar-DUP0Fsk6.js",
+        "file": "assets/calendar-B1_7Z9tV.js",
         "rawBytes": 710,
-        "gzipBytes": 357
+        "gzipBytes": 359
       },
       {
-        "file": "assets/network-BU6X0m1A.js",
+        "file": "assets/network-fHaCHQuo.js",
         "rawBytes": 553,
-        "gzipBytes": 336
+        "gzipBytes": 337
       },
       {
-        "file": "assets/git-branch-CGrjAJsr.js",
+        "file": "assets/git-branch-Cv6iL_oK.js",
         "rawBytes": 443,
-        "gzipBytes": 318
+        "gzipBytes": 319
       },
       {
-        "file": "assets/copy-CXGFztPS.js",
+        "file": "assets/copy-B_GUGLLU.js",
         "rawBytes": 400,
-        "gzipBytes": 307
+        "gzipBytes": 309
       },
       {
-        "file": "assets/eye-D0RguJXf.js",
+        "file": "assets/eye-CppJF00w.js",
         "rawBytes": 420,
-        "gzipBytes": 300
+        "gzipBytes": 302
       },
       {
-        "file": "assets/route-CLnci9Qs.js",
+        "file": "assets/route-uezlnhSf.js",
         "rawBytes": 418,
-        "gzipBytes": 300
+        "gzipBytes": 302
       },
       {
-        "file": "assets/hash-CixvjiOt.js",
+        "file": "assets/hash-BLsRzo7s.js",
         "rawBytes": 465,
-        "gzipBytes": 296
+        "gzipBytes": 297
       },
       {
-        "file": "assets/folder-C0tUSWDF.js",
+        "file": "assets/folder-S9ZeSp69.js",
         "rawBytes": 397,
-        "gzipBytes": 290
+        "gzipBytes": 291
       }
     ],
     "css": [
       {
-        "file": "assets/index-CH5V2hVT.css",
-        "rawBytes": 406213,
-        "gzipBytes": 66572
+        "file": "assets/index-CccIs8m9.css",
+        "rawBytes": 423532,
+        "gzipBytes": 68125
       },
       {
         "file": "assets/katex-DvXFAOB1.css",

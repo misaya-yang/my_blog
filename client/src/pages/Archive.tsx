@@ -58,7 +58,7 @@ export default function Archive() {
       <SpaceBackdrop subtle />
       <SiteHeader active="archive" />
 
-      <main className="container relative z-10 px-4 py-10 sm:px-6 md:py-14">
+      <main className="container archive-page relative z-10 px-4 py-10 sm:px-6 md:py-14">
         <section className="page-hero">
           <div className="signal-chip mb-6">
             <CalendarDays className="h-4 w-4" />
@@ -72,28 +72,32 @@ export default function Archive() {
           </p>
         </section>
 
-        <Surface className="mt-10 hairline-list">
+        <Surface className="archive-timeline mt-10 hairline-list">
           {isLoading ? (
             <LoadingState
               title={t("common.loadingNotes")}
               description={t("common.loadingHint")}
             />
           ) : groups?.length ? (
-            <div className="grid gap-8">
+            <div className="archive-timeline-groups grid gap-8">
               {groups.map((group: any) => (
-                <section key={group.key} className="grid gap-3">
+                <section
+                  key={group.key}
+                  className="archive-month-group grid gap-3"
+                >
                   <SectionHeader
+                    className="archive-month-header"
                     title={formatMonth(group.year, group.month, locale)}
                     action={
                       <span className="text-sm text-slate-400">
-                      {t("discovery.articlesCount", {
-                        count: group.posts.length,
-                      })}
+                        {t("discovery.articlesCount", {
+                          count: group.posts.length,
+                        })}
                       </span>
                     }
                   />
 
-                  <div className="divide-y divide-sky-200/10">
+                  <div className="archive-month-posts divide-y divide-sky-200/10">
                     {group.posts.map((post: any) => (
                       <article
                         key={post.id}

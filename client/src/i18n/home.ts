@@ -266,8 +266,8 @@ const home: TranslationDict = {
   },
   "about.focusTitle": { en: "Current focus", zh: "当前关注" },
   "about.focusBody": {
-    en: "This blog is maintained as a working research notebook. The goal is to keep ideas precise enough to implement, inspect, and revisit later.",
-    zh: "这个博客更像持续维护的研究笔记：每个想法都尽量写到可以实现、检查，并在之后重新审视的程度。",
+    en: "Research notes on AI system mechanics, engineering constraints, and evaluation loops, written for implementation and later review.",
+    zh: "记录 AI 系统机制、工程边界与评测循环，重点放在可实现和可复查的细节。",
   },
   "about.focus1": {
     en: "Long-context mechanisms and positional encoding",
