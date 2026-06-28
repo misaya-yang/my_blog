@@ -151,6 +151,20 @@ describe("Agent source cards", () => {
     ]);
   });
 
+  it("restores persisted assistant latency from source metadata", () => {
+    const message = toChatMessage({
+      id: "assistant-1",
+      role: "assistant",
+      content: "Grounded answer.",
+      sourceJson: {
+        sourceCards: [{ ...source, anchorId: "3-exact-invariants" }],
+        latencyMs: 8420,
+      },
+    });
+
+    expect(message.finalElapsedMs).toBe(8420);
+  });
+
   it("preserves failed user turns and partial assistant content", () => {
     const messages = [
       {
@@ -214,13 +228,13 @@ describe("Agent source cards", () => {
     });
   });
 
-  it("collapses source cards to three and expands to all", () => {
+  it("collapses source cards to two and expands to all", () => {
     const sources = Array.from({ length: 5 }, (_, index) => ({
       ...source,
       sourceId: `source-${index}`,
     }));
 
-    expect(getVisibleSourceCards(sources, false)).toHaveLength(3);
+    expect(getVisibleSourceCards(sources, false)).toHaveLength(2);
     expect(getVisibleSourceCards(sources, true)).toHaveLength(5);
   });
 });

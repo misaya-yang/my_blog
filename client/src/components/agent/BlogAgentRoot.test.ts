@@ -7,7 +7,15 @@ import {
   inferClientScope,
   openBlogAgentWithPrompt,
 } from "./routeContext";
-import { inferAnswerMode, isBlogAgentHiddenRoute } from "./BlogAgentRoot";
+import {
+  clampAgentFrameState,
+  getAgentDisplayElapsedMs,
+  getDefaultAgentFrameState,
+  getTraceStageDurations,
+  inferAnswerMode,
+  isAgentNearBottom,
+  isBlogAgentHiddenRoute,
+} from "./BlogAgentRoot";
 import {
   AGENT_STREAM_TIMEOUT_MS,
   isAbortError,
@@ -122,6 +130,79 @@ describe("BlogAgent route context", () => {
         buildRouteContext("/post/agent-loop", "en")
       )
     ).toBe("deep");
+  });
+
+  it("prefers final elapsed time over cumulative trace status values", () => {
+    expect(
+      getAgentDisplayElapsedMs({
+        id: "assistant-1",
+        role: "assistant",
+        content: "Done",
+        finalElapsedMs: 8420,
+        traceEntries: [
+          { stage: "retrieval", elapsedMs: 1200 },
+          { stage: "saving", elapsedMs: 2300 },
+        ],
+      })
+    ).toBe(8420);
+  });
+
+  it("derives clamped stage durations from cumulative trace events", () => {
+    expect(
+      getTraceStageDurations([
+        { stage: "understanding", elapsedMs: 100 },
+        { stage: "retrieval", elapsedMs: 450 },
+        { stage: "saving", elapsedMs: 425 },
+        { stage: "answer", elapsedMs: 700 },
+      ]).map(entry => ({
+        stage: entry.stage,
+        durationMs: entry.durationMs,
+      }))
+    ).toEqual([
+      { stage: "understanding", durationMs: 100 },
+      { stage: "saving", durationMs: 325 },
+      { stage: "retrieval", durationMs: 25 },
+      { stage: "answer", durationMs: 250 },
+    ]);
+  });
+
+  it("keeps the desktop frame inside the viewport", () => {
+    expect(
+      clampAgentFrameState(
+        { width: 900, height: 900, x: -200, y: 1200 },
+        { width: 800, height: 700 }
+      )
+    ).toMatchObject({
+      width: 768,
+      height: 668,
+      x: 16,
+      y: 16,
+    });
+
+    expect(getDefaultAgentFrameState({ width: 1440, height: 900 })).toEqual({
+      width: 520,
+      height: 680,
+      x: 896,
+      y: 124,
+      preset: "comfortable",
+    });
+  });
+
+  it("only follows streaming output when the reader is near the bottom", () => {
+    expect(
+      isAgentNearBottom({
+        scrollHeight: 1200,
+        scrollTop: 680,
+        clientHeight: 440,
+      } as HTMLElement)
+    ).toBe(true);
+    expect(
+      isAgentNearBottom({
+        scrollHeight: 1200,
+        scrollTop: 320,
+        clientHeight: 440,
+      } as HTMLElement)
+    ).toBe(false);
   });
 
   it("dispatches an open event with an article prompt", () => {

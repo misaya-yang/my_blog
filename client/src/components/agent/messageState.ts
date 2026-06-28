@@ -26,6 +26,7 @@ export function markAssistantMessageRecoverable(
     recoveryPrompt: string;
     messageId?: string;
     quotaTier?: string;
+    finalElapsedMs?: number;
   }
 ) {
   return messages.map(message =>
@@ -39,6 +40,7 @@ export function markAssistantMessageRecoverable(
           recoveryMessage: input.content,
           recoveryPrompt: input.recoveryPrompt,
           quotaTier: input.quotaTier,
+          finalElapsedMs: input.finalElapsedMs ?? message.finalElapsedMs,
         }
       : message
   );
@@ -56,7 +58,17 @@ export function toChatMessage(message: {
     content: message.content,
     sourceCards: extractSourceCards(message.sourceJson),
     relatedQuestions: extractRelatedQuestions(message.sourceJson),
+    finalElapsedMs: extractLatencyMs(message.sourceJson),
   };
+}
+
+function extractLatencyMs(
+  sourceJson: Record<string, unknown> | null | undefined
+) {
+  const latencyMs = sourceJson?.latencyMs;
+  return typeof latencyMs === "number" && Number.isFinite(latencyMs)
+    ? latencyMs
+    : undefined;
 }
 
 function extractRelatedQuestions(

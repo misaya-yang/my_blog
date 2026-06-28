@@ -161,6 +161,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
       sourceJson: {
         sourceCards,
         relatedQuestions: input.answer.relatedQuestions,
+        latencyMs: input.latencyMs,
       },
       usageJson: {
         inputTokens: 0,
@@ -594,6 +595,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           currentPageContextInjected,
         });
         const answer = modelResult.answer;
+        const latencyMs = now().getTime() - startedAt.getTime();
         const assistantMessage = await deps.conversationStore.addMessage({
           conversationId: conversation.id,
           role: "assistant",
@@ -602,6 +604,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           sourceJson: {
             sourceCards: answer.sourceCards,
             relatedQuestions: answer.relatedQuestions,
+            latencyMs,
           },
           usageJson: {
             inputTokens: modelResult.inputTokens ?? 0,
@@ -616,7 +619,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           status: "completed",
           inputTokens: modelResult.inputTokens,
           outputTokens: modelResult.outputTokens,
-          latencyMs: now().getTime() - startedAt.getTime(),
+          latencyMs,
           retrievedChunkIds: [
             ...sources.map(source => source.sourceId),
             ...contextSources.map(source => source.sourceId),
@@ -644,6 +647,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
             currentPageContextInjected,
             errorCode,
           });
+          const latencyMs = now().getTime() - startedAt.getTime();
           const assistantMessage = await deps.conversationStore.addMessage({
             conversationId: conversation.id,
             role: "assistant",
@@ -653,6 +657,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
               sourceCards: answer.sourceCards,
               relatedQuestions: answer.relatedQuestions,
               fallbackReason: errorCode,
+              latencyMs,
             },
             usageJson: {
               inputTokens: 0,
@@ -667,7 +672,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
             status: "completed",
             inputTokens: 0,
             outputTokens: 0,
-            latencyMs: now().getTime() - startedAt.getTime(),
+            latencyMs,
             retrievedChunkIds: [
               ...sources.map(source => source.sourceId),
               ...contextSources.map(source => source.sourceId),
@@ -981,6 +986,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         throwIfAborted(options.signal);
         emit({ type: "status", stage: "saving", elapsedMs: elapsedMs() });
         const answer = modelResult.answer;
+        const answerLatencyMs = elapsedMs();
         const assistantMessage = await deps.conversationStore.addMessage({
           conversationId: conversation.id,
           role: "assistant",
@@ -989,6 +995,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           sourceJson: {
             sourceCards: answer.sourceCards,
             relatedQuestions: answer.relatedQuestions,
+            latencyMs: answerLatencyMs,
           },
           usageJson: {
             inputTokens: modelResult.inputTokens ?? 0,
@@ -1050,6 +1057,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           });
           emit({ type: "status", stage: "saving", elapsedMs: elapsedMs() });
 
+          const answerLatencyMs = elapsedMs();
           const assistantMessage = await deps.conversationStore.addMessage({
             conversationId: conversation.id,
             role: "assistant",
@@ -1059,6 +1067,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
               sourceCards: answer.sourceCards,
               relatedQuestions: answer.relatedQuestions,
               fallbackReason: errorCode,
+              latencyMs: answerLatencyMs,
             },
             usageJson: {
               inputTokens: 0,

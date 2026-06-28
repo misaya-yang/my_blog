@@ -5,6 +5,7 @@ export type ChatMessage = {
   sourceCards?: SourceCard[];
   relatedQuestions?: string[];
   traceEntries?: AgentTraceEntry[];
+  finalElapsedMs?: number;
   streaming?: boolean;
   state?: ChatMessageState;
   recoveryMessage?: string;

@@ -21,6 +21,30 @@ const agent: TranslationDict = {
     en: "Close assistant",
     zh: "关闭助手",
   },
+  "agent.frame.drag": {
+    en: "Move",
+    zh: "移动",
+  },
+  "agent.frame.resize": {
+    en: "Resize assistant",
+    zh: "调整助手大小",
+  },
+  "agent.frame.reset": {
+    en: "Reset size and position",
+    zh: "重置尺寸和位置",
+  },
+  "agent.frame.compact": {
+    en: "Compact size",
+    zh: "紧凑尺寸",
+  },
+  "agent.frame.comfortable": {
+    en: "Comfortable size",
+    zh: "舒适尺寸",
+  },
+  "agent.frame.wide": {
+    en: "Wide size",
+    zh: "宽屏尺寸",
+  },
   "agent.history.title": {
     en: "Recent conversations",
     zh: "最近对话",
@@ -60,14 +84,6 @@ const agent: TranslationDict = {
   "agent.scope.post": {
     en: "Current post",
     zh: "当前文章",
-  },
-  "agent.scope.postContextReady": {
-    en: "Current article context connected",
-    zh: "当前文章上下文已接入",
-  },
-  "agent.scope.postScope": {
-    en: "Article scope",
-    zh: "文章范围",
   },
   "agent.scope.category": {
     en: "Category",
@@ -312,6 +328,26 @@ const agent: TranslationDict = {
   "agent.sources.countDetailed": {
     en: "{shown}/{total} shown",
     zh: "已显示 {shown}/{total}",
+  },
+  "agent.sources.summary": {
+    en: "{count} source(s)",
+    zh: "{count} 个来源",
+  },
+  "agent.sources.view": {
+    en: "View sources",
+    zh: "查看来源",
+  },
+  "agent.sources.hide": {
+    en: "Hide sources",
+    zh: "收起来源",
+  },
+  "agent.sources.previewMore": {
+    en: "+{count}",
+    zh: "+{count}",
+  },
+  "agent.sources.details": {
+    en: "Excerpt and match",
+    zh: "摘录与匹配依据",
   },
   "agent.sources.showAll": {
     en: "Show {count} more",

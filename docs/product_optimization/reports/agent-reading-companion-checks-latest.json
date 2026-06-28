@@ -1,0 +1,58 @@
+{
+  "generatedAt": "2026-06-28T03:10:20.311Z",
+  "passed": true,
+  "results": [
+    {
+      "name": "desktop-light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "light",
+      "dragMoved": true,
+      "resizeChanged": true,
+      "metrics": {
+        "theme": "light",
+        "panelRole": "complementary",
+        "sourceListCollapsed": true,
+        "sourceSummaryText": "5 source(s)1. 一个很长但应该被截断的来源标题，用来验证没有横向滚动条2. 一个很长但应该被截断的来源标题，用来验证没有横向滚动条+3View sources",
+        "panelNoHorizontalOverflow": true,
+        "scrollerNoHorizontalOverflow": true,
+        "pageNoHorizontalOverflow": true,
+        "composerVisible": true,
+        "answerVisible": true,
+        "panelWidth": 600,
+        "panelHeight": 730,
+        "topbarHeight": 75,
+        "historyFontSize": "12px",
+        "localStorageFrame": "{\"width\":600,\"height\":730,\"x\":820,\"y\":154}"
+      }
+    },
+    {
+      "name": "mobile-dark",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "dragMoved": null,
+      "resizeChanged": null,
+      "metrics": {
+        "theme": "dark",
+        "panelRole": "dialog",
+        "sourceListCollapsed": true,
+        "sourceSummaryText": "5 source(s)1. 一个很长但应该被截断的来源标题，用来验证没有横向滚动条2. 一个很长但应该被截断的来源标题，用来验证没有横向滚动条+3View sources",
+        "panelNoHorizontalOverflow": true,
+        "scrollerNoHorizontalOverflow": true,
+        "pageNoHorizontalOverflow": true,
+        "composerVisible": true,
+        "answerVisible": true,
+        "panelWidth": 366,
+        "panelHeight": 720,
+        "topbarHeight": 75,
+        "historyFontSize": "0px",
+        "localStorageFrame": "{\"width\":520,\"height\":680,\"x\":880,\"y\":120,\"preset\":\"comfortable\"}"
+      }
+    }
+  ]
+}

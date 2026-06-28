@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-06-24T14:45:32.439Z",
-  "baseUrl": "http://localhost:3001",
+  "generatedAt": "2026-06-28T03:13:33.332Z",
+  "baseUrl": "http://localhost:3000",
   "passed": true,
   "results": [
     {
@@ -56,7 +56,7 @@
       },
       "measurements": {
         "headerHeight": 72,
-        "proseY": 715.859375,
+        "proseY": 673.421875,
         "entryHeight": 106.09375,
         "bodyScrollWidth": 390,
         "documentScrollWidth": 390,
@@ -78,7 +78,7 @@
       },
       "measurements": {
         "headerHeight": 72,
-        "proseY": 540.03125,
+        "proseY": 536.8125,
         "entryHeight": 106.09375,
         "bodyScrollWidth": 1440,
         "documentScrollWidth": 1440,
