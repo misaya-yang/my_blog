@@ -34,7 +34,10 @@ export type AgentRouteContext = {
     | "search"
     | "track"
     | "archive"
-    | "public";
+    | "public"
+    | "owner"
+    | "editor"
+    | "system";
   postSlug?: string;
   postTitle?: string;
   categorySlug?: string;

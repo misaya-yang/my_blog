@@ -1,3 +1,5 @@
+import { classifyProductRoute } from "@shared/route-contract";
+
 export type AgentRouteContext = ReturnType<typeof buildRouteContext>;
 export const BLOG_AGENT_OPEN_EVENT = "blog-agent:open";
 
@@ -13,15 +15,20 @@ export type AgentScope =
   | { type: "track"; value?: string };
 
 export function buildRouteContext(path: string, locale: "en" | "zh") {
-  const pathname = getRoutePathname(path);
-  const postSlug = matchPath(pathname, /^\/post\/([^/?#]+)/);
-  const tagSlug = matchPath(pathname, /^\/tags\/([^/?#]+)/);
-  const categorySlug = matchPath(pathname, /^\/categories\/([^/?#]+)/);
+  const route = classifyProductRoute(path);
+  const pathname = route.pathname;
 
-  if (postSlug) return { path, routeType: "post" as const, postSlug, locale };
-  if (tagSlug) return { path, routeType: "tag" as const, tagSlug, locale };
-  if (categorySlug)
-    return { path, routeType: "category" as const, categorySlug, locale };
+  if (route.kind === "reader" && route.slug)
+    return { path, routeType: "post" as const, postSlug: route.slug, locale };
+  if (pathname.startsWith("/tags/") && route.slug)
+    return { path, routeType: "tag" as const, tagSlug: route.slug, locale };
+  if (pathname.startsWith("/categories/") && route.slug)
+    return {
+      path,
+      routeType: "category" as const,
+      categorySlug: route.slug,
+      locale,
+    };
   if (pathname === "/algorithms")
     return {
       path,
@@ -41,6 +48,12 @@ export function buildRouteContext(path: string, locale: "en" | "zh") {
   if (pathname === "/search")
     return { path, routeType: "search" as const, locale };
   if (pathname === "/") return { path, routeType: "home" as const, locale };
+  if (route.kind === "owner")
+    return { path, routeType: "owner" as const, locale };
+  if (route.kind === "editor")
+    return { path, routeType: "editor" as const, locale };
+  if (route.kind === "system")
+    return { path, routeType: "system" as const, locale };
   return { path, routeType: "public" as const, locale };
 }
 
@@ -158,13 +171,4 @@ export function openBlogAgentWithPrompt(prompt?: string) {
       detail: { prompt },
     })
   );
-}
-
-function matchPath(path: string, pattern: RegExp) {
-  const value = pattern.exec(path)?.[1];
-  return value ? decodeURIComponent(value) : undefined;
-}
-
-function getRoutePathname(path: string) {
-  return path.split(/[?#]/, 1)[0] || "/";
 }

@@ -94,6 +94,24 @@ describe("BlogAgent route context", () => {
     });
   });
 
+  it("does not classify owner, editor, auth, or unknown routes as public Agent context", () => {
+    expect(buildRouteContext("/manage/agent?tab=evals", "en")).toMatchObject({
+      path: "/manage/agent?tab=evals",
+      routeType: "owner",
+      locale: "en",
+    });
+    expect(buildRouteContext("/write/draft-slug", "zh")).toMatchObject({
+      routeType: "editor",
+      locale: "zh",
+    });
+    expect(buildRouteContext("/login", "en")).toMatchObject({
+      routeType: "system",
+    });
+    expect(buildRouteContext("/not-a-real-route", "en")).toMatchObject({
+      routeType: "system",
+    });
+  });
+
   it("returns distinct companion prompt sets by route type", () => {
     const postContext = buildRouteContext(
       "/post/agent-loop-observable-tool-using-agents",
@@ -134,7 +152,7 @@ describe("BlogAgent route context", () => {
     });
   });
 
-  it("hides the public Blog Agent on owner and auth routes only", () => {
+  it("hides the public Blog Agent on owner, editor, auth, and system routes", () => {
     expect(isBlogAgentHiddenRoute("/manage")).toBe(true);
     expect(isBlogAgentHiddenRoute("/manage/agent")).toBe(true);
     expect(isBlogAgentHiddenRoute("/manage?tab=index")).toBe(true);
@@ -142,11 +160,13 @@ describe("BlogAgent route context", () => {
     expect(isBlogAgentHiddenRoute("/write?draft=1")).toBe(true);
     expect(isBlogAgentHiddenRoute("/login")).toBe(true);
     expect(isBlogAgentHiddenRoute("/login?reason=expired")).toBe(true);
+    expect(isBlogAgentHiddenRoute("/404")).toBe(true);
+    expect(isBlogAgentHiddenRoute("/not-a-real-route")).toBe(true);
+    expect(isBlogAgentHiddenRoute("/managed-reading-notes")).toBe(true);
 
     expect(isBlogAgentHiddenRoute("/")).toBe(false);
     expect(isBlogAgentHiddenRoute("/archive")).toBe(false);
     expect(isBlogAgentHiddenRoute("/post/agent-loop")).toBe(false);
-    expect(isBlogAgentHiddenRoute("/managed-reading-notes")).toBe(false);
   });
 
   it("infers answer mode from companion prompt intent", () => {

@@ -12,6 +12,9 @@ export const agentRouteContextInput = z.object({
       "track",
       "archive",
       "public",
+      "owner",
+      "editor",
+      "system",
     ])
     .optional(),
   postSlug: z.string().trim().max(200).optional(),

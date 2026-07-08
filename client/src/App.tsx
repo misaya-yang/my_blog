@@ -6,6 +6,7 @@ import { LanguageProvider, useLanguage } from "./contexts/LanguageContext";
 import { trackPageView } from "@/lib/analytics";
 import { BlogAgentRoot } from "@/components/agent/BlogAgentRoot";
 import { BrandMark, SpaceBackdrop } from "@/components/ResearchShell";
+import { classifyProductRoute } from "@shared/route-contract";
 
 const Home = lazy(() => import("./pages/Home"));
 const Toaster = lazy(() =>
@@ -96,25 +97,7 @@ function AnalyticsRouteTracker() {
 }
 
 function getRouteKind(location: string) {
-  const pathname = location.split(/[?#]/)[0] || "/";
-
-  if (pathname === "/") return "home";
-  if (pathname.startsWith("/post/")) return "reader";
-  if (pathname.startsWith("/write")) return "editor";
-  if (pathname.startsWith("/manage")) return "owner";
-  if (
-    pathname === "/archive" ||
-    pathname === "/search" ||
-    pathname === "/about" ||
-    pathname === "/algorithms" ||
-    pathname === "/applications" ||
-    pathname.startsWith("/tags/") ||
-    pathname.startsWith("/categories/")
-  ) {
-    return "public";
-  }
-
-  return "system";
+  return classifyProductRoute(location).kind;
 }
 
 function RouteEffectController() {

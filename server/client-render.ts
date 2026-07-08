@@ -7,6 +7,10 @@ import {
   type RouteMetadata,
   type SeoPost,
 } from "../shared/metadata.js";
+import {
+  classifyProductRoute,
+  normalizeRoutePathname,
+} from "../shared/route-contract.js";
 import { siteConfig } from "../shared/site.js";
 import { ENV } from "./_core/env.js";
 import * as db from "./db.js";
@@ -63,22 +67,7 @@ type ClientRenderMiddlewareOptions = {
   transformHtml?: (urlPath: string, html: string) => Promise<string>;
 };
 
-const staticClientRoutes = new Set<string>([
-  ...siteConfig.publicStaticRoutes,
-  "/login",
-  "/manage",
-  "/manage/agent",
-  "/write",
-  "/404",
-]);
-
-const slugSegment = "[^/?#]+";
 const DEFAULT_ARTICLE_SNAPSHOT_TIMEOUT_MS = 2500;
-const dynamicKnownRoutePatterns = [
-  new RegExp(`^/tags/${slugSegment}$`),
-  new RegExp(`^/categories/${slugSegment}$`),
-  new RegExp(`^/write/${slugSegment}$`),
-];
 const knownRouteMetadata: Record<string, KnownRouteMetadata> = {
   "/algorithms": {
     title: "AI Algorithms",
@@ -116,18 +105,10 @@ const knownRouteMetadata: Record<string, KnownRouteMetadata> = {
 };
 
 export function classifyClientRoute(urlPath: string): ClientRoute {
-  const pathname = normalizePathname(urlPath);
-  const articleMatch = pathname.match(new RegExp(`^/post/(${slugSegment})$`));
-  if (articleMatch) {
-    return { kind: "article", slug: decodeURIComponent(articleMatch[1]) };
-  }
-
-  if (
-    staticClientRoutes.has(pathname) ||
-    dynamicKnownRoutePatterns.some(pattern => pattern.test(pathname))
-  ) {
-    return { kind: "known" };
-  }
+  const route = classifyProductRoute(urlPath);
+  if (route.kind === "reader" && route.slug)
+    return { kind: "article", slug: route.slug };
+  if (route.known) return { kind: "known" };
 
   return { kind: "unknown" };
 }
@@ -538,9 +519,7 @@ function injectBeforeHeadEnd(html: string, tag: string) {
 }
 
 function normalizePathname(urlPath: string) {
-  const pathname =
-    new URL(urlPath, "http://local").pathname.replace(/\/+$/, "") || "/";
-  return pathname;
+  return normalizeRoutePathname(new URL(urlPath, "http://local").pathname);
 }
 
 function markdownToPlainText(markdown: string) {

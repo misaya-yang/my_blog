@@ -1,3 +1,8 @@
+import {
+  DISALLOWED_ROUTES,
+  PUBLIC_STATIC_ROUTES,
+} from "./route-contract.js";
+
 export const siteConfig = {
   name: "Misaya Notes",
   defaultTitle: "Misaya Notes",
@@ -16,8 +21,8 @@ export const siteConfig = {
   feedTitle: "Misaya Notes",
   feedDescription:
     "Research notes by Misaya Yang on model mechanisms and applied AI systems.",
-  publicStaticRoutes: ["/", "/algorithms", "/applications", "/archive", "/about", "/search"],
-  disallowedRoutes: ["/write", "/manage", "/api/trpc/posts.create", "/api/trpc/posts.update"],
+  publicStaticRoutes: PUBLIC_STATIC_ROUTES,
+  disallowedRoutes: DISALLOWED_ROUTES,
 } as const;
 
 export function applyTitleTemplate(title?: string | null) {

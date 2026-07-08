@@ -1,3 +1,4 @@
+import { canShowPublicBlogAgent } from "@shared/route-contract";
 import type { AgentAnswerMode } from "./streamClient";
 import {
   getCompanionPromptKeys,
@@ -44,8 +45,7 @@ export function inferAnswerMode(
 }
 
 export function isBlogAgentHiddenRoute(path: string) {
-  const pathname = path.split(/[?#]/, 1)[0] || "/";
-  return /^\/(write|manage|login)(\/|$)/.test(pathname);
+  return !canShowPublicBlogAgent(path);
 }
 
 export function getAgentSessionKey(session: AgentSessionIdentity) {
