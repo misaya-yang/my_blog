@@ -1366,7 +1366,7 @@ describe("AI agent harness", () => {
     );
   });
 
-  it("runs retrieval-only evals for admins", async () => {
+  it("marks custom retrieval-only evals as manual review instead of pass", async () => {
     const { service, model } = createHarness();
     const adminCtx = adminContext();
 
@@ -1376,9 +1376,44 @@ describe("AI agent harness", () => {
     });
 
     expect(result.items).toHaveLength(2);
-    expect(result.items[0]).toMatchObject({ passed: true, sourceCount: 1 });
-    expect(result.summary).toMatchObject({ total: 2, passed: 2, failed: 0 });
+    expect(result.items[0]).toMatchObject({
+      status: "manual_review_required",
+      passed: false,
+      sourceCount: 1,
+      manualReviewReason: "source_recall_only",
+    });
+    expect(result.items[0].notes.join(" ")).toContain(
+      "source recall alone cannot prove answer quality"
+    );
+    expect(result.summary).toMatchObject({
+      total: 2,
+      passed: 0,
+      failed: 0,
+      manualReview: 2,
+    });
     expect(model.generate).not.toHaveBeenCalled();
+  });
+
+  it("fails custom retrieval-only evals when no public source is found", async () => {
+    const { service } = createHarness({ retrieve: vi.fn(async () => []) });
+
+    const result = await service.adminRunEvals(adminContext(), {
+      questions: ["Explain an unavailable internal note"],
+      routeContext,
+    });
+
+    expect(result.items[0]).toMatchObject({
+      status: "failed",
+      passed: false,
+      sourceCount: 0,
+      failureReason: "retrieval_failure",
+    });
+    expect(result.summary).toMatchObject({
+      total: 1,
+      passed: 0,
+      failed: 1,
+      manualReview: 0,
+    });
   });
 
   it("runs the default golden eval set with success and refusal cases", async () => {
@@ -1400,6 +1435,7 @@ describe("AI agent harness", () => {
         expect.objectContaining({
           category: "Refusal",
           expectedBehavior: "refusal",
+          status: "passed",
           passed: true,
           sourceCount: 0,
         }),

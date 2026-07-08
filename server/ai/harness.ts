@@ -349,25 +349,41 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           sources.length,
           missingSourceSlugs
         );
-        const passed =
+        const deterministicPass =
           golden.expectedBehavior === "refusal"
             ? sources.length === 0
             : sources.length > 0 && missingSourceSlugs.length === 0;
+        const needsManualReview =
+          deterministicPass &&
+          golden.expectedBehavior === "sources" &&
+          golden.expectedSourceSlugs.length === 0;
+        const status = needsManualReview
+          ? ("manual_review_required" as const)
+          : deterministicPass
+            ? ("passed" as const)
+            : ("failed" as const);
+        const passed = status === "passed";
         items.push({
           question: golden.question,
           expectedBehavior: golden.expectedBehavior,
           category: golden.category,
+          status,
           passed,
           sourceCount: sources.length,
           topSourceTitle: sources[0]?.postTitle ?? null,
           sourceIds: sources.map(source => source.sourceId),
           expectedSourceSlugs: golden.expectedSourceSlugs,
           missingSourceSlugs,
-          failureReason: passed ? undefined : failureReason,
+          failureReason: status === "failed" ? failureReason : undefined,
+          manualReviewReason: needsManualReview
+            ? ("source_recall_only" as const)
+            : undefined,
           notes: [
             ...golden.notes,
-            ...(passed
+            ...(status === "passed"
               ? []
+              : status === "manual_review_required"
+                ? buildEvalManualReviewNotes()
               : buildEvalFailureNotes(
                   golden.expectedBehavior,
                   sources.length,
@@ -377,11 +393,16 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         });
       }
       const passed = items.filter(item => item.passed).length;
+      const manualReview = items.filter(
+        item => item.status === "manual_review_required"
+      ).length;
+      const failed = items.filter(item => item.status === "failed").length;
       return {
         summary: {
           total: items.length,
           passed,
-          failed: items.length - passed,
+          failed,
+          manualReview,
           successCases: items.filter(
             item => item.expectedBehavior === "sources"
           ).length,
@@ -1435,6 +1456,12 @@ function buildEvalFailureNotes(
     ];
   }
   return ["Eval needs manual review."];
+}
+
+function buildEvalManualReviewNotes() {
+  return [
+    "Manual review required: retrieval found public sources, but this eval has no expected source slug, so source recall alone cannot prove answer quality.",
+  ];
 }
 
 function buildArticleIdeaTitle(seed: string) {

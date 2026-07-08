@@ -197,6 +197,7 @@ export type AgentEvalRunOutput = {
     total: number;
     passed: number;
     failed: number;
+    manualReview: number;
     successCases: number;
     refusalCases: number;
     runAt: Date;
@@ -207,6 +208,7 @@ export type AgentEvalRunOutput = {
     question: string;
     expectedBehavior: "sources" | "refusal";
     category: string;
+    status: "passed" | "failed" | "manual_review_required";
     passed: boolean;
     sourceCount: number;
     topSourceTitle: string | null;
@@ -214,6 +216,7 @@ export type AgentEvalRunOutput = {
     expectedSourceSlugs: string[];
     missingSourceSlugs: string[];
     failureReason?: "retrieval_failure" | "wrong_source" | "refusal_boundary";
+    manualReviewReason?: "source_recall_only";
     notes: string[];
   }>;
 };

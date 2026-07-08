@@ -63,12 +63,15 @@ type EvalSummaryData = {
   total: number;
   passed: number;
   failed: number;
+  manualReview?: number;
   successCases: number;
   refusalCases: number;
   runAt: string | Date;
   retrievalStrategy: string;
   modelProvider: string;
 };
+
+type EvalStatus = "passed" | "failed" | "manual_review_required";
 
 type IdeaStatus = "new" | "reviewed" | "planned" | "dismissed";
 
@@ -358,9 +361,9 @@ export default function ManageAgent() {
                     </div>
                     <Badge
                       variant="outline"
-                      className={getEvalBadgeClass(item.passed)}
+                      className={getEvalBadgeClass(resolveEvalStatus(item))}
                     >
-                      {getEvalStatusLabel(item.passed, t)}
+                      {getEvalStatusLabel(resolveEvalStatus(item), t)}
                     </Badge>
                   </div>
                   <p className="mt-1 text-xs text-slate-500">
@@ -849,7 +852,7 @@ function EvalSummary({ summary }: { summary: EvalSummaryData }) {
   const { t } = useLanguage();
 
   return (
-    <div className="mt-4 grid gap-3 md:grid-cols-4">
+    <div className="mt-4 grid gap-3 md:grid-cols-5">
       <MetricCard
         label={t("agentOps.evals.passed")}
         value={`${summary.passed}/${summary.total}`}
@@ -857,6 +860,10 @@ function EvalSummary({ summary }: { summary: EvalSummaryData }) {
       <MetricCard
         label={t("agentOps.evals.failed")}
         value={String(summary.failed)}
+      />
+      <MetricCard
+        label={t("agentOps.evals.manualReview")}
+        value={String(summary.manualReview ?? 0)}
       />
       <MetricCard
         label={t("agentOps.evals.refusals")}
@@ -935,14 +942,25 @@ function splitQuestions(value: string) {
     .filter(Boolean);
 }
 
-function getEvalBadgeClass(passed: boolean) {
-  return passed
-    ? "border-cyan-300/30 text-cyan-200"
-    : "border-amber-300/30 text-amber-200";
+function resolveEvalStatus(item: {
+  status?: EvalStatus;
+  passed: boolean;
+}): EvalStatus {
+  return item.status ?? (item.passed ? "passed" : "failed");
 }
 
-function getEvalStatusLabel(passed: boolean, t: (key: string) => string) {
-  return passed ? t("agentOps.evals.passed") : t("agentOps.evals.failed");
+function getEvalBadgeClass(status: EvalStatus) {
+  if (status === "passed") return "border-cyan-300/30 text-cyan-200";
+  if (status === "manual_review_required")
+    return "border-amber-300/30 text-amber-200";
+  return "border-red-300/30 text-red-200";
+}
+
+function getEvalStatusLabel(status: EvalStatus, t: (key: string) => string) {
+  if (status === "passed") return t("agentOps.evals.passed");
+  if (status === "manual_review_required")
+    return t("agentOps.evals.manualReview");
+  return t("agentOps.evals.failed");
 }
 
 function getExpectedLabel(

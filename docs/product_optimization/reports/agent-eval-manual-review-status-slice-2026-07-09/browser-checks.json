@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-07-08T22:39:34.176Z",
+  "results": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "screenshot": "manage-agent-manual-review-desktop.png",
+      "hasManualReviewSummary": true,
+      "hasManualReviewNote": true,
+      "hasPassedZero": true,
+      "horizontalOverflowPx": 0,
+      "consoleErrors": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "manage-agent-manual-review-mobile.png",
+      "hasManualReviewSummary": true,
+      "hasManualReviewNote": true,
+      "hasPassedZero": true,
+      "horizontalOverflowPx": 0,
+      "consoleErrors": []
+    }
+  ]
+}

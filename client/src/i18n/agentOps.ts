@@ -170,6 +170,10 @@ const agentOps: TranslationDict = {
   "agentOps.evals.run": { en: "Run evals", zh: "运行 Eval" },
   "agentOps.evals.passed": { en: "Passed", zh: "通过" },
   "agentOps.evals.failed": { en: "Needs review", zh: "需检查" },
+  "agentOps.evals.manualReview": {
+    en: "Manual review",
+    zh: "人工复核",
+  },
   "agentOps.evals.refusals": { en: "Refusal cases", zh: "拒答用例" },
   "agentOps.evals.expectedSourceAnswer": {
     en: "Source-backed",

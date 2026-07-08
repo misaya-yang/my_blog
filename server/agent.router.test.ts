@@ -106,6 +106,7 @@ const agentMocks = vi.hoisted(() => ({
       total: 1,
       passed: 1,
       failed: 0,
+      manualReview: 0,
       successCases: 1,
       refusalCases: 0,
       runAt: new Date("2026-05-31T00:00:00.000Z"),
@@ -117,6 +118,7 @@ const agentMocks = vi.hoisted(() => ({
         question: "What is a harness engine?",
         expectedBehavior: "sources",
         category: "Agent Harness Engine",
+        status: "passed",
         passed: true,
         sourceCount: 1,
         topSourceTitle: "Agent Harness Engine",
@@ -393,7 +395,9 @@ describe("agent router", () => {
     expect(quality.radar.summary.failedRuns).toBe(1);
     expect(quality.actionItems[0].target).toBe("traces");
     expect(evals.items[0].passed).toBe(true);
+    expect(evals.items[0].status).toBe("passed");
     expect(evals.summary.passed).toBe(1);
+    expect(evals.summary.manualReview).toBe(0);
     expect(ideas.ideas[0].proposedTitle).toContain("failure modes");
     expect(radar.summary.failedRuns).toBe(1);
     expect(radar.suggestedIdeas[0].status).toBe("new");
