@@ -176,6 +176,11 @@ async function inspectPost(browser: BrowserLike, viewport: Viewport) {
     const feedbackSubmit = feedback?.querySelector<HTMLButtonElement>(
       'button[type="submit"]'
     );
+    const subscription = document.querySelector<HTMLElement>(
+      ".article-subscription-panel"
+    );
+    const subscriptionSubmit =
+      subscription?.querySelector<HTMLButtonElement>('button[type="submit"]');
     return {
       headerHeight: rectHeight(header),
       proseY: rectTop(prose),
@@ -198,6 +203,25 @@ async function inspectPost(browser: BrowserLike, viewport: Viewport) {
       feedbackInputCount: feedback?.querySelectorAll("input").length ?? 0,
       feedbackSubmitExists: Boolean(feedbackSubmit),
       feedbackSubmitDisabled: feedbackSubmit?.disabled ?? null,
+      subscriptionHeight: rectHeight(subscription),
+      subscriptionClientWidth: subscription?.clientWidth ?? null,
+      subscriptionScrollWidth: subscription?.scrollWidth ?? null,
+      subscriptionInputCount:
+        subscription?.querySelectorAll("input").length ?? 0,
+      subscriptionLanguageControl: Boolean(
+        subscription?.querySelector(".subscription-language-control")
+      ),
+      subscriptionDetailToggle: Boolean(
+        subscription?.querySelector(".subscription-details-toggle")
+      ),
+      subscriptionDetailExpanded:
+        subscription
+          ?.querySelector(".subscription-details-toggle")
+          ?.getAttribute("aria-expanded") ?? null,
+      subscriptionSubmitExists: Boolean(subscriptionSubmit),
+      subscriptionRssLink: Boolean(
+        subscription?.querySelector('a[href="/rss.xml"]')
+      ),
       bodyScrollWidth: document.body.scrollWidth,
       documentScrollWidth: document.documentElement.scrollWidth,
       viewportWidth: window.innerWidth,
@@ -246,6 +270,20 @@ async function inspectPost(browser: BrowserLike, viewport: Viewport) {
         (viewport.width < 768 ? 360 : 330),
       feedbackSubmitWaitsForSignal:
         measurements.feedbackSubmitDisabled === true,
+      subscriptionNoHorizontalOverflow:
+        Number(measurements.subscriptionScrollWidth ?? Infinity) <=
+        Number(measurements.subscriptionClientWidth ?? 0) + 1,
+      subscriptionProgressiveDefault:
+        Number(measurements.subscriptionInputCount) === 1 &&
+        measurements.subscriptionLanguageControl === false &&
+        measurements.subscriptionDetailExpanded === "false",
+      subscriptionActionsAvailable:
+        Boolean(measurements.subscriptionDetailToggle) &&
+        Boolean(measurements.subscriptionSubmitExists) &&
+        Boolean(measurements.subscriptionRssLink),
+      subscriptionCompact:
+        Number(measurements.subscriptionHeight ?? Infinity) <=
+        (viewport.width < 768 ? 340 : 300),
     },
   };
 }

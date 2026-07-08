@@ -100,8 +100,8 @@ const common: TranslationDict = {
     zh: "保存后续阅读兴趣",
   },
   "engagement.subscribe.description": {
-    en: "Leave an email and topic preference as a private reading signal. Email delivery is not automated yet; RSS is available now.",
-    zh: "留下邮箱和主题偏好，作为私密阅读意向。当前邮件发送尚未自动化；现在可以直接使用 RSS。",
+    en: "Leave an email for future notes. Topics and language are optional.",
+    zh: "留下邮箱即可；主题和语言偏好可选。",
   },
   "engagement.subscribe.rss": { en: "RSS", zh: "RSS" },
   "engagement.subscribe.emailPlaceholder": {
@@ -115,6 +115,14 @@ const common: TranslationDict = {
   "engagement.subscribe.languageLabel": {
     en: "Email language",
     zh: "接收语言",
+  },
+  "engagement.subscribe.detailsToggle": {
+    en: "Add topics and language",
+    zh: "补充主题和语言",
+  },
+  "engagement.subscribe.detailsHide": {
+    en: "Hide topics and language",
+    zh: "收起主题和语言",
   },
   "engagement.subscribe.loading": { en: "Saving...", zh: "保存中..." },
   "engagement.subscribe.button": { en: "Save preference", zh: "保存偏好" },

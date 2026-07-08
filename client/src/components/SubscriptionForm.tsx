@@ -3,8 +3,14 @@ import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, MailPlus, Rss } from "lucide-react";
-import { FormEvent, useId, useState } from "react";
+import {
+  ChevronDown,
+  Loader2,
+  MailPlus,
+  Rss,
+  SlidersHorizontal,
+} from "lucide-react";
+import React, { FormEvent, useId, useState } from "react";
 import { toast } from "sonner";
 
 type SubscriptionFormProps = {
@@ -37,9 +43,11 @@ export function SubscriptionForm({
   );
   const [interests, setInterests] = useState("");
   const [status, setStatus] = useState<SubscriptionStatus>("idle");
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const emailId = useId();
   const interestsId = useId();
   const statusId = useId();
+  const detailsId = useId();
   const titleKey =
     surface === "article"
       ? "engagement.subscribe.articleTitle"
@@ -50,6 +58,7 @@ export function SubscriptionForm({
       setStatus(result.status);
       setEmail("");
       setInterests("");
+      setDetailsOpen(false);
       toast.success(
         result.status === "created"
           ? t("engagement.subscribe.toastCreated")
@@ -78,18 +87,19 @@ export function SubscriptionForm({
   return (
     <section
       className={cn(
-        embedded ? "space-y-4" : "glass-panel liquid-panel p-5",
+        "subscription-surface",
+        embedded ? "space-y-3" : "glass-panel liquid-panel p-5",
         className
       )}
       aria-label={t("engagement.subscribe.title")}
     >
-      <div className="flex items-start justify-between gap-4">
+      <div className="subscription-head flex items-start justify-between gap-4">
         <div>
-          <div className="mb-2 flex items-center gap-2 text-white">
-            <MailPlus className="h-4 w-4 text-sky-200" />
+          <div className="subscription-title-row mb-2 flex items-center gap-2">
+            <MailPlus className="h-4 w-4" />
             <h2 className="text-base font-semibold">{t(titleKey)}</h2>
           </div>
-          <p className="max-w-2xl text-sm leading-6 text-slate-400">
+          <p className="max-w-2xl text-sm leading-6">
             {t("engagement.subscribe.description")}
           </p>
         </div>
@@ -97,7 +107,7 @@ export function SubscriptionForm({
           asChild
           variant="outline"
           size="sm"
-          className="glass-button shrink-0"
+          className="subscription-rss-link shrink-0"
         >
           <a href="/rss.xml" aria-label={t("engagement.subscribe.rss")}>
             <Rss className="h-4 w-4" />
@@ -109,7 +119,7 @@ export function SubscriptionForm({
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-3">
-        <div className="grid gap-3">
+        <div className="subscription-core grid gap-3">
           <label className="sr-only" htmlFor={emailId}>
             {t("engagement.subscribe.emailPlaceholder")}
           </label>
@@ -123,12 +133,12 @@ export function SubscriptionForm({
             onChange={event => setEmail(event.target.value)}
             placeholder={t("engagement.subscribe.emailPlaceholder")}
             aria-describedby={statusId}
-            className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-500"
+            className="subscription-field"
           />
           <Button
             type="submit"
             disabled={subscribe.isPending}
-            className="w-full"
+            className="subscription-submit"
           >
             {subscribe.isPending ? (
               <>
@@ -141,52 +151,71 @@ export function SubscriptionForm({
           </Button>
         </div>
 
-        <div className="grid gap-3">
-          <label className="sr-only" htmlFor={interestsId}>
-            {t("engagement.subscribe.interestsPlaceholder")}
-          </label>
-          <Input
-            id={interestsId}
-            value={interests}
-            onChange={event => setInterests(event.target.value)}
-            placeholder={t("engagement.subscribe.interestsPlaceholder")}
-            className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-500"
-            maxLength={240}
-            aria-describedby={statusId}
+        <button
+          type="button"
+          aria-expanded={detailsOpen}
+          aria-controls={detailsId}
+          onClick={() => setDetailsOpen(value => !value)}
+          className="subscription-details-toggle inline-flex min-h-9 items-center justify-center gap-2 rounded-md px-3 text-sm font-medium transition"
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+          {detailsOpen
+            ? t("engagement.subscribe.detailsHide")
+            : t("engagement.subscribe.detailsToggle")}
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 transition-transform",
+              detailsOpen && "rotate-180"
+            )}
+            aria-hidden="true"
           />
-          <div
-            className="subscription-language-control"
-            role="group"
-            aria-label={t("engagement.subscribe.languageLabel")}
-          >
-            <span className="subscription-language-label">
-              {t("engagement.subscribe.languageLabel")}
-            </span>
-            <div className="inline-grid grid-cols-2 rounded-md border border-white/10 bg-slate-950/50 p-1">
-              {(["zh", "en"] as const).map(option => (
-                <button
-                  key={option}
-                  type="button"
-                  aria-pressed={preferredLanguage === option}
-                  onClick={() => setPreferredLanguage(option)}
-                  className={cn(
-                    "h-8 rounded px-3 text-xs font-medium transition",
-                    preferredLanguage === option
-                      ? "bg-sky-300/15 text-sky-100"
-                      : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-100"
-                  )}
-                >
-                  {option === "zh" ? t("nav.switchToZh") : t("nav.switchToEn")}
-                </button>
-              ))}
+        </button>
+
+        {detailsOpen && (
+          <div id={detailsId} className="subscription-details grid gap-3">
+            <label className="sr-only" htmlFor={interestsId}>
+              {t("engagement.subscribe.interestsPlaceholder")}
+            </label>
+            <Input
+              id={interestsId}
+              value={interests}
+              onChange={event => setInterests(event.target.value)}
+              placeholder={t("engagement.subscribe.interestsPlaceholder")}
+              className="subscription-field"
+              maxLength={240}
+              aria-describedby={statusId}
+            />
+            <div
+              className="subscription-language-control"
+              role="group"
+              aria-label={t("engagement.subscribe.languageLabel")}
+            >
+              <span className="subscription-language-label">
+                {t("engagement.subscribe.languageLabel")}
+              </span>
+              <div className="subscription-language-options inline-grid grid-cols-2 rounded-md p-1">
+                {(["zh", "en"] as const).map(option => (
+                  <button
+                    key={option}
+                    type="button"
+                    aria-pressed={preferredLanguage === option}
+                    onClick={() => setPreferredLanguage(option)}
+                    className="subscription-language-option h-8 rounded px-3 text-xs font-medium transition"
+                  >
+                    {option === "zh"
+                      ? t("nav.switchToZh")
+                      : t("nav.switchToEn")}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </form>
 
       <div
         id={statusId}
-        className="min-h-5 text-xs leading-5 text-slate-500"
+        className="min-h-5 text-xs leading-5"
         aria-live="polite"
       >
         <span className={statusMessage.className}>{statusMessage.text}</span>
@@ -209,21 +238,21 @@ function getSubscriptionMessage(
       text: errorMessage.includes("Too many")
         ? t("engagement.subscribe.rateLimited")
         : t("engagement.subscribe.error"),
-      className: "text-red-200",
+      className: "subscription-error",
     };
   }
 
   if (status === "created") {
     return {
       text: t("engagement.subscribe.successCreated"),
-      className: "text-sky-100",
+      className: "subscription-success",
     };
   }
 
   if (status === "existing") {
     return {
       text: t("engagement.subscribe.successExisting"),
-      className: "text-sky-100",
+      className: "subscription-success",
     };
   }
 

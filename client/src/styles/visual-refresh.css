@@ -6658,6 +6658,7 @@
   .article-feedback-panel,
   .article-feedback-surface,
   .article-subscription-panel,
+  .subscription-surface,
   .article-related-cluster {
     min-width: 0;
   }
@@ -6828,6 +6829,109 @@
     color: var(--destructive);
   }
 
+  .subscription-surface {
+    display: grid;
+    gap: 0.75rem;
+    overflow-x: hidden;
+    color: var(--public-muted);
+  }
+
+  .subscription-head {
+    min-width: 0;
+  }
+
+  .subscription-title-row {
+    color: var(--public-text);
+  }
+
+  .subscription-title-row svg {
+    color: var(--public-accent);
+  }
+
+  .subscription-head p {
+    color: var(--public-muted);
+  }
+
+  .subscription-core,
+  .subscription-details {
+    min-width: 0;
+  }
+
+  .subscription-submit {
+    width: 100%;
+  }
+
+  .subscription-field {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .subscription-details-toggle {
+    width: 100%;
+    border: 1px solid var(--public-border);
+    background: color-mix(in oklch, var(--public-input-bg) 86%, transparent);
+    color: var(--public-muted);
+  }
+
+  .subscription-details-toggle:hover,
+  .subscription-details-toggle:focus-visible {
+    border-color: color-mix(in oklch, var(--public-accent) 42%, var(--public-border));
+    background: color-mix(in oklch, var(--public-inline-bg) 82%, var(--public-accent) 8%);
+    color: var(--public-text);
+  }
+
+  .subscription-language-control {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    border: 1px solid var(--public-border);
+    border-radius: var(--public-radius);
+    background: color-mix(in oklch, var(--public-inline-bg) 72%, transparent);
+    padding: 0.45rem 0.5rem 0.45rem 0.65rem;
+  }
+
+  .subscription-language-label {
+    min-width: 0;
+    color: var(--public-text);
+    font-size: 0.78rem;
+    font-weight: 720;
+    line-height: 1.2;
+  }
+
+  .subscription-language-options {
+    border: 1px solid var(--public-border);
+    background: var(--public-input-bg);
+  }
+
+  .subscription-language-option {
+    color: var(--public-muted);
+  }
+
+  .subscription-language-option:hover,
+  .subscription-language-option:focus-visible {
+    background: var(--public-inline-bg);
+    color: var(--public-text);
+  }
+
+  .subscription-language-option[aria-pressed="true"] {
+    background: color-mix(in oklch, var(--public-accent) 16%, transparent);
+    color: var(--public-accent-bright);
+  }
+
+  .subscription-surface [aria-live="polite"] {
+    color: var(--public-faint);
+  }
+
+  .subscription-success {
+    color: var(--public-accent-bright);
+  }
+
+  .subscription-error {
+    color: var(--destructive);
+  }
+
   @media (min-width: 900px) {
     .article-continuation-head,
     .article-continuation-meta {
@@ -6836,6 +6940,17 @@
 
     .article-reader-response-grid {
       grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.82fr);
+    }
+
+    .subscription-core {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .subscription-submit {
+      width: auto;
+      min-width: 8.5rem;
     }
 
     .article-adjacent-nav {
