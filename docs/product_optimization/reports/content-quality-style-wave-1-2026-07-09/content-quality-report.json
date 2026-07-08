@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-07-08T16:42:18.961Z",
+  "summary": {
+    "markdownFiles": 9,
+    "articleFiles": 9,
+    "skippedMarkdownFiles": 6,
+    "seedPosts": 9,
+    "suggestions": 1,
+    "warnings": 0,
+    "failures": 0
+  },
+  "issues": [
+    {
+      "severity": "suggestion",
+      "category": "evidence",
+      "code": "content.unsupported_certainty",
+      "file": "gated_ffn_blog.md",
+      "line": 353,
+      "message": "Review unsupported certainty: 永远",
+      "evidence": "- 训练永远更稳定。",
+      "suggestion": "Add scope, evidence, or a caveat for the claim."
+    }
+  ],
+  "findings": [
+    {
+      "severity": "suggestion",
+      "category": "evidence",
+      "code": "content.unsupported_certainty",
+      "file": "gated_ffn_blog.md",
+      "line": 353,
+      "message": "Review unsupported certainty: 永远",
+      "evidence": "- 训练永远更稳定。",
+      "suggestion": "Add scope, evidence, or a caveat for the claim."
+    }
+  ]
+}

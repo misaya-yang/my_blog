@@ -1,15 +1,29 @@
 import { existsSync } from "node:fs";
-import { readdir, readFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
 import { contentSeriesCatalog } from "../../shared/content-series.js";
 
+export type ContentFindingSeverity = "suggestion" | "warning" | "failure";
+
+export type ContentFindingCategory =
+  | "structure"
+  | "metadata"
+  | "markdown"
+  | "style"
+  | "evidence"
+  | "readability"
+  | "linking";
+
 export type ContentQualityIssue = {
-  severity: "warning" | "failure";
+  severity: ContentFindingSeverity;
+  category: ContentFindingCategory;
   code: string;
   file: string;
+  articleSlug?: string;
   line?: number;
   message: string;
   evidence?: string;
+  suggestion?: string;
 };
 
 export type ContentQualityReport = {
@@ -19,10 +33,12 @@ export type ContentQualityReport = {
     articleFiles: number;
     skippedMarkdownFiles: number;
     seedPosts: number;
+    suggestions: number;
     warnings: number;
     failures: number;
   };
   issues: ContentQualityIssue[];
+  findings: ContentQualityIssue[];
 };
 
 type SeedPost = {
@@ -46,6 +62,46 @@ const AIISH_PHRASES = [
   "总之",
   "我们可以",
   "我们将",
+];
+
+const SUBJECTIVE_FRAMING_PATTERNS: Array<{
+  phrase: string;
+  pattern: RegExp;
+}> = [
+  { phrase: "我认为", pattern: /我认为/ },
+  { phrase: "我们可以看到", pattern: /我们可以看到/ },
+  { phrase: "显然", pattern: /显然/ },
+  { phrase: "有趣的是", pattern: /有趣的是/ },
+];
+
+const UNSUPPORTED_CERTAINTY_PATTERNS: Array<{
+  phrase: string;
+  pattern: RegExp;
+}> = [
+  { phrase: "无疑", pattern: /无疑/ },
+  { phrase: "必然", pattern: /必然/ },
+  { phrase: "永远", pattern: /永远/ },
+  { phrase: "从不", pattern: /从不/ },
+  { phrase: "always", pattern: /\balways\b/i },
+  { phrase: "never", pattern: /\bnever\b/i },
+  { phrase: "SOTA", pattern: /\bSOTA\b/ },
+];
+
+const VAGUE_TECHNICAL_CLAIM_PATTERNS: Array<{
+  phrase: string;
+  pattern: RegExp;
+}> = [
+  { phrase: "显著提升", pattern: /显著提升/ },
+  { phrase: "更好检索", pattern: /更好[地的]?检索/ },
+  { phrase: "更鲁棒", pattern: /更鲁棒/ },
+  { phrase: "更强能力", pattern: /更强[^，。；;]*能力/ },
+  { phrase: "improves efficiency", pattern: /\bimproves efficiency\b/i },
+  { phrase: "better retrieval", pattern: /\bbetter retrieval\b/i },
+  { phrase: "more robust", pattern: /\bmore robust\b/i },
+  {
+    phrase: "stronger agent capability",
+    pattern: /\bstronger agent capabilit(?:y|ies)\b/i,
+  },
 ];
 
 const MALFORMED_MARKDOWN_PATTERNS: Array<{
@@ -116,6 +172,9 @@ export async function runContentQualityAudit(
 
   const warnings = issues.filter(issue => issue.severity === "warning").length;
   const failures = issues.filter(issue => issue.severity === "failure").length;
+  const suggestions = issues.filter(
+    issue => issue.severity === "suggestion"
+  ).length;
 
   return {
     generatedAt: new Date().toISOString(),
@@ -124,10 +183,12 @@ export async function runContentQualityAudit(
       articleFiles: articleFiles.length,
       skippedMarkdownFiles: skippedMarkdownFiles.length,
       seedPosts: seedPosts.length,
+      suggestions,
       warnings,
       failures,
     },
     issues,
+    findings: issues,
   };
 }
 
@@ -221,6 +282,7 @@ function auditSeedPosts(
         issues.push(
           warning(
             "seed.generic_excerpt_voice",
+            "metadata",
             "seed-blog.mjs",
             `${message} Slug: ${post.slug}`,
             undefined,
@@ -321,6 +383,7 @@ function auditMarkdownFile(
       issues.push(
         warning(
           "content.shell_title_only",
+          "structure",
           file,
           `Markdown relies on the article shell title for ${post.slug}.`,
           undefined,
@@ -342,6 +405,7 @@ function auditMarkdownFile(
     issues.push(
       warning(
         "content.title_mismatch",
+        "metadata",
         file,
         `Markdown H1 differs from seed title for ${post.slug}.`,
         undefined,
@@ -362,25 +426,76 @@ function auditMarkdownFile(
       if (!line.includes(phrase)) continue;
       if (isTechnicalCaveatPhrase(phrase, line)) continue;
       issues.push(
-        warning(
+        suggestion(
           "content.aiish_phrase",
+          "style",
           file,
           `Review template-like phrase: ${phrase}`,
           index + 1,
-          line.trim()
+          line.trim(),
+          "Replace the filler phrase with the concrete mechanism, evidence, limitation, or implication."
+        )
+      );
+    }
+
+    for (const { phrase, pattern } of SUBJECTIVE_FRAMING_PATTERNS) {
+      if (!pattern.test(line)) continue;
+      issues.push(
+        suggestion(
+          "content.subjective_framing",
+          "style",
+          file,
+          `Review over-subjective framing: ${phrase}`,
+          index + 1,
+          line.trim(),
+          "State the mechanism, evidence, or author position directly."
+        )
+      );
+    }
+
+    for (const { phrase, pattern } of UNSUPPORTED_CERTAINTY_PATTERNS) {
+      if (!pattern.test(line)) continue;
+      if (isScopedCertaintyContext(phrase, line)) continue;
+      issues.push(
+        suggestion(
+          "content.unsupported_certainty",
+          "evidence",
+          file,
+          `Review unsupported certainty: ${phrase}`,
+          index + 1,
+          line.trim(),
+          "Add scope, evidence, or a caveat for the claim."
+        )
+      );
+    }
+
+    for (const { phrase, pattern } of VAGUE_TECHNICAL_CLAIM_PATTERNS) {
+      if (!pattern.test(line)) continue;
+      issues.push(
+        suggestion(
+          "content.vague_technical_claim",
+          "readability",
+          file,
+          `Review vague technical claim: ${phrase}`,
+          index + 1,
+          line.trim(),
+          "Name the affected task, metric, cost dimension, or failure mode."
         )
       );
     }
 
     for (const { code, pattern, message } of MALFORMED_MARKDOWN_PATTERNS) {
       if (!pattern.test(line)) continue;
-      issues.push(warning(code, file, message, index + 1, line.trim()));
+      issues.push(
+        warning(code, "markdown", file, message, index + 1, line.trim())
+      );
     }
 
     if (hasUnbalancedBoldMarkers(line)) {
       issues.push(
         warning(
           "content.unbalanced_bold_marker",
+          "markdown",
           file,
           "Review possible unbalanced bold marker.",
           index + 1,
@@ -400,6 +515,7 @@ function auditMarkdownFile(
       issues.push(
         warning(
           "content.relative_link_missing",
+          "linking",
           file,
           `Relative link target does not exist: ${href}`
         )
@@ -413,6 +529,15 @@ function auditMarkdownFile(
 function isTechnicalCaveatPhrase(phrase: string, line: string) {
   if (phrase !== "需要注意的是" && phrase !== "值得注意的是") return false;
   return /[$`]|\\[a-zA-Z]+/.test(line);
+}
+
+function isScopedCertaintyContext(phrase: string, line: string) {
+  if (phrase !== "永远") return false;
+  if (/不是说/.test(line)) return true;
+  return (
+    /永远不能/.test(line) &&
+    /(hidden|admin|draft|public|source|权限|安全|private)/i.test(line)
+  );
 }
 
 function hasUnbalancedBoldMarkers(line: string) {
@@ -501,12 +626,13 @@ function readStringField(block: string, field: string) {
 
 function warning(
   code: string,
+  category: ContentFindingCategory,
   file: string,
   message: string,
   line?: number,
   evidence?: string
 ): ContentQualityIssue {
-  return { severity: "warning", code, file, line, message, evidence };
+  return { severity: "warning", category, code, file, line, message, evidence };
 }
 
 function failure(
@@ -516,11 +642,72 @@ function failure(
   line?: number,
   evidence?: string
 ): ContentQualityIssue {
-  return { severity: "failure", code, file, line, message, evidence };
+  return {
+    severity: "failure",
+    category: getFailureCategory(code),
+    code,
+    file,
+    line,
+    message,
+    evidence,
+  };
+}
+
+function getFailureCategory(code: string): ContentFindingCategory {
+  if (code.startsWith("seed.") || code.startsWith("series.")) {
+    return "metadata";
+  }
+  if (code.includes("link")) return "linking";
+  if (code.includes("markdown")) return "markdown";
+  return "structure";
+}
+
+function suggestion(
+  code: string,
+  category: ContentFindingCategory,
+  file: string,
+  message: string,
+  line?: number,
+  evidence?: string,
+  rewriteIntent?: string
+): ContentQualityIssue {
+  return {
+    severity: "suggestion",
+    category,
+    code,
+    file,
+    line,
+    message,
+    evidence,
+    suggestion: rewriteIntent,
+  };
+}
+
+async function writeContentAuditReport(
+  outputPath: string,
+  report: ContentQualityReport
+) {
+  const absolutePath = resolve(process.cwd(), outputPath);
+  await mkdir(dirname(absolutePath), { recursive: true });
+  await writeFile(absolutePath, `${JSON.stringify(report, null, 2)}\n`);
+}
+
+function readOutputPath(args: string[]) {
+  const outputArg = args.find(arg => arg.startsWith("--output="));
+  if (outputArg) return outputArg.slice("--output=".length);
+
+  const outputIndex = args.indexOf("--output");
+  if (outputIndex >= 0) return args[outputIndex + 1];
+
+  return undefined;
 }
 
 async function main() {
   const report = await runContentQualityAudit();
+  const outputPath = readOutputPath(process.argv.slice(2));
+  if (outputPath) {
+    await writeContentAuditReport(outputPath, report);
+  }
   console.log(JSON.stringify(report, null, 2));
   process.exit(report.summary.failures > 0 ? 1 : 0);
 }

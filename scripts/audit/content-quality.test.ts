@@ -48,7 +48,7 @@ describe("content quality audit", () => {
     ]);
   });
 
-  it("reports structural failures and style warnings separately", async () => {
+  it("reports structural failures and style suggestions separately", async () => {
     const root = await createTempProject();
     await writeFile(
       join(root, "seed-blog.mjs"),
@@ -92,8 +92,60 @@ describe("content quality audit", () => {
           code: "seed.missing_content_file",
         }),
         expect.objectContaining({
-          severity: "warning",
+          severity: "suggestion",
           code: "content.aiish_phrase",
+          category: "style",
+        }),
+      ])
+    );
+    expect(report.summary.suggestions).toBe(2);
+    expect(report.findings).toBe(report.issues);
+  });
+
+  it("flags subjective, certain, and vague technical claims as suggestions", async () => {
+    const root = await createTempProject();
+    await writeFile(
+      join(root, "seed-blog.mjs"),
+      `
+      const posts = [
+        {
+          title: "Style",
+          slug: "style-note",
+          contentPath: "./style.md",
+          status: "published",
+          visibility: "public",
+          excerpt: "Concrete style note.",
+        },
+      ];
+      `
+    );
+    await writeFile(
+      join(root, "style.md"),
+      "# Style\n\n我认为这个方案会显著提升 Agent 能力，并且永远不会退化。"
+    );
+
+    const report = await runContentQualityAudit(root);
+
+    expect(report.summary.suggestions).toBeGreaterThanOrEqual(3);
+    expect(report.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          severity: "suggestion",
+          category: "style",
+          code: "content.subjective_framing",
+          suggestion: expect.stringContaining("mechanism"),
+        }),
+        expect.objectContaining({
+          severity: "suggestion",
+          category: "evidence",
+          code: "content.unsupported_certainty",
+          suggestion: expect.stringContaining("scope"),
+        }),
+        expect.objectContaining({
+          severity: "suggestion",
+          category: "readability",
+          code: "content.vague_technical_claim",
+          suggestion: expect.stringContaining("metric"),
         }),
       ])
     );
@@ -181,13 +233,26 @@ describe("content quality audit", () => {
     );
     await writeFile(
       join(root, "derivation.md"),
-      "# Derivation\n\n需要注意的是，$Q^TQ=I$ 只约束残差子空间。"
+      [
+        "# Derivation",
+        "",
+        "需要注意的是，$Q^TQ=I$ 只约束残差子空间。",
+        "",
+        "这不是说网络整体永远不放大信号，而是说明 residual transport 不额外制造谱变化。",
+        "",
+        "- hidden/admin/draft 内容永远不能进 public source。",
+      ].join("\n")
     );
 
     const report = await runContentQualityAudit(root);
 
     expect(
       report.issues.filter(issue => issue.code === "content.aiish_phrase")
+    ).toEqual([]);
+    expect(
+      report.issues.filter(
+        issue => issue.code === "content.unsupported_certainty"
+      )
     ).toEqual([]);
   });
 
@@ -307,7 +372,10 @@ describe("content quality audit", () => {
       `
     );
     await writeFile(join(root, "seeded.md"), "# Seeded\n\nBody.");
-    await writeFile(join(root, "agent.md"), "Branch policy without article H1.");
+    await writeFile(
+      join(root, "agent.md"),
+      "Branch policy without article H1."
+    );
 
     const report = await runContentQualityAudit(root);
 
@@ -342,7 +410,10 @@ describe("content quality audit", () => {
       `
     );
     await writeFile(join(root, "seeded.md"), "# Seeded\n\nBody.");
-    await writeFile(join(root, "wpu-01-home-mobile-snapshot.md"), "snapshot text");
+    await writeFile(
+      join(root, "wpu-01-home-mobile-snapshot.md"),
+      "snapshot text"
+    );
 
     const report = await runContentQualityAudit(root);
 
