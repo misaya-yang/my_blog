@@ -206,6 +206,22 @@ const home: TranslationDict = {
     zh: "阅读路径",
   },
   "discovery.articlesCount": { en: "{count} articles", zh: "{count} 篇文章" },
+  "discovery.taxonomyResultRange": {
+    en: "Showing {start}-{end} of {total}",
+    zh: "正在显示 {start}-{end} / {total}",
+  },
+  "discovery.taxonomyPageStatus": {
+    en: "Page {page} of {totalPages}",
+    zh: "第 {page} / {totalPages} 页",
+  },
+  "discovery.taxonomyPageSizeHint": {
+    en: "{count} articles per page",
+    zh: "每页 {count} 篇",
+  },
+  "discovery.taxonomyPageEmpty": {
+    en: "No public articles on this page.",
+    zh: "这一页暂无公开文章。",
+  },
   "discovery.updated": { en: "Updated {date}", zh: "更新于 {date}" },
   "discovery.searchKicker": { en: "Full-site search", zh: "全站搜索" },
   "discovery.searchTitle": {
