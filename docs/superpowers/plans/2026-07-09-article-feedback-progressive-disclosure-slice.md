@@ -1,5 +1,7 @@
 # Article Feedback Progressive Disclosure Implementation Plan
 
+Status: Completed
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Make article feedback support reader signals without interrupting the first reading pass.

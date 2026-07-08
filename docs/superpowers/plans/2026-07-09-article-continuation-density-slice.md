@@ -1,5 +1,7 @@
 # Article Continuation Density Slice Implementation Plan
 
+Status: Completed
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Turn the article footer from stacked utility sections into a calm continuation surface where next reading comes first, feedback/subscription recede, and share/author tools stay secondary.
@@ -44,7 +46,7 @@
 - Produces: `ARTICLE_READER_LAYOUT.continuation.secondaryOrder`
 - Produces: `getArticleContinuationMode(viewportWidthPx: number): "stacked" | "split"`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Update the import in `client/src/pages/PostDetail.test.ts`:
 
@@ -74,7 +76,7 @@ it("keeps reader response below the continuation path and splits only when there
 });
 ```
 
-- [ ] **Step 2: Run the focused test to verify it fails**
+- [x] **Step 2: Run the focused test to verify it fails**
 
 Run:
 
@@ -84,7 +86,7 @@ corepack pnpm test -- client/src/pages/PostDetail.test.ts
 
 Expected: FAIL because `getArticleContinuationMode` and `ARTICLE_READER_LAYOUT.continuation` do not exist yet.
 
-- [ ] **Step 3: Implement the contract**
+- [x] **Step 3: Implement the contract**
 
 Modify `client/src/lib/articleLayout.ts` so the exported constant includes:
 
@@ -112,7 +114,7 @@ export function getArticleContinuationMode(
 }
 ```
 
-- [ ] **Step 4: Run the focused test to verify it passes**
+- [x] **Step 4: Run the focused test to verify it passes**
 
 Run:
 
@@ -134,7 +136,7 @@ Expected: PASS.
 - Produces: CSS variables `--article-continuation-max` and `--article-response-split-min`
 - Produces: DOM classes `article-continuation-shell`, `article-continuation-head`, `article-adjacent-nav`, `article-related-cluster`, `article-reader-response-grid`, `article-continuation-meta`, `article-author-note`
 
-- [ ] **Step 1: Extend `articleReaderLayoutStyle`**
+- [x] **Step 1: Extend `articleReaderLayoutStyle`**
 
 Add these properties to `articleReaderLayoutStyle`:
 
@@ -143,7 +145,7 @@ Add these properties to `articleReaderLayoutStyle`:
   "--article-response-split-min": `${ARTICLE_READER_LAYOUT.continuation.responseSplitMinViewportPx}px`,
 ```
 
-- [ ] **Step 2: Replace the stacked footer blocks**
+- [x] **Step 2: Replace the stacked footer blocks**
 
 In `client/src/pages/PostDetail.tsx`, replace the current `article-secondary-actions`, `Author Footer`, and final author block with one `article-continuation-shell` section:
 
@@ -217,7 +219,7 @@ In `client/src/pages/PostDetail.tsx`, replace the current `article-secondary-act
 
 Keep all handlers and links unchanged.
 
-- [ ] **Step 3: Run typecheck**
+- [x] **Step 3: Run typecheck**
 
 Run:
 
@@ -238,7 +240,7 @@ Expected: PASS.
 - Consumes: `.article-continuation-*` classes from `PostDetail.tsx`
 - Consumes: `--article-continuation-max` and existing public color tokens
 
-- [ ] **Step 1: Add scoped continuation styles**
+- [x] **Step 1: Add scoped continuation styles**
 
 Add scoped styles after the existing `.article-handoff-*` block in `visual-refresh.css`:
 
@@ -324,7 +326,7 @@ Add scoped styles after the existing `.article-handoff-*` block in `visual-refre
 
 Use the actual final CSS to avoid duplicate rules if equivalent selectors already exist.
 
-- [ ] **Step 2: Keep mobile stacked**
+- [x] **Step 2: Keep mobile stacked**
 
 Add or update the existing `@media (max-width: 760px)` article block:
 
@@ -340,7 +342,7 @@ Add or update the existing `@media (max-width: 760px)` article block:
 }
 ```
 
-- [ ] **Step 3: Verify CSS debt count**
+- [x] **Step 3: Verify CSS debt count**
 
 Run:
 
@@ -362,7 +364,7 @@ Expected: the count remains `199`.
 - Consumes: local dev server at `http://localhost:3000`
 - Produces: viewport screenshots and probe JSON for article continuation layout.
 
-- [ ] **Step 1: Start local server**
+- [x] **Step 1: Start local server**
 
 Run:
 
@@ -372,7 +374,7 @@ corepack pnpm dev
 
 Expected: server listens on `http://localhost:3000`.
 
-- [ ] **Step 2: Capture browser probes**
+- [x] **Step 2: Capture browser probes**
 
 Use Playwright on `/post/goal-harness-agent-phase-protocol` at `1440x900`, `1024x900`, and `390x844` in light/dark. Probe:
 
@@ -415,7 +417,7 @@ Expected:
 - At `1440`, response grid has two columns.
 - At `390`, response grid has one column and share buttons do not overflow.
 
-- [ ] **Step 3: Run UI audit**
+- [x] **Step 3: Run UI audit**
 
 Run:
 
@@ -425,7 +427,7 @@ AUDIT_BASE_URL=http://localhost:3000 corepack pnpm audit:ui -- --output=docs/pro
 
 Expected: PASS.
 
-- [ ] **Step 4: Write report**
+- [x] **Step 4: Write report**
 
 Create `summary.md` with exact scope, screenshots, probe summary, CSS debt, verification commands, and residual risks.
 
@@ -439,7 +441,7 @@ Create `summary.md` with exact scope, screenshots, probe summary, CSS debt, veri
 
 - Produces: one commit for this slice on `dev`
 
-- [ ] **Step 1: Run focused tests**
+- [x] **Step 1: Run focused tests**
 
 Run:
 
@@ -449,7 +451,7 @@ corepack pnpm test -- client/src/pages/PostDetail.test.ts client/src/components/
 
 Expected: PASS.
 
-- [ ] **Step 2: Run typecheck**
+- [x] **Step 2: Run typecheck**
 
 Run:
 
@@ -459,7 +461,7 @@ corepack pnpm check
 
 Expected: PASS.
 
-- [ ] **Step 3: Run production build**
+- [x] **Step 3: Run production build**
 
 Run:
 
@@ -469,7 +471,7 @@ corepack pnpm build
 
 Expected: PASS.
 
-- [ ] **Step 4: Run whitespace and secret scan**
+- [x] **Step 4: Run whitespace and secret scan**
 
 Run:
 
@@ -480,7 +482,7 @@ rg -n "password|token|secret|api[_-]?key|credential|123456|HrqHsBKEoNSndwozGlmAM
 
 Expected: whitespace check passes; sensitive scan returns no actual credentials. Mentions of "credential" inside the plan constraints are acceptable.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 

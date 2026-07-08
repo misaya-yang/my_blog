@@ -1,5 +1,7 @@
 # Feedback Reader Signal Bridge Implementation Plan
 
+Status: Completed
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Surface article feedback opportunities as normalized `article_feedback` reader signals in the existing owner-only content radar summary.

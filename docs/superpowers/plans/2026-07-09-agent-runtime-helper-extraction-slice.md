@@ -1,5 +1,7 @@
 # Agent Runtime Helper Extraction Implementation Plan
 
+Status: Completed
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans for this tightly coupled extraction. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Reduce `BlogAgentRoot.tsx` orchestration noise by moving pure runtime helper logic into a focused module while preserving every existing public export and Agent behavior.

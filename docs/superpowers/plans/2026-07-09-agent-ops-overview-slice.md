@@ -1,5 +1,7 @@
 # Agent Ops Overview Implementation Plan
 
+Status: Completed
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans for this tightly coupled UI slice. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Make `/manage/agent` answer owner quality-risk questions in the first screen before raw index/debug/eval/trace tools.

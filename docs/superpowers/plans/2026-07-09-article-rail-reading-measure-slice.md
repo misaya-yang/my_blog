@@ -1,5 +1,7 @@
 # Article Rail Reading Measure Slice Implementation Plan
 
+Status: Completed
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Make the article reading page keep the prose column dominant by showing the right TOC rail only when the viewport is wide enough for a healthy 66-78ch reading measure.
@@ -40,7 +42,7 @@
 - Produces: `getArticleRailMode(viewportWidthPx: number): "inline-toc" | "toc-rail"`
 - Produces: `isArticleProseMeasureHealthy(measureCh: number): boolean`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add this import to `client/src/pages/PostDetail.test.ts`:
 
@@ -79,7 +81,7 @@ describe("article reader layout contract", () => {
 });
 ```
 
-- [ ] **Step 2: Run the focused test to verify it fails**
+- [x] **Step 2: Run the focused test to verify it fails**
 
 Run:
 
@@ -89,7 +91,7 @@ corepack pnpm test -- client/src/pages/PostDetail.test.ts
 
 Expected: FAIL because `client/src/lib/articleLayout.ts` does not exist.
 
-- [ ] **Step 3: Implement the layout contract**
+- [x] **Step 3: Implement the layout contract**
 
 Create `client/src/lib/articleLayout.ts`:
 
@@ -118,7 +120,7 @@ export function isArticleProseMeasureHealthy(measureCh: number) {
 }
 ```
 
-- [ ] **Step 4: Run the focused test to verify it passes**
+- [x] **Step 4: Run the focused test to verify it passes**
 
 Run:
 
@@ -137,7 +139,7 @@ Expected: PASS.
 - Consumes: `ARTICLE_READER_LAYOUT` from `client/src/lib/articleLayout.ts`
 - Produces: `articleReaderLayoutStyle` CSS custom properties on `.paper-reader-cockpit`
 
-- [ ] **Step 1: Add the imports**
+- [x] **Step 1: Add the imports**
 
 Modify the imports in `client/src/pages/PostDetail.tsx`:
 
@@ -146,7 +148,7 @@ import { ARTICLE_READER_LAYOUT } from "@/lib/articleLayout";
 import { lazy, Suspense, useEffect, useState, useCallback, type CSSProperties } from "react";
 ```
 
-- [ ] **Step 2: Add CSS custom property object**
+- [x] **Step 2: Add CSS custom property object**
 
 Add this constant after `articleAgentPromptKeys`:
 
@@ -159,7 +161,7 @@ const articleReaderLayoutStyle = {
 } as CSSProperties;
 ```
 
-- [ ] **Step 3: Attach the layout style and data attributes**
+- [x] **Step 3: Attach the layout style and data attributes**
 
 Change the cockpit wrapper to:
 
@@ -177,7 +179,7 @@ Change the cover wrapper to:
 <div className="article-cover-frame mb-10 overflow-hidden rounded-lg">
 ```
 
-- [ ] **Step 4: Run TypeScript check for this file path**
+- [x] **Step 4: Run TypeScript check for this file path**
 
 Run:
 
@@ -196,7 +198,7 @@ Expected: PASS or unrelated pre-existing failures only. If there is a failure ca
 - Consumes: `--article-prose-target`, `--article-prose-max`, and `--article-toc-rail-width` set by `PostDetail.tsx`
 - Produces: inline TOC mode below `1360px`; right rail mode at `1360px+`
 
-- [ ] **Step 1: Edit the existing article override block**
+- [x] **Step 1: Edit the existing article override block**
 
 In `client/src/styles/visual-refresh.css`, modify the existing last-mile article overrides so they express this behavior:
 
@@ -249,7 +251,7 @@ In `client/src/styles/visual-refresh.css`, modify the existing last-mile article
 
 Also change the existing `@media (min-width: 1600px)` article cockpit override to the same two-column template rather than reintroducing a wider main column.
 
-- [ ] **Step 2: Check CSS debt count before and after**
+- [x] **Step 2: Check CSS debt count before and after**
 
 Run:
 
@@ -259,7 +261,7 @@ node -e "const fs=require('fs'); const p='client/src/styles/visual-refresh.css';
 
 Expected: count does not increase from the pre-change value for this file.
 
-- [ ] **Step 3: Run whitespace check**
+- [x] **Step 3: Run whitespace check**
 
 Run:
 
@@ -279,7 +281,7 @@ Expected: no whitespace errors.
 - Consumes: local dev server at `http://localhost:3000`
 - Produces: screenshots and JSON probes documenting no horizontal overflow, rail mode, inline TOC visibility, computed font, line height, and prose width.
 
-- [ ] **Step 1: Start local server**
+- [x] **Step 1: Start local server**
 
 Run:
 
@@ -289,7 +291,7 @@ corepack pnpm dev
 
 Expected: server listens on `http://localhost:3000`.
 
-- [ ] **Step 2: Capture browser probes**
+- [x] **Step 2: Capture browser probes**
 
 Use Playwright to visit `/post/goal-harness-agent-phase-protocol` at `1024x900`, `1360x900`, `1440x900`, and `390x844` in light and dark where practical. Capture:
 
@@ -320,7 +322,7 @@ Expected:
 - `1360x900` and `1440x900`: `railDisplay` is not `none`, no horizontal overflow.
 - `390x844`: no horizontal overflow, inline TOC remains reachable, body text remains readable.
 
-- [ ] **Step 3: Run project UI audit**
+- [x] **Step 3: Run project UI audit**
 
 Run:
 
@@ -330,7 +332,7 @@ AUDIT_BASE_URL=http://localhost:3000 corepack pnpm audit:ui -- --output=docs/pro
 
 Expected: script completes and writes JSON.
 
-- [ ] **Step 4: Write report**
+- [x] **Step 4: Write report**
 
 Create `docs/product_optimization/reports/article-rail-reading-measure-slice-2026-07-09/summary.md` with:
 
@@ -372,7 +374,7 @@ Branch: dev
 **Interfaces:**
 - Produces: a single commit for this slice on `dev`
 
-- [ ] **Step 1: Run focused tests**
+- [x] **Step 1: Run focused tests**
 
 Run:
 
@@ -382,7 +384,7 @@ corepack pnpm test -- client/src/pages/PostDetail.test.ts client/src/components/
 
 Expected: PASS.
 
-- [ ] **Step 2: Run typecheck**
+- [x] **Step 2: Run typecheck**
 
 Run:
 
@@ -392,7 +394,7 @@ corepack pnpm check
 
 Expected: PASS.
 
-- [ ] **Step 3: Run production build**
+- [x] **Step 3: Run production build**
 
 Run:
 
@@ -402,7 +404,7 @@ corepack pnpm build
 
 Expected: PASS.
 
-- [ ] **Step 4: Run whitespace check**
+- [x] **Step 4: Run whitespace check**
 
 Run:
 
@@ -412,7 +414,7 @@ git diff --check
 
 Expected: no whitespace errors.
 
-- [ ] **Step 5: Review diff**
+- [x] **Step 5: Review diff**
 
 Run:
 
@@ -422,7 +424,7 @@ git diff -- client/src/lib/articleLayout.ts client/src/pages/PostDetail.tsx clie
 
 Expected: diff is scoped to this slice and contains no credentials.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 Run:
 

@@ -516,7 +516,7 @@ All passed.
 No fresh browser screenshot is included in this slice. The next UI browser pass should capture tag and category pages at desktop light and mobile dark.
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 Run:
 

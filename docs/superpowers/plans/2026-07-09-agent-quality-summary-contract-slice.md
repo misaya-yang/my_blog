@@ -1,5 +1,7 @@
 # Agent Quality Summary Contract Implementation Plan
 
+Status: Completed
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans for this tightly coupled server/client slice. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add an owner-only Agent quality summary data contract so `/manage/agent` overview can load Agent quality state from one endpoint instead of composing multiple raw tool queries.
