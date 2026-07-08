@@ -62,6 +62,7 @@ describe("release check orchestration", () => {
       "content-audit",
       "content-verify",
       "build",
+      "performance-audit",
       "ui-audit",
     ]);
     expect(steps.at(-1)).toEqual(
@@ -69,6 +70,13 @@ describe("release check orchestration", () => {
         command: "corepack",
         args: ["pnpm", "audit:ui"],
         env: { AUDIT_BASE_URL: "http://localhost:3000" },
+      })
+    );
+    expect(steps.find(step => step.id === "performance-audit")).toEqual(
+      expect.objectContaining({
+        command: "corepack",
+        args: ["pnpm", "audit:performance"],
+        blocking: true,
       })
     );
   });

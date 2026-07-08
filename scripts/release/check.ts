@@ -17,6 +17,7 @@ export type ReleaseStepId =
   | "content-audit"
   | "content-verify"
   | "build"
+  | "performance-audit"
   | "ui-audit";
 
 export type ReleaseCheckOptions = {
@@ -203,6 +204,13 @@ export function buildReleaseSteps(options: ReleaseCheckOptions): ReleaseStep[] {
       label: "Production build",
       command: "corepack",
       args: ["pnpm", "build"],
+      blocking: true,
+    },
+    {
+      id: "performance-audit",
+      label: "Performance budget audit",
+      command: "corepack",
+      args: ["pnpm", "audit:performance"],
       blocking: true,
     },
     {

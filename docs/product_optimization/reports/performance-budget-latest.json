@@ -1,0 +1,121 @@
+{
+  "generatedAt": "2026-07-08T23:10:05.756Z",
+  "status": "passed",
+  "distDir": "dist/public",
+  "totals": {
+    "javascriptRawBytes": 1532076,
+    "javascriptGzipBytes": 466950,
+    "cssRawBytes": 506034,
+    "cssGzipBytes": 84430,
+    "javascriptAssetCount": 42,
+    "cssAssetCount": 3
+  },
+  "largestAssets": {
+    "javascript": [
+      {
+        "file": "assets/index-B-2DH7Xv.js",
+        "rawBytes": 437491,
+        "gzipBytes": 130157
+      },
+      {
+        "file": "assets/app-vendor-BdG3WRU2.js",
+        "rawBytes": 297880,
+        "gzipBytes": 90823
+      },
+      {
+        "file": "assets/index-BqrOHAud.js",
+        "rawBytes": 244281,
+        "gzipBytes": 76410
+      },
+      {
+        "file": "assets/MarkdownRenderer-Yll82yZQ.js",
+        "rawBytes": 179947,
+        "gzipBytes": 55221
+      },
+      {
+        "file": "assets/knowledgeRefresh-DCouZnGb.js",
+        "rawBytes": 50512,
+        "gzipBytes": 18031
+      },
+      {
+        "file": "assets/Manage-BSYIWwpf.js",
+        "rawBytes": 63407,
+        "gzipBytes": 15569
+      },
+      {
+        "file": "assets/Editor-NWKwgWBd.js",
+        "rawBytes": 40868,
+        "gzipBytes": 11489
+      },
+      {
+        "file": "assets/PostDetail-nBA7aJcE.js",
+        "rawBytes": 37144,
+        "gzipBytes": 10374
+      }
+    ],
+    "css": [
+      {
+        "file": "assets/index-DvhKXFs2.css",
+        "rawBytes": 475525,
+        "gzipBytes": 75782
+      },
+      {
+        "file": "assets/katex-DvXFAOB1.css",
+        "rawBytes": 29193,
+        "gzipBytes": 8033
+      },
+      {
+        "file": "assets/github-dark-BSTcku12.css",
+        "rawBytes": 1316,
+        "gzipBytes": 615
+      }
+    ]
+  },
+  "checks": [
+    {
+      "id": "dist-assets-present",
+      "label": "Build output assets present",
+      "state": "passed",
+      "blocking": true,
+      "evidence": "dist/public includes 42 JS and 3 CSS assets."
+    },
+    {
+      "id": "route-pages-lazy-loaded",
+      "label": "Route pages remain lazy-loaded",
+      "state": "passed",
+      "blocking": true,
+      "evidence": "client/src/App.tsx should keep route page modules behind React.lazy."
+    },
+    {
+      "id": "markdown-heavy-deps-lazy",
+      "label": "Markdown heavy dependencies stay out of page entry modules",
+      "state": "passed",
+      "blocking": true,
+      "evidence": "PostDetail and Editor should lazy-load MarkdownRenderer instead of importing markdown parsing packages directly."
+    },
+    {
+      "id": "editor-deps-chunked",
+      "label": "Editor dependencies stay chunked",
+      "state": "passed",
+      "blocking": true,
+      "evidence": "vite.config.ts should keep @tiptap packages in the editor chunk."
+    },
+    {
+      "id": "largest-js-gzip-baseline",
+      "label": "Largest JS gzip baseline",
+      "state": "passed",
+      "blocking": false,
+      "evidence": "assets/index-B-2DH7Xv.js: 127.1 kB gzip; warning threshold 200.0 kB."
+    },
+    {
+      "id": "total-css-gzip-baseline",
+      "label": "Total CSS gzip baseline",
+      "state": "passed",
+      "blocking": false,
+      "evidence": "82.5 kB total CSS gzip; warning threshold 96.0 kB."
+    }
+  ],
+  "failures": [],
+  "warnings": [],
+  "outputPath": "docs/product_optimization/reports/performance-budget-latest.json"
+}
