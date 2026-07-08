@@ -4,6 +4,8 @@ Date: 2026-07-08
 Status: Ready for owner review
 Scope: UI, discovery, reading, Agent, owner workflow, article quality, release gates
 
+Current package: this file has been superseded by the 2026-07-09 review package after additional specs were generated. Use [2026-07-09-product-optimization-spec-review-package.md](./2026-07-09-product-optimization-spec-review-package.md) as the active execution contract.
+
 ## How To Review
 
 Read this file first. It is the index and execution contract for the full optimization package. The detailed specs are linked below and can be reviewed independently.
