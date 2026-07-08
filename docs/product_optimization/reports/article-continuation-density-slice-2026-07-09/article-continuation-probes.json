@@ -1,0 +1,736 @@
+{
+  "generatedAt": "2026-07-08T20:13:55.663Z",
+  "screenshotMode": "viewport-at-continuation-start",
+  "results": [
+    {
+      "case": "desktop-light-1440",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "desktop-light-1440.png",
+      "metrics": {
+        "theme": "light",
+        "viewportWidth": 1440,
+        "viewportHeight": 900,
+        "bodyScrollWidth": 1440,
+        "bodyClientWidth": 1440,
+        "horizontalOverflow": false,
+        "shellRect": {
+          "x": 228,
+          "y": 92,
+          "documentY": 15794,
+          "width": 704,
+          "height": 981
+        },
+        "handoffRect": {
+          "x": 228,
+          "y": -177,
+          "documentY": 15525,
+          "width": 704,
+          "height": 224
+        },
+        "pathRect": {
+          "x": 228,
+          "y": 185,
+          "documentY": 15887,
+          "width": 704,
+          "height": 148
+        },
+        "headColumns": "466.062px 225.234px",
+        "responseColumns": "368.094px 320px",
+        "responseRect": {
+          "x": 228,
+          "y": 358,
+          "documentY": 16060,
+          "width": 704,
+          "height": 532
+        },
+        "metaColumns": "275.297px 416px",
+        "metaRect": {
+          "x": 228,
+          "y": 915,
+          "documentY": 16617,
+          "width": 704,
+          "height": 158
+        },
+        "shareRect": {
+          "x": 516,
+          "y": 945,
+          "documentY": 16647,
+          "width": 416,
+          "height": 105
+        },
+        "authorRect": {
+          "x": 228,
+          "y": 932,
+          "documentY": 16634,
+          "width": 275,
+          "height": 141
+        },
+        "subscribeRect": {
+          "x": 612,
+          "y": 376,
+          "documentY": 16078,
+          "width": 320,
+          "height": 514
+        }
+      }
+    },
+    {
+      "case": "desktop-dark-1440",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "desktop-dark-1440.png",
+      "metrics": {
+        "theme": "dark",
+        "viewportWidth": 1440,
+        "viewportHeight": 900,
+        "bodyScrollWidth": 1440,
+        "bodyClientWidth": 1440,
+        "horizontalOverflow": false,
+        "shellRect": {
+          "x": 228,
+          "y": 92,
+          "documentY": 15794,
+          "width": 704,
+          "height": 981
+        },
+        "handoffRect": {
+          "x": 228,
+          "y": -177,
+          "documentY": 15525,
+          "width": 704,
+          "height": 224
+        },
+        "pathRect": {
+          "x": 228,
+          "y": 185,
+          "documentY": 15887,
+          "width": 704,
+          "height": 148
+        },
+        "headColumns": "466.062px 225.234px",
+        "responseColumns": "368.094px 320px",
+        "responseRect": {
+          "x": 228,
+          "y": 358,
+          "documentY": 16060,
+          "width": 704,
+          "height": 532
+        },
+        "metaColumns": "275.297px 416px",
+        "metaRect": {
+          "x": 228,
+          "y": 915,
+          "documentY": 16617,
+          "width": 704,
+          "height": 158
+        },
+        "shareRect": {
+          "x": 516,
+          "y": 945,
+          "documentY": 16647,
+          "width": 416,
+          "height": 105
+        },
+        "authorRect": {
+          "x": 228,
+          "y": 932,
+          "documentY": 16634,
+          "width": 275,
+          "height": 141
+        },
+        "subscribeRect": {
+          "x": 612,
+          "y": 376,
+          "documentY": 16078,
+          "width": 320,
+          "height": 514
+        }
+      }
+    },
+    {
+      "case": "tablet-light-1024",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "tablet-light-1024.png",
+      "metrics": {
+        "theme": "light",
+        "viewportWidth": 1024,
+        "viewportHeight": 900,
+        "bodyScrollWidth": 1024,
+        "bodyClientWidth": 1024,
+        "horizontalOverflow": false,
+        "shellRect": {
+          "x": 119,
+          "y": 92,
+          "documentY": 15565,
+          "width": 786,
+          "height": 925
+        },
+        "handoffRect": {
+          "x": 65,
+          "y": -173,
+          "documentY": 15300,
+          "width": 786,
+          "height": 224
+        },
+        "pathRect": {
+          "x": 119,
+          "y": 180,
+          "documentY": 15653,
+          "width": 786,
+          "height": 148
+        },
+        "headColumns": "548.062px 225.234px",
+        "responseColumns": "423.125px 346.969px",
+        "responseRect": {
+          "x": 119,
+          "y": 349,
+          "documentY": 15822,
+          "width": 786,
+          "height": 512
+        },
+        "metaColumns": "357.297px 416px",
+        "metaRect": {
+          "x": 119,
+          "y": 881,
+          "documentY": 16354,
+          "width": 786,
+          "height": 136
+        },
+        "shareRect": {
+          "x": 489,
+          "y": 912,
+          "documentY": 16385,
+          "width": 416,
+          "height": 105
+        },
+        "authorRect": {
+          "x": 119,
+          "y": 899,
+          "documentY": 16372,
+          "width": 357,
+          "height": 118
+        },
+        "subscribeRect": {
+          "x": 558,
+          "y": 367,
+          "documentY": 15840,
+          "width": 347,
+          "height": 494
+        }
+      }
+    },
+    {
+      "case": "tablet-dark-1024",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "tablet-dark-1024.png",
+      "metrics": {
+        "theme": "dark",
+        "viewportWidth": 1024,
+        "viewportHeight": 900,
+        "bodyScrollWidth": 1024,
+        "bodyClientWidth": 1024,
+        "horizontalOverflow": false,
+        "shellRect": {
+          "x": 119,
+          "y": 92,
+          "documentY": 15565,
+          "width": 786,
+          "height": 925
+        },
+        "handoffRect": {
+          "x": 65,
+          "y": -173,
+          "documentY": 15300,
+          "width": 786,
+          "height": 224
+        },
+        "pathRect": {
+          "x": 119,
+          "y": 180,
+          "documentY": 15653,
+          "width": 786,
+          "height": 148
+        },
+        "headColumns": "548.062px 225.234px",
+        "responseColumns": "423.125px 346.969px",
+        "responseRect": {
+          "x": 119,
+          "y": 349,
+          "documentY": 15822,
+          "width": 786,
+          "height": 512
+        },
+        "metaColumns": "357.297px 416px",
+        "metaRect": {
+          "x": 119,
+          "y": 881,
+          "documentY": 16354,
+          "width": 786,
+          "height": 136
+        },
+        "shareRect": {
+          "x": 489,
+          "y": 912,
+          "documentY": 16385,
+          "width": 416,
+          "height": 105
+        },
+        "authorRect": {
+          "x": 119,
+          "y": 899,
+          "documentY": 16372,
+          "width": 357,
+          "height": 118
+        },
+        "subscribeRect": {
+          "x": 558,
+          "y": 367,
+          "documentY": 15840,
+          "width": 347,
+          "height": 494
+        }
+      }
+    },
+    {
+      "case": "boundary-light-899",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "boundary-light-899.png",
+      "metrics": {
+        "theme": "light",
+        "viewportWidth": 899,
+        "viewportHeight": 900,
+        "bodyScrollWidth": 899,
+        "bodyClientWidth": 899,
+        "horizontalOverflow": false,
+        "shellRect": {
+          "x": 56,
+          "y": 92,
+          "documentY": 15466,
+          "width": 786,
+          "height": 1419
+        },
+        "handoffRect": {
+          "x": 43,
+          "y": -168,
+          "documentY": 15206,
+          "width": 786,
+          "height": 224
+        },
+        "pathRect": {
+          "x": 56,
+          "y": 228,
+          "documentY": 15602,
+          "width": 786,
+          "height": 148
+        },
+        "headColumns": "786.094px",
+        "responseColumns": "786.094px",
+        "responseRect": {
+          "x": 56,
+          "y": 394,
+          "documentY": 15768,
+          "width": 786,
+          "height": 832
+        },
+        "metaColumns": "786.094px",
+        "metaRect": {
+          "x": 56,
+          "y": 1244,
+          "documentY": 16618,
+          "width": 786,
+          "height": 266
+        },
+        "shareRect": {
+          "x": 242,
+          "y": 1405,
+          "documentY": 16779,
+          "width": 416,
+          "height": 105
+        },
+        "authorRect": {
+          "x": 56,
+          "y": 1262,
+          "documentY": 16636,
+          "width": 786,
+          "height": 118
+        },
+        "subscribeRect": {
+          "x": 56,
+          "y": 878,
+          "documentY": 16252,
+          "width": 786,
+          "height": 348
+        }
+      }
+    },
+    {
+      "case": "boundary-dark-899",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "boundary-dark-899.png",
+      "metrics": {
+        "theme": "dark",
+        "viewportWidth": 899,
+        "viewportHeight": 900,
+        "bodyScrollWidth": 899,
+        "bodyClientWidth": 899,
+        "horizontalOverflow": false,
+        "shellRect": {
+          "x": 56,
+          "y": 92,
+          "documentY": 15466,
+          "width": 786,
+          "height": 1419
+        },
+        "handoffRect": {
+          "x": 43,
+          "y": -168,
+          "documentY": 15206,
+          "width": 786,
+          "height": 224
+        },
+        "pathRect": {
+          "x": 56,
+          "y": 228,
+          "documentY": 15602,
+          "width": 786,
+          "height": 148
+        },
+        "headColumns": "786.094px",
+        "responseColumns": "786.094px",
+        "responseRect": {
+          "x": 56,
+          "y": 394,
+          "documentY": 15768,
+          "width": 786,
+          "height": 832
+        },
+        "metaColumns": "786.094px",
+        "metaRect": {
+          "x": 56,
+          "y": 1244,
+          "documentY": 16618,
+          "width": 786,
+          "height": 266
+        },
+        "shareRect": {
+          "x": 242,
+          "y": 1405,
+          "documentY": 16779,
+          "width": 416,
+          "height": 105
+        },
+        "authorRect": {
+          "x": 56,
+          "y": 1262,
+          "documentY": 16636,
+          "width": 786,
+          "height": 118
+        },
+        "subscribeRect": {
+          "x": 56,
+          "y": 878,
+          "documentY": 16252,
+          "width": 786,
+          "height": 348
+        }
+      }
+    },
+    {
+      "case": "boundary-light-900",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "boundary-light-900.png",
+      "metrics": {
+        "theme": "light",
+        "viewportWidth": 900,
+        "viewportHeight": 900,
+        "bodyScrollWidth": 900,
+        "bodyClientWidth": 900,
+        "horizontalOverflow": false,
+        "shellRect": {
+          "x": 57,
+          "y": 92,
+          "documentY": 15466,
+          "width": 786,
+          "height": 918
+        },
+        "handoffRect": {
+          "x": 43,
+          "y": -168,
+          "documentY": 15206,
+          "width": 786,
+          "height": 224
+        },
+        "pathRect": {
+          "x": 57,
+          "y": 178,
+          "documentY": 15552,
+          "width": 786,
+          "height": 148
+        },
+        "headColumns": "548.062px 225.234px",
+        "responseColumns": "423.125px 346.969px",
+        "responseRect": {
+          "x": 57,
+          "y": 344,
+          "documentY": 15718,
+          "width": 786,
+          "height": 512
+        },
+        "metaColumns": "357.297px 416px",
+        "metaRect": {
+          "x": 57,
+          "y": 874,
+          "documentY": 16248,
+          "width": 786,
+          "height": 136
+        },
+        "shareRect": {
+          "x": 427,
+          "y": 904,
+          "documentY": 16278,
+          "width": 416,
+          "height": 105
+        },
+        "authorRect": {
+          "x": 57,
+          "y": 892,
+          "documentY": 16266,
+          "width": 357,
+          "height": 118
+        },
+        "subscribeRect": {
+          "x": 496,
+          "y": 362,
+          "documentY": 15736,
+          "width": 347,
+          "height": 494
+        }
+      }
+    },
+    {
+      "case": "boundary-dark-900",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "boundary-dark-900.png",
+      "metrics": {
+        "theme": "dark",
+        "viewportWidth": 900,
+        "viewportHeight": 900,
+        "bodyScrollWidth": 900,
+        "bodyClientWidth": 900,
+        "horizontalOverflow": false,
+        "shellRect": {
+          "x": 57,
+          "y": 92,
+          "documentY": 15466,
+          "width": 786,
+          "height": 918
+        },
+        "handoffRect": {
+          "x": 43,
+          "y": -168,
+          "documentY": 15206,
+          "width": 786,
+          "height": 224
+        },
+        "pathRect": {
+          "x": 57,
+          "y": 178,
+          "documentY": 15552,
+          "width": 786,
+          "height": 148
+        },
+        "headColumns": "548.062px 225.234px",
+        "responseColumns": "423.125px 346.969px",
+        "responseRect": {
+          "x": 57,
+          "y": 344,
+          "documentY": 15718,
+          "width": 786,
+          "height": 512
+        },
+        "metaColumns": "357.297px 416px",
+        "metaRect": {
+          "x": 57,
+          "y": 874,
+          "documentY": 16248,
+          "width": 786,
+          "height": 136
+        },
+        "shareRect": {
+          "x": 427,
+          "y": 904,
+          "documentY": 16278,
+          "width": 416,
+          "height": 105
+        },
+        "authorRect": {
+          "x": 57,
+          "y": 892,
+          "documentY": 16266,
+          "width": 357,
+          "height": 118
+        },
+        "subscribeRect": {
+          "x": 496,
+          "y": 362,
+          "documentY": 15736,
+          "width": 347,
+          "height": 494
+        }
+      }
+    },
+    {
+      "case": "mobile-light-390",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "mobile-light-390.png",
+      "metrics": {
+        "theme": "light",
+        "viewportWidth": 390,
+        "viewportHeight": 844,
+        "bodyScrollWidth": 390,
+        "bodyClientWidth": 390,
+        "horizontalOverflow": false,
+        "shellRect": {
+          "x": 32,
+          "y": 92,
+          "documentY": 19431,
+          "width": 326,
+          "height": 1819
+        },
+        "handoffRect": {
+          "x": 32,
+          "y": -281,
+          "documentY": 19058,
+          "width": 326,
+          "height": 341
+        },
+        "pathRect": {
+          "x": 32,
+          "y": 230,
+          "documentY": 19569,
+          "width": 326,
+          "height": 163
+        },
+        "headColumns": "326px",
+        "responseColumns": "326px",
+        "responseRect": {
+          "x": 32,
+          "y": 411,
+          "documentY": 19750,
+          "width": 326,
+          "height": 1104
+        },
+        "metaColumns": "326px",
+        "metaRect": {
+          "x": 32,
+          "y": 1532,
+          "documentY": 20871,
+          "width": 326,
+          "height": 379
+        },
+        "shareRect": {
+          "x": 32,
+          "y": 1716,
+          "documentY": 21055,
+          "width": 326,
+          "height": 195
+        },
+        "authorRect": {
+          "x": 32,
+          "y": 1550,
+          "documentY": 20889,
+          "width": 326,
+          "height": 141
+        },
+        "subscribeRect": {
+          "x": 32,
+          "y": 1118,
+          "documentY": 20457,
+          "width": 326,
+          "height": 396
+        }
+      }
+    },
+    {
+      "case": "mobile-dark-390",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "mobile-dark-390.png",
+      "metrics": {
+        "theme": "dark",
+        "viewportWidth": 390,
+        "viewportHeight": 844,
+        "bodyScrollWidth": 390,
+        "bodyClientWidth": 390,
+        "horizontalOverflow": false,
+        "shellRect": {
+          "x": 32,
+          "y": 92,
+          "documentY": 19431,
+          "width": 326,
+          "height": 1819
+        },
+        "handoffRect": {
+          "x": 32,
+          "y": -281,
+          "documentY": 19058,
+          "width": 326,
+          "height": 341
+        },
+        "pathRect": {
+          "x": 32,
+          "y": 230,
+          "documentY": 19569,
+          "width": 326,
+          "height": 163
+        },
+        "headColumns": "326px",
+        "responseColumns": "326px",
+        "responseRect": {
+          "x": 32,
+          "y": 411,
+          "documentY": 19750,
+          "width": 326,
+          "height": 1104
+        },
+        "metaColumns": "326px",
+        "metaRect": {
+          "x": 32,
+          "y": 1532,
+          "documentY": 20871,
+          "width": 326,
+          "height": 379
+        },
+        "shareRect": {
+          "x": 32,
+          "y": 1716,
+          "documentY": 21055,
+          "width": 326,
+          "height": 195
+        },
+        "authorRect": {
+          "x": 32,
+          "y": 1550,
+          "documentY": 20889,
+          "width": 326,
+          "height": 141
+        },
+        "subscribeRect": {
+          "x": 32,
+          "y": 1118,
+          "documentY": 20457,
+          "width": 326,
+          "height": 396
+        }
+      }
+    }
+  ]
+}

@@ -150,6 +150,8 @@ const articleReaderLayoutStyle = {
   "--article-prose-target": `${ARTICLE_READER_LAYOUT.proseMeasure.target}ch`,
   "--article-prose-max": `${ARTICLE_READER_LAYOUT.proseMeasure.max}ch`,
   "--article-toc-rail-width": `${ARTICLE_READER_LAYOUT.tocRailWidthRem}rem`,
+  "--article-continuation-max": `${ARTICLE_READER_LAYOUT.continuation.maxMeasure}ch`,
+  "--article-response-split-min": `${ARTICLE_READER_LAYOUT.continuation.responseSplitMinViewportPx}px`,
 } as CSSProperties;
 
 export function buildArticleCompletionLinks({
@@ -731,11 +733,7 @@ export default function PostDetail() {
     item => item.key !== primaryEntryItem?.key
   );
   const articlePostContext = postContext as PostContextModel | undefined;
-  const seriesContext = buildSeriesContext(
-    articlePost,
-    articlePostContext,
-    t
-  );
+  const seriesContext = buildSeriesContext(articlePost, articlePostContext, t);
   const seriesLinks: SeriesProgressLink[] = seriesContext
     ? ([
         !seriesContext.isFirst && seriesContext.first
@@ -1001,7 +999,6 @@ export default function PostDetail() {
                       </dl>
                     </details>
                   )}
-
                 </section>
               )}
             </div>
@@ -1098,65 +1095,17 @@ export default function PostDetail() {
               </div>
             </section>
 
-            <div
-              className="article-secondary-actions glass-dock liquid-surface"
-              aria-label={t("post.share")}
+            <section
+              className="article-continuation-shell"
+              aria-labelledby="article-continuation-title"
             >
-              <span className="article-secondary-label">{t("post.share")}</span>
-              <Button
-                variant="outline"
-                size="sm"
-                className="glass-button h-8 gap-1.5 text-xs"
-                onClick={() => handleShare("twitter")}
-              >
-                <Twitter className="h-3.5 w-3.5" />
-                {t("post.twitter")}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="glass-button h-8 gap-1.5 text-xs"
-                onClick={() => handleShare("linkedin")}
-              >
-                <Linkedin className="h-3.5 w-3.5" />
-                {t("post.linkedin")}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="glass-button h-8 gap-1.5 text-xs"
-                onClick={() => handleShare("wechat")}
-              >
-                <MessageCircle className="h-3.5 w-3.5" />
-                {t("post.wechat")}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="glass-button h-8 gap-1.5 text-xs"
-                onClick={() => handleShare("copy")}
-              >
-                <Copy className="h-3.5 w-3.5" />
-                {t("post.copyLink")}
-              </Button>
-              {isAdmin && (
-                <Link href={`/write/${post.slug}`}>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="glass-button h-8 gap-1.5 text-xs"
-                  >
-                    <Edit className="h-3.5 w-3.5" />
-                    {t("post.edit")}
-                  </Button>
-                </Link>
-              )}
-            </div>
-
-            {/* Author Footer */}
-            <div className="mt-16 border-t border-white/10 pt-8">
-              <div className="mb-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                <h2 className="section-title">{t("post.discoveryTitle")}</h2>
+              <div className="article-continuation-head">
+                <div>
+                  <p className="technical-label">{t("post.handoff.kicker")}</p>
+                  <h2 id="article-continuation-title" className="section-title">
+                    {t("post.discoveryTitle")}
+                  </h2>
+                </div>
                 <Button
                   asChild
                   variant="outline"
@@ -1170,110 +1119,109 @@ export default function PostDetail() {
                 </Button>
               </div>
 
-              {seriesContext &&
-                (seriesContext.previous || seriesContext.next) && (
-                  <SeriesProgress
-                    variant="footer"
-                    className="mb-6"
-                    label={t("post.series.continuity")}
-                    title={seriesContext.title}
-                    meta={seriesContext.positionLabel}
-                    links={
-                      [
-                        seriesContext.previous
-                          ? {
-                              href: `/post/${seriesContext.previous.slug}`,
-                              label: seriesContext.previous.title,
-                              direction: "previous" as const,
-                            }
-                          : null,
-                        seriesContext.next
-                          ? {
-                              href: `/post/${seriesContext.next.slug}`,
-                              label: seriesContext.next.title,
-                              direction: "next" as const,
-                              primary: true,
-                            }
-                          : null,
-                      ].filter(Boolean) as SeriesProgressLink[]
-                    }
-                  />
-                )}
+              <div className="article-continuation-path">
+                {seriesContext &&
+                  (seriesContext.previous || seriesContext.next) && (
+                    <SeriesProgress
+                      variant="footer"
+                      className="article-series-continuation"
+                      label={t("post.series.continuity")}
+                      title={seriesContext.title}
+                      meta={seriesContext.positionLabel}
+                      links={
+                        [
+                          seriesContext.previous
+                            ? {
+                                href: `/post/${seriesContext.previous.slug}`,
+                                label: seriesContext.previous.title,
+                                direction: "previous" as const,
+                              }
+                            : null,
+                          seriesContext.next
+                            ? {
+                                href: `/post/${seriesContext.next.slug}`,
+                                label: seriesContext.next.title,
+                                direction: "next" as const,
+                                primary: true,
+                              }
+                            : null,
+                        ].filter(Boolean) as SeriesProgressLink[]
+                      }
+                    />
+                  )}
 
-              {!seriesContext &&
-                (postContext?.previous || postContext?.next) && (
-                  <div className="grid gap-3 md:grid-cols-2">
-                    {postContext.previous && (
-                      <Link
-                        href={`/post/${postContext.previous.slug}`}
-                        className="article-nav-card glass-control rounded-lg p-4 transition"
-                      >
-                        <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
-                          <ArrowLeft className="h-3.5 w-3.5" />
-                          {t("post.previous")}
-                        </span>
-                        <h3 className="line-clamp-2 text-sm font-semibold leading-6 text-white">
-                          {postContext.previous.title}
-                        </h3>
-                      </Link>
-                    )}
-                    {postContext.next && (
-                      <Link
-                        href={`/post/${postContext.next.slug}`}
-                        className="article-nav-card glass-control rounded-lg p-4 text-right transition"
-                      >
-                        <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
-                          {t("post.next")}
-                          <ArrowRight className="h-3.5 w-3.5" />
-                        </span>
-                        <h3 className="line-clamp-2 text-sm font-semibold leading-6 text-white">
-                          {postContext.next.title}
-                        </h3>
-                      </Link>
-                    )}
+                {!seriesContext &&
+                  (postContext?.previous || postContext?.next) && (
+                    <div className="article-adjacent-nav">
+                      {postContext.previous && (
+                        <Link
+                          href={`/post/${postContext.previous.slug}`}
+                          className="article-nav-card glass-control rounded-lg p-4 transition"
+                        >
+                          <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
+                            <ArrowLeft className="h-3.5 w-3.5" />
+                            {t("post.previous")}
+                          </span>
+                          <h3 className="line-clamp-2 text-sm font-semibold leading-6 text-white">
+                            {postContext.previous.title}
+                          </h3>
+                        </Link>
+                      )}
+                      {postContext.next && (
+                        <Link
+                          href={`/post/${postContext.next.slug}`}
+                          className="article-nav-card glass-control rounded-lg p-4 text-right transition"
+                        >
+                          <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
+                            {t("post.next")}
+                            <ArrowRight className="h-3.5 w-3.5" />
+                          </span>
+                          <h3 className="line-clamp-2 text-sm font-semibold leading-6 text-white">
+                            {postContext.next.title}
+                          </h3>
+                        </Link>
+                      )}
+                    </div>
+                  )}
+
+                {postContext?.related?.length ? (
+                  <div className="article-related-cluster">
+                    <h3>{t("post.related")}</h3>
+                    <div className="article-related-list">
+                      {postContext.related.map((related: any) => (
+                        <Link
+                          key={related.id}
+                          href={`/post/${related.slug}`}
+                          className="article-related-link glass-control flex items-center justify-between gap-4 rounded-lg px-4 py-3 text-sm text-slate-200 transition hover:text-white"
+                        >
+                          <span className="line-clamp-1">{related.title}</span>
+                          <ArrowRight className="h-4 w-4 shrink-0 text-sky-200" />
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                )}
+                ) : null}
+              </div>
 
-              {postContext?.related?.length ? (
-                <div className="mt-8">
-                  <h3 className="mb-3 text-sm font-semibold text-white">
-                    {t("post.related")}
-                  </h3>
-                  <div className="grid gap-3">
-                    {postContext.related.map((related: any) => (
-                      <Link
-                        key={related.id}
-                        href={`/post/${related.slug}`}
-                        className="article-related-link glass-control flex items-center justify-between gap-4 rounded-lg px-4 py-3 text-sm text-slate-200 transition hover:text-white"
-                      >
-                        <span className="line-clamp-1">{related.title}</span>
-                        <ArrowRight className="h-4 w-4 shrink-0 text-sky-200" />
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
-              <div className="mt-10 grid gap-8 border-t border-white/10 pt-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
+              <div className="article-reader-response-grid">
                 <ArticleFeedback
                   postId={post.id}
                   postTitle={post.title}
+                  className="article-feedback-panel"
                   embedded
                 />
-                <SubscriptionForm surface="article" embedded />
+                <SubscriptionForm
+                  surface="article"
+                  className="article-subscription-panel"
+                  embedded
+                />
               </div>
-            </div>
 
-            <div className="mt-16 border-t border-white/10 pt-8">
-              <div className="flex items-start gap-4">
-                <div className="flex-1">
-                  <h3 className="mb-2 text-lg font-semibold text-white">
-                    {t("post.authorName")}
-                  </h3>
-                  <p className="mb-4 text-sm text-slate-400">
-                    {t("post.authorBio")}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
+              <div className="article-continuation-meta">
+                <div className="article-author-note">
+                  <h3>{t("post.authorName")}</h3>
+                  <p>{t("post.authorBio")}</p>
+                  <div className="article-author-actions">
                     <a
                       href="https://scholar.google.com/citations?user=6X9HlDAAAAAJ"
                       target="_blank"
@@ -1299,8 +1247,65 @@ export default function PostDetail() {
                     </Button>
                   </div>
                 </div>
+
+                <div
+                  className="article-secondary-actions glass-dock liquid-surface"
+                  aria-label={t("post.share")}
+                >
+                  <span className="article-secondary-label">
+                    {t("post.share")}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="glass-button h-8 gap-1.5 text-xs"
+                    onClick={() => handleShare("twitter")}
+                  >
+                    <Twitter className="h-3.5 w-3.5" />
+                    {t("post.twitter")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="glass-button h-8 gap-1.5 text-xs"
+                    onClick={() => handleShare("linkedin")}
+                  >
+                    <Linkedin className="h-3.5 w-3.5" />
+                    {t("post.linkedin")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="glass-button h-8 gap-1.5 text-xs"
+                    onClick={() => handleShare("wechat")}
+                  >
+                    <MessageCircle className="h-3.5 w-3.5" />
+                    {t("post.wechat")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="glass-button h-8 gap-1.5 text-xs"
+                    onClick={() => handleShare("copy")}
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                    {t("post.copyLink")}
+                  </Button>
+                  {isAdmin && (
+                    <Link href={`/write/${post.slug}`}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="glass-button h-8 gap-1.5 text-xs"
+                      >
+                        <Edit className="h-3.5 w-3.5" />
+                        {t("post.edit")}
+                      </Button>
+                    </Link>
+                  )}
+                </div>
               </div>
-            </div>
+            </section>
           </article>
 
           {/* Table of Contents */}

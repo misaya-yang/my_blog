@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   ARTICLE_READER_LAYOUT,
+  getArticleContinuationMode,
   getArticleRailMode,
   isArticleProseMeasureHealthy,
 } from "../lib/articleLayout";
@@ -115,5 +116,18 @@ describe("article reader layout contract", () => {
     expect(isArticleProseMeasureHealthy(74)).toBe(true);
     expect(isArticleProseMeasureHealthy(78)).toBe(true);
     expect(isArticleProseMeasureHealthy(79)).toBe(false);
+  });
+
+  it("keeps reader response below the continuation path and splits only when there is room", () => {
+    expect(ARTICLE_READER_LAYOUT.continuation).toEqual({
+      maxMeasure: 78,
+      responseSplitMinViewportPx: 900,
+      responseOrder: ["feedback", "subscription"],
+      secondaryOrder: ["author", "share"],
+    });
+    expect(getArticleContinuationMode(760)).toBe("stacked");
+    expect(getArticleContinuationMode(899)).toBe("stacked");
+    expect(getArticleContinuationMode(900)).toBe("split");
+    expect(getArticleContinuationMode(1440)).toBe("split");
   });
 });

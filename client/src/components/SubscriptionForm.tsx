@@ -109,7 +109,7 @@ export function SubscriptionForm({
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-3">
-        <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="grid gap-3">
           <label className="sr-only" htmlFor={emailId}>
             {t("engagement.subscribe.emailPlaceholder")}
           </label>
@@ -128,7 +128,7 @@ export function SubscriptionForm({
           <Button
             type="submit"
             disabled={subscribe.isPending}
-            className="w-full md:w-auto"
+            className="w-full"
           >
             {subscribe.isPending ? (
               <>
@@ -141,7 +141,7 @@ export function SubscriptionForm({
           </Button>
         </div>
 
-        <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="grid gap-3">
           <label className="sr-only" htmlFor={interestsId}>
             {t("engagement.subscribe.interestsPlaceholder")}
           </label>
