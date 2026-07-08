@@ -120,6 +120,10 @@ export default function ManageAgent() {
     enabled: isAdmin,
     retry: false,
   });
+  const qualitySummary = trpc.agent.adminQualitySummary.useQuery(
+    { limit: 50 },
+    { enabled: isAdmin, retry: false }
+  );
   const debug = trpc.agent.adminDebugRetrieval.useQuery(
     { query: debugQuery, routeContext },
     { enabled: false, retry: false }
@@ -258,12 +262,9 @@ export default function ManageAgent() {
 
           <TabsContent value="overview" className="research-surface agent-console-panel">
             <AgentQualityOverview
-              indexLoading={indexStatus.isLoading}
-              indexError={indexStatus.isError}
-              indexStatus={indexStatus.data}
-              radarLoading={questionRadar.isLoading}
-              radarError={questionRadar.isError}
-              radar={questionRadar.data}
+              qualityLoading={qualitySummary.isLoading}
+              qualityError={qualitySummary.isError}
+              qualitySummary={qualitySummary.data}
               searchMissLoading={contentRadar.isLoading}
               searchMisses={contentRadar.data?.searchMisses}
             />

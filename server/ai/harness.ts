@@ -56,6 +56,7 @@ import type {
   AgentIdentity,
   AgentKnowledgeIndexStatusOutput,
   AgentModel,
+  AgentQualitySummaryOutput,
   AgentQuota,
   AgentQuestionRadarOutput,
   AgentRetrievalDebugOutput,
@@ -115,6 +116,10 @@ export type AgentService = {
   adminKnowledgeStatus(
     ctx: AgentContext
   ): Promise<AgentKnowledgeIndexStatusOutput>;
+  adminQualitySummary(
+    ctx: AgentContext,
+    input: { limit?: number }
+  ): Promise<AgentQualitySummaryOutput>;
   adminExtractArticleIdeas(
     ctx: AgentContext,
     input: { conversationId: string }
@@ -394,6 +399,25 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
     async adminKnowledgeStatus(ctx) {
       assertAdminContext(ctx);
       return deps.getKnowledgeStatus();
+    },
+
+    async adminQualitySummary(ctx, input) {
+      assertAdminContext(ctx);
+      const [knowledgeStatus, runs] = await Promise.all([
+        deps.getKnowledgeStatus(),
+        deps.conversationStore.listRuns({
+          limit: Math.min(Math.max(input.limit ?? 50, 1), 100),
+        }),
+      ]);
+      const radar = buildQuestionRadar(runs);
+
+      return {
+        generatedAt: now(),
+        knowledgeStatus,
+        radar,
+        releaseBlocking: isKnowledgeReleaseBlocking(knowledgeStatus),
+        actionItems: buildQualitySummaryActions(knowledgeStatus, radar),
+      };
     },
 
     async adminExtractArticleIdeas(ctx, input) {
@@ -1557,6 +1581,102 @@ function buildQuestionRadar(runs: AgentRunRecord[]): AgentQuestionRadarOutput {
       status: "new" as const,
     })),
   };
+}
+
+function isKnowledgeReleaseBlocking(
+  status: AgentKnowledgeIndexStatusOutput
+) {
+  return (
+    status.stalePublicPostSlugs.length > 0 ||
+    status.extraIndexedPostSlugs.length > 0 ||
+    Boolean(status.latestReindexError)
+  );
+}
+
+function buildQualitySummaryActions(
+  knowledgeStatus: AgentKnowledgeIndexStatusOutput,
+  radar: AgentQuestionRadarOutput
+): AgentQualitySummaryOutput["actionItems"] {
+  const actions: AgentQualitySummaryOutput["actionItems"] = [];
+
+  if (knowledgeStatus.latestReindexError) {
+    actions.push({
+      id: "index_error",
+      severity: "high",
+      title: "Latest Agent knowledge reindex failed",
+      description:
+        "Resolve the latest reindex error before claiming Agent release readiness.",
+      target: "index",
+      details: [knowledgeStatus.latestReindexError],
+    });
+  } else if (
+    knowledgeStatus.stalePublicPostSlugs.length > 0 ||
+    knowledgeStatus.extraIndexedPostSlugs.length > 0
+  ) {
+    actions.push({
+      id: "index_stale",
+      severity: "high",
+      title: "Agent knowledge index is stale",
+      description:
+        "The public article inventory and Agent knowledge index do not match.",
+      target: "index",
+      count:
+        knowledgeStatus.stalePublicPostSlugs.length +
+        knowledgeStatus.extraIndexedPostSlugs.length,
+      details: [
+        ...knowledgeStatus.stalePublicPostSlugs.slice(0, 3),
+        ...knowledgeStatus.extraIndexedPostSlugs.slice(0, 3),
+      ].slice(0, 4),
+    });
+  }
+
+  if (radar.summary.noSourceRuns > 0) {
+    actions.push({
+      id: "no_source_runs",
+      severity: "medium",
+      title: "Completed Agent runs without public sources",
+      description:
+        "Review whether content coverage, retrieval aliases, or refusal copy need work.",
+      target: "content_radar",
+      count: radar.summary.noSourceRuns,
+      details: radar.noSourceRuns
+        .map(run => formatQualityRunDetail(run))
+        .slice(0, 3),
+    });
+  }
+
+  if (radar.summary.failedRuns > 0) {
+    actions.push({
+      id: "failed_runs",
+      severity: "medium",
+      title: "Failed Agent runs need trace review",
+      description:
+        "Inspect recent failed runs before turning the issue into content backlog.",
+      target: "traces",
+      count: radar.summary.failedRuns,
+      details: radar.failedRuns
+        .map(run => formatQualityRunDetail(run))
+        .slice(0, 3),
+    });
+  }
+
+  return actions;
+}
+
+function formatQualityRunDetail(run: {
+  runId: string;
+  errorCode?: string | null;
+  scopeType?: string | null;
+  scopeValue?: string | null;
+}) {
+  const scope = run.scopeType
+    ? run.scopeValue
+      ? `${run.scopeType}:${run.scopeValue}`
+      : run.scopeType
+    : null;
+  return [run.runId, run.errorCode, scope]
+    .filter((part): part is string => Boolean(part))
+    .join(" · ");
 }
 
 function sanitizeQuestion(question: string | null | undefined) {

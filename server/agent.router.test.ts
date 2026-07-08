@@ -140,6 +140,47 @@ const agentMocks = vi.hoisted(() => ({
     extraIndexedPostSlugs: [],
     indexedPostSlugs: ["agent-harness"],
   })),
+  adminQualitySummary: vi.fn(async () => ({
+    generatedAt: new Date("2026-05-31T00:00:00.000Z"),
+    knowledgeStatus: {
+      chunkCount: 12,
+      publicPostCount: 3,
+      indexedPublicPostCount: 3,
+      hiddenOrDraftExcludedCount: 1,
+      lastReindexAt: new Date("2026-05-31T00:00:00.000Z"),
+      latestReindexError: null,
+      reindexCommand: "pnpm ai:reindex",
+      publishCommand: "pnpm content:publish",
+      stalePublicPostSlugs: [],
+      extraIndexedPostSlugs: [],
+      indexedPostSlugs: ["agent-harness"],
+    },
+    radar: {
+      summary: {
+        totalRuns: 3,
+        failedRuns: 1,
+        noSourceRuns: 1,
+        uniqueQuestions: 2,
+      },
+      frequentQuestions: [],
+      noSourceRuns: [],
+      failedRuns: [],
+      scopeBreakdown: [],
+      suggestedIdeas: [],
+    },
+    releaseBlocking: false,
+    actionItems: [
+      {
+        id: "failed_runs",
+        severity: "medium",
+        title: "Failed Agent runs need trace review",
+        description: "Inspect recent failed runs.",
+        target: "traces",
+        count: 1,
+        details: ["run-ops-1 · agent_generation_failed · post:agent-harness"],
+      },
+    ],
+  })),
   adminExtractArticleIdeas: vi.fn(async () => ({
     ideas: [
       {
@@ -215,6 +256,7 @@ vi.mock("./ai/harness.js", () => ({
     adminDebugRetrieval: agentMocks.adminDebugRetrieval,
     adminRunEvals: agentMocks.adminRunEvals,
     adminKnowledgeStatus: agentMocks.adminKnowledgeStatus,
+    adminQualitySummary: agentMocks.adminQualitySummary,
     adminExtractArticleIdeas: agentMocks.adminExtractArticleIdeas,
     adminQuestionRadar: agentMocks.adminQuestionRadar,
     sendMessage: agentMocks.sendMessage,
@@ -340,6 +382,7 @@ describe("agent router", () => {
       },
     });
     const status = await caller.agent.adminKnowledgeStatus();
+    const quality = await caller.agent.adminQualitySummary({ limit: 20 });
     const ideas = await caller.agent.adminExtractArticleIdeas({
       conversationId: "11111111-1111-4111-8111-111111111111",
     });
@@ -347,6 +390,8 @@ describe("agent router", () => {
 
     expect(debug.sourceIds).toEqual(["post:agent-harness:1"]);
     expect(status.chunkCount).toBe(12);
+    expect(quality.radar.summary.failedRuns).toBe(1);
+    expect(quality.actionItems[0].target).toBe("traces");
     expect(evals.items[0].passed).toBe(true);
     expect(evals.summary.passed).toBe(1);
     expect(ideas.ideas[0].proposedTitle).toContain("failure modes");

@@ -287,6 +287,22 @@ export type AgentQuestionRadarOutput = {
   }>;
 };
 
+export type AgentQualitySummaryOutput = {
+  generatedAt: Date;
+  knowledgeStatus: AgentKnowledgeIndexStatusOutput;
+  radar: AgentQuestionRadarOutput;
+  releaseBlocking: boolean;
+  actionItems: Array<{
+    id: "index_stale" | "index_error" | "no_source_runs" | "failed_runs";
+    severity: "high" | "medium";
+    title: string;
+    description: string;
+    target: "index" | "content_radar" | "traces";
+    count?: number;
+    details: string[];
+  }>;
+};
+
 export type AgentAddContextInput = {
   conversationId?: string;
   routeContext: AgentRouteContext;

@@ -1507,6 +1507,85 @@ describe("AI agent harness", () => {
     });
   });
 
+  it("summarizes Agent quality into bounded owner action items", async () => {
+    const getKnowledgeStatus = vi.fn(async () => ({
+      chunkCount: 9,
+      publicPostCount: 3,
+      indexedPublicPostCount: 2,
+      hiddenOrDraftExcludedCount: 1,
+      lastReindexAt: new Date("2026-05-30T08:00:00.000Z"),
+      latestReindexError: null,
+      reindexCommand: "pnpm ai:reindex",
+      publishCommand: "pnpm content:publish",
+      stalePublicPostSlugs: ["agent-loop-observable"],
+      extraIndexedPostSlugs: [],
+      indexedPostSlugs: ["agent-harness", "rag-evidence-packet"],
+    }));
+    const { service, conversationStore } = createHarness({
+      getKnowledgeStatus,
+    });
+    conversationStore.runs.push(
+      {
+        id: "run-summary-1",
+        question: "Why did the harness fail without sources?",
+        status: "completed",
+        scopeType: "track",
+        scopeValue: "ai-applications",
+        retrievedChunkIds: [],
+        createdAt: new Date("2026-05-30T08:00:00.000Z"),
+      },
+      {
+        id: "run-summary-2",
+        question: "Why did the harness fail without sources?",
+        status: "failed",
+        errorCode: "agent_generation_failed",
+        scopeType: "track",
+        scopeValue: "ai-applications",
+        retrievedChunkIds: ["agent-harness:1"],
+        createdAt: new Date("2026-05-30T09:00:00.000Z"),
+      }
+    );
+
+    await expect(
+      service.adminQualitySummary(visitorContext(), { limit: 20 })
+    ).rejects.toThrow("Admin authentication required");
+    const summary = await service.adminQualitySummary(adminContext(), {
+      limit: 20,
+    });
+
+    expect(summary.releaseBlocking).toBe(true);
+    expect(summary.knowledgeStatus.stalePublicPostSlugs).toEqual([
+      "agent-loop-observable",
+    ]);
+    expect(summary.radar.summary).toMatchObject({
+      failedRuns: 1,
+      noSourceRuns: 1,
+    });
+    expect(summary.actionItems.map(item => item.id)).toEqual([
+      "index_stale",
+      "no_source_runs",
+      "failed_runs",
+    ]);
+    expect(summary.actionItems[0]).toMatchObject({
+      severity: "high",
+      target: "index",
+      details: ["agent-loop-observable"],
+    });
+    expect(summary.actionItems[1]).toMatchObject({
+      target: "content_radar",
+      details: ["run-summary-1 · track:ai-applications"],
+    });
+    expect(summary.actionItems[2]).toMatchObject({
+      target: "traces",
+      details: [
+        "run-summary-2 · agent_generation_failed · track:ai-applications",
+      ],
+    });
+    expect(JSON.stringify(summary.actionItems)).not.toContain(
+      "Why did the harness fail without sources?"
+    );
+  });
+
   it("attaches pasted context to the current conversation and passes it to the model", async () => {
     const model: AgentModel = {
       generate: vi.fn(async ({ contextSources }) => ({

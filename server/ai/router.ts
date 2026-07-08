@@ -100,6 +100,21 @@ export const agentRouter = router({
     );
   }),
 
+  adminQualitySummary: publicProcedure
+    .input(
+      z
+        .object({
+          limit: z.number().int().min(1).max(100).optional(),
+        })
+        .optional()
+    )
+    .query(async ({ ctx, input }) => {
+      return defaultAgentService.adminQualitySummary(
+        await buildAgentContext(ctx.req, ctx.res),
+        input ?? {}
+      );
+    }),
+
   adminExtractArticleIdeas: publicProcedure
     .input(
       z.object({

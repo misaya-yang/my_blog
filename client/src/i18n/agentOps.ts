@@ -57,6 +57,14 @@ const agentOps: TranslationDict = {
     en: "The owner signal surface could not load. Check admin auth, database connectivity, or the Agent runs table.",
     zh: "作者信号面板加载失败。请检查管理员登录、数据库连接或 Agent 运行表。",
   },
+  "agentOps.overview.actionSummaryErrorTitle": {
+    en: "Quality summary unavailable",
+    zh: "质量总览不可用",
+  },
+  "agentOps.overview.actionSummaryErrorDescription": {
+    en: "The Agent quality summary could not load. Check admin auth, database connectivity, knowledge status, or the Agent runs table.",
+    zh: "Agent 质量总览加载失败。请检查管理员登录、数据库连接、知识索引状态或 Agent 运行表。",
+  },
   "agentOps.overview.actionNoSourceTitle": {
     en: "No-source Agent runs",
     zh: "无来源 Agent 运行",

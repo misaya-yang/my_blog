@@ -47,6 +47,23 @@ type SearchMisses = {
   }>;
 };
 
+type AgentQualitySummary = {
+  knowledgeStatus: IndexStatus;
+  radar: QuestionRadar;
+  releaseBlocking: boolean;
+  actionItems: QualityActionItem[];
+};
+
+type QualityActionItem = {
+  id: "index_stale" | "index_error" | "no_source_runs" | "failed_runs";
+  severity: "high" | "medium";
+  title: string;
+  description: string;
+  target: "index" | "content_radar" | "traces";
+  count?: number;
+  details: string[];
+};
+
 type OverviewAction = {
   id: string;
   tone: "blocked" | "warning" | "info";
@@ -57,39 +74,32 @@ type OverviewAction = {
 };
 
 export function AgentQualityOverview({
-  indexLoading,
-  indexError,
-  indexStatus,
-  radarLoading,
-  radarError,
-  radar,
+  qualityLoading,
+  qualityError,
+  qualitySummary,
   searchMisses,
   searchMissLoading,
 }: {
-  indexLoading: boolean;
-  indexError: boolean;
-  indexStatus?: IndexStatus;
-  radarLoading: boolean;
-  radarError: boolean;
-  radar?: QuestionRadar;
+  qualityLoading: boolean;
+  qualityError: boolean;
+  qualitySummary?: AgentQualitySummary;
   searchMisses?: SearchMisses;
   searchMissLoading?: boolean;
 }) {
   const { t } = useLanguage();
+  const indexStatus = qualitySummary?.knowledgeStatus;
+  const radar = qualitySummary?.radar;
   const indexFresh = isIndexFresh(indexStatus);
   const actions = buildOverviewActions({
-    indexError,
-    indexStatus,
-    radarError,
-    radar,
+    qualityError,
+    actionItems: qualitySummary?.actionItems,
     searchMisses,
     t,
   });
   const noSourceCount = radar?.summary.noSourceRuns ?? 0;
   const failedCount = radar?.summary.failedRuns ?? 0;
   const searchMissCount = searchMisses?.uniqueQueries ?? 0;
-  const overviewLoading =
-    indexLoading || radarLoading || Boolean(searchMissLoading);
+  const overviewLoading = qualityLoading || Boolean(searchMissLoading);
 
   return (
     <div className="space-y-5">
@@ -103,19 +113,19 @@ export function AgentQualityOverview({
         <MetricTile
           label={t("agentOps.overview.knowledge")}
           value={getIndexSummaryValue({
-            loading: indexLoading,
-            error: indexError,
+            loading: qualityLoading,
+            error: qualityError,
             fresh: indexFresh,
             t,
           })}
         />
         <MetricTile
           label={t("agentOps.overview.noSource")}
-          value={radarLoading ? "..." : String(noSourceCount)}
+          value={qualityLoading ? "..." : String(noSourceCount)}
         />
         <MetricTile
           label={t("agentOps.overview.failed")}
-          value={radarLoading ? "..." : String(failedCount)}
+          value={qualityLoading ? "..." : String(failedCount)}
         />
         <MetricTile
           label={t("agentOps.overview.searchMisses")}
@@ -195,72 +205,29 @@ export function AgentQualityOverview({
 }
 
 function buildOverviewActions({
-  indexError,
-  indexStatus,
-  radarError,
-  radar,
+  qualityError,
+  actionItems,
   searchMisses,
   t,
 }: {
-  indexError: boolean;
-  indexStatus?: IndexStatus;
-  radarError: boolean;
-  radar?: QuestionRadar;
+  qualityError: boolean;
+  actionItems?: QualityActionItem[];
   searchMisses?: SearchMisses;
   t: (key: string, values?: Record<string, string | number>) => string;
 }) {
   const actions: OverviewAction[] = [];
-  const indexFresh = isIndexFresh(indexStatus);
 
-  if (indexError || (indexStatus && !indexFresh)) {
+  if (qualityError) {
     actions.push({
-      id: "index",
-      tone: "blocked",
-      title: t("agentOps.overview.actionIndexTitle"),
-      description: t("agentOps.overview.actionIndexDescription"),
-      detail:
-        indexStatus?.stalePublicPostSlugs.slice(0, 3).join(", ") ||
-        indexStatus?.latestReindexError ||
-        undefined,
-      target: t("agentOps.index.title"),
-    });
-  }
-
-  if (radarError) {
-    actions.push({
-      id: "radar-error",
+      id: "quality-error",
       tone: "warning",
-      title: t("agentOps.overview.actionRadarErrorTitle"),
-      description: t("agentOps.overview.actionRadarErrorDescription"),
+      title: t("agentOps.overview.actionSummaryErrorTitle"),
+      description: t("agentOps.overview.actionSummaryErrorDescription"),
       target: t("agentOps.ideas.title"),
     });
   }
 
-  if ((radar?.summary.noSourceRuns ?? 0) > 0) {
-    actions.push({
-      id: "no-source",
-      tone: "warning",
-      title: t("agentOps.overview.actionNoSourceTitle"),
-      description: t("agentOps.overview.actionNoSourceDescription", {
-        count: radar?.summary.noSourceRuns ?? 0,
-      }),
-      detail: formatRunPreview(radar?.noSourceRuns ?? []),
-      target: t("agentOps.ideas.title"),
-    });
-  }
-
-  if ((radar?.summary.failedRuns ?? 0) > 0) {
-    actions.push({
-      id: "failed",
-      tone: "warning",
-      title: t("agentOps.overview.actionFailedTitle"),
-      description: t("agentOps.overview.actionFailedDescription", {
-        count: radar?.summary.failedRuns ?? 0,
-      }),
-      detail: formatRunPreview(radar?.failedRuns ?? []),
-      target: t("agentOps.traces.title"),
-    });
-  }
+  actions.push(...(actionItems ?? []).map(item => toOverviewAction(item, t)));
 
   if ((searchMisses?.uniqueQueries ?? 0) > 0) {
     actions.push({
@@ -279,6 +246,47 @@ function buildOverviewActions({
   }
 
   return actions;
+}
+
+function toOverviewAction(
+  item: QualityActionItem,
+  t: (key: string, values?: Record<string, string | number>) => string
+): OverviewAction {
+  const count = item.count ?? item.details.length;
+  if (item.id === "index_stale" || item.id === "index_error") {
+    return {
+      id: item.id,
+      tone: "blocked",
+      title: t("agentOps.overview.actionIndexTitle"),
+      description: t("agentOps.overview.actionIndexDescription"),
+      detail: item.details.slice(0, 3).join(", ") || undefined,
+      target: t("agentOps.index.title"),
+    };
+  }
+
+  if (item.id === "no_source_runs") {
+    return {
+      id: item.id,
+      tone: item.severity === "high" ? "blocked" : "warning",
+      title: t("agentOps.overview.actionNoSourceTitle"),
+      description: t("agentOps.overview.actionNoSourceDescription", {
+        count,
+      }),
+      detail: item.details.slice(0, 3).join(", ") || undefined,
+      target: t("agentOps.ideas.title"),
+    };
+  }
+
+  return {
+    id: item.id,
+    tone: item.severity === "high" ? "blocked" : "warning",
+    title: t("agentOps.overview.actionFailedTitle"),
+    description: t("agentOps.overview.actionFailedDescription", {
+      count,
+    }),
+    detail: item.details.slice(0, 3).join(", ") || undefined,
+    target: t("agentOps.traces.title"),
+  };
 }
 
 function isIndexFresh(status?: IndexStatus) {
@@ -306,14 +314,6 @@ function getIndexSummaryValue({
   return fresh
     ? t("agentOps.overview.fresh")
     : t("agentOps.overview.needsWork");
-}
-
-function formatRunPreview(runs: RadarRun[]) {
-  return runs
-    .slice(0, 3)
-    .map(run => run.question || run.runId)
-    .filter(Boolean)
-    .join(", ");
 }
 
 function getActionClass(tone: OverviewAction["tone"]) {

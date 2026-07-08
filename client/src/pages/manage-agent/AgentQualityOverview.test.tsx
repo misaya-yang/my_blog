@@ -15,35 +15,65 @@ describe("AgentQualityOverview", () => {
   it("prioritizes stale index and weak Agent run actions", () => {
     const html = renderToStaticMarkup(
       <AgentQualityOverview
-        indexLoading={false}
-        indexError={false}
-        indexStatus={{
-          ...freshIndex(),
-          stalePublicPostSlugs: ["agent-loop-observable"],
-        }}
-        radarLoading={false}
-        radarError={false}
-        radar={{
-          summary: {
-            totalRuns: 4,
-            uniqueQuestions: 2,
-            noSourceRuns: 1,
-            failedRuns: 1,
+        qualityLoading={false}
+        qualityError={false}
+        qualitySummary={{
+          knowledgeStatus: {
+            ...freshIndex(),
+            stalePublicPostSlugs: ["agent-loop-observable"],
           },
-          noSourceRuns: [
-            {
-              runId: "run-1",
-              question: "Explain missing source",
-              scopeType: "post",
-              scopeValue: "agent-loop",
+          radar: {
+            summary: {
+              totalRuns: 4,
+              uniqueQuestions: 2,
+              noSourceRuns: 1,
+              failedRuns: 1,
             },
-          ],
-          failedRuns: [
+            noSourceRuns: [
+              {
+                runId: "run-1",
+                question: "Explain missing source",
+                scopeType: "post",
+                scopeValue: "agent-loop",
+              },
+            ],
+            failedRuns: [
+              {
+                runId: "run-2",
+                question: "Why did it fail?",
+                scopeType: "track",
+                scopeValue: "ai-applications",
+              },
+            ],
+          },
+          releaseBlocking: true,
+          actionItems: [
             {
-              runId: "run-2",
-              question: "Why did it fail?",
-              scopeType: "track",
-              scopeValue: "ai-applications",
+              id: "index_stale",
+              severity: "high",
+              title: "Agent knowledge index is stale",
+              description: "The public article inventory and Agent knowledge index do not match.",
+              target: "index",
+              count: 1,
+              details: ["agent-loop-observable"],
+            },
+            {
+              id: "no_source_runs",
+              severity: "medium",
+              title: "Completed Agent runs without public sources",
+              description: "Review whether content coverage needs work.",
+              target: "content_radar",
+              count: 1,
+              details: ["run-1 · post:agent-loop"],
+            },
+            {
+              id: "failed_runs",
+              severity: "medium",
+              title: "Failed Agent runs need trace review",
+              description: "Inspect recent failed runs.",
+              target: "traces",
+              count: 1,
+              details: ["run-2 · agent_generation_failed · track:ai-applications"],
             },
           ],
         }}
@@ -66,9 +96,11 @@ describe("AgentQualityOverview", () => {
     expect(html).toContain("Refresh Agent knowledge");
     expect(html).toContain("agent-loop-observable");
     expect(html).toContain("No-source Agent runs");
-    expect(html).toContain("Explain missing source");
+    expect(html).toContain("run-1");
+    expect(html).not.toContain("Explain missing source");
     expect(html).toContain("Failed Agent runs");
-    expect(html).toContain("Why did it fail?");
+    expect(html).toContain("agent_generation_failed");
+    expect(html).not.toContain("Why did it fail?");
     expect(html).toContain("Search misses");
     expect(html).toContain("agent memory");
     expect(html).toContain("4 actions");
@@ -77,20 +109,22 @@ describe("AgentQualityOverview", () => {
   it("shows all-clear state when existing quality signals are clean", () => {
     const html = renderToStaticMarkup(
       <AgentQualityOverview
-        indexLoading={false}
-        indexError={false}
-        indexStatus={freshIndex()}
-        radarLoading={false}
-        radarError={false}
-        radar={{
-          summary: {
-            totalRuns: 2,
-            uniqueQuestions: 2,
-            noSourceRuns: 0,
-            failedRuns: 0,
+        qualityLoading={false}
+        qualityError={false}
+        qualitySummary={{
+          knowledgeStatus: freshIndex(),
+          radar: {
+            summary: {
+              totalRuns: 2,
+              uniqueQuestions: 2,
+              noSourceRuns: 0,
+              failedRuns: 0,
+            },
+            noSourceRuns: [],
+            failedRuns: [],
           },
-          noSourceRuns: [],
-          failedRuns: [],
+          releaseBlocking: false,
+          actionItems: [],
         }}
         searchMissLoading={false}
         searchMisses={{
@@ -111,12 +145,9 @@ describe("AgentQualityOverview", () => {
   it("does not show all-clear while quality signals are still loading", () => {
     const html = renderToStaticMarkup(
       <AgentQualityOverview
-        indexLoading
-        indexError={false}
-        indexStatus={undefined}
-        radarLoading
-        radarError={false}
-        radar={undefined}
+        qualityLoading
+        qualityError={false}
+        qualitySummary={undefined}
         searchMissLoading
         searchMisses={undefined}
       />
@@ -166,6 +197,8 @@ function translate(key: string, values?: Record<string, string | number>) {
         "agentOps.overview.actionIndexDescription": "Index is stale.",
         "agentOps.overview.actionRadarErrorTitle": "Question radar unavailable",
         "agentOps.overview.actionRadarErrorDescription": "Check radar.",
+        "agentOps.overview.actionSummaryErrorTitle": "Quality summary unavailable",
+        "agentOps.overview.actionSummaryErrorDescription": "Check summary.",
         "agentOps.overview.actionNoSourceTitle": "No-source Agent runs",
         "agentOps.overview.actionNoSourceDescription": `${values?.count} no-source runs`,
         "agentOps.overview.actionFailedTitle": "Failed Agent runs",
