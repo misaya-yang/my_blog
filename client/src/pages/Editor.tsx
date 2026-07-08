@@ -147,7 +147,7 @@ function ToolbarDivider() {
 
 export default function Editor() {
   const { isAdmin, loading: authLoading } = useAuth();
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const siteUrl = getClientSiteUrl();
   const params = useParams<{ slug?: string }>();
   const [, navigate] = useLocation();
@@ -1332,6 +1332,7 @@ export default function Editor() {
                   >
                     <MarkdownRenderer
                       content={content || `*${t("editor.previewPlaceholder")}*`}
+                      language={language}
                     />
                   </Suspense>
                 </article>

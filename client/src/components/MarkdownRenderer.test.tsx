@@ -79,7 +79,7 @@ describe("MarkdownRenderer", () => {
     expect(html).toContain('href="/post/source"');
     expect(html).toContain("technical-table-wrap");
     expect(html).toContain('role="region"');
-    expect(html).toContain('aria-label="Scrollable table"');
+    expect(html).toContain('aria-label="Scrollable article table"');
     expect(html).toContain("<table");
     expect(html).toContain("katex");
     expect(html).toContain("article-callout");
@@ -126,5 +126,36 @@ describe("MarkdownRenderer", () => {
     );
 
     expect(html).toContain('aria-label="可横向滚动的文章表格"');
+  });
+
+  it("localizes generated markdown labels from the selected language", () => {
+    const html = renderToStaticMarkup(
+      <MarkdownRenderer
+        content={[
+          "## 方法",
+          "",
+          "> [!NOTE]",
+          "> 这是读者提示。",
+          "",
+          "| 维度 | 说明 |",
+          "| --- | --- |",
+          "| source | evidence packet |",
+          "",
+          "```ts",
+          "const signal = true;",
+          "```",
+        ].join("\n")}
+        headings={[{ id: "method-zh", text: "方法", level: 2 }]}
+        copiedCode={null}
+        language="zh"
+        onCopyCode={() => undefined}
+      />
+    );
+
+    expect(html).toContain('aria-label="前往小节：方法"');
+    expect(html).toContain("提示");
+    expect(html).toContain('aria-label="可横向滚动的文章表格"');
+    expect(html).toContain(">代码</span>");
+    expect(html).toContain('aria-label="复制代码"');
   });
 });

@@ -1,4 +1,5 @@
 import { Check, Copy } from "lucide-react";
+import { interpolate, translations, type Language } from "@/i18n";
 import {
   Children,
   cloneElement,
@@ -25,17 +26,18 @@ type MarkdownRendererProps = {
   copiedCode?: string | null;
   copyCodeLabel?: string;
   tableLabel?: string;
+  language?: Language;
   onCopyCode?: (code: string, id: string) => void;
 };
 
 type CalloutType = "note" | "claim" | "caveat" | "implementation" | "source";
 
-const CALLOUT_LABELS: Record<CalloutType, string> = {
-  note: "Note",
-  claim: "Claim",
-  caveat: "Caveat",
-  implementation: "Implementation",
-  source: "Source",
+const CALLOUT_LABEL_KEYS: Record<CalloutType, string> = {
+  note: "post.markdown.callout.note",
+  claim: "post.markdown.callout.claim",
+  caveat: "post.markdown.callout.caveat",
+  implementation: "post.markdown.callout.implementation",
+  source: "post.markdown.callout.source",
 };
 
 const CALLOUT_PATTERN =
@@ -45,8 +47,9 @@ export default function MarkdownRenderer({
   content,
   headings = [],
   copiedCode,
-  copyCodeLabel = "Copy code",
-  tableLabel = "Scrollable table",
+  copyCodeLabel,
+  tableLabel,
+  language = "en",
   onCopyCode,
 }: MarkdownRendererProps) {
   useEffect(() => {
@@ -55,6 +58,10 @@ export default function MarkdownRenderer({
   }, []);
 
   const headingIdResolver = createHeadingIdResolver(headings);
+  const label = createMarkdownLabelResolver(language);
+  const codeBlockLabel = label("post.markdown.codeBlock");
+  const effectiveCopyCodeLabel = copyCodeLabel ?? label("post.copyCode");
+  const effectiveTableLabel = tableLabel ?? label("post.scrollableTable");
 
   return (
     <ReactMarkdown
@@ -64,31 +71,37 @@ export default function MarkdownRenderer({
         h1: createHeadingComponent(
           "h1",
           headingIdResolver,
+          label,
           "mb-5 mt-12 text-3xl font-semibold"
         ),
         h2: createHeadingComponent(
           "h2",
           headingIdResolver,
+          label,
           "mb-4 mt-10 border-b border-white/10 pb-2 text-2xl font-semibold"
         ),
         h3: createHeadingComponent(
           "h3",
           headingIdResolver,
+          label,
           "mb-3 mt-8 text-xl font-semibold"
         ),
         h4: createHeadingComponent(
           "h4",
           headingIdResolver,
+          label,
           "mb-2 mt-7 text-lg font-semibold"
         ),
         h5: createHeadingComponent(
           "h5",
           headingIdResolver,
+          label,
           "mb-2 mt-6 text-base font-semibold"
         ),
         h6: createHeadingComponent(
           "h6",
           headingIdResolver,
+          label,
           "mb-2 mt-5 text-sm font-semibold"
         ),
         p: ({ node: _node, children, ...props }: any) => {
@@ -142,7 +155,7 @@ export default function MarkdownRenderer({
               {meta.language || meta.filename ? (
                 <div className="code-block-meta flex items-center justify-between gap-3 rounded-t-lg border border-slate-200 bg-slate-100/80 px-4 py-2 text-xs text-slate-600 dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-300">
                   <span className="min-w-0 truncate">
-                    {meta.filename ?? "Code"}
+                    {meta.filename ?? codeBlockLabel}
                   </span>
                   {meta.language ? (
                     <span className="shrink-0 font-mono uppercase tracking-wide text-sky-700 dark:text-sky-200">
@@ -156,7 +169,7 @@ export default function MarkdownRenderer({
               </pre>
               {code && onCopyCode ? (
                 <button
-                  aria-label={copyCodeLabel}
+                  aria-label={effectiveCopyCodeLabel}
                   onClick={() => onCopyCode(code, codeId)}
                   className="code-copy-button absolute right-3 top-3 rounded-md bg-slate-900/85 p-2 opacity-90 transition-colors hover:bg-slate-800 hover:opacity-100 focus-visible:opacity-100"
                 >
@@ -174,7 +187,7 @@ export default function MarkdownRenderer({
           <div
             className="technical-table-wrap"
             role="region"
-            aria-label={tableLabel}
+            aria-label={effectiveTableLabel}
             tabIndex={0}
           >
             <table {...props}>{children}</table>
@@ -214,7 +227,7 @@ export default function MarkdownRenderer({
               data-callout-type={callout.type}
             >
               <div className="article-callout-label mb-2 text-sm font-semibold text-sky-900 dark:text-sky-200">
-                {CALLOUT_LABELS[callout.type]}
+                {label(CALLOUT_LABEL_KEYS[callout.type])}
               </div>
               <div className="article-callout-body text-sm leading-7 text-slate-700 dark:text-slate-200">
                 {callout.children}
@@ -232,6 +245,7 @@ export default function MarkdownRenderer({
 function createHeadingComponent(
   Tag: "h1" | "h2" | "h3" | "h4" | "h5" | "h6",
   resolveHeadingId: (text: string) => string | undefined,
+  label: MarkdownLabelResolver,
   className: string
 ) {
   return ({ node: _node, children, ...props }: any) => {
@@ -247,7 +261,7 @@ function createHeadingComponent(
         {id ? (
           <a
             href={`#${id}`}
-            aria-label={`Link to ${text}`}
+            aria-label={label("post.markdown.headingAnchor", { heading: text })}
             className="heading-anchor-link not-prose ml-2 text-sm opacity-0 transition-opacity group-hover:opacity-70 focus:opacity-100"
           >
             #
@@ -255,6 +269,19 @@ function createHeadingComponent(
         ) : null}
       </Tag>
     );
+  };
+}
+
+type MarkdownLabelResolver = (
+  key: string,
+  vars?: Record<string, string | number>
+) => string;
+
+function createMarkdownLabelResolver(language: Language): MarkdownLabelResolver {
+  return (key, vars) => {
+    const entry = translations[key];
+    if (!entry) return key;
+    return interpolate(entry[language], vars);
   };
 }
 

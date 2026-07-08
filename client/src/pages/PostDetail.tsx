@@ -1012,6 +1012,7 @@ export default function PostDetail() {
                   content={readableContent}
                   headings={headings}
                   copiedCode={copiedCode}
+                  language={language}
                   copyCodeLabel={t("post.copyCode")}
                   tableLabel={t("post.scrollableTable")}
                   onCopyCode={copyCode}
