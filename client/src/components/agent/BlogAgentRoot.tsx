@@ -80,6 +80,11 @@ import {
   getTraceStageDurations,
 } from "./agentElapsed";
 import {
+  getHiddenSourceCount,
+  getSourcePreviewTitle,
+  getVisibleSourceCards,
+} from "./agentSourceSummary";
+import {
   getNextAgentStreamFollowState,
   shouldScrollAgentMessagesToEnd,
 } from "./agentScrollPolicy";
@@ -117,6 +122,12 @@ export {
   getTraceStageDurations,
 } from "./agentElapsed";
 export type { AgentTraceStageDuration } from "./agentElapsed";
+export {
+  AGENT_COLLAPSED_SOURCE_LIMIT,
+  getHiddenSourceCount,
+  getSourcePreviewTitle,
+  getVisibleSourceCards,
+} from "./agentSourceSummary";
 export {
   getNextAgentStreamFollowState,
   isAgentNearBottom,
@@ -1481,6 +1492,7 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
   const currentPath = normalizePathWithoutHash(location);
   const visibleSources = getVisibleSourceCards(sources, expanded);
   const previewSources = getVisibleSourceCards(sources, false);
+  const hiddenSourceCount = getHiddenSourceCount(sources);
 
   return (
     <div className="agent-sources mt-3 border-t border-slate-800/80 pt-3">
@@ -1493,10 +1505,10 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
             {previewSources.map(source => (
               <AgentSourcePreviewChip key={source.sourceId} source={source} />
             ))}
-            {sources.length > previewSources.length && (
+            {hiddenSourceCount > 0 && (
               <span className="agent-source-chip shrink-0 rounded-md border border-slate-700 bg-slate-950/35 px-2 py-0.5 text-[0.68rem] font-medium text-slate-500">
                 {t("agent.sources.previewMore", {
-                  count: sources.length - previewSources.length,
+                  count: hiddenSourceCount,
                 })}
               </span>
             )}
@@ -1613,11 +1625,7 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
 
 function AgentSourcePreviewChip({ source }: { source: SourceCard }) {
   const { t } = useLanguage();
-  const title =
-    source.sectionTitle ??
-    source.heading ??
-    source.postTitle ??
-    t("agent.sources.site");
+  const title = getSourcePreviewTitle(source, t("agent.sources.site"));
 
   return (
     <span
@@ -1627,10 +1635,6 @@ function AgentSourcePreviewChip({ source }: { source: SourceCard }) {
       {title}
     </span>
   );
-}
-
-export function getVisibleSourceCards<T>(sources: T[], expanded: boolean) {
-  return expanded ? sources : sources.slice(0, 2);
 }
 
 function handleSourceLinkClick(

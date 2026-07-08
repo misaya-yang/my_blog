@@ -4,8 +4,12 @@ import {
   getSourceAnchorId,
   getSourceFallbackAnchorId,
   getSourceHref,
-  getVisibleSourceCards,
 } from "./BlogAgentRoot";
+import {
+  getHiddenSourceCount,
+  getSourcePreviewTitle,
+  getVisibleSourceCards,
+} from "./agentSourceSummary";
 import { markAssistantMessageRecoverable, toChatMessage } from "./messageState";
 import type { SourceCard } from "./types";
 
@@ -236,5 +240,39 @@ describe("Agent source cards", () => {
 
     expect(getVisibleSourceCards(sources, false)).toHaveLength(2);
     expect(getVisibleSourceCards(sources, true)).toHaveLength(5);
+    expect(getHiddenSourceCount(sources)).toBe(3);
+  });
+
+  it("keeps source preview titles compact and stable", () => {
+    expect(
+      getSourcePreviewTitle(
+        {
+          ...source,
+          sectionTitle: "Exact Invariants",
+        },
+        "Site"
+      )
+    ).toBe("Exact Invariants");
+    expect(
+      getSourcePreviewTitle(
+        {
+          ...source,
+          sectionTitle: undefined,
+          heading: "3. Exact Invariants",
+        },
+        "Site"
+      )
+    ).toBe("3. Exact Invariants");
+    expect(
+      getSourcePreviewTitle(
+        {
+          ...source,
+          sectionTitle: undefined,
+          heading: undefined,
+          postTitle: undefined,
+        },
+        "Site"
+      )
+    ).toBe("Site");
   });
 });
