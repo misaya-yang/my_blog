@@ -9,7 +9,11 @@ import {
   assertWindowRateLimit,
   recordWindowRateLimitHit,
 } from "./rateLimit.js";
-import { buildSearchMissSignals } from "./readerSignals.js";
+import {
+  buildArticleFeedbackSignal,
+  buildSearchMissSignals,
+  sortReaderSignals,
+} from "./readerSignals.js";
 import {
   listSearchMissOpportunities,
   resetSearchMissesForTests,
@@ -291,6 +295,23 @@ function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
     .slice(0, 6);
   const searchMissBacklog = searchMissOpportunities.slice(0, 8);
   const searchMissSignals = buildSearchMissSignals(searchMissBacklog);
+  const feedbackSignals = feedbackOpportunities.map(item =>
+    buildArticleFeedbackSignal({
+      articleSlug: item.postSlug,
+      feedbackType: item.notUseful > 0 ? "not_useful" : "feedback",
+      count: item.total,
+      excerpt:
+        item.sampleMessages.length > 0
+          ? item.sampleMessages.join(" ")
+          : item.postTitle,
+      firstSeenAt: item.latestAt ?? new Date(0),
+      lastSeenAt: item.latestAt ?? new Date(0),
+    })
+  );
+  const readerSignalItems = sortReaderSignals([
+    ...feedbackSignals,
+    ...searchMissSignals,
+  ]);
 
   return {
     feedback: {
@@ -325,8 +346,8 @@ function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
       opportunities: searchMissBacklog,
     },
     readerSignals: {
-      total: searchMissSignals.length,
-      items: searchMissSignals,
+      total: readerSignalItems.length,
+      items: readerSignalItems,
     },
     writingBacklog: buildWritingBacklog(
       feedbackOpportunities,

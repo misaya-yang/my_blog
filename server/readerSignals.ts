@@ -290,6 +290,10 @@ export function buildAgentSignals(inputs: AgentSignalBuilderInput[]) {
     .sort(compareReaderSignals);
 }
 
+export function sortReaderSignals(signals: ReaderSignal[]) {
+  return [...signals].sort(compareReaderSignals);
+}
+
 export function normalizeSignalSource(
   source?: string | null
 ): ReaderSignalKind | null {

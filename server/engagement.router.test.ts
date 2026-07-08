@@ -339,6 +339,18 @@ describe("engagement router", () => {
       `article=${publishedPost.slug}`
     );
     expect(summary.writingBacklog[0].draftHref).toContain("source=feedback");
+    expect(summary.readerSignals).toMatchObject({
+      total: 1,
+      items: [
+        expect.objectContaining({
+          id: "article_feedback:agent-harness-engine:not_useful",
+          kind: "article_feedback",
+          severity: "high",
+          articleSlug: publishedPost.slug,
+          count: 2,
+        }),
+      ],
+    });
     expect(summary.subscriptions).toMatchObject({
       total: 2,
       activeCount: 2,
@@ -397,9 +409,9 @@ describe("engagement router", () => {
       priority: "high",
       status: "new",
     });
-    expect(summary.readerSignals).toMatchObject({
-      total: 1,
-      items: [
+    expect(summary.readerSignals.total).toBe(2);
+    expect(summary.readerSignals.items).toEqual(
+      expect.arrayContaining([
         expect.objectContaining({
           id: "search_miss:uncovered agent memory pattern from [redacted-email]",
           kind: "search_miss",
@@ -407,8 +419,8 @@ describe("engagement router", () => {
           query: "uncovered agent memory pattern from [redacted-email]",
           count: 2,
         }),
-      ],
-    });
+      ])
+    );
     expect(summary.writingBacklog[0].draftHref).toContain("/write?idea=");
     expect(summary.writingBacklog[0].draftHref).toContain(
       "source=search_miss"
