@@ -92,6 +92,7 @@ import {
 } from "react";
 import { Link as RouterLink, useParams, useLocation } from "wouter";
 import { toast } from "sonner";
+import { normalizeBacklogSource } from "./editorBacklogSource";
 
 const MarkdownRenderer = lazy(() => import("@/components/MarkdownRenderer"));
 
@@ -283,7 +284,7 @@ export default function Editor() {
     const idea = params.get("idea")?.trim();
     if (!idea) return;
 
-    const source = params.get("source")?.trim() || "backlog";
+    const source = normalizeBacklogSource(params.get("source"));
     seededFromBacklogRef.current = true;
     setTitle(current => current || idea.slice(0, 120));
     setContent(current => {

@@ -1524,7 +1524,7 @@ function WritingBacklogPanel({
     status: idea.status ?? "new",
     priority: idea.supportCount > 1 ? "high" : "normal",
     sourceHref: "/manage/agent",
-    draftHref: `/write?idea=${encodeURIComponent(idea.proposedTitle)}&source=agent_radar`,
+    draftHref: `/write?idea=${encodeURIComponent(idea.proposedTitle)}&source=agent_question`,
     latestAt: null,
     evidence: [idea.rationale],
   }));
