@@ -18,6 +18,22 @@ import React, { FormEvent, useId, useState } from "react";
 import { toast } from "sonner";
 
 type FeedbackType = "useful" | "not_useful";
+export type FeedbackReason =
+  | "unclear_mechanism"
+  | "needs_example"
+  | "unsupported_claim"
+  | "awkward_wording"
+  | "missing_next_step"
+  | "other";
+
+export const ARTICLE_FEEDBACK_REASONS: FeedbackReason[] = [
+  "unclear_mechanism",
+  "needs_example",
+  "unsupported_claim",
+  "awkward_wording",
+  "missing_next_step",
+  "other",
+];
 
 type ArticleFeedbackProps = {
   postId: number;
@@ -36,11 +52,13 @@ export function ArticleFeedback({
   const { t } = useLanguage();
   const [type, setType] = useState<FeedbackType | null>(null);
   const [message, setMessage] = useState("");
+  const [reason, setReason] = useState<FeedbackReason | null>(null);
   const [replyEmail, setReplyEmail] = useState("");
   const [visitorName, setVisitorName] = useState("");
   const [sent, setSent] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const messageId = useId();
+  const reasonId = useId();
   const visitorNameId = useId();
   const replyEmailId = useId();
   const statusId = useId();
@@ -52,6 +70,7 @@ export function ArticleFeedback({
       setSent(true);
       setType(null);
       setMessage("");
+      setReason(null);
       setReplyEmail("");
       setVisitorName("");
       setDetailsOpen(false);
@@ -69,6 +88,7 @@ export function ArticleFeedback({
     feedback.mutate({
       postId,
       type,
+      reason: reason ?? undefined,
       message: message.trim() || undefined,
       replyEmail: replyEmail.trim() || undefined,
       visitorName: isVisitor ? undefined : visitorName.trim() || undefined,
@@ -158,6 +178,34 @@ export function ArticleFeedback({
 
         {detailsOpen && (
           <div id={detailsId} className="article-feedback-details grid gap-3">
+            <div
+              className="article-feedback-reasons grid gap-2"
+              role="group"
+              aria-labelledby={reasonId}
+            >
+              <p id={reasonId} className="text-xs font-medium">
+                {t("engagement.feedback.reasonLabel")}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {ARTICLE_FEEDBACK_REASONS.map(item => (
+                  <button
+                    key={item}
+                    type="button"
+                    aria-pressed={reason === item}
+                    onClick={() =>
+                      setReason(current => (current === item ? null : item))
+                    }
+                    className="article-feedback-reason inline-flex min-h-8 items-center rounded-md px-2.5 text-xs font-medium transition"
+                  >
+                    {t(`engagement.feedback.reason.${item}`)}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs leading-5">
+                {t("engagement.feedback.reasonHint")}
+              </p>
+            </div>
+
             <div>
               <label className="sr-only" htmlFor={messageId}>
                 {t("engagement.feedback.messagePlaceholder")}

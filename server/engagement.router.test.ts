@@ -202,6 +202,44 @@ describe("engagement router", () => {
     );
   });
 
+  it("stores optional structured feedback reason in the private message", async () => {
+    const caller = routers.appRouter.createCaller(
+      createContext("", "203.0.113.13").ctx
+    ) as any;
+
+    await caller.engagement.feedback.create({
+      postId: publishedPost.id,
+      type: "not_useful",
+      reason: "needs_example",
+      message: "Show a shorter implementation path.",
+    });
+
+    expect(db.createPostFeedback).toHaveBeenCalledWith(
+      expect.objectContaining({
+        postId: publishedPost.id,
+        type: "not_useful",
+        message:
+          "Feedback reason: needs_example\n\nShow a shorter implementation path.",
+      })
+    );
+  });
+
+  it("rejects unknown feedback reason values", async () => {
+    const caller = routers.appRouter.createCaller(
+      createContext("", "203.0.113.14").ctx
+    ) as any;
+
+    await expect(
+      caller.engagement.feedback.create({
+        postId: publishedPost.id,
+        type: "not_useful",
+        reason: "marketing_followup",
+      })
+    ).rejects.toThrow();
+
+    expect(db.createPostFeedback).not.toHaveBeenCalled();
+  });
+
   it("captures visitor identity when feedback comes from a visitor session", async () => {
     const { ctx, setCookies } = createContext("", "203.0.113.12");
     const loginCaller = routers.appRouter.createCaller(ctx);

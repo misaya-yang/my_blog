@@ -204,6 +204,38 @@ const common: TranslationDict = {
     en: "Optional note: what was clear or missing?",
     zh: "可选补充：哪里清楚，哪里还缺？",
   },
+  "engagement.feedback.reasonLabel": {
+    en: "What should I improve?",
+    zh: "主要想改进什么？",
+  },
+  "engagement.feedback.reasonHint": {
+    en: "Choose one reason if it helps route this into the right revision.",
+    zh: "如果方便，选择一个原因，方便作者判断该如何修订。",
+  },
+  "engagement.feedback.reason.unclear_mechanism": {
+    en: "Mechanism unclear",
+    zh: "机制不清楚",
+  },
+  "engagement.feedback.reason.needs_example": {
+    en: "Needs example",
+    zh: "需要例子",
+  },
+  "engagement.feedback.reason.unsupported_claim": {
+    en: "Needs evidence",
+    zh: "缺少依据",
+  },
+  "engagement.feedback.reason.awkward_wording": {
+    en: "Wording awkward",
+    zh: "措辞别扭",
+  },
+  "engagement.feedback.reason.missing_next_step": {
+    en: "Missing next step",
+    zh: "缺少后续路径",
+  },
+  "engagement.feedback.reason.other": {
+    en: "Other",
+    zh: "其他",
+  },
   "engagement.feedback.namePlaceholder": {
     en: "Optional nickname",
     zh: "可选昵称",

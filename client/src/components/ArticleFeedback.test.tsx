@@ -2,7 +2,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import { ArticleFeedback } from "./ArticleFeedback";
+import { ARTICLE_FEEDBACK_REASONS, ArticleFeedback } from "./ArticleFeedback";
 
 vi.mock("@/_core/hooks/useAuth", () => ({
   useAuth: () => ({
@@ -33,6 +33,15 @@ vi.mock("@/contexts/LanguageContext", () => ({
           "engagement.feedback.notUseful": "Not useful",
           "engagement.feedback.detailsToggle": "Add a private note",
           "engagement.feedback.detailsHide": "Hide private note",
+          "engagement.feedback.reasonLabel": "What should I improve?",
+          "engagement.feedback.reasonHint":
+            "Choose one reason if it helps route this into the right revision.",
+          "engagement.feedback.reason.unclear_mechanism": "Mechanism unclear",
+          "engagement.feedback.reason.needs_example": "Needs example",
+          "engagement.feedback.reason.unsupported_claim": "Needs evidence",
+          "engagement.feedback.reason.awkward_wording": "Wording awkward",
+          "engagement.feedback.reason.missing_next_step": "Missing next step",
+          "engagement.feedback.reason.other": "Other",
           "engagement.feedback.messagePlaceholder":
             "Optional note: what was clear or missing?",
           "engagement.feedback.namePlaceholder": "Optional nickname",
@@ -93,6 +102,9 @@ describe("ArticleFeedback reader trust copy", () => {
     expect(html).toContain("Send feedback");
     expect(html).toContain("Choose one signal. Details are optional.");
     expect(html).not.toContain("Optional note: what was clear or missing?");
+    expect(html).not.toContain("What should I improve?");
+    expect(html).not.toContain("Mechanism unclear");
+    expect(html).not.toContain("Needs example");
     expect(html).not.toContain("Optional nickname");
     expect(html).not.toContain("Optional reply email");
   });
@@ -110,5 +122,16 @@ describe("ArticleFeedback reader trust copy", () => {
     expect(html).toContain("Useful for revisions, examples, and follow-up notes.");
     expect(html).not.toContain("mailto:");
     expect(html).not.toContain("zedpl28174");
+  });
+
+  it("keeps a stable optional reason taxonomy for owner backlog routing", () => {
+    expect(ARTICLE_FEEDBACK_REASONS).toEqual([
+      "unclear_mechanism",
+      "needs_example",
+      "unsupported_claim",
+      "awkward_wording",
+      "missing_next_step",
+      "other",
+    ]);
   });
 });

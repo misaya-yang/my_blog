@@ -6803,6 +6803,28 @@
     overflow-x: hidden;
   }
 
+  .article-feedback-reasons {
+    min-width: 0;
+  }
+
+  .article-feedback-reasons p {
+    color: var(--public-faint);
+  }
+
+  .article-feedback-reason {
+    border: 1px solid var(--public-border);
+    background: color-mix(in oklch, var(--public-input-bg) 88%, transparent);
+    color: var(--public-muted);
+  }
+
+  .article-feedback-reason:hover,
+  .article-feedback-reason:focus-visible,
+  .article-feedback-reason[aria-pressed="true"] {
+    border-color: color-mix(in oklch, var(--public-accent) 44%, var(--public-border));
+    background: color-mix(in oklch, var(--public-inline-bg) 82%, var(--public-accent) 10%);
+    color: var(--public-text);
+  }
+
   .article-feedback-details :where(textarea, input) {
     max-width: 100%;
   }

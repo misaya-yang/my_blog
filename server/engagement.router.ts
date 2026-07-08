@@ -27,6 +27,14 @@ const engagementSubmissions = new Map<
 >();
 
 const feedbackStatusInput = z.enum(["new", "reviewed", "hidden"]);
+const feedbackReasonInput = z.enum([
+  "unclear_mechanism",
+  "needs_example",
+  "unsupported_claim",
+  "awkward_wording",
+  "missing_next_step",
+  "other",
+]);
 
 const optionalTrimmedText = (maxLength: number) =>
   z
@@ -61,6 +69,7 @@ const subscriptionInput = z.object({
 const feedbackCreateInput = z.object({
   postId: z.number().int().positive(),
   type: z.enum(["useful", "not_useful"]),
+  reason: feedbackReasonInput.optional(),
   message: optionalTrimmedText(600),
   visitorName: optionalTrimmedText(80),
   replyEmail: optionalEmailInput,
@@ -91,6 +100,15 @@ function recordEngagementSubmission(source: string, bucket: string) {
     key: engagementRateLimitKey(source, bucket),
     windowMs: ENGAGEMENT_WINDOW_MS,
   });
+}
+
+function formatFeedbackMessage(
+  message: string | null | undefined,
+  reason: z.infer<typeof feedbackReasonInput> | undefined
+) {
+  if (!reason) return message ?? null;
+  const reasonLine = `Feedback reason: ${reason}`;
+  return message ? `${reasonLine}\n\n${message}` : reasonLine;
 }
 
 export function __resetEngagementRateLimitsForTests() {
@@ -144,7 +162,7 @@ export const engagementRouter = router({
           visitorId: visitor?.visitorId ?? null,
           visitorName: visitor?.displayName ?? input.visitorName,
           type: input.type,
-          message: input.message,
+          message: formatFeedbackMessage(input.message, input.reason),
           replyEmail: input.replyEmail,
           source,
           userAgent: getRequestHeader(ctx.req, "user-agent") ?? null,
