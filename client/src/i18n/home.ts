@@ -310,6 +310,13 @@ const home: TranslationDict = {
   "track.seriesTitle": { en: "Reading paths", zh: "阅读路径" },
   "track.nextPlanned": { en: "Next planned", zh: "后续计划" },
   "track.readingOrder": { en: "Path", zh: "路径" },
+  "track.orientationLabel": {
+    en: "Track reading orientation",
+    zh: "方向阅读入口",
+  },
+  "track.startHere": { en: "Start here", zh: "从这里开始" },
+  "track.corePaths": { en: "Core paths", zh: "核心路径" },
+  "track.recentNotes": { en: "Recent notes", zh: "近期笔记" },
   "track.readingOrderHint": {
     en: "Start with the path, then use the note index below for lookup.",
     zh: "先读路径，再用下方笔记索引查找细节。",

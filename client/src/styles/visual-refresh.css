@@ -6250,6 +6250,93 @@
     overflow-wrap: anywhere;
   }
 
+  .track-orientation-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
+    margin-top: 1rem;
+    max-width: 58rem;
+  }
+
+  .track-orientation-strip a {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.2rem 0.45rem;
+    border: 1px solid var(--public-border);
+    border-radius: var(--public-radius);
+    background: var(--public-inline-bg);
+    color: var(--public-muted);
+    padding: 0.62rem 0.68rem;
+  }
+
+  .track-orientation-strip a:hover,
+  .track-orientation-strip a:focus-visible {
+    border-color: var(--public-border-strong);
+    color: var(--public-text);
+  }
+
+  .track-orientation-strip svg {
+    grid-row: span 2;
+    margin-top: 0.08rem;
+    color: var(--public-accent);
+  }
+
+  .track-orientation-strip span {
+    min-width: 0;
+    color: var(--public-faint);
+    font-size: 0.72rem;
+    font-weight: 680;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .track-orientation-strip strong {
+    min-width: 0;
+    color: var(--public-text);
+    font-size: 0.86rem;
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .series-card-next {
+    display: grid;
+    gap: 0.42rem;
+    border-top: 1px solid var(--public-border);
+    padding-top: 0.72rem;
+  }
+
+  .series-card-next > span {
+    color: var(--public-faint);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .series-card-next div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.36rem;
+    min-width: 0;
+  }
+
+  .series-card-next em {
+    max-width: 100%;
+    border: 1px solid var(--public-border);
+    border-radius: 999px;
+    background: var(--public-inline-bg);
+    color: var(--public-muted);
+    padding: 0.22rem 0.5rem;
+    font-size: 0.76rem;
+    font-style: normal;
+    font-weight: 640;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
   @media (max-width: 760px) {
     .home-index-spread {
       padding-top: 0.75rem !important;
@@ -6279,6 +6366,15 @@
     .home-track-post-list strong {
       overflow-wrap: anywhere;
       word-break: normal;
+    }
+
+    .track-orientation-strip {
+      grid-template-columns: 1fr;
+      max-width: 100%;
+    }
+
+    .track-orientation-strip strong {
+      white-space: normal;
     }
 
     .home-intro-rail {

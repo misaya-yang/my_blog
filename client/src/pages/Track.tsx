@@ -12,6 +12,7 @@ import {
   getPublicTrackSeries,
   trackConfigs,
   type TrackKind,
+  type TrackSeriesConfig,
 } from "@/lib/tracks";
 import { trpc } from "@/lib/trpc";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
@@ -33,6 +34,32 @@ function resolvePostTitle(posts: ArticleCardPost[], slug: string) {
   );
 }
 
+export type TrackReadingPathStats = {
+  pathCount: number;
+  articleCount: number;
+  plannedTopicCount: number;
+};
+
+export function getTrackStartPostSlug(series: TrackSeriesConfig[]) {
+  return series[0]?.postSlugs[0] ?? null;
+}
+
+export function getTrackReadingPathStats(
+  series: TrackSeriesConfig[]
+): TrackReadingPathStats {
+  return {
+    pathCount: series.length,
+    articleCount: series.reduce(
+      (total, item) => total + item.postSlugs.length,
+      0
+    ),
+    plannedTopicCount: series.reduce(
+      (total, item) => total + item.expectedNextKeys.length,
+      0
+    ),
+  };
+}
+
 function TrackPage({ kind }: { kind: TrackKind }) {
   const { language, t } = useLanguage();
   const config = trackConfigs[kind];
@@ -50,6 +77,8 @@ function TrackPage({ kind }: { kind: TrackKind }) {
     ? ((posts?.posts ?? []) as ArticleCardPost[])
     : [];
   const publicSeries = getPublicTrackSeries(kind, trackPosts);
+  const startPostSlug = getTrackStartPostSlug(publicSeries);
+  const readingPathStats = getTrackReadingPathStats(publicSeries);
   const totalViews = trackPosts.reduce(
     (sum, post) => sum + (post.viewCount || 0),
     0
@@ -102,6 +131,43 @@ function TrackPage({ kind }: { kind: TrackKind }) {
               </div>
             </div>
 
+            <nav
+              className="track-orientation-strip"
+              aria-label={t("track.orientationLabel")}
+            >
+              <Link
+                href={
+                  startPostSlug ? `/post/${startPostSlug}` : "#research-index"
+                }
+              >
+                <FileText className="h-4 w-4" aria-hidden="true" />
+                <span>{t("track.startHere")}</span>
+                <strong>
+                  {startPostSlug
+                    ? resolvePostTitle(trackPosts, startPostSlug)
+                    : t("track.articles")}
+                </strong>
+              </Link>
+              <Link href="#track-reading-paths">
+                <GitBranch className="h-4 w-4" aria-hidden="true" />
+                <span>{t("track.corePaths")}</span>
+                <strong>
+                  {t("home.pathCount", {
+                    count: readingPathStats.pathCount,
+                  })}
+                </strong>
+              </Link>
+              <Link href="#research-index">
+                <Folder className="h-4 w-4" aria-hidden="true" />
+                <span>{t("track.recentNotes")}</span>
+                <strong>
+                  {t("home.publicNotes", {
+                    count: readingPathStats.articleCount,
+                  })}
+                </strong>
+              </Link>
+            </nav>
+
             <div className="track-stat-grid track-stat-row mt-6 grid max-w-4xl grid-cols-3 gap-2 sm:gap-3">
               <StatTile
                 icon={<FileText className="h-5 w-5" />}
@@ -139,7 +205,10 @@ function TrackPage({ kind }: { kind: TrackKind }) {
             </div>
 
             {publicSeries.length > 0 && (
-              <section className="track-path-section mt-7 max-w-5xl">
+              <section
+                id="track-reading-paths"
+                className="track-path-section mt-7 max-w-5xl"
+              >
                 <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
                   <div>
                     <h2 className="section-title">{t("track.seriesTitle")}</h2>
@@ -180,6 +249,16 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                           <span key={key}>{t(key)}</span>
                         ))}
                       </div>
+                      {series.expectedNextKeys.length > 0 && (
+                        <div className="series-card-next mt-4">
+                          <span>{t("track.nextPlanned")}</span>
+                          <div>
+                            {series.expectedNextKeys.slice(0, 2).map(key => (
+                              <em key={key}>{t(key)}</em>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                       <div className="series-card-steps mt-5">
                         {series.postSlugs.map((slug, index) => (
                           <Link
