@@ -51,4 +51,3 @@ Use this crosswalk only to confirm coverage. Do not use it as a replacement for 
 - Every requested direction has a corresponding spec: UI, functionality, Agent, reading, owner operations, article quality, and release gates.
 - Every high-risk boundary has a spec: auth, privacy, public visibility, data model, and deployment stop conditions.
 - Every implementation slice can name one primary spec, one focused test set, and one report path.
-
