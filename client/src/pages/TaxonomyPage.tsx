@@ -98,6 +98,7 @@ export type TaxonomyPost = {
 };
 
 const TAXONOMY_VISIBLE_TAG_LIMIT = 3;
+const TAXONOMY_VISIBLE_SIBLING_LIMIT = 10;
 
 export function getVisibleTaxonomyTags(
   tags: TaxonomyTag[] | null | undefined,
@@ -162,6 +163,14 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
           track => track.categorySlug === taxonomy?.slug
         )
       : undefined;
+  const visibleSiblingTags = getVisibleTaxonomyTags(
+    data?.siblingTags,
+    TAXONOMY_VISIBLE_SIBLING_LIMIT
+  );
+  const hiddenSiblingTagCount = getHiddenTaxonomyTagCount(
+    data?.siblingTags,
+    TAXONOMY_VISIBLE_SIBLING_LIMIT
+  );
   useSeo(
     buildRouteMetadata(siteUrl, {
       title: taxonomy?.name ?? slug,
@@ -237,16 +246,25 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
                 title={t("discovery.siblingTags")}
               />
               <div className="mt-4 flex flex-wrap gap-2">
-                {data.siblingTags?.length ? (
-                  data.siblingTags.slice(0, 16).map((tag: any) => (
-                    <Link
-                      key={tag.slug}
-                      href={`/tags/${tag.slug}`}
-                      className="article-tag px-3 py-1.5"
-                    >
-                      {tag.name}
-                    </Link>
-                  ))
+                {visibleSiblingTags.length ? (
+                  <>
+                    {visibleSiblingTags.map(tag => (
+                      <Link
+                        key={tag.slug}
+                        href={`/tags/${tag.slug}`}
+                        className="article-tag px-3 py-1.5"
+                      >
+                        {tag.name}
+                      </Link>
+                    ))}
+                    {hiddenSiblingTagCount > 0 && (
+                      <span className="article-tag article-tag-muted px-3 py-1.5">
+                        {t("discovery.moreTags", {
+                          count: hiddenSiblingTagCount,
+                        })}
+                      </span>
+                    )}
+                  </>
                 ) : (
                   <span className="text-sm text-slate-400">
                     {t("discovery.noSiblingTags")}

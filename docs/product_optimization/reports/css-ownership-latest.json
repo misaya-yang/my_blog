@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-08T23:30:07.820Z",
+  "generatedAt": "2026-07-08T23:39:48.319Z",
   "status": "passed",
   "files": [
     {
@@ -99,7 +99,7 @@
     {
       "path": "client/src/styles/visual-refresh.css",
       "owner": "public-visual",
-      "lineCount": 7497,
+      "lineCount": 7557,
       "metrics": {
         "important": {
           "count": 199,
@@ -117,23 +117,23 @@
               "text": "transform: none !important;"
             },
             {
-              "line": 1398,
+              "line": 1458,
               "text": "margin-top: 0.75rem !important;"
             },
             {
-              "line": 1410,
+              "line": 1470,
               "text": "margin-top: 0.75rem !important;"
             },
             {
-              "line": 1514,
+              "line": 1574,
               "text": "padding: 1rem !important;"
             },
             {
-              "line": 1670,
+              "line": 1730,
               "text": "padding-top: clamp(1.35rem, 3vh, 2.1rem) !important;"
             },
             {
-              "line": 1671,
+              "line": 1731,
               "text": "padding-bottom: clamp(1.2rem, 2.8vh, 1.9rem) !important;"
             }
           ]
@@ -170,7 +170,7 @@
               "text": "font-size: clamp(2.2rem, 4vw, 4rem);"
             },
             {
-              "line": 1384,
+              "line": 1444,
               "text": "font-size: clamp(2rem, 10vw, 2.75rem);"
             }
           ]
@@ -216,35 +216,35 @@
           "count": 14,
           "samples": [
             {
-              "line": 4665,
+              "line": 4725,
               "text": "body:has(.track-index-page) .agent-liquid-launcher"
             },
             {
-              "line": 4665,
+              "line": 4725,
               "text": "body:has(.login-panel) .agent-liquid-launcher"
             },
             {
-              "line": 4665,
+              "line": 4725,
               "text": "body:has(.auth-required-page) .agent-liquid-launcher"
             },
             {
-              "line": 4665,
+              "line": 4725,
               "text": "body:has(.owner-editor-shell) .agent-liquid-launcher"
             },
             {
-              "line": 4665,
+              "line": 4725,
               "text": "body:has(.owner-ops-page) .agent-liquid-launcher"
             },
             {
-              "line": 4665,
+              "line": 4725,
               "text": "body:has(.agent-console-tabs) .agent-liquid-launcher"
             },
             {
-              "line": 4674,
+              "line": 4734,
               "text": "body:has(.home-index-spread) .agent-liquid-launcher"
             },
             {
-              "line": 4685,
+              "line": 4745,
               "text": "body:has(.home-index-spread) .agent-liquid-launcher > span:not(.agent-launcher-orb)"
             }
           ]
@@ -253,35 +253,35 @@
           "count": 22,
           "samples": [
             {
-              "line": 2838,
+              "line": 2898,
               "text": ".agent-liquid-launcher {"
             },
             {
-              "line": 2844,
+              "line": 2904,
               "text": ".agent-liquid-panel {"
             },
             {
-              "line": 3480,
+              "line": 3540,
               "text": ".agent-liquid-launcher {"
             },
             {
-              "line": 3489,
+              "line": 3549,
               "text": ".agent-liquid-launcher .agent-launcher-orb {"
             },
             {
-              "line": 3494,
+              "line": 3554,
               "text": ".agent-liquid-launcher > span:not(.agent-launcher-orb) {"
             },
             {
-              "line": 3686,
+              "line": 3746,
               "text": ".agent-liquid-launcher {"
             },
             {
-              "line": 3693,
+              "line": 3753,
               "text": ".agent-liquid-launcher .agent-launcher-orb {"
             },
             {
-              "line": 4665,
+              "line": 4725,
               "text": "body:has(.track-index-page) .agent-liquid-launcher,"
             }
           ]
@@ -840,7 +840,7 @@
   "missingFiles": [],
   "totals": {
     "fileCount": 6,
-    "lineCount": 15952,
+    "lineCount": 16012,
     "important": 1559,
     "viewportFontSize": 70,
     "hardCodedColor": 1175,

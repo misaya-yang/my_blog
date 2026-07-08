@@ -198,18 +198,24 @@ export default function Search() {
       <SiteHeader active="search" />
 
       <main className="container relative z-10 px-4 py-10 sm:px-6 md:py-14">
-        <section className="page-hero">
-          <div className="signal-chip mb-6">
+        <section className={query ? "page-hero search-query-hero" : "page-hero"}>
+          <div className={query ? "signal-chip mb-3" : "signal-chip mb-6"}>
             <SearchIcon className="h-4 w-4" />
             {t("discovery.searchKicker")}
           </div>
           <h1 className="page-title">{t("discovery.searchTitle")}</h1>
-          <p className="page-copy mt-5">{t("discovery.searchSubtitle")}</p>
+          <p className={query ? "page-copy mt-2" : "page-copy mt-5"}>
+            {t("discovery.searchSubtitle")}
+          </p>
         </section>
 
         <form
           onSubmit={handleSubmit}
-          className="home-search-dock glass-dock mt-9 max-w-4xl"
+          className={
+            query
+              ? "home-search-dock search-query-dock glass-dock mt-4 max-w-3xl"
+              : "home-search-dock glass-dock mt-9 max-w-4xl"
+          }
         >
           <div className="home-search-dock-title">
             <SearchIcon className="h-5 w-5" />
@@ -240,7 +246,7 @@ export default function Search() {
         </form>
 
         <Surface
-          className="mt-8 hairline-list"
+          className={query ? "mt-4 hairline-list" : "mt-8 hairline-list"}
           density={query ? "compact" : "normal"}
         >
           <SectionHeader

@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-07-08T23:10:05.756Z",
+  "generatedAt": "2026-07-08T23:40:40.277Z",
   "status": "passed",
   "distDir": "dist/public",
   "totals": {
-    "javascriptRawBytes": 1532076,
-    "javascriptGzipBytes": 466950,
-    "cssRawBytes": 506034,
-    "cssGzipBytes": 84430,
+    "javascriptRawBytes": 1532577,
+    "javascriptGzipBytes": 467045,
+    "cssRawBytes": 506876,
+    "cssGzipBytes": 84563,
     "javascriptAssetCount": 42,
     "cssAssetCount": 3
   },
@@ -23,41 +23,41 @@
         "gzipBytes": 90823
       },
       {
-        "file": "assets/index-BqrOHAud.js",
-        "rawBytes": 244281,
-        "gzipBytes": 76410
+        "file": "assets/index-C9R5iJgP.js",
+        "rawBytes": 244447,
+        "gzipBytes": 76432
       },
       {
-        "file": "assets/MarkdownRenderer-Yll82yZQ.js",
+        "file": "assets/MarkdownRenderer-BdtRkhTB.js",
         "rawBytes": 179947,
-        "gzipBytes": 55221
+        "gzipBytes": 55225
       },
       {
-        "file": "assets/knowledgeRefresh-DCouZnGb.js",
+        "file": "assets/knowledgeRefresh-D30SNZiG.js",
         "rawBytes": 50512,
         "gzipBytes": 18031
       },
       {
-        "file": "assets/Manage-BSYIWwpf.js",
+        "file": "assets/Manage-DLPHbiOy.js",
         "rawBytes": 63407,
-        "gzipBytes": 15569
+        "gzipBytes": 15572
       },
       {
-        "file": "assets/Editor-NWKwgWBd.js",
+        "file": "assets/Editor-Df8U2Udw.js",
         "rawBytes": 40868,
-        "gzipBytes": 11489
+        "gzipBytes": 11491
       },
       {
-        "file": "assets/PostDetail-nBA7aJcE.js",
-        "rawBytes": 37144,
-        "gzipBytes": 10374
+        "file": "assets/PostDetail-CiNlfsoW.js",
+        "rawBytes": 37145,
+        "gzipBytes": 10378
       }
     ],
     "css": [
       {
-        "file": "assets/index-DvhKXFs2.css",
-        "rawBytes": 475525,
-        "gzipBytes": 75782
+        "file": "assets/index-DNsX0Xn7.css",
+        "rawBytes": 476367,
+        "gzipBytes": 75915
       },
       {
         "file": "assets/katex-DvXFAOB1.css",
@@ -112,7 +112,7 @@
       "label": "Total CSS gzip baseline",
       "state": "passed",
       "blocking": false,
-      "evidence": "82.5 kB total CSS gzip; warning threshold 96.0 kB."
+      "evidence": "82.6 kB total CSS gzip; warning threshold 96.0 kB."
     }
   ],
   "failures": [],

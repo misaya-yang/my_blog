@@ -1238,6 +1238,53 @@
     padding: 0.25rem 0;
   }
 
+  .search-query-hero {
+    max-width: 52rem;
+  }
+
+  .search-query-hero .page-title {
+    max-width: 13ch;
+    font-size: 3.45rem;
+    line-height: 1.04;
+  }
+
+  .search-query-hero .page-copy {
+    max-width: 42rem;
+    margin-top: 0.85rem;
+    font-size: 1rem;
+    line-height: 1.58;
+  }
+
+  .search-query-dock {
+    max-width: 44rem;
+  }
+
+  @media (min-width: 761px) {
+    .search-query-hero {
+      display: grid;
+      grid-template-columns: auto minmax(18rem, 1fr);
+      align-items: end;
+      gap: 0.5rem 1.2rem;
+    }
+
+    .search-query-hero .signal-chip {
+      grid-column: 1 / -1;
+    }
+
+    .search-query-hero .page-title {
+      max-width: none;
+      font-size: 2.65rem;
+      line-height: 1.05;
+      white-space: nowrap;
+    }
+
+    .search-query-hero .page-copy {
+      margin-top: 0;
+      font-size: 0.96rem;
+      line-height: 1.5;
+    }
+  }
+
   .search-recovery-primary {
     display: flex;
     flex-direction: column;
@@ -1362,6 +1409,19 @@
       flex-direction: row;
       align-items: flex-start;
       justify-content: space-between;
+    }
+
+    .search-page-has-query .search-recovery-primary {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 0.9rem;
+      padding: 0.85rem 1rem;
+    }
+
+    .search-page-has-query .search-recovery-primary p {
+      max-width: 58rem;
+      line-height: 1.52;
     }
 
     .series-progress-card {
@@ -1647,7 +1707,7 @@
       overflow: hidden;
       margin-top: 0.28rem;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 4;
       line-height: 1.45;
     }
 
