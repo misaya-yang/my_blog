@@ -6037,3 +6037,141 @@
     }
   }
 }
+
+@layer components {
+  /* PVC-04 public visual contract: readable editorial surfaces, low-glare controls. */
+  .space-page:not(.owner-dark-scope) {
+    --public-bg: var(--surface-page);
+    --public-bg-lower: color-mix(in oklch, var(--surface-page) 94%, black 6%);
+    --public-header-bg: var(--surface-overlay);
+    --public-sheet-bg: var(--surface-overlay);
+    --public-panel-bg: var(--surface-reading);
+    --public-inline-bg: var(--surface-muted);
+    --public-input-bg: var(--surface-overlay);
+    --public-text: var(--text-primary);
+    --public-muted: var(--text-secondary);
+    --public-faint: var(--text-tertiary);
+    --public-border: var(--border-subtle);
+    --public-border-strong: var(--border-strong);
+    --public-divider: var(--border-subtle);
+    --public-accent: var(--accent-action);
+    --public-accent-bright: var(--text-link);
+    --public-button-bg: var(--accent-action);
+    --public-button-text: oklch(0.985 0.004 250);
+    --public-radius: 0.72rem;
+    --public-panel-shadow: 0 1px 2px oklch(0.32 0.018 250 / 7%);
+    background: linear-gradient(180deg, var(--public-bg), var(--public-bg-lower));
+    color: var(--public-text);
+  }
+
+  .dark .space-page:not(.owner-dark-scope) {
+    --public-bg-lower: color-mix(in oklch, var(--surface-page) 86%, black 14%);
+    --public-button-text: oklch(0.08 0.012 252);
+  }
+
+  .space-page:not(.owner-dark-scope)
+    :where(.space-grid, .space-stars, .planet-horizon) {
+    opacity: 0.08;
+  }
+
+  .space-page:not(.owner-dark-scope)
+    :where(.home-index-spread, .home-index-grid, .home-track-panel, .home-featured-note, .paper-reader-container, .paper-reader-main, .article-prose) {
+    min-width: 0;
+  }
+
+  .space-page:not(.owner-dark-scope)
+    :where(.home-intro-rail, .home-track-panel, .home-featured-note, .home-more-notes, .paper-reader-main.reading-surface) {
+    border-color: var(--public-border);
+    background: var(--public-panel-bg);
+    color: var(--public-text);
+    box-shadow: var(--public-panel-shadow);
+  }
+
+  .home-index-grid {
+    gap: clamp(0.9rem, 1.7vw, 1.35rem);
+  }
+
+  .home-intro-rail {
+    min-height: clamp(24rem, 48vh, 34rem);
+  }
+
+  .home-intro-rail .home-title {
+    max-width: 12ch;
+    text-shadow: none;
+  }
+
+  .home-title-accent {
+    color: var(--public-accent-bright);
+    text-shadow: none;
+  }
+
+  .home-start-path-actions a,
+  .home-track-post-list a,
+  .article-agent-prompt {
+    overflow-wrap: anywhere;
+  }
+
+  .home-search-submit,
+  .home-index-search .home-search-submit,
+  .search-recovery-agent-button {
+    background: var(--public-button-bg);
+    color: var(--public-button-text);
+    box-shadow: none;
+  }
+
+  .paper-reader-main .article-prose {
+    max-width: 74ch;
+    color: var(--text-secondary);
+    font-size: clamp(1.04rem, 0.98rem + 0.18vw, 1.14rem);
+    line-height: 1.88;
+  }
+
+  .paper-reader-main .article-prose :where(p, li, blockquote) {
+    color: var(--text-secondary);
+  }
+
+  .paper-reader-main .article-prose :where(h1, h2, h3, h4, strong) {
+    color: var(--text-primary);
+  }
+
+  .paper-reader-main .article-prose :where(a) {
+    color: var(--text-link);
+  }
+
+  .paper-reader-main .article-prose :where(pre, .technical-table-wrap) {
+    max-width: 100%;
+    border-color: var(--border-subtle);
+    background: var(--surface-overlay);
+  }
+
+  .paper-reader-main .article-prose :where(code:not(pre code)) {
+    border-color: var(--border-subtle);
+    background: var(--surface-muted);
+    color: var(--text-link);
+  }
+
+  @media (max-width: 760px) {
+    .home-index-spread {
+      padding-top: 0.75rem !important;
+    }
+
+    .home-intro-rail {
+      min-height: 0;
+    }
+
+    .home-track-panel,
+    .home-featured-note {
+      border-radius: var(--public-radius);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .space-page:not(.owner-dark-scope)
+      :where(.home-intro-rail, .home-track-panel, .home-featured-note, .home-more-notes, .paper-reader-main.reading-surface) {
+      background: var(--surface-reading) !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+  }
+}

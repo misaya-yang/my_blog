@@ -395,7 +395,7 @@ function MobileToc({
   if (headings.length === 0) return null;
 
   return (
-    <details className="mobile-toc-shell glass-dock mb-7 rounded-lg p-4 lg:hidden">
+    <details className="mobile-toc-shell glass-dock liquid-panel mb-7 rounded-lg p-4 lg:hidden">
       <summary className="cursor-pointer text-sm font-semibold text-white">
         {t("post.toc")}
       </summary>
@@ -707,7 +707,7 @@ export default function PostDetail() {
       <div className="paper-reader-container container relative z-10 max-w-7xl px-4 py-8 sm:px-6 md:py-12">
         <div className="paper-reader-cockpit">
           <aside className="paper-brief-rail hidden xl:block">
-            <div className="paper-brief-card glass-dock sticky top-24">
+            <div className="paper-brief-card glass-dock liquid-panel sticky top-24">
               <p className="technical-label">{t("post.readerMap")}</p>
               <h2>{t("post.entry.kicker")}</h2>
               <dl className="paper-brief-stats">
@@ -756,7 +756,7 @@ export default function PostDetail() {
           </aside>
 
           {/* Main Content */}
-          <article className="reading-surface solid-reading paper-reader-main p-5 sm:p-8 lg:p-10">
+          <article className="reading-surface solid-reading liquid-readable paper-reader-main p-5 sm:p-8 lg:p-10">
             {/* Post Header */}
             <div className="article-reading-header">
               <h1 className="article-page-title mb-5">{post.title}</h1>
@@ -843,7 +843,7 @@ export default function PostDetail() {
 
               {(primaryEntryItem || seriesContext) && (
                 <section
-                  className="article-entry-layer glass-dock"
+                  className="article-entry-layer glass-dock liquid-panel"
                   aria-labelledby="article-entry-title"
                 >
                   <div className="article-entry-brief">
@@ -903,7 +903,7 @@ export default function PostDetail() {
                   )}
 
                   <div
-                    className="article-agent-prompts glass-dock"
+                    className="article-agent-prompts glass-dock liquid-surface"
                     aria-label={t("post.agentCompanion.title")}
                   >
                     <div className="article-agent-prompts-heading">
@@ -963,7 +963,7 @@ export default function PostDetail() {
             </div>
 
             <div
-              className="article-secondary-actions glass-dock"
+              className="article-secondary-actions glass-dock liquid-surface"
               aria-label={t("post.share")}
             >
               <span className="article-secondary-label">{t("post.share")}</span>
@@ -1169,7 +1169,7 @@ export default function PostDetail() {
 
           {/* Table of Contents */}
           <aside className="paper-toc-rail hidden lg:block">
-            <div className="toc-surface glass-dock sticky top-24 p-5">
+            <div className="toc-surface glass-dock liquid-panel sticky top-24 p-5">
               <h3 className="section-title mb-4">{t("post.toc")}</h3>
               <nav className="space-y-2">
                 {headings.map(heading => (

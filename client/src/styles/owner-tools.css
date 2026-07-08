@@ -654,72 +654,57 @@
   /* Theme mode lock: mainstream neutral layering, not bright highlight cards. */
   :root,
   .space-page {
-    --public-bg: oklch(0.948 0.006 250);
-    --public-bg-lower: oklch(0.928 0.007 250);
-    --public-header-bg: oklch(0.966 0.005 250 / 92%);
-    --public-sheet-bg: oklch(0.972 0.004 250 / 98%);
-    --public-panel-bg:
-      linear-gradient(
-        180deg,
-        oklch(0.982 0.004 250 / 88%),
-        oklch(0.956 0.005 250 / 88%)
-      ),
-      oklch(0.968 0.005 250);
-    --public-inline-bg: oklch(0.92 0.006 250 / 74%);
-    --public-input-bg: oklch(0.982 0.004 250 / 94%);
-    --public-text: oklch(0.18 0.018 260);
-    --public-muted: oklch(0.43 0.018 250);
-    --public-faint: oklch(0.56 0.014 250);
-    --public-border: oklch(0.78 0.012 250 / 58%);
-    --public-border-strong: oklch(0.54 0.14 245 / 30%);
-    --public-divider: oklch(0.78 0.012 250 / 50%);
-    --public-accent: oklch(0.5 0.15 245);
-    --public-accent-bright: oklch(0.45 0.15 242);
-    --public-button-bg: oklch(0.52 0.16 248);
+    --public-bg: var(--surface-page);
+    --public-bg-lower: color-mix(in oklch, var(--surface-page) 94%, black 6%);
+    --public-header-bg: var(--surface-overlay);
+    --public-sheet-bg: var(--surface-overlay);
+    --public-panel-bg: var(--surface-reading);
+    --public-inline-bg: var(--surface-muted);
+    --public-input-bg: var(--surface-overlay);
+    --public-text: var(--text-primary);
+    --public-muted: var(--text-secondary);
+    --public-faint: var(--text-tertiary);
+    --public-border: var(--border-subtle);
+    --public-border-strong: var(--border-strong);
+    --public-divider: var(--border-subtle);
+    --public-accent: var(--accent-action);
+    --public-accent-bright: var(--text-link);
+    --public-button-bg: var(--accent-action);
     --public-button-text: oklch(0.99 0 0);
     --ui-muted: var(--public-muted);
-    --ui-muted-low: oklch(0.52 0.014 250);
+    --ui-muted-low: var(--text-tertiary);
     --ui-accent: var(--public-accent-bright);
-    --ui-accent-soft: oklch(0.5 0.15 245 / 12%);
-    --public-radius: 0.82rem;
-    --public-panel-shadow:
-      inset 0 1px 0 oklch(1 0 0 / 50%),
-      0 1px 2px oklch(0.3 0.018 250 / 8%),
-      0 8px 22px oklch(0.3 0.018 250 / 6%);
+    --ui-accent-soft: color-mix(in oklch, var(--accent-action) 12%, transparent);
+    --public-radius: 0.72rem;
+    --public-panel-shadow: 0 1px 2px oklch(0.32 0.018 250 / 7%);
   }
 
   .dark,
   .dark .space-page {
-    --public-bg: oklch(0.105 0.013 252);
-    --public-bg-lower: oklch(0.086 0.012 252);
-    --public-header-bg: oklch(0.105 0.013 252 / 82%);
-    --public-sheet-bg: oklch(0.08 0.012 252 / 96%);
-    --public-panel-bg:
-      linear-gradient(
-        145deg,
-        oklch(0.16 0.022 248 / 78%),
-        oklch(0.07 0.014 252 / 88%)
-      ),
-      oklch(0.095 0.014 252);
-    --public-inline-bg: oklch(0.11 0.016 248 / 44%);
-    --public-input-bg: oklch(0.055 0.014 252 / 86%);
-    --public-text: oklch(0.94 0.008 240);
-    --public-muted: oklch(0.74 0.018 236);
-    --public-faint: oklch(0.58 0.016 236);
-    --public-border: oklch(0.85 0.04 240 / 10%);
-    --public-border-strong: oklch(0.72 0.15 245 / 28%);
-    --public-divider: oklch(0.85 0.04 240 / 10%);
-    --public-accent: oklch(0.72 0.15 245);
-    --public-accent-bright: oklch(0.84 0.13 210);
-    --public-button-bg: oklch(0.55 0.16 248);
-    --public-button-text: oklch(0.99 0 0);
+    --public-bg: var(--surface-page);
+    --public-bg-lower: color-mix(in oklch, var(--surface-page) 86%, black 14%);
+    --public-header-bg: var(--surface-overlay);
+    --public-sheet-bg: var(--surface-overlay);
+    --public-panel-bg: var(--surface-reading);
+    --public-inline-bg: var(--surface-muted);
+    --public-input-bg: oklch(0.09 0.012 252 / 88%);
+    --public-text: var(--text-primary);
+    --public-muted: var(--text-secondary);
+    --public-faint: var(--text-tertiary);
+    --public-border: var(--border-subtle);
+    --public-border-strong: var(--border-strong);
+    --public-divider: var(--border-subtle);
+    --public-accent: var(--accent-action);
+    --public-accent-bright: var(--text-link);
+    --public-button-bg: var(--accent-action);
+    --public-button-text: oklch(0.08 0.012 252);
     --ui-muted: var(--public-muted);
     --ui-muted-low: var(--public-faint);
     --ui-accent: var(--public-accent-bright);
-    --ui-accent-soft: oklch(0.76 0.13 226 / 12%);
+    --ui-accent-soft: color-mix(in oklch, var(--accent-action) 12%, transparent);
     --public-panel-shadow:
-      inset 0 1px 0 oklch(1 0 0 / 7%),
-      0 22px 46px oklch(0.03 0.012 252 / 26%);
+      inset 0 1px 0 oklch(1 0 0 / 5%),
+      0 8px 18px oklch(0.03 0.012 252 / 18%);
   }
 
   .space-page {
@@ -731,12 +716,12 @@
     background:
       radial-gradient(
         90% 70% at 12% -8%,
-        oklch(0.52 0.13 245 / 13%),
+        color-mix(in oklch, var(--accent-action) 10%, transparent),
         transparent 55%
       ),
       radial-gradient(
         90% 72% at 96% 0%,
-        oklch(0.56 0.1 220 / 7%),
+        color-mix(in oklch, var(--accent-reading) 7%, transparent),
         transparent 48%
       ),
       linear-gradient(180deg, var(--public-bg), var(--public-bg-lower));
@@ -805,13 +790,13 @@
     background:
       linear-gradient(
         145deg,
-        oklch(0.22 0.04 246 / 70%),
-        oklch(0.08 0.014 252 / 88%)
+        color-mix(in oklch, var(--surface-rail) 82%, transparent),
+        color-mix(in oklch, var(--surface-overlay) 90%, transparent)
       ),
-      oklch(0.09 0.014 252);
+      var(--surface-overlay);
     box-shadow:
       inset 0 1px 0 oklch(1 0 0 / 7%),
-      0 0 24px oklch(0.72 0.15 245 / 12%);
+      0 1px 2px oklch(0.02 0.012 252 / 24%);
   }
 
   .nav-ink,
@@ -829,7 +814,7 @@
   .nav-ink:hover,
   .nav-icon-button:hover,
   .nav-icon-button-active {
-    background: oklch(0.54 0.17 245 / 10%);
+    background: var(--ui-accent-soft);
     color: var(--public-text);
   }
 
@@ -870,7 +855,7 @@
 
   .site-mobile-sheet-link:hover,
   .site-mobile-sheet-link-active {
-    background: oklch(0.54 0.17 245 / 10%);
+    background: var(--ui-accent-soft);
     color: var(--public-text);
   }
 
@@ -959,7 +944,7 @@
   .home-featured-note-head > span,
   .home-track-panel-head span {
     border-color: var(--public-border-strong);
-    background: oklch(0.54 0.17 245 / 10%);
+    background: var(--ui-accent-soft);
     color: var(--public-accent-bright);
   }
 
@@ -2564,5 +2549,23 @@
       font-size: 0.88rem !important;
       line-height: 1.65 !important;
     }
+  }
+}
+
+@layer components {
+  /* PVC-04 compact reader entry: keep aids secondary to the article body. */
+  .space-page:not(.owner-dark-scope) .paper-reader-main .article-entry-layer {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0 !important;
+    margin: 0.2rem 0 0.45rem !important;
+    padding: 0.52rem 0.62rem !important;
+    background: var(--public-inline-bg) !important;
+    box-shadow: none !important;
+  }
+
+  .space-page:not(.owner-dark-scope)
+    .paper-reader-main
+    .article-agent-prompts {
+    display: none !important;
   }
 }
