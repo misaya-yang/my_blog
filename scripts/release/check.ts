@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { promisify } from "node:util";
@@ -27,6 +27,8 @@ export type ReleaseCheckOptions = {
   skipUi: boolean;
   skipContentVerify: boolean;
   allowDirty: boolean;
+  agentEvalReportPath: string | null;
+  agentEvalWaiver: string | null;
 };
 
 export type ReleaseStep = {
@@ -68,10 +70,21 @@ export type ReleaseCheckReport = {
     skipUi: boolean;
     skipContentVerify: boolean;
     allowDirty: boolean;
+    agentEvalReportPath: string | null;
+    agentEvalWaiver: string | null;
   };
+  agentEvalEvidence: AgentEvalEvidence;
   steps: ReleaseStepResult[];
   failures: string[];
   outputPath: string | null;
+};
+
+export type AgentEvalEvidence = {
+  status: "provided" | "waived" | "missing" | "missing_report";
+  reportPath: string | null;
+  waiver: string | null;
+  reason: string | null;
+  ownerImpact: string;
 };
 
 type CommandRunner = (
@@ -92,6 +105,8 @@ export function parseReleaseCheckArgs(
     skipUi: false,
     skipContentVerify: false,
     allowDirty: false,
+    agentEvalReportPath: env.AGENT_EVAL_REPORT ?? null,
+    agentEvalWaiver: env.AGENT_EVAL_WAIVER ?? null,
   };
 
   for (const arg of argv) {
@@ -103,6 +118,10 @@ export function parseReleaseCheckArgs(
       options.skipContentVerify = true;
     } else if (arg === "--allow-dirty") {
       options.allowDirty = true;
+    } else if (arg.startsWith("--agent-eval-report=")) {
+      options.agentEvalReportPath = arg.slice("--agent-eval-report=".length);
+    } else if (arg.startsWith("--agent-eval-waiver=")) {
+      options.agentEvalWaiver = arg.slice("--agent-eval-waiver=".length);
     } else if (arg === "--no-output") {
       options.outputPath = null;
     } else if (arg.startsWith("--output=")) {
@@ -113,6 +132,14 @@ export function parseReleaseCheckArgs(
       throw new Error(`Unknown release:check argument: ${arg}`);
     }
   }
+
+  if (options.agentEvalReportPath?.trim() && options.agentEvalWaiver?.trim()) {
+    throw new Error(
+      "Use either --agent-eval-report or --agent-eval-waiver, not both."
+    );
+  }
+  options.agentEvalReportPath = options.agentEvalReportPath?.trim() || null;
+  options.agentEvalWaiver = options.agentEvalWaiver?.trim() || null;
 
   return options;
 }
@@ -190,6 +217,7 @@ export async function runReleaseCheck(
   runner: CommandRunner = runStepCommand
 ): Promise<ReleaseCheckReport> {
   const git = await collectGitState(options.projectRoot);
+  const agentEvalEvidence = await collectAgentEvalEvidence(options);
   const steps = buildReleaseSteps(options);
   const results: ReleaseStepResult[] = [];
   let failed = false;
@@ -224,6 +252,13 @@ export async function runReleaseCheck(
   }
 
   const failures = collectFailures(results);
+  if (
+    !options.dryRun &&
+    (agentEvalEvidence.status === "missing" ||
+      agentEvalEvidence.status === "missing_report")
+  ) {
+    failures.unshift(agentEvalEvidence.reason ?? "Agent eval evidence missing.");
+  }
   if (git.dirty && !options.allowDirty) {
     failures.unshift(
       "Working tree is dirty. Commit, stash, or rerun with --allow-dirty for an explicitly non-release diagnostic."
@@ -245,7 +280,10 @@ export async function runReleaseCheck(
       skipUi: options.skipUi,
       skipContentVerify: options.skipContentVerify,
       allowDirty: options.allowDirty,
+      agentEvalReportPath: options.agentEvalReportPath,
+      agentEvalWaiver: options.agentEvalWaiver,
     },
+    agentEvalEvidence,
     steps: results,
     failures,
     outputPath: options.outputPath,
@@ -355,6 +393,58 @@ function collectFailures(results: ReleaseStepResult[]) {
   return results
     .filter(result => result.blocking && result.state === "failed")
     .map(result => `${result.label} failed with exit code ${result.exitCode}.`);
+}
+
+async function collectAgentEvalEvidence(
+  options: ReleaseCheckOptions
+): Promise<AgentEvalEvidence> {
+  if (options.agentEvalWaiver) {
+    return {
+      status: "waived",
+      reportPath: null,
+      waiver: options.agentEvalWaiver,
+      reason: null,
+      ownerImpact:
+        "Agent answer-quality eval evidence was waived for this release check. Treat release readiness as conditional on owner acceptance of the waiver.",
+    };
+  }
+
+  if (options.agentEvalReportPath) {
+    const absoluteReportPath = resolve(
+      options.projectRoot,
+      options.agentEvalReportPath
+    );
+    try {
+      await access(absoluteReportPath);
+      return {
+        status: "provided",
+        reportPath: options.agentEvalReportPath,
+        waiver: null,
+        reason: null,
+        ownerImpact:
+          "Agent answer-quality eval evidence is attached to this release report.",
+      };
+    } catch {
+      return {
+        status: "missing_report",
+        reportPath: options.agentEvalReportPath,
+        waiver: null,
+        reason: `Agent eval report was not found at ${options.agentEvalReportPath}. Provide an existing report or use --agent-eval-waiver=<reason>.`,
+        ownerImpact:
+          "Release readiness cannot be claimed because Agent quality evidence was referenced but not available.",
+      };
+    }
+  }
+
+  return {
+    status: "missing",
+    reportPath: null,
+    waiver: null,
+    reason:
+      "Agent eval evidence is missing. Provide --agent-eval-report=<path> or --agent-eval-waiver=<reason> before claiming release readiness.",
+    ownerImpact:
+      "Release readiness cannot be claimed because Agent answer-quality evidence or an explicit waiver is absent.",
+  };
 }
 
 function formatCommand(step: ReleaseStep) {

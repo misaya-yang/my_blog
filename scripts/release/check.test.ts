@@ -16,6 +16,7 @@ describe("release check orchestration", () => {
         "--skip-ui",
         "--skip-content-verify",
         "--allow-dirty",
+        "--agent-eval-waiver=local diagnostic only",
         "--base-url=http://127.0.0.1:4321",
         "--output=.cache/release.json",
       ],
@@ -31,7 +32,18 @@ describe("release check orchestration", () => {
       skipUi: true,
       skipContentVerify: true,
       allowDirty: true,
+      agentEvalReportPath: null,
+      agentEvalWaiver: "local diagnostic only",
     });
+  });
+
+  it("rejects conflicting Agent eval evidence options", () => {
+    expect(() =>
+      parseReleaseCheckArgs([
+        "--agent-eval-report=.cache/agent-eval.json",
+        "--agent-eval-waiver=manual waiver",
+      ])
+    ).toThrow("Use either --agent-eval-report or --agent-eval-waiver");
   });
 
   it("keeps the full release gate sequence explicit", () => {
@@ -73,7 +85,7 @@ describe("release check orchestration", () => {
 
   it("stops after the first blocking command failure and records not-run steps", async () => {
     const options = parseReleaseCheckArgs(
-      ["--allow-dirty", "--no-output"],
+      ["--allow-dirty", "--no-output", "--agent-eval-waiver=test failure"],
       {},
       process.cwd()
     );
@@ -88,6 +100,89 @@ describe("release check orchestration", () => {
     expect(report.steps.find(step => step.id === "unit-tests")?.state).toBe(
       "not_run"
     );
+  });
+
+  it("fails release readiness when Agent eval evidence is missing", async () => {
+    const options = parseReleaseCheckArgs(
+      ["--allow-dirty", "--no-output"],
+      {},
+      process.cwd()
+    );
+    const report = await runReleaseCheck(options, async step =>
+      fakeResult(step, "passed")
+    );
+
+    expect(report.status).toBe("failed");
+    expect(report.agentEvalEvidence).toMatchObject({
+      status: "missing",
+      reportPath: null,
+      waiver: null,
+    });
+    expect(report.failures[0]).toContain("Agent eval evidence is missing");
+  });
+
+  it("passes with an existing Agent eval report path", async () => {
+    const options = parseReleaseCheckArgs(
+      ["--allow-dirty", "--no-output", "--agent-eval-report=package.json"],
+      {},
+      process.cwd()
+    );
+    const report = await runReleaseCheck(options, async step =>
+      fakeResult(step, "passed")
+    );
+
+    expect(report.status).toBe("passed");
+    expect(report.agentEvalEvidence).toMatchObject({
+      status: "provided",
+      reportPath: "package.json",
+      waiver: null,
+    });
+    expect(report.failures).toEqual([]);
+  });
+
+  it("passes with an explicit Agent eval waiver", async () => {
+    const options = parseReleaseCheckArgs(
+      [
+        "--allow-dirty",
+        "--no-output",
+        "--agent-eval-waiver=provider credentials unavailable in local diagnostic",
+      ],
+      {},
+      process.cwd()
+    );
+    const report = await runReleaseCheck(options, async step =>
+      fakeResult(step, "passed")
+    );
+
+    expect(report.status).toBe("passed");
+    expect(report.agentEvalEvidence).toMatchObject({
+      status: "waived",
+      reportPath: null,
+      waiver: "provider credentials unavailable in local diagnostic",
+    });
+    expect(report.failures).toEqual([]);
+  });
+
+  it("fails when the Agent eval report path is missing", async () => {
+    const options = parseReleaseCheckArgs(
+      [
+        "--allow-dirty",
+        "--no-output",
+        "--agent-eval-report=.cache/missing-agent-eval.json",
+      ],
+      {},
+      process.cwd()
+    );
+    const report = await runReleaseCheck(options, async step =>
+      fakeResult(step, "passed")
+    );
+
+    expect(report.status).toBe("failed");
+    expect(report.agentEvalEvidence).toMatchObject({
+      status: "missing_report",
+      reportPath: ".cache/missing-agent-eval.json",
+    });
+    expect(report.failures[0]).toContain("Agent eval report was not found");
   });
 
   it("does not execute commands in dry-run mode", async () => {
