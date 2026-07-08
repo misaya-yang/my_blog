@@ -90,6 +90,9 @@ type AgentQualityCheck = {
     readableCollapsed: boolean;
     citationUsable: boolean;
   };
+  manualReviewRequired?: Array<
+    "grounded" | "scoped" | "citation_usefulness" | "answer_helpfulness"
+  >;
   failures: string[];
 };
 ```
@@ -103,6 +106,15 @@ First-pass deterministic rules:
 - `citationUsable` is true when each displayed source has title plus route or article slug.
 
 Rules that require semantic judgment should be marked `manual_review_required` rather than faked.
+
+Release-blocking answer-quality failures:
+
+- Hidden, draft, admin-only, or private source returned.
+- Expected public source missing for a golden current-article question.
+- Repeated zero-source completed run for an in-scope public question.
+- Citation unusable because displayed sources lack title plus route or article slug.
+
+Do not count `manual_review_required` as pass. It is a separate state that needs owner review or a narrower deterministic check.
 
 ## Golden Sets
 
@@ -141,6 +153,7 @@ Signal rules:
 - Store article or track scope when available.
 - Group by normalized question plus route context.
 - Severity is high for repeated zero-source failures, medium for refusal gaps, low for ordinary repeated questions.
+- `server/readerSignals.ts` must expose builders, stable IDs, redaction, severity, and suggested owner actions for `agent_question`, `agent_low_confidence`, and `agent_refusal`.
 
 ## Owner UI Contract
 
@@ -183,6 +196,26 @@ Suggested IA:
 
 Raw traces should not be the default first reading surface.
 
+## Operations Runbook
+
+Owner-visible states:
+
+- `model_not_configured`: high severity for Agent availability, blocks Agent release claims.
+- `agent_stream_timeout`: medium by default, high if repeated.
+- `agent_stream_aborted`: low when user-initiated, medium when system-initiated.
+- `quota_exhausted`: owner-visible capacity state, not a content-quality failure.
+- `latestReindexError`: high when public content changed after the last successful index.
+- `stale_index`: high when public article content is newer than Agent knowledge.
+- `report_unavailable`: medium until verified by CLI report.
+- `retrieval_no_source`: medium for one-off in-scope question, high when repeated.
+
+Each state must define:
+
+- owner-facing copy.
+- whether it blocks release.
+- suggested command or route.
+- privacy boundary.
+
 ## Data And Privacy
 
 - Do not expose owner Agent quality endpoints publicly.
@@ -198,6 +231,7 @@ Raw traces should not be the default first reading surface.
 3. Surface normalized quality summary in `server/ai/router.ts`.
 4. Reorder `/manage/agent` so quality summary and action queue come before raw traces.
 5. Add tests for zero-source, refusal, expected-source coverage, and private-context redaction.
+6. Add Agent ops runbook state mapping and release-gate report output.
 
 ## Tests
 
@@ -224,7 +258,10 @@ Browser evidence:
 ## Acceptance Checklist
 
 - Owner can identify Agent quality risk in under one minute.
+- All Agent-related `ReaderSignalKind` values have builder tests.
 - Zero-source and refusal cases become reader signals without leaking private context.
 - Evals include source coverage, scope, refusal, collapsed readability, and citation usefulness.
+- Manual review required is not reported as pass.
+- Ops runbook states are visible and have explicit release-blocking semantics.
 - Raw traces remain available but secondary.
 - No provider, auth, quota, schema, or streaming contract change is required.

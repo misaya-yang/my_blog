@@ -62,6 +62,10 @@ Each kind must define:
 - public/private data boundary.
 - owner-facing suggested action.
 
+Compatibility:
+
+- Existing UI links may use `agent_radar` as a source query param. Signal builders and new links should normalize it to `agent_question`.
+
 ## Grouping Rules
 
 Stable IDs should be deterministic for aggregated read-model signals:
@@ -99,6 +103,7 @@ Statuses:
 - `new`: generated and unreviewed.
 - `triaged`: owner has reviewed and accepted it as real.
 - `planned`: owner intends to write or fix.
+- `in_revision`: owner has started a concrete draft, edit, or revision for the signal.
 - `resolved`: owner has fixed or intentionally addressed it.
 - `ignored`: owner reviewed and declined.
 
@@ -116,6 +121,7 @@ Phase 2:
 Phase 3:
 
 - Link resolved signals to post revisions, publish events, or eval results.
+- Link `in_revision` signals to draft slugs, post ids, or version ids when durable storage is introduced.
 
 ## Suggested Action Contract
 
@@ -165,5 +171,6 @@ corepack pnpm build
 - Every `ReaderSignalKind` has a builder and tests.
 - Grouping keys are deterministic and privacy-safe.
 - Severity rules are explicit and tested.
+- Lifecycle status semantics include `in_revision` and do not confuse local UI state with durable owner action.
 - Local UI status is not represented as durable state.
 - Private context and contact data are not leaked into signals.

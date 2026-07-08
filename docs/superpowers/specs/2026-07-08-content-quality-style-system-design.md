@@ -114,7 +114,11 @@ type ContentFinding = {
   file?: string;
   articleSlug?: string;
   line?: number;
+  span?: string;
   message: string;
+  reason?: string;
+  rewriteIntent?: string;
+  confidence?: "low" | "medium" | "high";
   suggestion?: string;
 };
 
@@ -137,6 +141,26 @@ Rules:
 - Terminal output can stay concise.
 - JSON report should be complete enough for owner cockpit ingestion.
 - Suggestions do not fail the release gate by default.
+- Style findings should include `span`, `reason`, `rewriteIntent`, and `confidence` when the script can identify them deterministically.
+
+## Style Finding Taxonomy
+
+Required style codes:
+
+- `aiish_phrase`: stock article setup or AI-product phrasing.
+- `awkward_expression`: grammatically valid but visibly unnatural phrasing.
+- `subjective_overreach`: author stance or certainty that is stronger than the evidence.
+- `translationese`: phrasing that reads like literal translation rather than natural technical prose.
+- `vague_claim`: claim without mechanism, metric, or task context.
+- `unsupported_certainty`: absolute claim without scope or caveat.
+
+Each taxonomy item must define:
+
+- trigger rule.
+- false-positive guard.
+- example evidence.
+- rewrite intent.
+- severity default.
 
 ## Style Rules
 
@@ -206,6 +230,29 @@ Each article should expose:
 5. Implication: why it matters for builders or readers.
 
 Audit should not fail every missing item immediately. Start as suggestions, then promote repeated structural gaps after review.
+
+Machine-readable output:
+
+```ts
+type ArticleRubricFinding = {
+  articleSlug: string;
+  dimensions: {
+    problem: "present" | "weak" | "missing";
+    mechanism: "present" | "weak" | "missing";
+    evidence: "present" | "weak" | "missing";
+    limitation: "present" | "weak" | "missing";
+    implication: "present" | "weak" | "missing";
+  };
+  lineRefs?: Record<string, number[]>;
+  suggestions: string[];
+};
+```
+
+Rules:
+
+- Rubric output is advisory in the first pass.
+- A weak or missing dimension should explain the concrete missing reader question.
+- Rubric output can feed owner backlog but should not generate article prose.
 
 ## I18n Copy Quality
 

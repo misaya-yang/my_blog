@@ -64,6 +64,7 @@ Desktop layout:
 - TOC rail remains secondary and visually quiet.
 - Agent launcher stays available but not dominant.
 - Side modules should not create a boxed dashboard around the article.
+- Rails only appear when the prose column can still maintain a readable measure, roughly 66 to 78 characters. If a rail compresses prose below that range, collapse it or move it below the body.
 
 Mobile layout:
 
@@ -72,6 +73,7 @@ Mobile layout:
 - Series progress compact.
 - Agent opens as a sheet.
 - Feedback and subscription appear after the reader has reached article completion or near the end.
+- Fixed order: title/meta, compact entry, collapsed TOC, prose, handoff/related path, feedback, subscription.
 
 ## Markdown Primitive Contract
 
@@ -246,6 +248,11 @@ Add or identify one fixture article with:
 - At least three callout types.
 - Internal anchor link.
 - External source link.
+- Repeated heading text to test anchor stability.
+- Long CJK and English text in the same paragraph.
+- Long formula that must scroll inside the math block.
+- Code-copy button focus state.
+- Editor preview rendering of the same fixture.
 
 The fixture can live in tests or seed content, depending on implementation constraints.
 

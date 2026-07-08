@@ -5,6 +5,9 @@ Status: Ready for owner review
 Implementation status: Paused until owner approval
 Scope: public UI, reading, Agent, owner cockpit, writing workflow, reader relationship, content quality, release gates
 
+Latest owner-review entry:
+[2026-07-09-product-optimization-final-spec-package.md](./2026-07-09-product-optimization-final-spec-package.md).
+
 ## How To Review
 
 Read this file first. It is the current execution contract for the next product improvement program. The 2026-07-08 specs remain valid source modules, but this package updates the inventory after the completed 2026-07-09 implementation slices and adds the missing specs needed before more code work starts.

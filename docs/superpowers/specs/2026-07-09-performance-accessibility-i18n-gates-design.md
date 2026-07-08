@@ -70,6 +70,37 @@ Acceptance:
 - No pale text on pale glass in light mode.
 - No low-contrast grey text on dark surfaces.
 - Focus states remain visible in both themes.
+- Markdown/code/table/callout/inline-code/code-copy/button states use semantic tokens or local CSS variables. They must remain readable even when rendered outside `.paper-reader-main`.
+
+## Typography Readability Gate
+
+Rules:
+
+- Do not add viewport-unit font sizing for readable text, including `font-size: clamp(...vw...)`, unless the report explains a bounded display-only exception.
+- Existing viewport-font rules are style debt. When touched, either remove them or record why they remain.
+- Record computed `font-family`, `font-size`, `line-height`, and paragraph measure for representative Chinese and English body text on changed reader surfaces.
+- Body text should target roughly 66 to 78 characters per line on desktop article pages, with shorter measures on mobile.
+- Letter spacing stays normal for body and compact UI labels unless there is a specific typographic reason.
+
+Acceptance:
+
+- Changed article and public shell typography is readable at 390px, 768px, and 1440px.
+- 320px or 400 percent zoom equivalent does not clip text or force page-level horizontal scroll.
+
+## Visual Density And Anti-Template Gate
+
+Rules:
+
+- Record article body start Y for post pages touched by the slice.
+- Record main content area share versus decorative/secondary chrome for first viewport checks where practical.
+- Count large glass/liquid containers and decorative layers on changed first screens.
+- If the first viewport contains multiple large glass/liquid containers before real content, collapse or downgrade secondary modules.
+- Avoid starfield, glow, bokeh, orb, and decorative SVG layers as the dominant identity on reading pages.
+
+Acceptance:
+
+- The first screen communicates real article/research content before decorative atmosphere.
+- Secondary modules do not consume more attention than the reading body.
 
 ## Reflow And Overflow Gate
 
@@ -151,6 +182,7 @@ Minimum matrix for UI slices:
 - Article: desktop and mobile.
 - Agent: long answer with sources, desktop and mobile.
 - Owner: `/manage` or `/manage/agent` when touched.
+- Typography/visual probes: document scroll width, content width, computed font family/size/line-height, representative contrast, glass/liquid container count, and viewport-font/`!important` deltas.
 
 Store evidence under:
 

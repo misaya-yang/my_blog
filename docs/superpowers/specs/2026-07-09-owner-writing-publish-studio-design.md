@@ -77,9 +77,11 @@ Supported input query params:
 
 Rules:
 
+- `agent_radar` is accepted as a legacy alias for `agent_question` while existing links are migrated.
 - Do not pass private feedback message bodies through query params.
 - Redact direct contact data before display.
-- Keep generated draft content empty by default; prefill intent, title suggestion, or editor note only.
+- Do not generate final article prose. A safe empty scaffold is allowed with headings such as source, reader question, claim, evidence, and caveats.
+- Prefill intent, title suggestion, scaffold headings, or editor note only.
 - If `article` is present, prefer opening the existing article for revision when possible.
 
 ## Editor IA
@@ -174,10 +176,11 @@ Rules:
 ## Implementation Slices
 
 1. Normalize backlog links and safe editor query params.
-2. Add editor preflight helpers and unit tests.
-3. Show knowledge refresh status consistently after create, update, publish, and restore.
-4. Make `/manage` backlog rows clearer and connected to editor actions.
-5. Add publish readiness evidence to final release report.
+2. Normalize `agent_radar` links to `agent_question` while preserving legacy compatibility.
+3. Add editor preflight helpers and unit tests.
+4. Show knowledge refresh status consistently after create, update, publish, and restore.
+5. Make `/manage` backlog rows clearer and connected to editor actions.
+6. Add publish readiness evidence to final release report.
 
 ## Tests
 
@@ -206,6 +209,7 @@ Browser evidence:
 
 - Owner can move from backlog item to editor without copying text manually.
 - Private feedback/context is not inserted into URLs or drafts.
+- Editor scaffolding is safe intent structure, not generated finished prose.
 - Publish preflight distinguishes blockers from warnings.
 - Knowledge refresh outcome is visible after post mutation.
 - Editor remains usable on desktop and mobile.

@@ -51,6 +51,7 @@ AUDIT_BASE_URL=http://localhost:3000 corepack pnpm audit:ui
 Notes:
 
 - `audit:ui` requires a running local server.
+- Agent answer-quality eval evidence is required before claiming final release readiness. If it is not automated in `release:check` yet, the release report must include an explicit waiver and the focused Agent eval command/result.
 - `content:publish` is not part of routine verification because it mutates DB/knowledge index state.
 - Deploy requires explicit approval.
 
@@ -64,6 +65,7 @@ Blocking:
 - Content audit failure.
 - UI audit failure.
 - Release-blocking publish freshness failure.
+- Release-blocking Agent quality failure, including hidden/draft source returned, expected source missing for a golden question, repeated zero-source in-scope answer, or unusable citations.
 - Dirty worktree not explained in report.
 - Secret exposure risk.
 
@@ -88,6 +90,7 @@ Each release report should include:
 - Screenshots or audit output paths.
 - Known warnings and waivers.
 - Deploy status: not requested, requested, skipped, or completed.
+- Agent eval report path, or explicit waiver with reason and owner impact.
 
 ## Implementation Slices
 

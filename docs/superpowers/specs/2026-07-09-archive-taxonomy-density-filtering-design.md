@@ -68,7 +68,13 @@ Long taxonomies should not load arbitrary large result sets without a limit.
 ## Density Rules
 
 - Prefer rows or compact cards for archive lists.
+- Archive defaults to ledger rows unless a future design intentionally chooses filtered cards.
+- Search results default to result rows with excerpt, matched track/tag context, and recovery actions.
+- Taxonomy pages use compact cards or rows when density is high; full `ArticleCard` treatment is reserved for small curated sets.
 - Limit visible tag chips per article or provide a controlled wrap.
+- Tag chips visible per item should have a cap, with `+N` or equivalent overflow behavior when needed.
+- Titles and excerpts should use intentional clamp rules, not accidental clipping.
+- Mobile targets must remain at least comfortably tappable for article links and filter controls.
 - Avoid nested cards.
 - Dates and series labels must remain readable on mobile.
 - No horizontal page scroll from long titles or tags.

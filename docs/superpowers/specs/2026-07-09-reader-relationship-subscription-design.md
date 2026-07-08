@@ -80,6 +80,7 @@ Existing data can remain the source of truth:
 - Feedback:
   - post id/slug.
   - type: useful or not useful.
+  - optional structured reason.
   - optional message.
   - optional reply email/name.
   - status.
@@ -97,6 +98,24 @@ Derived reader signals:
 - `search_miss`: already covered by discovery.
 - `agent_question`: covered by Agent quality operations.
 - Subscription interest clusters can influence backlog but should not be exposed as individual personal records.
+
+## Feedback Reason Taxonomy
+
+Optional feedback reason values:
+
+- `unclear_mechanism`: reader could not follow how the mechanism works.
+- `needs_example`: reader needs a concrete example, diagram, or walkthrough.
+- `unsupported_claim`: reader wants evidence, metric, source, or caveat.
+- `awkward_wording`: reader found the wording hard to parse or unnatural.
+- `missing_next_step`: reader does not know what to read or do next.
+- `other`: reader supplied free-form context.
+
+Rules:
+
+- Reason is optional.
+- The public form should not become a long survey.
+- Reasons can shape owner backlog grouping.
+- Direct contact data in free-form message is redacted before signal excerpts.
 
 ## Privacy And Safety
 
@@ -147,10 +166,11 @@ Chinese copy should avoid overly subjective or self-promotional phrasing. Englis
 ## Implementation Slices
 
 1. Tighten public feedback/subscription copy and layout.
-2. Add reader signal normalization for article feedback and subscription topic clusters where safe.
-3. Improve `/manage` feedback and subscription summary hierarchy.
-4. Add tests for redaction, rate limits, and backlog shaping.
-5. Add browser evidence for article feedback and manage export surfaces.
+2. Add optional feedback reason capture without making the public form feel like a survey.
+3. Add reader signal normalization for article feedback and subscription topic clusters where safe.
+4. Improve `/manage` feedback and subscription summary hierarchy.
+5. Add tests for redaction, rate limits, feedback reasons, and backlog shaping.
+6. Add browser evidence for article feedback and manage export surfaces.
 
 ## Tests
 

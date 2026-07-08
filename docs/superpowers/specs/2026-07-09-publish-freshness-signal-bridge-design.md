@@ -63,6 +63,17 @@ Signal fields:
 - `excerpt`: concise safe message.
 - `firstSeenAt` and `lastSeenAt`: report generation timestamp when available.
 
+Stable ID format:
+
+- `publish_freshness:<check_code>:<article_or_global>`
+
+Rules:
+
+- Hidden/draft exposure checks are always release-blocking.
+- Missing public route inclusion for a published article is high severity.
+- Report unavailable is medium severity until verified.
+- UI may show report path and suggested command, but browser code must not run seed, reindex, publish, deploy, or destructive operations.
+
 ## Owner UI Contract
 
 `/manage` should show:

@@ -49,6 +49,8 @@ For UI slices, report:
 - CSS files changed.
 - Approximate added/removed lines.
 - New `!important` count.
+- Current and changed `!important` count for touched CSS files.
+- Viewport-unit font-size count, especially `clamp(...vw...)` for readable text.
 - New hard-coded colors.
 - New broad selectors.
 - Screenshot evidence.
@@ -56,9 +58,23 @@ For UI slices, report:
 Default rules:
 
 - No new `!important` without an explanation.
+- No increase in `!important`, viewport-font rules, or broad selectors without a report-level waiver and removal plan.
 - No new random hex colors when a token exists.
 - No global selector for a local component problem.
 - No nested cards or decorative card wrappers.
+
+## Baseline Debt To Track
+
+Read-only review found heavy existing `!important` use concentrated in:
+
+- `client/src/styles/liquid-materials.css`
+- `client/src/styles/owner-tools.css`
+- `client/src/styles/visual-refresh.css`
+- `client/src/styles/agent-surfaces.css`
+
+Exact counts should be recalculated by the implementation slice before editing. The rule is burn-down or no-growth by default.
+
+Viewport-font debt also exists in public/visual CSS. New readable text must avoid viewport-unit sizing, and touched existing rules should be converted to stable responsive steps or documented as display-only exceptions.
 
 ## Tests And Evidence
 
