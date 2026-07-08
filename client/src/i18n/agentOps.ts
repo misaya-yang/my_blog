@@ -32,6 +32,23 @@ const agentOps: TranslationDict = {
     en: "Knowledge index needs attention",
     zh: "知识索引需要处理",
   },
+  "agentOps.index.releaseReady": {
+    en: "Release ready: Agent knowledge is fresh",
+    zh: "发布就绪：Agent 知识索引新鲜",
+  },
+  "agentOps.index.releaseReadyDescription": {
+    en: "This state should not block review, merge, or deployment from the Agent knowledge side.",
+    zh: "从 Agent 知识索引角度看，这个状态不会阻塞审查、合并或部署。",
+  },
+  "agentOps.index.releaseBlocked": {
+    en: "Release blocker: refresh Agent knowledge before merge or deploy",
+    zh: "发布阻塞：合并或部署前需要刷新 Agent 知识",
+  },
+  "agentOps.index.releaseBlockedDescription": {
+    en: "The public article inventory and indexed Agent knowledge do not match. Reindex first, then verify freshness before claiming release readiness.",
+    zh: "公开文章清单与 Agent 知识索引不一致。先重建索引，再验证新鲜度，之后才能声明发布就绪。",
+  },
+  "agentOps.index.then": { en: "then", zh: "然后" },
   "agentOps.index.lastReindex": { en: "Last indexed", zh: "最近索引" },
   "agentOps.index.cliOnly": {
     en: "Reindex remains a CLI-only operation for now:",

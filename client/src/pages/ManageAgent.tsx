@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import {
   AlertTriangle,
@@ -515,7 +515,7 @@ export default function ManageAgent() {
   );
 }
 
-function IndexStatusPanel({
+export function IndexStatusPanel({
   loading,
   error,
   status,
@@ -546,7 +546,11 @@ function IndexStatusPanel({
 
   const isFresh =
     status.stalePublicPostSlugs.length === 0 &&
-    status.extraIndexedPostSlugs.length === 0;
+    status.extraIndexedPostSlugs.length === 0 &&
+    !status.latestReindexError;
+  const blockerClass = isFresh
+    ? "border-cyan-300/20 bg-cyan-950/15"
+    : "border-amber-300/25 bg-amber-950/20";
 
   return (
     <div className="space-y-5">
@@ -567,6 +571,38 @@ function IndexStatusPanel({
           label={t("agentOps.index.excluded")}
           value={String(status.hiddenOrDraftExcludedCount)}
         />
+      </div>
+      <div className={`rounded-lg border p-4 ${blockerClass}`}>
+        <div className="flex items-start gap-3">
+          {isFresh ? (
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-200" />
+          ) : (
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-200" />
+          )}
+          <div className="min-w-0">
+            <h2 className="font-semibold text-white">
+              {isFresh
+                ? t("agentOps.index.releaseReady")
+                : t("agentOps.index.releaseBlocked")}
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-slate-400">
+              {isFresh
+                ? t("agentOps.index.releaseReadyDescription")
+                : t("agentOps.index.releaseBlockedDescription")}
+            </p>
+            {!isFresh && (
+              <div className="mt-3 flex min-w-0 flex-wrap items-center gap-2 text-xs text-slate-400">
+                <code className="rounded bg-slate-950/70 px-1.5 py-0.5 text-amber-100">
+                  {status.reindexCommand}
+                </code>
+                <span>{t("agentOps.index.then")}</span>
+                <code className="rounded bg-slate-950/70 px-1.5 py-0.5 text-amber-100">
+                  pnpm content:verify
+                </code>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
       <div className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
