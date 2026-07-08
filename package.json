@@ -14,6 +14,7 @@
     "audit:baseline:quick": "tsx scripts/audit/baseline.ts --skip-checks",
     "audit:ui": "tsx scripts/audit/ui-layout.ts",
     "release:check": "tsx scripts/release/check.ts",
+    "ai:eval": "tsx scripts/ai/agent-eval-report.ts",
     "ai:reindex": "tsx scripts/ai/reindex-knowledge.ts",
     "content:audit": "tsx scripts/audit/content-quality.ts",
     "content:verify": "tsx scripts/audit/publish-freshness.ts --output=docs/product_optimization/reports/po-08-publish-freshness-latest.json",

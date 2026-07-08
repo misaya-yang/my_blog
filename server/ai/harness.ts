@@ -12,7 +12,11 @@ import {
   PostgresContextSourceStore,
   type ContextSourceStore,
 } from "./contextSources.js";
-import { AGENT_GOLDEN_QUESTIONS, getGoldenQuestionsForInput } from "./evals.js";
+import {
+  AGENT_GOLDEN_QUESTIONS,
+  evaluateAgentGoldenQuestions,
+  getGoldenQuestionsForInput,
+} from "./evals.js";
 import {
   getKnowledgeIndexStatus,
   searchPublicKnowledgeChunkSources,
@@ -327,94 +331,13 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
       const questions = getGoldenQuestionsForInput(
         input.questions ?? defaultEvalQuestions(scope)
       );
-      const items = [];
-      for (const golden of questions) {
-        const itemScope = golden.scope ?? scope;
-        const sources = await deps.retrieve({
-          query: golden.question,
-          scope: itemScope,
-          limit: 6,
-          routeContext: input.routeContext,
-        });
-        const sourceSlugs = new Set(
-          sources
-            .map(source => source.postSlug)
-            .filter((slug): slug is string => Boolean(slug))
-        );
-        const missingSourceSlugs = golden.expectedSourceSlugs.filter(
-          slug => !sourceSlugs.has(slug)
-        );
-        const failureReason = buildEvalFailureReason(
-          golden.expectedBehavior,
-          sources.length,
-          missingSourceSlugs
-        );
-        const deterministicPass =
-          golden.expectedBehavior === "refusal"
-            ? sources.length === 0
-            : sources.length > 0 && missingSourceSlugs.length === 0;
-        const needsManualReview =
-          deterministicPass &&
-          golden.expectedBehavior === "sources" &&
-          golden.expectedSourceSlugs.length === 0;
-        const status = needsManualReview
-          ? ("manual_review_required" as const)
-          : deterministicPass
-            ? ("passed" as const)
-            : ("failed" as const);
-        const passed = status === "passed";
-        items.push({
-          question: golden.question,
-          expectedBehavior: golden.expectedBehavior,
-          category: golden.category,
-          status,
-          passed,
-          sourceCount: sources.length,
-          topSourceTitle: sources[0]?.postTitle ?? null,
-          sourceIds: sources.map(source => source.sourceId),
-          expectedSourceSlugs: golden.expectedSourceSlugs,
-          missingSourceSlugs,
-          failureReason: status === "failed" ? failureReason : undefined,
-          manualReviewReason: needsManualReview
-            ? ("source_recall_only" as const)
-            : undefined,
-          notes: [
-            ...golden.notes,
-            ...(status === "passed"
-              ? []
-              : status === "manual_review_required"
-                ? buildEvalManualReviewNotes()
-              : buildEvalFailureNotes(
-                  golden.expectedBehavior,
-                  sources.length,
-                  missingSourceSlugs
-                )),
-          ],
-        });
-      }
-      const passed = items.filter(item => item.passed).length;
-      const manualReview = items.filter(
-        item => item.status === "manual_review_required"
-      ).length;
-      const failed = items.filter(item => item.status === "failed").length;
-      return {
-        summary: {
-          total: items.length,
-          passed,
-          failed,
-          manualReview,
-          successCases: items.filter(
-            item => item.expectedBehavior === "sources"
-          ).length,
-          refusalCases: items.filter(
-            item => item.expectedBehavior === "refusal"
-          ).length,
-          runAt: now(),
-          retrievalStrategy: "supabase_keyword",
-          modelProvider: "retrieval-only",
-        },
-        items,
-      };
+      return evaluateAgentGoldenQuestions({
+        goldens: questions,
+        defaultScope: scope,
+        routeContext: input.routeContext,
+        retrieve: deps.retrieve,
+        now,
+      });
     },
 
     async adminKnowledgeStatus(ctx) {
@@ -1421,47 +1344,6 @@ function hasCurrentPageContext(sources: KnowledgeSearchResult[]) {
       .toLowerCase()
       .startsWith("current public article context")
   );
-}
-
-function buildEvalFailureReason(
-  expectedBehavior: "sources" | "refusal",
-  sourceCount: number,
-  missingSourceSlugs: string[]
-) {
-  if (expectedBehavior === "refusal" && sourceCount > 0)
-    return "refusal_boundary" as const;
-  if (sourceCount === 0) return "retrieval_failure" as const;
-  if (missingSourceSlugs.length > 0) return "wrong_source" as const;
-  return "wrong_source" as const;
-}
-
-function buildEvalFailureNotes(
-  expectedBehavior: "sources" | "refusal",
-  sourceCount: number,
-  missingSourceSlugs: string[]
-) {
-  if (expectedBehavior === "refusal" && sourceCount > 0) {
-    return [
-      "Expected no public source, but retrieval returned source cards. Review hidden/out-of-scope matching.",
-    ];
-  }
-  if (sourceCount === 0) {
-    return [
-      "Expected public sources, but retrieval returned none. Reindex or improve query/tag matching.",
-    ];
-  }
-  if (missingSourceSlugs.length > 0) {
-    return [
-      `Missing expected source slug(s): ${missingSourceSlugs.join(", ")}.`,
-    ];
-  }
-  return ["Eval needs manual review."];
-}
-
-function buildEvalManualReviewNotes() {
-  return [
-    "Manual review required: retrieval found public sources, but this eval has no expected source slug, so source recall alone cannot prove answer quality.",
-  ];
 }
 
 function buildArticleIdeaTitle(seed: string) {

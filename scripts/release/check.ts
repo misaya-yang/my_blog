@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { access, mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { promisify } from "node:util";
@@ -80,8 +80,15 @@ export type ReleaseCheckReport = {
 };
 
 export type AgentEvalEvidence = {
-  status: "provided" | "waived" | "missing" | "missing_report";
+  status:
+    | "provided"
+    | "waived"
+    | "missing"
+    | "missing_report"
+    | "invalid_report"
+    | "failed_report";
   reportPath: string | null;
+  reportStatus: string | null;
   waiver: string | null;
   reason: string | null;
   ownerImpact: string;
@@ -252,11 +259,7 @@ export async function runReleaseCheck(
   }
 
   const failures = collectFailures(results);
-  if (
-    !options.dryRun &&
-    (agentEvalEvidence.status === "missing" ||
-      agentEvalEvidence.status === "missing_report")
-  ) {
+  if (!options.dryRun && agentEvalEvidence.reason) {
     failures.unshift(agentEvalEvidence.reason ?? "Agent eval evidence missing.");
   }
   if (git.dirty && !options.allowDirty) {
@@ -402,6 +405,7 @@ async function collectAgentEvalEvidence(
     return {
       status: "waived",
       reportPath: null,
+      reportStatus: null,
       waiver: options.agentEvalWaiver,
       reason: null,
       ownerImpact:
@@ -416,9 +420,33 @@ async function collectAgentEvalEvidence(
     );
     try {
       await access(absoluteReportPath);
+      const reportStatus = await readAgentEvalReportStatus(absoluteReportPath);
+      if (!reportStatus) {
+        return {
+          status: "invalid_report",
+          reportPath: options.agentEvalReportPath,
+          reportStatus: null,
+          waiver: null,
+          reason: `Agent eval report at ${options.agentEvalReportPath} does not expose a top-level status. Run pnpm ai:eval or provide an explicit waiver.`,
+          ownerImpact:
+            "Release readiness cannot be claimed because Agent quality evidence is not in the expected report format.",
+        };
+      }
+      if (reportStatus !== "passed") {
+        return {
+          status: "failed_report",
+          reportPath: options.agentEvalReportPath,
+          reportStatus,
+          waiver: null,
+          reason: `Agent eval report status is ${reportStatus}. Provide a passing report or use --agent-eval-waiver=<reason>.`,
+          ownerImpact:
+            "Release readiness cannot be claimed because the attached Agent quality report is not passing.",
+        };
+      }
       return {
         status: "provided",
         reportPath: options.agentEvalReportPath,
+        reportStatus,
         waiver: null,
         reason: null,
         ownerImpact:
@@ -428,6 +456,7 @@ async function collectAgentEvalEvidence(
       return {
         status: "missing_report",
         reportPath: options.agentEvalReportPath,
+        reportStatus: null,
         waiver: null,
         reason: `Agent eval report was not found at ${options.agentEvalReportPath}. Provide an existing report or use --agent-eval-waiver=<reason>.`,
         ownerImpact:
@@ -439,12 +468,24 @@ async function collectAgentEvalEvidence(
   return {
     status: "missing",
     reportPath: null,
+    reportStatus: null,
     waiver: null,
     reason:
       "Agent eval evidence is missing. Provide --agent-eval-report=<path> or --agent-eval-waiver=<reason> before claiming release readiness.",
     ownerImpact:
       "Release readiness cannot be claimed because Agent answer-quality evidence or an explicit waiver is absent.",
   };
+}
+
+async function readAgentEvalReportStatus(absoluteReportPath: string) {
+  try {
+    const report = JSON.parse(await readFile(absoluteReportPath, "utf8")) as {
+      status?: unknown;
+    };
+    return typeof report.status === "string" ? report.status : null;
+  } catch {
+    return null;
+  }
 }
 
 function formatCommand(step: ReleaseStep) {
