@@ -71,6 +71,11 @@ import { AgentReasoningTrace } from "./AgentReasoningTrace";
 import { AgentSourceCards } from "./AgentSourceCards";
 import { AgentHistoryPanel } from "./AgentHistoryPanel";
 import {
+  AgentQuotaBadge,
+  AgentQuotaCallout,
+  shouldShowQuotaCallout,
+} from "./AgentQuotaStatus";
+import {
   getNextAgentStreamFollowState,
   shouldScrollAgentMessagesToEnd,
 } from "./agentScrollPolicy";
@@ -1525,48 +1530,6 @@ function AgentRelatedQuestions({
       </div>
     </div>
   );
-}
-
-function AgentQuotaBadge({
-  quota,
-}: {
-  quota: { limit: number; remaining: number; tier?: string };
-}) {
-  const { t } = useLanguage();
-  const key =
-    quota.remaining <= 1 ? "agent.quota.low" : "agent.quota.remaining";
-
-  return (
-    <span
-      className="agent-quota-badge inline-flex items-center gap-1.5 rounded-md border border-slate-500/25 bg-white/[0.03] px-2.5 py-1 text-slate-300"
-      title={quota.tier ? `${quota.tier} quota` : undefined}
-    >
-      <LogIn className="h-3.5 w-3.5 text-slate-400" />
-      {t(key, { remaining: quota.remaining, limit: quota.limit })}
-    </span>
-  );
-}
-
-function AgentQuotaCallout({
-  quota,
-}: {
-  quota: { remaining: number; tier: string };
-}) {
-  const { t } = useLanguage();
-  const message =
-    quota.tier === "admin"
-      ? t("agent.quota.adminDetail")
-      : t("agent.quota.lowDetail");
-
-  return (
-    <div className="mt-2 rounded-md border border-slate-700 bg-slate-950/45 px-3 py-2 text-xs leading-5 text-slate-300">
-      {message}
-    </div>
-  );
-}
-
-function shouldShowQuotaCallout(quota: { remaining: number; tier: string }) {
-  return quota.remaining <= 1 || quota.tier === "admin";
 }
 
 export function isBlogAgentHiddenRoute(path: string) {
