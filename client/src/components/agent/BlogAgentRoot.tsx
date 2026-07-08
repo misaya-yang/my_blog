@@ -1090,9 +1090,9 @@ export function AgentPanel({
       </header>
 
       <div className="agent-topbar border-b border-slate-800 px-4 py-2 text-xs text-slate-300">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-slate-600/45 bg-slate-900/55 px-2.5 py-1 text-slate-300">
+        <div className="agent-topbar-primary flex items-center justify-between gap-2">
+          <div className="agent-topbar-meta flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
+            <span className="agent-scope-pill inline-flex items-center gap-1.5 rounded-md border border-slate-600/45 bg-slate-900/55 px-2.5 py-1 text-slate-300">
               <BookOpen className="h-3.5 w-3.5 text-slate-400" />
               {scopeLabel(currentScope, t)}
             </span>

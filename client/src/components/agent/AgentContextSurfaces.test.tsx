@@ -90,9 +90,9 @@ describe("AgentContextSurfaces", () => {
     expect(privateHtml).toContain("Public scope: Current article");
     expect(privateHtml).toContain("conversation-local");
     expect(privateHtml).not.toContain("agent-trust-boundary-attached");
-    expect(attachedHtml).toContain("Public scope: Site");
+    expect(attachedHtml).toContain("Public scope: Site · 1 attached");
     expect(attachedHtml).toContain("source cards stay separated");
-    expect(attachedHtml).toContain("open=");
+    expect(attachedHtml).not.toContain("open=");
     expect(attachedHtml).toContain("agent-trust-boundary-attached");
   });
 });

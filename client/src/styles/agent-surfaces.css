@@ -481,13 +481,32 @@
   }
 
   .agent-topbar {
-    padding-block: 0.5rem;
+    padding-block: 0.375rem;
+  }
+
+  .agent-topbar-primary {
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .agent-topbar-meta {
+    gap: 0.375rem;
+  }
+
+  .agent-scope-pill,
+  .agent-quota-badge,
+  .agent-history-button {
+    min-height: 2rem;
+    padding-block: 0.35rem;
+    border-radius: 0.55rem;
+    white-space: nowrap;
   }
 
   body .agent-trust-boundary,
   .agent-trust-boundary {
-    flex: 1 1 15rem;
+    flex: 1 1 13rem;
     max-width: 100%;
+    padding: 0.35rem 0.55rem;
     border-color: var(--agent-border) !important;
     background: color-mix(
       in oklch,
@@ -495,6 +514,16 @@
       transparent
     ) !important;
     color: var(--agent-muted);
+  }
+
+  .agent-trust-boundary summary {
+    min-height: 1.2rem;
+    line-height: 1.25;
+  }
+
+  .agent-trust-boundary p {
+    margin-top: 0.25rem;
+    line-height: 1.4;
   }
 
   body .agent-trust-boundary-attached,
@@ -509,6 +538,19 @@
 
   .agent-message-scroll {
     scroll-padding-block: 1rem 8rem;
+  }
+
+  .agent-context-dock {
+    padding-block: 0.375rem;
+  }
+
+  .agent-context-toggle {
+    min-height: 2rem;
+    padding-block: 0.25rem;
+  }
+
+  .agent-context-editor {
+    margin-top: 0.375rem;
   }
 
   .agent-message-bubble {

@@ -30,13 +30,13 @@ export function AgentContextDock({
   const { t } = useLanguage();
 
   return (
-    <div className="border-t border-slate-800 px-3 py-2">
+    <div className="agent-context-dock border-t border-slate-800 px-3 py-2">
       <div className="flex items-center justify-between gap-3">
         <button
           type="button"
           onClick={onToggle}
           disabled={disabled}
-          className="inline-flex min-h-11 min-w-0 items-center gap-2 rounded-md px-2 py-2 text-xs font-medium text-slate-400 transition hover:text-slate-100 sm:min-h-0 sm:px-1.5 sm:py-1"
+          className="agent-context-toggle inline-flex min-h-11 min-w-0 items-center gap-2 rounded-md px-2 py-2 text-xs font-medium text-slate-400 transition hover:text-slate-100 sm:min-h-0 sm:px-1.5 sm:py-1"
         >
           <Paperclip className="h-3.5 w-3.5 text-slate-400" />
           <span className="truncate">{t("agent.context.title")}</span>
@@ -55,7 +55,7 @@ export function AgentContextDock({
       </div>
 
       {open && (
-        <div className="mt-2 rounded-md border border-slate-700 bg-slate-950/45 p-2">
+        <div className="agent-context-editor mt-2 rounded-md border border-slate-700 bg-slate-950/45 p-2">
           <p className="mb-2 text-xs leading-5 text-slate-400">
             {t("agent.context.supported")}
           </p>
@@ -115,10 +115,14 @@ export function AgentTrustBoundary({
       ? "agent.trust.contextAttached"
       : "agent.trust.contextPrivate";
   const hasAttachedContext = attachedContextCount > 0;
+  const summaryLabel = hasAttachedContext
+    ? `${scopeLabel} · ${t("agent.context.count", {
+        count: attachedContextCount,
+      })}`
+    : scopeLabel;
 
   return (
     <details
-      open={hasAttachedContext}
       className={cn(
         "agent-trust-boundary min-w-0 rounded-md border px-2.5 py-1",
         hasAttachedContext && "agent-trust-boundary-attached"
@@ -128,7 +132,7 @@ export function AgentTrustBoundary({
         <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
         <span className="truncate">
           {t("agent.trust.publicScope", {
-            scope: scopeLabel,
+            scope: summaryLabel,
           })}
         </span>
       </summary>
