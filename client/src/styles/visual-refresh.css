@@ -4711,15 +4711,49 @@
     display: none !important;
   }
 
+  .paper-reader-cockpit .paper-toc-rail {
+    display: none;
+  }
+
+  .paper-reader-main
+    :where(
+      .article-reading-header,
+      .article-cover-frame,
+      .mobile-toc-shell,
+      .article-reading-handoff,
+      .article-secondary-actions
+    ) {
+    max-width: min(100%, var(--article-prose-max, 78ch));
+    margin-right: auto;
+    margin-left: auto;
+  }
+
   @media (min-width: 1024px) {
     .paper-reader-cockpit {
-      grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.34fr) !important;
+      grid-template-columns: minmax(0, 1fr) !important;
     }
   }
 
-  @media (min-width: 1280px) {
+  @media (min-width: 1024px) and (max-width: 1359px) {
+    .paper-reader-main .mobile-toc-shell {
+      display: block;
+    }
+  }
+
+  @media (min-width: 1360px) {
     .paper-reader-cockpit {
-      grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.32fr) !important;
+      grid-template-columns:
+        minmax(0, min(100%, var(--article-prose-max, 78ch)))
+        minmax(14rem, var(--article-toc-rail-width, 15.5rem)) !important;
+      justify-content: center;
+    }
+
+    .paper-reader-cockpit .paper-toc-rail {
+      display: block;
+    }
+
+    .paper-reader-main .mobile-toc-shell {
+      display: none;
     }
   }
 
@@ -6096,7 +6130,9 @@
     }
 
     .paper-reader-cockpit {
-      grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.32fr) !important;
+      grid-template-columns:
+        minmax(0, min(100%, var(--article-prose-max, 78ch)))
+        minmax(14rem, var(--article-toc-rail-width, 15.5rem)) !important;
       gap: clamp(1rem, 1.7vw, 1.45rem) !important;
       justify-content: center;
     }
@@ -6278,7 +6314,9 @@
   }
 
   .paper-reader-main .article-prose {
-    max-width: 74ch;
+    max-width: min(100%, var(--article-prose-target, 74ch));
+    margin-right: auto;
+    margin-left: auto;
     color: var(--text-secondary);
     font-size: clamp(1.04rem, 0.98rem + 0.18vw, 1.14rem);
     line-height: 1.88;

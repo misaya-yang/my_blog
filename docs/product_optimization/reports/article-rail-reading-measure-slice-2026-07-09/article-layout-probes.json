@@ -1,0 +1,334 @@
+{
+  "generatedAt": "2026-07-08T19:55:07.537Z",
+  "screenshotMode": "viewport",
+  "results": [
+    {
+      "case": "tablet-light-1024",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "tablet-light-1024.png",
+      "metrics": {
+        "url": "/post/goal-harness-agent-phase-protocol",
+        "theme": "light",
+        "viewportWidth": 1024,
+        "viewportHeight": 900,
+        "bodyScrollWidth": 1024,
+        "bodyClientWidth": 1024,
+        "horizontalOverflow": false,
+        "tocRailMinWidth": "1360",
+        "railDisplay": "none",
+        "mobileTocDisplay": "block",
+        "cockpitColumns": "976px",
+        "articleRect": {
+          "x": 24,
+          "y": 120,
+          "width": 976,
+          "height": 16602
+        },
+        "headerRect": {
+          "x": 119,
+          "y": 161,
+          "width": 786,
+          "height": 366
+        },
+        "proseRect": {
+          "x": 192,
+          "y": 615,
+          "width": 641,
+          "height": 14634
+        },
+        "proseFontFamily": "\"Misaya Reading\", \"Source Serif 4\", \"Iowan Old Style\", Charter, \"Songti SC\", STSong, \"Source Han Serif SC\", \"Noto Serif CJK SC\", Georgia, serif",
+        "proseFontSize": "17.5232px",
+        "proseLineHeight": "32.5932px",
+        "proseColor": "oklch(0.38 0.016 252)"
+      }
+    },
+    {
+      "case": "tablet-dark-1024",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "tablet-dark-1024.png",
+      "metrics": {
+        "url": "/post/goal-harness-agent-phase-protocol",
+        "theme": "dark",
+        "viewportWidth": 1024,
+        "viewportHeight": 900,
+        "bodyScrollWidth": 1024,
+        "bodyClientWidth": 1024,
+        "horizontalOverflow": false,
+        "tocRailMinWidth": "1360",
+        "railDisplay": "none",
+        "mobileTocDisplay": "block",
+        "cockpitColumns": "976px",
+        "articleRect": {
+          "x": 24,
+          "y": 120,
+          "width": 976,
+          "height": 16602
+        },
+        "headerRect": {
+          "x": 119,
+          "y": 161,
+          "width": 786,
+          "height": 366
+        },
+        "proseRect": {
+          "x": 192,
+          "y": 615,
+          "width": 641,
+          "height": 14634
+        },
+        "proseFontFamily": "\"Misaya Reading\", \"Source Serif 4\", \"Iowan Old Style\", Charter, \"Songti SC\", STSong, \"Source Han Serif SC\", \"Noto Serif CJK SC\", Georgia, serif",
+        "proseFontSize": "17.5232px",
+        "proseLineHeight": "32.5932px",
+        "proseColor": "oklch(0.76 0.014 238)"
+      }
+    },
+    {
+      "case": "rail-light-1360",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "rail-light-1360.png",
+      "metrics": {
+        "url": "/post/goal-harness-agent-phase-protocol",
+        "theme": "light",
+        "viewportWidth": 1360,
+        "viewportHeight": 900,
+        "bodyScrollWidth": 1360,
+        "bodyClientWidth": 1360,
+        "horizontalOverflow": false,
+        "tocRailMinWidth": "1360",
+        "railDisplay": "block",
+        "mobileTocDisplay": "none",
+        "cockpitColumns": "786.094px 248px",
+        "articleRect": {
+          "x": 147,
+          "y": 120,
+          "width": 786,
+          "height": 16854
+        },
+        "headerRect": {
+          "x": 188,
+          "y": 161,
+          "width": 704,
+          "height": 395
+        },
+        "proseRect": {
+          "x": 209,
+          "y": 561,
+          "width": 663,
+          "height": 14853
+        },
+        "proseFontFamily": "\"Misaya Reading\", \"Source Serif 4\", \"Iowan Old Style\", Charter, \"Songti SC\", STSong, \"Source Han Serif SC\", \"Noto Serif CJK SC\", Georgia, serif",
+        "proseFontSize": "18.128px",
+        "proseLineHeight": "33.7181px",
+        "proseColor": "oklch(0.38 0.016 252)"
+      }
+    },
+    {
+      "case": "rail-dark-1360",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "rail-dark-1360.png",
+      "metrics": {
+        "url": "/post/goal-harness-agent-phase-protocol",
+        "theme": "dark",
+        "viewportWidth": 1360,
+        "viewportHeight": 900,
+        "bodyScrollWidth": 1360,
+        "bodyClientWidth": 1360,
+        "horizontalOverflow": false,
+        "tocRailMinWidth": "1360",
+        "railDisplay": "block",
+        "mobileTocDisplay": "none",
+        "cockpitColumns": "786.094px 248px",
+        "articleRect": {
+          "x": 147,
+          "y": 120,
+          "width": 786,
+          "height": 16854
+        },
+        "headerRect": {
+          "x": 188,
+          "y": 161,
+          "width": 704,
+          "height": 395
+        },
+        "proseRect": {
+          "x": 209,
+          "y": 561,
+          "width": 663,
+          "height": 14853
+        },
+        "proseFontFamily": "\"Misaya Reading\", \"Source Serif 4\", \"Iowan Old Style\", Charter, \"Songti SC\", STSong, \"Source Han Serif SC\", \"Noto Serif CJK SC\", Georgia, serif",
+        "proseFontSize": "18.128px",
+        "proseLineHeight": "33.7181px",
+        "proseColor": "oklch(0.76 0.014 238)"
+      }
+    },
+    {
+      "case": "desktop-light-1440",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "desktop-light-1440.png",
+      "metrics": {
+        "url": "/post/goal-harness-agent-phase-protocol",
+        "theme": "light",
+        "viewportWidth": 1440,
+        "viewportHeight": 900,
+        "bodyScrollWidth": 1440,
+        "bodyClientWidth": 1440,
+        "horizontalOverflow": false,
+        "tocRailMinWidth": "1360",
+        "railDisplay": "block",
+        "mobileTocDisplay": "none",
+        "cockpitColumns": "786.094px 248px",
+        "articleRect": {
+          "x": 187,
+          "y": 120,
+          "width": 786,
+          "height": 16911
+        },
+        "headerRect": {
+          "x": 228,
+          "y": 161,
+          "width": 704,
+          "height": 403
+        },
+        "proseRect": {
+          "x": 246,
+          "y": 569,
+          "width": 668,
+          "height": 14902
+        },
+        "proseFontFamily": "\"Misaya Reading\", \"Source Serif 4\", \"Iowan Old Style\", Charter, \"Songti SC\", STSong, \"Source Han Serif SC\", \"Noto Serif CJK SC\", Georgia, serif",
+        "proseFontSize": "18.272px",
+        "proseLineHeight": "33.9859px",
+        "proseColor": "oklch(0.38 0.016 252)"
+      }
+    },
+    {
+      "case": "desktop-dark-1440",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "desktop-dark-1440.png",
+      "metrics": {
+        "url": "/post/goal-harness-agent-phase-protocol",
+        "theme": "dark",
+        "viewportWidth": 1440,
+        "viewportHeight": 900,
+        "bodyScrollWidth": 1440,
+        "bodyClientWidth": 1440,
+        "horizontalOverflow": false,
+        "tocRailMinWidth": "1360",
+        "railDisplay": "block",
+        "mobileTocDisplay": "none",
+        "cockpitColumns": "786.094px 248px",
+        "articleRect": {
+          "x": 187,
+          "y": 120,
+          "width": 786,
+          "height": 16911
+        },
+        "headerRect": {
+          "x": 228,
+          "y": 161,
+          "width": 704,
+          "height": 403
+        },
+        "proseRect": {
+          "x": 246,
+          "y": 569,
+          "width": 668,
+          "height": 14902
+        },
+        "proseFontFamily": "\"Misaya Reading\", \"Source Serif 4\", \"Iowan Old Style\", Charter, \"Songti SC\", STSong, \"Source Han Serif SC\", \"Noto Serif CJK SC\", Georgia, serif",
+        "proseFontSize": "18.272px",
+        "proseLineHeight": "33.9859px",
+        "proseColor": "oklch(0.76 0.014 238)"
+      }
+    },
+    {
+      "case": "mobile-light-390",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "mobile-light-390.png",
+      "metrics": {
+        "url": "/post/goal-harness-agent-phase-protocol",
+        "theme": "light",
+        "viewportWidth": 390,
+        "viewportHeight": 844,
+        "bodyScrollWidth": 390,
+        "bodyClientWidth": 390,
+        "horizontalOverflow": false,
+        "tocRailMinWidth": "1360",
+        "railDisplay": "none",
+        "mobileTocDisplay": "block",
+        "cockpitColumns": "358px",
+        "articleRect": {
+          "x": 16,
+          "y": 104,
+          "width": 358,
+          "height": 21212
+        },
+        "headerRect": {
+          "x": 32,
+          "y": 121,
+          "width": 326,
+          "height": 432
+        },
+        "proseRect": {
+          "x": 32,
+          "y": 639,
+          "width": 326,
+          "height": 18387
+        },
+        "proseFontFamily": "\"Misaya Reading\", \"Source Serif 4\", \"Iowan Old Style\", Charter, \"Songti SC\", STSong, \"Source Han Serif SC\", \"Noto Serif CJK SC\", Georgia, serif",
+        "proseFontSize": "16.96px",
+        "proseLineHeight": "31.5456px",
+        "proseColor": "oklch(0.38 0.016 252)"
+      }
+    },
+    {
+      "case": "mobile-dark-390",
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "status": 200,
+      "screenshot": "mobile-dark-390.png",
+      "metrics": {
+        "url": "/post/goal-harness-agent-phase-protocol",
+        "theme": "dark",
+        "viewportWidth": 390,
+        "viewportHeight": 844,
+        "bodyScrollWidth": 390,
+        "bodyClientWidth": 390,
+        "horizontalOverflow": false,
+        "tocRailMinWidth": "1360",
+        "railDisplay": "none",
+        "mobileTocDisplay": "block",
+        "cockpitColumns": "358px",
+        "articleRect": {
+          "x": 16,
+          "y": 104,
+          "width": 358,
+          "height": 21212
+        },
+        "headerRect": {
+          "x": 32,
+          "y": 121,
+          "width": 326,
+          "height": 432
+        },
+        "proseRect": {
+          "x": 32,
+          "y": 639,
+          "width": 326,
+          "height": 18387
+        },
+        "proseFontFamily": "\"Misaya Reading\", \"Source Serif 4\", \"Iowan Old Style\", Charter, \"Songti SC\", STSong, \"Source Han Serif SC\", \"Noto Serif CJK SC\", Georgia, serif",
+        "proseFontSize": "16.96px",
+        "proseLineHeight": "31.5456px",
+        "proseColor": "oklch(0.76 0.014 238)"
+      }
+    }
+  ]
+}

@@ -12,6 +12,7 @@ import {
 import { SubscriptionForm } from "@/components/SubscriptionForm";
 import { openBlogAgentWithPrompt } from "@/components/agent/routeContext";
 import { Button } from "@/components/ui/button";
+import { ARTICLE_READER_LAYOUT } from "@/lib/articleLayout";
 import { getPublicArticleTitle } from "@/lib/publicArticles";
 import { trackConfigs } from "@/lib/tracks";
 import { trpc } from "@/lib/trpc";
@@ -45,7 +46,14 @@ import {
 } from "lucide-react";
 import { Link, useParams } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { lazy, Suspense, useEffect, useState, useCallback } from "react";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useState,
+  useCallback,
+  type CSSProperties,
+} from "react";
 
 import { toast } from "sonner";
 
@@ -136,6 +144,13 @@ const articleAgentPromptKeys = [
   "agent.prompts.postAbstraction",
   "agent.prompts.nextReading",
 ];
+
+const articleReaderLayoutStyle = {
+  "--article-prose-min": `${ARTICLE_READER_LAYOUT.proseMeasure.min}ch`,
+  "--article-prose-target": `${ARTICLE_READER_LAYOUT.proseMeasure.target}ch`,
+  "--article-prose-max": `${ARTICLE_READER_LAYOUT.proseMeasure.max}ch`,
+  "--article-toc-rail-width": `${ARTICLE_READER_LAYOUT.tocRailWidthRem}rem`,
+} as CSSProperties;
 
 export function buildArticleCompletionLinks({
   seriesNext,
@@ -467,7 +482,7 @@ function MobileToc({
   if (headings.length === 0) return null;
 
   return (
-    <details className="mobile-toc-shell glass-dock liquid-panel mb-7 rounded-lg p-4 lg:hidden">
+    <details className="mobile-toc-shell glass-dock liquid-panel mb-7 rounded-lg p-4">
       <summary className="cursor-pointer text-sm font-semibold text-white">
         {t("post.toc")}
       </summary>
@@ -786,7 +801,11 @@ export default function PostDetail() {
       <SiteHeader backHref="/" backLabel={t("nav.back")} compact />
 
       <div className="paper-reader-container container relative z-10 max-w-7xl px-4 py-8 sm:px-6 md:py-12">
-        <div className="paper-reader-cockpit">
+        <div
+          className="paper-reader-cockpit"
+          data-toc-rail-min-width={ARTICLE_READER_LAYOUT.tocRailMinViewportPx}
+          style={articleReaderLayoutStyle}
+        >
           <aside className="paper-brief-rail hidden xl:block">
             <div className="paper-brief-card glass-dock liquid-panel sticky top-24">
               <p className="technical-label">{t("post.readerMap")}</p>
@@ -989,7 +1008,7 @@ export default function PostDetail() {
 
             {/* Cover Image */}
             {post.coverImage && (
-              <div className="mb-10 rounded-lg overflow-hidden">
+              <div className="article-cover-frame mb-10 overflow-hidden rounded-lg">
                 <img
                   src={post.coverImage}
                   alt={post.title}
@@ -1285,7 +1304,7 @@ export default function PostDetail() {
           </article>
 
           {/* Table of Contents */}
-          <aside className="paper-toc-rail hidden lg:block">
+          <aside className="paper-toc-rail">
             <div className="toc-surface glass-dock liquid-panel sticky top-24 p-5">
               <h3 className="section-title mb-4">{t("post.toc")}</h3>
               <nav className="space-y-2">
