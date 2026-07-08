@@ -256,7 +256,7 @@
   --text-tertiary: oklch(0.54 0.014 250);
   --text-link: oklch(0.43 0.13 236);
   --border-subtle: oklch(0.8 0.01 250 / 58%);
-  --border-strong: oklch(0.56 0.08 238 / 34%);
+  --border-public-strong: oklch(0.56 0.08 238 / 34%);
   --accent-action: oklch(0.48 0.12 236);
   --accent-reading: oklch(0.42 0.08 196);
   --focus-ring: oklch(0.5 0.11 220 / 38%);
@@ -371,7 +371,7 @@
   --text-tertiary: oklch(0.62 0.014 238);
   --text-link: oklch(0.78 0.09 198);
   --border-subtle: oklch(0.85 0.035 238 / 13%);
-  --border-strong: oklch(0.78 0.07 198 / 28%);
+  --border-public-strong: oklch(0.78 0.07 198 / 28%);
   --accent-action: oklch(0.74 0.09 198);
   --accent-reading: oklch(0.78 0.07 172);
   --focus-ring: oklch(0.76 0.08 198 / 42%);

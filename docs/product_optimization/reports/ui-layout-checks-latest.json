@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-28T03:13:33.332Z",
+  "generatedAt": "2026-07-08T15:57:36.719Z",
   "baseUrl": "http://localhost:3000",
   "passed": true,
   "results": [
@@ -11,9 +11,9 @@
         "height": 844
       },
       "measurements": {
-        "firstArticleY": 752.59375,
+        "firstArticleY": 742.984375,
         "headerHeight": 72,
-        "searchDockY": 394.578125,
+        "searchDockY": 386.578125,
         "bodyScrollWidth": 390,
         "documentScrollWidth": 390,
         "viewportWidth": 390
@@ -33,9 +33,9 @@
         "height": 1000
       },
       "measurements": {
-        "firstArticleY": 863.234375,
+        "firstArticleY": 774.359375,
         "headerHeight": 72,
-        "searchDockY": 560.5625,
+        "searchDockY": 471.6875,
         "bodyScrollWidth": 1440,
         "documentScrollWidth": 1440,
         "viewportWidth": 1440
@@ -56,7 +56,7 @@
       },
       "measurements": {
         "headerHeight": 72,
-        "proseY": 673.421875,
+        "proseY": 639.3125,
         "entryHeight": 106.09375,
         "bodyScrollWidth": 390,
         "documentScrollWidth": 390,
@@ -78,7 +78,7 @@
       },
       "measurements": {
         "headerHeight": 72,
-        "proseY": 536.8125,
+        "proseY": 569.265625,
         "entryHeight": 106.09375,
         "bodyScrollWidth": 1440,
         "documentScrollWidth": 1440,
@@ -99,8 +99,8 @@
         "height": 844
       },
       "measurements": {
-        "recoveryY": 504.328125,
-        "actionY": 504.328125,
+        "recoveryY": 501.140625,
+        "actionY": 501.140625,
         "clearExists": true,
         "bodyScrollWidth": 390,
         "documentScrollWidth": 390,

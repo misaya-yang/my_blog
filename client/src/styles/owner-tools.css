@@ -622,7 +622,7 @@
 }
 
 @layer components {
-  /* EOF lock: owner-tools is imported last, so these rules must remain last. */
+  /* Owner guardrails and legacy compact fixes; public convergence lives in visual-refresh. */
   .site-header {
     min-height: 72px;
     border-color: var(--public-border);
@@ -1974,7 +1974,7 @@
   }
 
   .paper-reader-main .article-prose {
-    max-width: 72ch !important;
+    max-width: 74ch;
   }
 
   .paper-reader-main .article-prose > :first-child {

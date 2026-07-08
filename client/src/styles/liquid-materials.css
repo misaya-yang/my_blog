@@ -2198,8 +2198,11 @@
   .space-page:not(.owner-dark-scope) .home-search-submit {
     border: 1px solid transparent !important;
     border-radius: 0.58rem !important;
-    background: color-mix(in oklch, var(--v2-accent) 88%, var(--v2-accent-2)) !important;
-    color: oklch(0.985 0.004 230) !important;
+    background: var(
+      --public-button-bg,
+      color-mix(in oklch, var(--v2-accent) 88%, var(--v2-accent-2))
+    ) !important;
+    color: var(--public-button-text, oklch(0.06 0.006 250)) !important;
     box-shadow: none !important;
   }
 

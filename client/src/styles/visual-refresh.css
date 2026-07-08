@@ -5217,10 +5217,10 @@
     }
 
     .home-index-spread::before {
-      right: -7rem;
+      right: 0.5rem;
       top: 0.25rem;
-      width: 30rem;
-      opacity: 0.3;
+      width: min(22rem, calc(100vw - 2rem));
+      opacity: 0.18;
     }
 
     .home-intro-rail {
@@ -6052,7 +6052,7 @@
     --public-muted: var(--text-secondary);
     --public-faint: var(--text-tertiary);
     --public-border: var(--border-subtle);
-    --public-border-strong: var(--border-strong);
+    --public-border-strong: var(--border-public-strong, var(--border-strong));
     --public-divider: var(--border-subtle);
     --public-accent: var(--accent-action);
     --public-accent-bright: var(--text-link);
@@ -6075,8 +6075,13 @@
   }
 
   .space-page:not(.owner-dark-scope)
-    :where(.home-index-spread, .home-index-grid, .home-track-panel, .home-featured-note, .paper-reader-container, .paper-reader-main, .article-prose) {
+    :where(.home-index-spread, .home-index-grid, .home-track-panel-grid, .home-featured-band, .home-track-panel, .home-featured-note, .paper-reader-container, .paper-reader-main, .article-prose) {
     min-width: 0;
+    max-width: 100%;
+  }
+
+  .space-page:not(.owner-dark-scope) .home-index-spread {
+    overflow-x: clip;
   }
 
   .space-page:not(.owner-dark-scope)
@@ -6148,6 +6153,38 @@
     border-color: var(--border-subtle);
     background: var(--surface-muted);
     color: var(--text-link);
+  }
+
+  .paper-reader-main .article-entry-layer {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0 !important;
+    margin: 0.2rem 0 0.45rem !important;
+    padding: 0.52rem 0.62rem !important;
+    background: var(--public-inline-bg) !important;
+    box-shadow: none !important;
+  }
+
+  .paper-reader-main .article-entry-heading {
+    margin-bottom: 0.32rem !important;
+  }
+
+  .paper-reader-main .article-entry-heading h2,
+  .paper-reader-main .article-entry-details,
+  .paper-reader-main .article-agent-prompts,
+  .paper-reader-main .article-entry-layer .series-progress-compact {
+    display: none !important;
+  }
+
+  .paper-reader-main .article-entry-grid-compact .article-entry-item {
+    min-height: 0 !important;
+    border-top: 0 !important;
+    padding: 0 !important;
+  }
+
+  .paper-reader-main .article-entry-item dd {
+    -webkit-line-clamp: 2 !important;
+    font-size: 0.88rem !important;
+    line-height: 1.46 !important;
   }
 
   @media (max-width: 760px) {

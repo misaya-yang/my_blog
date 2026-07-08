@@ -8,9 +8,9 @@ import App from "./App";
 import { getLoginUrl } from "./const";
 import "./index.css";
 import "./styles/public-components.css";
-import "./styles/visual-refresh.css";
 import "./styles/owner-tools.css";
 import "./styles/liquid-materials.css";
+import "./styles/visual-refresh.css";
 import "./styles/agent-surfaces.css";
 import { initAnalytics } from "./lib/analytics";
 
