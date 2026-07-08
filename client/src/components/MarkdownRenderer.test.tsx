@@ -14,11 +14,14 @@ const richArticleFixture = [
   "| RLVR | verifier-backed reward |",
   "| RAG | evidence packet |",
   "",
+  "> [!CLAIM]",
+  "> The answer should stay readable before sources expand.",
+  "",
   "$$",
   "\\sum_i p_i = 1",
   "$$",
   "",
-  "```ts",
+  '```ts title="server/ai/harness.ts"',
   "const verifier = (reward: number) => reward > 0;",
   "```",
   "",
@@ -67,6 +70,8 @@ describe("MarkdownRenderer", () => {
     );
 
     expect(html).toContain('id="method"');
+    expect(html).toContain("heading-anchor-link");
+    expect(html).toContain('href="#method"');
     expect(html).toContain('id="detail-anchor"');
     expect(html).toContain('id="h5-boundary"');
     expect(html).toContain('id="h6-boundary"');
@@ -76,6 +81,13 @@ describe("MarkdownRenderer", () => {
     expect(html).toContain('aria-label="Scrollable table"');
     expect(html).toContain("<table");
     expect(html).toContain("katex");
+    expect(html).toContain("article-callout");
+    expect(html).toContain('data-callout-type="claim"');
+    expect(html).toContain("Claim");
+    expect(html).toContain("The answer should stay readable");
+    expect(html).toContain("code-block-meta");
+    expect(html).toContain("server/ai/harness.ts");
+    expect(html).toContain("ts");
     expect(html).toContain("hljs");
     expect(html).toContain('class="hljs-keyword">const</span>');
     expect(html).toContain("verifier");
