@@ -1,7 +1,7 @@
 # Search Archive Retrieval Wave 1 Plan
 
 Date: 2026-07-09
-Status: In progress
+Status: Completed
 Spec source: `docs/superpowers/specs/2026-07-08-discovery-research-map-design.md`
 
 ## Scope
@@ -36,14 +36,14 @@ Implement the next Wave 1 Discovery slice: make search and archive work as retri
 
 ## Implementation Steps
 
-1. Add pure search highlight tokenization and test it.
-2. Add a no-query search start panel using existing recovery topics and track/archive links.
-3. Move search row colors to semantic classes and prevent long excerpts from causing overflow.
-4. Add pure archive summary calculation and test it.
-5. Add a compact archive summary strip before the timeline.
-6. Add final-layer public CSS for search start, highlights, result rows, archive summary, and mobile reflow.
-7. Capture search and archive screenshots in light/dark and desktop/mobile.
-8. Run focused tests, type check, content audit, build, and UI audit.
+1. [x] Add pure search highlight tokenization and test it.
+2. [x] Add a no-query search start panel using existing recovery topics and track/archive links.
+3. [x] Move search row colors to semantic classes and prevent long excerpts from causing overflow.
+4. [x] Add pure archive summary calculation and test it.
+5. [x] Add a compact archive summary strip before the timeline.
+6. [x] Add final-layer public CSS for search start, highlights, result rows, archive summary, and mobile reflow.
+7. [x] Capture search and archive screenshots in light/dark and desktop/mobile.
+8. [x] Run focused tests, type check, content audit, build, and UI audit.
 
 ## Verification Commands
 
@@ -60,3 +60,17 @@ corepack pnpm audit:ui
 - Search start content can become another hero. Keep it inside the results surface and action-oriented.
 - Highlight color can become glare in light mode. Use muted inline background and semantic text tokens.
 - Archive rows can crowd on mobile. Keep dates, title, and metadata stacked with no horizontal scroll.
+
+## Result
+
+- Shipped in commit `f1eb4c3`.
+- Evidence report: `docs/product_optimization/reports/search-archive-retrieval-wave-1-2026-07-09/summary.md`.
+
+## Verification
+
+- `corepack pnpm test -- client/src/pages/Search.test.tsx client/src/pages/Archive.test.ts client/src/pages/searchRecovery.test.ts server/discovery.router.test.ts client/src/i18n/copyVoice.test.ts` passed: 44 files, 272 tests.
+- `corepack pnpm check` passed.
+- `corepack pnpm content:audit` passed with 0 warnings and 0 failures.
+- `corepack pnpm build` passed.
+- `corepack pnpm audit:ui` passed.
+- `git diff --check` passed.

@@ -1,7 +1,7 @@
 # Article Reading Flow Wave 1 Plan
 
 Date: 2026-07-09
-Status: In progress
+Status: Completed
 Spec source: `docs/superpowers/specs/2026-07-08-article-reading-rendering-design.md`
 
 ## Scope
@@ -33,13 +33,13 @@ Implement the next article detail slice: make the reading body arrive sooner, mo
 
 ## Implementation Steps
 
-1. Add a pure `buildArticleCompletionLinks` helper and tests for series, post-next, track, related, and duplicate handling.
-2. Remove the header Agent prompt block and compute completion links from existing post context.
-3. Add an after-prose `article-reading-handoff` section before share/feedback.
-4. Add concise Chinese/English copy for the handoff labels.
-5. Add final-layer CSS for the handoff and remove pre-body Agent prompt re-expansion from the liquid layer.
-6. Capture desktop/mobile and light/dark screenshots for the article route.
-7. Run focused tests, type check, content audit, build, and UI audit.
+1. [x] Add a pure `buildArticleCompletionLinks` helper and tests for series, post-next, track, related, and duplicate handling.
+2. [x] Remove the header Agent prompt block and compute completion links from existing post context.
+3. [x] Add an after-prose `article-reading-handoff` section before share/feedback.
+4. [x] Add concise Chinese/English copy for the handoff labels.
+5. [x] Add final-layer CSS for the handoff and remove pre-body Agent prompt re-expansion from the liquid layer.
+6. [x] Capture desktop/mobile and light/dark screenshots for the article route.
+7. [x] Run focused tests, type check, content audit, build, and UI audit.
 
 ## Verification Commands
 
@@ -56,3 +56,17 @@ corepack pnpm audit:ui
 - Adding a completion block can duplicate footer navigation. Keep it compact and action-oriented.
 - Agent prompt copy can feel promotional if placed before the article. Keep prompts after the body.
 - Related links can repeat the primary next item. Deduplicate by slug in the helper.
+
+## Result
+
+- Shipped in commit `f10b6ce`.
+- Evidence report: `docs/product_optimization/reports/article-reading-flow-wave-1-2026-07-09/summary.md`.
+- Browser probes: `docs/product_optimization/reports/article-reading-flow-wave-1-2026-07-09/playwright-probes.json`.
+
+## Verification
+
+- `corepack pnpm test -- client/src/pages/PostDetail.test.ts client/src/i18n/copyVoice.test.ts` passed: 45 files, 276 tests.
+- `corepack pnpm check` passed.
+- `corepack pnpm content:audit` passed with 0 failures, 0 warnings, and 1 existing non-blocking suggestion.
+- `corepack pnpm build` passed.
+- `corepack pnpm audit:ui` passed.

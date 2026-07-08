@@ -1,7 +1,7 @@
 # Markdown Rendering Polish Wave 1 Plan
 
 Date: 2026-07-09
-Status: In progress
+Status: Completed
 Spec source: `docs/superpowers/specs/2026-07-08-article-reading-rendering-design.md`
 
 ## Scope
@@ -33,13 +33,13 @@ Improve article Markdown rendering primitives without changing article content, 
 
 ## Implementation Steps
 
-1. Add paragraph detection helpers for image-only paragraphs and figure captions.
-2. Render image-only paragraphs as `figure.article-figure`.
-3. Render emphasized caption paragraphs as `p.article-figure-caption`.
-4. Add semantic classes to code block shell, pre, metadata, and copy button.
-5. Add tests for figure, caption, code metadata, copy exclusion, and table wrapper retention.
-6. Add final-layer CSS for figure/caption and code block polish in light/dark/mobile.
-7. Capture browser evidence on an article route and run focused/full gates.
+1. [x] Add paragraph detection helpers for image-only paragraphs and figure captions.
+2. [x] Render image-only paragraphs as `figure.article-figure`.
+3. [x] Render emphasized caption paragraphs as `p.article-figure-caption`.
+4. [x] Add semantic classes to code block shell, pre, metadata, and copy button.
+5. [x] Add tests for figure, caption, code metadata, copy exclusion, and table wrapper retention.
+6. [x] Add final-layer CSS for figure/caption and code block polish in light/dark/mobile.
+7. [x] Capture browser evidence on an article route and run focused/full gates.
 
 ## Verification Commands
 
@@ -56,3 +56,17 @@ corepack pnpm audit:ui
 - Paragraph detection can over-classify italic text. Only treat captions starting with `Figure:` or `图：` as captions.
 - Figure wrapping can alter image spacing. Keep the wrapper unframed and close to existing image styling.
 - Code block CSS can become decorative. Keep it textual and metadata-first, without fake terminal chrome.
+
+## Result
+
+- Shipped in commit `4bb5370`.
+- Evidence report: `docs/product_optimization/reports/markdown-rendering-polish-wave-1-2026-07-09/summary.md`.
+- Browser probes: `docs/product_optimization/reports/markdown-rendering-polish-wave-1-2026-07-09/playwright-probes.json`.
+
+## Verification
+
+- `corepack pnpm test -- client/src/components/MarkdownRenderer.test.tsx` passed: 45 files, 276 tests.
+- `corepack pnpm check` passed.
+- `corepack pnpm content:audit` passed with 0 failures, 0 warnings, and 1 existing non-blocking suggestion.
+- `corepack pnpm build` passed.
+- `corepack pnpm audit:ui` passed.
