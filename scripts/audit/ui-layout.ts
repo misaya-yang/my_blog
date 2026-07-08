@@ -58,6 +58,16 @@ async function main() {
         name: "mobile",
         width: 390,
         height: 844,
+      }),
+      await inspectAgentAnswerFixture(browser, {
+        name: "mobile",
+        width: 390,
+        height: 844,
+      }),
+      await inspectAgentAnswerFixture(browser, {
+        name: "desktop",
+        width: 1440,
+        height: 900,
       })
     );
   } finally {
@@ -289,6 +299,199 @@ async function inspectAgentDialog(browser: BrowserLike, viewport: Viewport) {
       focusEnteredPanel: Boolean(measurements.activeElementInsidePanel),
       escapeClosesPanel: !afterEscape.panelExists,
       focusReturnsToLauncher: afterEscape.activeIsLauncher,
+    },
+  };
+}
+
+async function inspectAgentAnswerFixture(
+  browser: BrowserLike,
+  viewport: Viewport
+) {
+  const page = await newMeasuredPage(browser, viewport);
+  await gotoAndWait(
+    page,
+    `${baseUrl}/post/goal-harness-agent-phase-protocol`,
+    ".agent-liquid-launcher"
+  );
+  await page
+    .getByRole("button", { name: /Blog Agent|阅读助手|Reader/i })
+    .click();
+  await page.waitForSelector(".agent-liquid-panel");
+  await page.waitForSelector(".agent-message-scroll");
+  await page.waitForTimeout(120);
+
+  const measurements = await page.evaluate(() => {
+    const scroller = document.querySelector<HTMLElement>(
+      ".agent-message-scroll"
+    );
+    if (!scroller) {
+      return {
+        fixtureMounted: false,
+        viewportHeight: window.innerHeight,
+        viewportWidth: window.innerWidth,
+        panelClientWidth: null,
+        panelScrollWidth: null,
+        scrollerClientWidth: null,
+        scrollerScrollWidth: null,
+        messageBubbleClientWidth: null,
+        messageBubbleScrollWidth: null,
+        sourceClientWidth: null,
+        sourceScrollWidth: null,
+        sourceTotal: 0,
+        sourceChipCount: 0,
+        sourceListCount: 0,
+        sourceToggleExpanded: null,
+        panelTop: null,
+        panelBottom: null,
+        scrollerTop: null,
+        scrollerBottom: null,
+        answerTop: null,
+        answerBottom: null,
+        sourceSummaryTop: null,
+        sourceSummaryBottom: null,
+        composerTop: null,
+        composerBottom: null,
+      };
+    }
+
+    scroller.innerHTML = `
+      <div class="space-y-4">
+        <article class="agent-message-row flex min-w-0 gap-3 justify-start">
+          <span class="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-md border border-slate-700 bg-slate-950/55 text-slate-300" aria-hidden="true"></span>
+          <div class="agent-message-bubble max-w-[86%] rounded-md border border-slate-700/70 bg-slate-950/35 px-3.5 py-2.5 text-sm leading-6 text-slate-200">
+            <div class="prose prose-sm prose-invert max-w-none prose-p:my-2 prose-li:my-1">
+              <p class="agent-fixture-answer-start">这是一段足够长的伴读回答，用于验证回答完成后读者仍然先看到答案，而不是被来源区块推到面板底部。它覆盖中文长句、英文术语 RLHF / retrieval / source grounding，以及不会自动产生横向滚动的超长词 longretrievalgroundingcitationidentifierwithoutspaces。</p>
+              <p>第二段继续模拟真实回答内容，包含列表、解释和小结。布局要求是正文仍然可读，来源入口保持可追溯但默认收起，输入框在当前视口内可继续使用。</p>
+            </div>
+            <div class="agent-sources mt-3 border-t border-slate-800/80 pt-3" data-source-total="5">
+              <div class="agent-source-summary flex min-w-0 flex-wrap items-center justify-between gap-2 text-xs">
+                <div class="flex min-w-0 flex-1 items-center gap-2">
+                  <span class="shrink-0 font-semibold text-slate-500">5 个来源</span>
+                  <div class="agent-source-chips flex min-w-0 flex-1 items-center gap-1.5">
+                    <span class="agent-source-chip truncate rounded-md border border-slate-700 bg-slate-950/35 px-2 py-0.5 text-[0.68rem] font-medium text-slate-400">大模型强化学习：从 RLHF 到可验证奖励</span>
+                    <span class="agent-source-chip truncate rounded-md border border-slate-700 bg-slate-950/35 px-2 py-0.5 text-[0.68rem] font-medium text-slate-400">Agent Phase Harness 设计协议</span>
+                    <span class="agent-source-chip shrink-0 rounded-md border border-slate-700 bg-slate-950/35 px-2 py-0.5 text-[0.68rem] font-medium text-slate-500">+3</span>
+                  </div>
+                </div>
+                <button type="button" aria-expanded="false" class="agent-source-toggle inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-slate-700 bg-white/[0.025] px-2.5 py-1.5 text-xs font-medium text-slate-300">查看来源</button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    `;
+    scroller.scrollTop = 0;
+
+    const panel = document.querySelector<HTMLElement>(".agent-liquid-panel");
+    const messageBubble =
+      document.querySelector<HTMLElement>(".agent-message-bubble");
+    const answerStart = document.querySelector<HTMLElement>(
+      ".agent-fixture-answer-start"
+    );
+    const sourceSummary = document.querySelector<HTMLElement>(
+      ".agent-source-summary"
+    );
+    const sources = document.querySelector<HTMLElement>(".agent-sources");
+    const sourceToggle = document.querySelector<HTMLElement>(
+      ".agent-source-toggle"
+    );
+    const composer = document.querySelector<HTMLElement>(
+      ".agent-liquid-panel form"
+    );
+    const panelRect = rect(panel);
+    const scrollerRect = rect(scroller);
+    const answerRect = rect(answerStart);
+    const composerRect = rect(composer);
+    const sourceSummaryRect = rect(sourceSummary);
+
+    return {
+      fixtureMounted: true,
+      viewportHeight: window.innerHeight,
+      viewportWidth: window.innerWidth,
+      panelClientWidth: panel?.clientWidth ?? null,
+      panelScrollWidth: panel?.scrollWidth ?? null,
+      scrollerClientWidth: scroller.clientWidth,
+      scrollerScrollWidth: scroller.scrollWidth,
+      messageBubbleClientWidth: messageBubble?.clientWidth ?? null,
+      messageBubbleScrollWidth: messageBubble?.scrollWidth ?? null,
+      sourceClientWidth: sources?.clientWidth ?? null,
+      sourceScrollWidth: sources?.scrollWidth ?? null,
+      sourceTotal: Number(sources?.dataset.sourceTotal ?? 0),
+      sourceChipCount: document.querySelectorAll(".agent-source-chip").length,
+      sourceListCount: document.querySelectorAll(".agent-source-list").length,
+      sourceToggleExpanded:
+        sourceToggle?.getAttribute("aria-expanded") ?? null,
+      panelTop: panelRect.top,
+      panelBottom: panelRect.bottom,
+      scrollerTop: scrollerRect.top,
+      scrollerBottom: scrollerRect.bottom,
+      answerTop: answerRect.top,
+      answerBottom: answerRect.bottom,
+      sourceSummaryTop: sourceSummaryRect.top,
+      sourceSummaryBottom: sourceSummaryRect.bottom,
+      composerTop: composerRect.top,
+      composerBottom: composerRect.bottom,
+    };
+
+    function rect(element: Element | null) {
+      const value = element?.getBoundingClientRect();
+      return {
+        top: value?.top ?? null,
+        bottom: value?.bottom ?? null,
+      };
+    }
+  });
+
+  await page.close();
+
+  const viewportHeight = Number(measurements.viewportHeight ?? 0);
+  const panelClientWidth = Number(measurements.panelClientWidth ?? 0);
+  const panelScrollWidth = Number(measurements.panelScrollWidth ?? Infinity);
+  const scrollerClientWidth = Number(measurements.scrollerClientWidth ?? 0);
+  const scrollerScrollWidth = Number(
+    measurements.scrollerScrollWidth ?? Infinity
+  );
+  const bubbleClientWidth = Number(measurements.messageBubbleClientWidth ?? 0);
+  const bubbleScrollWidth = Number(
+    measurements.messageBubbleScrollWidth ?? Infinity
+  );
+  const sourceClientWidth = Number(measurements.sourceClientWidth ?? 0);
+  const sourceScrollWidth = Number(
+    measurements.sourceScrollWidth ?? Infinity
+  );
+  const answerTop = Number(measurements.answerTop ?? Infinity);
+  const answerBottom = Number(measurements.answerBottom ?? Infinity);
+  const scrollerTop = Number(measurements.scrollerTop ?? -Infinity);
+  const scrollerBottom = Number(measurements.scrollerBottom ?? Infinity);
+  const composerTop = Number(measurements.composerTop ?? Infinity);
+  const composerBottom = Number(measurements.composerBottom ?? Infinity);
+  const sourceSummaryBottom = Number(
+    measurements.sourceSummaryBottom ?? Infinity
+  );
+
+  return {
+    route: "/post/goal-harness-agent-phase-protocol#agent-answer-fixture",
+    viewport,
+    measurements,
+    checks: {
+      fixtureMounted: Boolean(measurements.fixtureMounted),
+      noPanelHorizontalOverflow: panelScrollWidth <= panelClientWidth + 1,
+      noMessageHorizontalOverflow:
+        scrollerScrollWidth <= scrollerClientWidth + 1 &&
+        bubbleScrollWidth <= bubbleClientWidth + 1 &&
+        sourceScrollWidth <= sourceClientWidth + 1,
+      answerStartsVisible:
+        answerTop >= scrollerTop &&
+        answerBottom <= Math.min(scrollerBottom, composerTop),
+      sourcesCollapsedByDefault:
+        Number(measurements.sourceTotal) === 5 &&
+        Number(measurements.sourceListCount) === 0 &&
+        measurements.sourceToggleExpanded === "false",
+      sourceSummaryCompact:
+        Number(measurements.sourceChipCount) <= 3 &&
+        sourceSummaryBottom <= composerTop,
+      composerReachable:
+        composerTop < viewportHeight && composerBottom <= viewportHeight + 1,
     },
   };
 }

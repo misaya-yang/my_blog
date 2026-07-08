@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-08T17:12:48.597Z",
+  "generatedAt": "2026-07-08T18:51:47.599Z",
   "baseUrl": "http://localhost:3000",
   "passed": true,
   "results": [
@@ -138,6 +138,94 @@
         "focusEnteredPanel": true,
         "escapeClosesPanel": true,
         "focusReturnsToLauncher": true
+      }
+    },
+    {
+      "route": "/post/goal-harness-agent-phase-protocol#agent-answer-fixture",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "measurements": {
+        "fixtureMounted": true,
+        "viewportHeight": 844,
+        "viewportWidth": 390,
+        "panelClientWidth": 364,
+        "panelScrollWidth": 364,
+        "scrollerClientWidth": 364,
+        "scrollerScrollWidth": 364,
+        "messageBubbleClientWidth": 284,
+        "messageBubbleScrollWidth": 284,
+        "sourceClientWidth": 256,
+        "sourceScrollWidth": 256,
+        "sourceTotal": 5,
+        "sourceChipCount": 3,
+        "sourceListCount": 0,
+        "sourceToggleExpanded": "false",
+        "panelTop": 44,
+        "panelBottom": 764,
+        "scrollerTop": 202.1875,
+        "scrollerBottom": 599,
+        "answerTop": 229.1875,
+        "answerBottom": 421.1875,
+        "sourceSummaryTop": 542.1875,
+        "sourceSummaryBottom": 578.1875,
+        "composerTop": 660,
+        "composerBottom": 763
+      },
+      "checks": {
+        "fixtureMounted": true,
+        "noPanelHorizontalOverflow": true,
+        "noMessageHorizontalOverflow": true,
+        "answerStartsVisible": true,
+        "sourcesCollapsedByDefault": true,
+        "sourceSummaryCompact": true,
+        "composerReachable": true
+      }
+    },
+    {
+      "route": "/post/goal-harness-agent-phase-protocol#agent-answer-fixture",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "measurements": {
+        "fixtureMounted": true,
+        "viewportHeight": 900,
+        "viewportWidth": 1440,
+        "panelClientWidth": 518,
+        "panelScrollWidth": 518,
+        "scrollerClientWidth": 518,
+        "scrollerScrollWidth": 518,
+        "messageBubbleClientWidth": 416,
+        "messageBubbleScrollWidth": 416,
+        "sourceClientWidth": 388,
+        "sourceScrollWidth": 388,
+        "sourceTotal": 5,
+        "sourceChipCount": 3,
+        "sourceListCount": 0,
+        "sourceToggleExpanded": "false",
+        "panelTop": 124,
+        "panelBottom": 804,
+        "scrollerTop": 241,
+        "scrollerBottom": 657.515625,
+        "answerTop": 268,
+        "answerBottom": 388,
+        "sourceSummaryTop": 485,
+        "sourceSummaryBottom": 521,
+        "composerTop": 698.515625,
+        "composerBottom": 783
+      },
+      "checks": {
+        "fixtureMounted": true,
+        "noPanelHorizontalOverflow": true,
+        "noMessageHorizontalOverflow": true,
+        "answerStartsVisible": true,
+        "sourcesCollapsedByDefault": true,
+        "sourceSummaryCompact": true,
+        "composerReachable": true
       }
     }
   ]
