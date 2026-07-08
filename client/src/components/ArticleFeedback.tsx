@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Mail, ThumbsDown, ThumbsUp } from "lucide-react";
-import { FormEvent, useId, useState } from "react";
+import { Loader2, ShieldCheck, ThumbsDown, ThumbsUp } from "lucide-react";
+import React, { FormEvent, useId, useState } from "react";
 import { toast } from "sonner";
 
 type FeedbackType = "useful" | "not_useful";
@@ -18,8 +18,6 @@ type ArticleFeedbackProps = {
   className?: string;
   embedded?: boolean;
 };
-
-const OWNER_EMAIL = "zedpl28174@gmail.com";
 
 export function ArticleFeedback({
   postId,
@@ -73,9 +71,9 @@ export function ArticleFeedback({
         embedded ? "space-y-5" : "glass-panel p-5",
         className
       )}
-      aria-label={t("engagement.feedback.title")}
+      aria-label={t("engagement.feedback.ariaLabel", { title: postTitle })}
     >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-3">
         <div>
           <h2 className="text-base font-semibold text-white">{t("engagement.feedback.title")}</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
@@ -87,12 +85,14 @@ export function ArticleFeedback({
               : t("engagement.feedback.anonymousIdentity")}
           </p>
         </div>
-        <Button asChild variant="outline" size="sm" className="glass-button shrink-0">
-          <a href={`mailto:${OWNER_EMAIL}?subject=${encodeURIComponent(`Feedback: ${postTitle}`)}`}>
-            <Mail className="h-4 w-4" />
-            {t("engagement.feedback.contact")}
-          </a>
-        </Button>
+        <div className="grid gap-2 rounded-md border border-sky-200/10 bg-slate-950/25 p-3 text-xs leading-5 text-slate-500 sm:grid-cols-3">
+          <span className="inline-flex min-w-0 items-start gap-2">
+            <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-300" />
+            {t("engagement.feedback.privateNote")}
+          </span>
+          <span>{t("engagement.feedback.optionalReply")}</span>
+          <span>{t("engagement.feedback.afterSubmit")}</span>
+        </div>
       </div>
 
       <form onSubmit={submitFeedback} className="grid gap-4">

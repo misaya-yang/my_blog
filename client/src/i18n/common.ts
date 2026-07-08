@@ -150,9 +150,13 @@ const common: TranslationDict = {
     en: "Was this useful?",
     zh: "这篇文章有帮助吗？",
   },
+  "engagement.feedback.ariaLabel": {
+    en: "Private feedback for {title}",
+    zh: "{title} 的私密反馈",
+  },
   "engagement.feedback.description": {
-    en: "Send a private note about what worked or what was missing.",
-    zh: "提交一条私密反馈，说明哪里有帮助或哪里还需要补充。",
+    en: "Send a short private note about what worked, what was unclear, or what should be added next.",
+    zh: "提交一条简短私密反馈，说明哪里有帮助、哪里不清楚，或后续应该补什么。",
   },
   "engagement.feedback.visitorIdentity": {
     en: "Submitting as {name}",
@@ -162,7 +166,18 @@ const common: TranslationDict = {
     en: "You can submit anonymously.",
     zh: "你可以匿名提交。",
   },
-  "engagement.feedback.contact": { en: "Email", zh: "发邮件" },
+  "engagement.feedback.privateNote": {
+    en: "Stored privately for the owner backlog.",
+    zh: "仅作为作者后台的私密改进线索保存。",
+  },
+  "engagement.feedback.optionalReply": {
+    en: "Reply email is optional.",
+    zh: "回复邮箱完全可选。",
+  },
+  "engagement.feedback.afterSubmit": {
+    en: "Useful for revisions, examples, and follow-up notes.",
+    zh: "用于后续修订、补充例子和规划新文章。",
+  },
   "engagement.feedback.useful": { en: "Useful", zh: "有帮助" },
   "engagement.feedback.notUseful": { en: "Not useful", zh: "帮助不大" },
   "engagement.feedback.messagePlaceholder": {
