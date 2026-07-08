@@ -151,6 +151,69 @@ describe("content quality audit", () => {
     );
   });
 
+  it("flags English AI-ish and subjective phrasing as suggestions", async () => {
+    const root = await createTempProject();
+    await writeFile(
+      join(root, "seed-blog.mjs"),
+      `
+      const posts = [
+        {
+          title: "English Voice",
+          slug: "english-voice",
+          contentPath: "./english.md",
+          status: "published",
+          visibility: "public",
+          excerpt: "Concrete English voice note.",
+        },
+      ];
+      `
+    );
+    await writeFile(
+      join(root, "english.md"),
+      [
+        "# English Voice",
+        "",
+        "In this article, we take a deep dive into a paradigm shift.",
+        "",
+        "I think we can see that this clearly significantly improves retrieval.",
+        "",
+        "```ts",
+        "const phrase = 'in this article clearly improves efficiency';",
+        "```",
+      ].join("\n")
+    );
+
+    const report = await runContentQualityAudit(root);
+
+    expect(report.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          severity: "suggestion",
+          category: "style",
+          code: "content.aiish_phrase",
+          evidence: expect.stringContaining("deep dive"),
+        }),
+        expect.objectContaining({
+          severity: "suggestion",
+          category: "style",
+          code: "content.subjective_framing",
+          evidence: expect.stringContaining("I think"),
+        }),
+        expect.objectContaining({
+          severity: "suggestion",
+          category: "readability",
+          code: "content.vague_technical_claim",
+          evidence: expect.stringContaining("significantly improves"),
+        }),
+      ])
+    );
+    expect(
+      report.issues.filter(issue =>
+        issue.evidence?.includes("const phrase =")
+      )
+    ).toEqual([]);
+  });
+
   it("flags vague seed excerpts without inspecting article claims", async () => {
     const root = await createTempProject();
     await writeFile(

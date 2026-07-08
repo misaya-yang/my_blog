@@ -64,6 +64,18 @@ const AIISH_PHRASES = [
   "我们将",
 ];
 
+const AIISH_PHRASE_PATTERNS: Array<{
+  phrase: string;
+  pattern: RegExp;
+}> = [
+  { phrase: "in this article", pattern: /\bin this article\b/i },
+  { phrase: "it is worth noting", pattern: /\bit is worth noting\b/i },
+  { phrase: "deep dive", pattern: /\bdeep dive\b/i },
+  { phrase: "game-changing", pattern: /\bgame[- ]changing\b/i },
+  { phrase: "paradigm shift", pattern: /\bparadigm shift\b/i },
+  { phrase: "revolutionary", pattern: /\brevolutionary\b/i },
+];
+
 const SUBJECTIVE_FRAMING_PATTERNS: Array<{
   phrase: string;
   pattern: RegExp;
@@ -72,6 +84,10 @@ const SUBJECTIVE_FRAMING_PATTERNS: Array<{
   { phrase: "我们可以看到", pattern: /我们可以看到/ },
   { phrase: "显然", pattern: /显然/ },
   { phrase: "有趣的是", pattern: /有趣的是/ },
+  { phrase: "I think", pattern: /\bI think\b/i },
+  { phrase: "we can see", pattern: /\bwe can see\b/i },
+  { phrase: "clearly", pattern: /\bclearly\b/i },
+  { phrase: "interestingly", pattern: /\binterestingly\b/i },
 ];
 
 const UNSUPPORTED_CERTAINTY_PATTERNS: Array<{
@@ -96,6 +112,8 @@ const VAGUE_TECHNICAL_CLAIM_PATTERNS: Array<{
   { phrase: "更鲁棒", pattern: /更鲁棒/ },
   { phrase: "更强能力", pattern: /更强[^，。；;]*能力/ },
   { phrase: "improves efficiency", pattern: /\bimproves efficiency\b/i },
+  { phrase: "significantly improves", pattern: /\bsignificantly improves\b/i },
+  { phrase: "dramatically improves", pattern: /\bdramatically improves\b/i },
   { phrase: "better retrieval", pattern: /\bbetter retrieval\b/i },
   { phrase: "more robust", pattern: /\bmore robust\b/i },
   {
@@ -425,6 +443,21 @@ function auditMarkdownFile(
     for (const phrase of AIISH_PHRASES) {
       if (!line.includes(phrase)) continue;
       if (isTechnicalCaveatPhrase(phrase, line)) continue;
+      issues.push(
+        suggestion(
+          "content.aiish_phrase",
+          "style",
+          file,
+          `Review template-like phrase: ${phrase}`,
+          index + 1,
+          line.trim(),
+          "Replace the filler phrase with the concrete mechanism, evidence, limitation, or implication."
+        )
+      );
+    }
+
+    for (const { phrase, pattern } of AIISH_PHRASE_PATTERNS) {
+      if (!pattern.test(line)) continue;
       issues.push(
         suggestion(
           "content.aiish_phrase",
