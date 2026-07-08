@@ -64,6 +64,36 @@ describe("BlogAgent route context", () => {
     expect(inferClientScope(context)).toEqual({ type: "site" });
   });
 
+  it("keeps route context stable when public routes include query or hash state", () => {
+    expect(buildRouteContext("/search?q=agent", "en")).toMatchObject({
+      path: "/search?q=agent",
+      routeType: "search",
+      locale: "en",
+    });
+
+    expect(
+      buildRouteContext("/archive?month=2026-07#timeline", "zh")
+    ).toMatchObject({
+      path: "/archive?month=2026-07#timeline",
+      routeType: "archive",
+      locale: "zh",
+    });
+
+    expect(buildRouteContext("/tags/rlhf?page=2", "en")).toMatchObject({
+      path: "/tags/rlhf?page=2",
+      routeType: "tag",
+      tagSlug: "rlhf",
+    });
+
+    expect(
+      buildRouteContext("/post/agent-loop-observable#trace", "en")
+    ).toMatchObject({
+      path: "/post/agent-loop-observable#trace",
+      routeType: "post",
+      postSlug: "agent-loop-observable",
+    });
+  });
+
   it("returns distinct companion prompt sets by route type", () => {
     const postContext = buildRouteContext(
       "/post/agent-loop-observable-tool-using-agents",
