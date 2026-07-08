@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 
-type Theme = "light" | "dark";
+export type Theme = "light" | "dark";
 
 interface ThemeContextType {
   theme: Theme;
@@ -15,14 +15,31 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
-const THEME_STORAGE_KEY = "theme";
+export const THEME_STORAGE_KEY = "theme";
+
+export function isTheme(value: unknown): value is Theme {
+  return value === "light" || value === "dark";
+}
+
+export function resolveInitialTheme({
+  switchable,
+  storedTheme,
+  defaultTheme,
+}: {
+  switchable: boolean;
+  storedTheme: string | null | undefined;
+  defaultTheme: Theme;
+}): Theme {
+  if (!switchable) return defaultTheme;
+  return isTheme(storedTheme) ? storedTheme : defaultTheme;
+}
 
 function readStoredTheme(): Theme | null {
   if (typeof window === "undefined") return null;
 
   try {
     const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-    return stored === "light" || stored === "dark" ? stored : null;
+    return isTheme(stored) ? stored : null;
   } catch {
     return null;
   }
@@ -50,8 +67,11 @@ export function ThemeProvider({
   switchable = false,
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
-    if (switchable) return readStoredTheme() ?? defaultTheme;
-    return defaultTheme;
+    return resolveInitialTheme({
+      switchable,
+      storedTheme: readStoredTheme(),
+      defaultTheme,
+    });
   });
 
   useEffect(() => {
