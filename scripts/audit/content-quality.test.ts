@@ -151,6 +151,132 @@ describe("content quality audit", () => {
     );
   });
 
+  it("adds article rubric summaries without turning weak dimensions into blockers", async () => {
+    const root = await createTempProject();
+    await writeFile(
+      join(root, "seed-blog.mjs"),
+      `
+      const posts = [
+        {
+          title: "Rubric",
+          slug: "rubric-note",
+          contentPath: "./rubric.md",
+          status: "published",
+          visibility: "public",
+          excerpt: "Concrete rubric note.",
+        },
+      ];
+      `
+    );
+    await writeFile(
+      join(root, "rubric.md"),
+      [
+        "# Rubric",
+        "",
+        "## Problem",
+        "Readers lose context when route state is not restored.",
+        "",
+        "## Mechanism",
+        "The router stores the source route and heading target.",
+        "",
+        "## Evidence",
+        "A focused test covers restoration from search results.",
+        "",
+        "This means the next reading link remains useful.",
+      ].join("\n")
+    );
+
+    const report = await runContentQualityAudit(root);
+    const rubric = report.rubrics.find(item => item.file === "rubric.md");
+
+    expect(report.summary.rubricArticles).toBe(1);
+    expect(
+      report.issues.filter(issue => issue.code.startsWith("rubric."))
+    ).toEqual([]);
+    expect(rubric).toEqual(
+      expect.objectContaining({
+        file: "rubric.md",
+        articleSlug: "rubric-note",
+        dimensions: expect.objectContaining({
+          problem: expect.objectContaining({ status: "present" }),
+          mechanism: expect.objectContaining({ status: "present" }),
+          evidence: expect.objectContaining({ status: "present" }),
+          implication: expect.objectContaining({ status: "weak" }),
+          limitation: expect.objectContaining({ status: "missing" }),
+        }),
+        weak: ["implication"],
+        missing: ["limitation"],
+      })
+    );
+    expect(report.summary.rubricWeakDimensions).toBe(1);
+    expect(report.summary.rubricMissingDimensions).toBe(1);
+  });
+
+  it("flags awkward expression and translationese as metadata-rich suggestions", async () => {
+    const root = await createTempProject();
+    await writeFile(
+      join(root, "seed-blog.mjs"),
+      `
+      const posts = [
+        {
+          title: "Expression",
+          slug: "expression-note",
+          contentPath: "./expression.md",
+          status: "published",
+          visibility: "public",
+          excerpt: "Concrete expression note.",
+        },
+      ];
+      `
+    );
+    await writeFile(
+      join(root, "expression.md"),
+      [
+        "# Expression",
+        "",
+        "这里需要进行一个分析，才能解释机制。",
+        "",
+        "作者对检索流程进行评估后再写结论。",
+        "",
+        "We should not make a conclusion before evidence is named.",
+      ].join("\n")
+    );
+
+    const report = await runContentQualityAudit(root);
+
+    expect(report.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          severity: "suggestion",
+          category: "style",
+          code: "content.awkward_expression",
+          evidence: expect.stringContaining("进行一个分析"),
+          reason: expect.stringContaining("filler construction"),
+          confidence: "medium",
+          span: expect.objectContaining({
+            start: expect.any(Number),
+            end: expect.any(Number),
+          }),
+        }),
+        expect.objectContaining({
+          severity: "suggestion",
+          category: "style",
+          code: "content.awkward_expression",
+          evidence: expect.stringContaining("make a conclusion"),
+          suggestion: expect.stringContaining("direct verb"),
+        }),
+        expect.objectContaining({
+          severity: "suggestion",
+          category: "readability",
+          code: "content.translationese",
+          evidence: expect.stringContaining("对检索流程进行评估"),
+          reason: expect.stringContaining("translated filler"),
+          confidence: "medium",
+        }),
+      ])
+    );
+  });
+
   it("flags English AI-ish and subjective phrasing as suggestions", async () => {
     const root = await createTempProject();
     await writeFile(

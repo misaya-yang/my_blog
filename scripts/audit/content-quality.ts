@@ -24,6 +24,37 @@ export type ContentQualityIssue = {
   message: string;
   evidence?: string;
   suggestion?: string;
+  reason?: string;
+  confidence?: "low" | "medium" | "high";
+  span?: {
+    start: number;
+    end: number;
+  };
+};
+
+export type ContentRubricDimension =
+  | "problem"
+  | "mechanism"
+  | "evidence"
+  | "limitation"
+  | "implication";
+
+export type ContentRubricStatus = "present" | "weak" | "missing";
+
+export type ArticleQualityRubric = {
+  file: string;
+  articleSlug?: string;
+  title?: string;
+  dimensions: Record<
+    ContentRubricDimension,
+    {
+      status: ContentRubricStatus;
+      reason: string;
+      evidence?: string;
+    }
+  >;
+  weak: ContentRubricDimension[];
+  missing: ContentRubricDimension[];
 };
 
 export type ContentQualityReport = {
@@ -36,9 +67,13 @@ export type ContentQualityReport = {
     suggestions: number;
     warnings: number;
     failures: number;
+    rubricArticles: number;
+    rubricWeakDimensions: number;
+    rubricMissingDimensions: number;
   };
   issues: ContentQualityIssue[];
   findings: ContentQualityIssue[];
+  rubrics: ArticleQualityRubric[];
 };
 
 type SeedPost = {
@@ -122,6 +157,26 @@ const VAGUE_TECHNICAL_CLAIM_PATTERNS: Array<{
   },
 ];
 
+const AWKWARD_EXPRESSION_PATTERNS: Array<{
+  phrase: string;
+  pattern: RegExp;
+}> = [
+  { phrase: "进行一个", pattern: /进行一个/ },
+  { phrase: "做一个", pattern: /做一个[^，。；;]{0,12}(?:分析|说明|总结|介绍)/ },
+  { phrase: "make a conclusion", pattern: /\bmake a conclusion\b/i },
+  { phrase: "do an analysis", pattern: /\bdo an analysis\b/i },
+];
+
+const TRANSLATIONESE_PATTERNS: Array<{
+  phrase: string;
+  pattern: RegExp;
+}> = [
+  { phrase: "对...进行", pattern: /对[^，。；;]{1,24}进行(?:分析|优化|建模|评估)/ },
+  { phrase: "under the situation", pattern: /\bunder the situation\b/i },
+  { phrase: "make research", pattern: /\bmake (?:a )?research\b/i },
+  { phrase: "do research on", pattern: /\bdo research on\b/i },
+];
+
 const MALFORMED_MARKDOWN_PATTERNS: Array<{
   code: string;
   pattern: RegExp;
@@ -197,6 +252,50 @@ const GENERIC_EXCERPT_VOICE_SUGGESTION_PATTERNS: Array<{
 
 const LINK_PATTERN = /\[[^\]]+]\(([^)]+)\)/g;
 
+const RUBRIC_RULES: Record<
+  ContentRubricDimension,
+  {
+    label: string;
+    patterns: RegExp[];
+  }
+> = {
+  problem: {
+    label: "problem",
+    patterns: [
+      /问题|挑战|痛点|失败|动机|目标/,
+      /\b(?:problem|challenge|failure|motivation|why)\b/i,
+    ],
+  },
+  mechanism: {
+    label: "mechanism",
+    patterns: [
+      /机制|原理|方法|结构|流程|如何|实现/,
+      /\b(?:mechanism|architecture|method|pipeline|how|implementation)\b/i,
+    ],
+  },
+  evidence: {
+    label: "evidence",
+    patterns: [
+      /证据|实验|评估|指标|结果|验证|依据/,
+      /\b(?:evidence|evaluation|benchmark|metric|result|trace|test)\b/i,
+    ],
+  },
+  limitation: {
+    label: "limitation",
+    patterns: [
+      /限制|边界|风险|失败模式|代价|权衡|不足|例外/,
+      /\b(?:limitation|boundary|risk|trade[- ]off|failure mode|caveat|cost)\b/i,
+    ],
+  },
+  implication: {
+    label: "implication",
+    patterns: [
+      /启示|结论|影响|意味着|因此|后续|适用/,
+      /\b(?:takeaway|implication|therefore|means|future|useful when)\b/i,
+    ],
+  },
+};
+
 export async function runContentQualityAudit(
   projectRoot = process.cwd()
 ): Promise<ContentQualityReport> {
@@ -214,6 +313,7 @@ export async function runContentQualityAudit(
       .filter((entry): entry is [string, SeedPost] => Boolean(entry[0]))
   );
   const issues: ContentQualityIssue[] = [];
+  const rubrics: ArticleQualityRubric[] = [];
 
   issues.push(...auditSeedPosts(root, seedPosts));
   issues.push(...auditSeries(seedPosts));
@@ -224,6 +324,7 @@ export async function runContentQualityAudit(
     const markdown = await readFile(absolute, "utf-8");
     const post = postsByContentPath.get(file);
     issues.push(...auditMarkdownFile(root, file, markdown, post));
+    rubrics.push(buildArticleQualityRubric(file, markdown, post));
   }
 
   const warnings = issues.filter(issue => issue.severity === "warning").length;
@@ -231,6 +332,14 @@ export async function runContentQualityAudit(
   const suggestions = issues.filter(
     issue => issue.severity === "suggestion"
   ).length;
+  const rubricWeakDimensions = rubrics.reduce(
+    (total, rubric) => total + rubric.weak.length,
+    0
+  );
+  const rubricMissingDimensions = rubrics.reduce(
+    (total, rubric) => total + rubric.missing.length,
+    0
+  );
 
   return {
     generatedAt: new Date().toISOString(),
@@ -242,9 +351,13 @@ export async function runContentQualityAudit(
       suggestions,
       warnings,
       failures,
+      rubricArticles: rubrics.length,
+      rubricWeakDimensions,
+      rubricMissingDimensions,
     },
     issues,
     findings: issues,
+    rubrics,
   };
 }
 
@@ -593,6 +706,50 @@ function auditMarkdownFile(
       );
     }
 
+    for (const { phrase, pattern } of AWKWARD_EXPRESSION_PATTERNS) {
+      const span = getPatternSpan(line, pattern);
+      if (!span) continue;
+      issues.push(
+        suggestion(
+          "content.awkward_expression",
+          "style",
+          file,
+          `Review awkward expression: ${phrase}`,
+          index + 1,
+          line.trim(),
+          "Use a direct verb and name the technical object being changed or analyzed.",
+          {
+            reason:
+              "The phrasing is usually a filler construction that can hide the actual technical action.",
+            confidence: "medium",
+            span,
+          }
+        )
+      );
+    }
+
+    for (const { phrase, pattern } of TRANSLATIONESE_PATTERNS) {
+      const span = getPatternSpan(line, pattern);
+      if (!span) continue;
+      issues.push(
+        suggestion(
+          "content.translationese",
+          "readability",
+          file,
+          `Review translationese phrasing: ${phrase}`,
+          index + 1,
+          line.trim(),
+          "Rewrite the sentence in natural Chinese or English while preserving the technical claim.",
+          {
+            reason:
+              "The phrase often reads like translated filler instead of authored technical prose.",
+            confidence: "medium",
+            span,
+          }
+        )
+      );
+    }
+
     for (const { code, pattern, message } of MALFORMED_MARKDOWN_PATTERNS) {
       if (!pattern.test(line)) continue;
       issues.push(
@@ -633,6 +790,101 @@ function auditMarkdownFile(
   }
 
   return issues;
+}
+
+function buildArticleQualityRubric(
+  file: string,
+  markdown: string,
+  post?: SeedPost
+): ArticleQualityRubric {
+  const lines = stripCodeFences(markdown).split(/\r?\n/);
+  const title =
+    lines
+      .find(line => /^#\s+/.test(line))
+      ?.replace(/^#\s+/, "")
+      .trim() || post?.title;
+  const dimensions = Object.fromEntries(
+    (Object.keys(RUBRIC_RULES) as ContentRubricDimension[]).map(dimension => [
+      dimension,
+      scoreRubricDimension(lines, dimension),
+    ])
+  ) as ArticleQualityRubric["dimensions"];
+  const weak = getRubricDimensionsByStatus(dimensions, "weak");
+  const missing = getRubricDimensionsByStatus(dimensions, "missing");
+
+  return {
+    file,
+    articleSlug: post?.slug,
+    title,
+    dimensions,
+    weak,
+    missing,
+  };
+}
+
+function scoreRubricDimension(
+  lines: string[],
+  dimension: ContentRubricDimension
+): ArticleQualityRubric["dimensions"][ContentRubricDimension] {
+  const rule = RUBRIC_RULES[dimension];
+  const matchingLines = lines
+    .map(line => line.trim())
+    .filter(Boolean)
+    .filter(line => rule.patterns.some(pattern => pattern.test(line)));
+  const headingMatch = matchingLines.find(line => /^#{1,4}\s+/.test(line));
+  const evidence = stripMarkdownSyntax(headingMatch ?? matchingLines[0] ?? "");
+
+  if (headingMatch || matchingLines.length >= 2) {
+    return {
+      status: "present",
+      reason: `${rule.label} is explicit in a heading or repeated nearby prose.`,
+      evidence,
+    };
+  }
+
+  if (matchingLines.length === 1) {
+    return {
+      status: "weak",
+      reason: `${rule.label} appears once but may need clearer support.`,
+      evidence,
+    };
+  }
+
+  return {
+    status: "missing",
+    reason: `${rule.label} signal was not found by deterministic audit heuristics.`,
+  };
+}
+
+function getRubricDimensionsByStatus(
+  dimensions: ArticleQualityRubric["dimensions"],
+  status: ContentRubricStatus
+) {
+  return (Object.keys(dimensions) as ContentRubricDimension[]).filter(
+    dimension => dimensions[dimension].status === status
+  );
+}
+
+function stripCodeFences(markdown: string) {
+  return markdown.replace(/```[\s\S]*?```/g, "");
+}
+
+function stripMarkdownSyntax(value: string) {
+  return value
+    .replace(/^#{1,6}\s+/, "")
+    .replace(/[*_`[\]()]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 220);
+}
+
+function getPatternSpan(line: string, pattern: RegExp) {
+  const match = new RegExp(pattern.source, pattern.flags).exec(line);
+  if (!match || typeof match.index !== "number") return undefined;
+  return {
+    start: match.index,
+    end: match.index + match[0].length,
+  };
 }
 
 function isTechnicalCaveatPhrase(phrase: string, line: string) {
@@ -778,7 +1030,11 @@ function suggestion(
   message: string,
   line?: number,
   evidence?: string,
-  rewriteIntent?: string
+  rewriteIntent?: string,
+  metadata: Pick<
+    ContentQualityIssue,
+    "reason" | "confidence" | "span"
+  > = {}
 ): ContentQualityIssue {
   return {
     severity: "suggestion",
@@ -789,6 +1045,7 @@ function suggestion(
     message,
     evidence,
     suggestion: rewriteIntent,
+    ...metadata,
   };
 }
 

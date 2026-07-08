@@ -1,0 +1,335 @@
+{
+  "generatedAt": "2026-07-08T22:16:52.417Z",
+  "summary": {
+    "markdownFiles": 9,
+    "articleFiles": 9,
+    "skippedMarkdownFiles": 6,
+    "seedPosts": 9,
+    "suggestions": 0,
+    "warnings": 0,
+    "failures": 0,
+    "rubricArticles": 9,
+    "rubricWeakDimensions": 4,
+    "rubricMissingDimensions": 2
+  },
+  "issues": [],
+  "findings": [],
+  "rubrics": [
+    {
+      "file": "agent_harness_engine_blog.md",
+      "articleSlug": "agent-harness-engine-evaluating-tool-using-agents",
+      "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
+      "dimensions": {
+        "problem": {
+          "status": "present",
+          "reason": "problem is explicit in a heading or repeated nearby prose.",
+          "evidence": "2. Task Spec: 把任务写成可失败的东西"
+        },
+        "mechanism": {
+          "status": "present",
+          "reason": "mechanism is explicit in a heading or repeated nearby prose.",
+          "evidence": "比如“解释这篇文章的核心机制”不是一个完整 task spec。更好的写法是："
+        },
+        "evidence": {
+          "status": "present",
+          "reason": "evidence is explicit in a heading or repeated nearby prose.",
+          "evidence": "5. Trace Store: 让一次运行可以被重放"
+        },
+        "limitation": {
+          "status": "present",
+          "reason": "limitation is explicit in a heading or repeated nearby prose.",
+          "evidence": "8. 边界"
+        },
+        "implication": {
+          "status": "present",
+          "reason": "implication is explicit in a heading or repeated nearby prose.",
+          "evidence": "9. Takeaway"
+        }
+      },
+      "weak": [],
+      "missing": []
+    },
+    {
+      "file": "agent_loop_blog.md",
+      "articleSlug": "agent-loop-observable-tool-using-agents",
+      "title": "Agent Loop: 从 ReAct 模式到可观测运行时",
+      "dimensions": {
+        "problem": {
+          "status": "present",
+          "reason": "problem is explicit in a heading or repeated nearby prose.",
+          "evidence": "13. Failure Taxonomy"
+        },
+        "mechanism": {
+          "status": "present",
+          "reason": "mechanism is explicit in a heading or repeated nearby prose.",
+          "evidence": "12. Implementation Skeleton"
+        },
+        "evidence": {
+          "status": "present",
+          "reason": "evidence is explicit in a heading or repeated nearby prose.",
+          "evidence": "但真正要上线时，这段伪代码会让人紧张。AgentLoop 从来不是 while true 调模型。它更像一个小型操作系统：状态由谁保存，工具调用如何治理，什么时候停止，失败如何恢复，预算如何消耗，人工确认在哪里插入，trace 如何复盘。"
+        },
+        "limitation": {
+          "status": "present",
+          "reason": "limitation is explicit in a heading or repeated nearby prose.",
+          "evidence": "先把边界说清楚"
+        },
+        "implication": {
+          "status": "present",
+          "reason": "implication is explicit in a heading or repeated nearby prose.",
+          "evidence": "因此，AgentLoop 的边界不是“模型自己决定下一步”，而是“运行时管理状态转移，模型在受控上下文中提出下一步决策”。"
+        }
+      },
+      "weak": [],
+      "missing": []
+    },
+    {
+      "file": "dfrope_blog_post.md",
+      "articleSlug": "evq-cosh-frequency-allocation",
+      "title": "EVQ-Cosh: RoPE as a Finite Spectral Budget",
+      "dimensions": {
+        "problem": {
+          "status": "present",
+          "reason": "problem is explicit in a heading or repeated nearby prose.",
+          "evidence": "1. RoPE 里有两个不同问题"
+        },
+        "mechanism": {
+          "status": "present",
+          "reason": "mechanism is explicit in a heading or repeated nearby prose.",
+          "evidence": "7. 和长上下文外推方法的关系"
+        },
+        "evidence": {
+          "status": "weak",
+          "reason": "evidence appears once but may need clearer support.",
+          "evidence": "这个改动很小，但检查点要清楚：初始化表、上下文长度、head 维度和 partial-rotary 规则都应该被记录进实验配置，否则后续很难复现实验差异。"
+        },
+        "limitation": {
+          "status": "present",
+          "reason": "limitation is explicit in a heading or repeated nearby prose.",
+          "evidence": "8. 边界"
+        },
+        "implication": {
+          "status": "present",
+          "reason": "implication is explicit in a heading or repeated nearby prose.",
+          "evidence": "10. Core Takeaway"
+        }
+      },
+      "weak": [
+        "evidence"
+      ],
+      "missing": []
+    },
+    {
+      "file": "flow_matching_generative_transport.md",
+      "articleSlug": "flow-matching-generative-transport",
+      "title": "Flow Matching：从扩散噪声到确定性运输",
+      "dimensions": {
+        "problem": {
+          "status": "present",
+          "reason": "problem is explicit in a heading or repeated nearby prose.",
+          "evidence": "2. 核心训练目标：学速度，而不是模拟轨迹"
+        },
+        "mechanism": {
+          "status": "present",
+          "reason": "mechanism is explicit in a heading or repeated nearby prose.",
+          "evidence": "2. coupling 决定噪声样本和数据样本如何配对。"
+        },
+        "evidence": {
+          "status": "weak",
+          "reason": "evidence appears once but may need clearer support.",
+          "evidence": "直线路径的吸引力很明显。如果轨迹真的足够直，采样时就不需要很多步。理想情况下，Euler 一步就能给出粗略生成结果："
+        },
+        "limitation": {
+          "status": "missing",
+          "reason": "limitation signal was not found by deterministic audit heuristics."
+        },
+        "implication": {
+          "status": "present",
+          "reason": "implication is explicit in a heading or repeated nearby prose.",
+          "evidence": "这也是 Flow Matching 里容易被低估的工程点。很多讨论只盯着 path，比如是否使用线性插值、是否使用 Gaussian path。实际训练里，coupling 直接影响目标速度的分布、梯度方差和少步采样质量。"
+        }
+      },
+      "weak": [
+        "evidence"
+      ],
+      "missing": [
+        "limitation"
+      ]
+    },
+    {
+      "file": "gated_ffn_blog.md",
+      "articleSlug": "gated-ffn-multiplicative-channel-control",
+      "title": "Gated FFN: Transformer 里的乘法通道",
+      "dimensions": {
+        "problem": {
+          "status": "present",
+          "reason": "problem is explicit in a heading or repeated nearby prose.",
+          "evidence": "12. Failure Boundaries"
+        },
+        "mechanism": {
+          "status": "present",
+          "reason": "mechanism is explicit in a heading or repeated nearby prose.",
+          "evidence": "9. 一个最小 PyTorch 实现"
+        },
+        "evidence": {
+          "status": "weak",
+          "reason": "evidence appears once but may need clearer support.",
+          "evidence": "这也是不少现代大模型采用 SwiGLU 的原因之一：实现简单，在许多公开架构和实验设置里也常优于 ReLU/GELU FFN。"
+        },
+        "limitation": {
+          "status": "missing",
+          "reason": "limitation signal was not found by deterministic audit heuristics."
+        },
+        "implication": {
+          "status": "present",
+          "reason": "implication is explicit in a heading or repeated nearby prose.",
+          "evidence": "13. Takeaway"
+        }
+      },
+      "weak": [
+        "evidence"
+      ],
+      "missing": [
+        "limitation"
+      ]
+    },
+    {
+      "file": "goal_harness_agent_phase_protocol.md",
+      "articleSlug": "goal-harness-agent-phase-protocol",
+      "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
+      "dimensions": {
+        "problem": {
+          "status": "present",
+          "reason": "problem is explicit in a heading or repeated nearby prose.",
+          "evidence": "有一类 Coding Agent 失败最难排查：代码能跑，提交也不少，但读者真正会走的路径仍然断着。"
+        },
+        "mechanism": {
+          "status": "present",
+          "reason": "mechanism is explicit in a heading or repeated nearby prose.",
+          "evidence": "在这个系列里，它的位置也很明确：Agent Harness Engine 讨论如何让工具型 Agent 的运行可观测；Evidence Packet 讨论知识如何被编译成 Agent 可消费的上下文；Agent Loop 讨论多步行动如何成为状态机。Goal Harness 补的是另一层：当 Agent 自己变成开发者时，产品需求如何被编译成它可以持续执行的工作环境。"
+        },
+        "evidence": {
+          "status": "present",
+          "reason": "evidence is explicit in a heading or repeated nearby prose.",
+          "evidence": "2. Source Packet: 先把上下文变成证据"
+        },
+        "limitation": {
+          "status": "present",
+          "reason": "limitation is explicit in a heading or repeated nearby prose.",
+          "evidence": "Design Boundary"
+        },
+        "implication": {
+          "status": "present",
+          "reason": "implication is explicit in a heading or repeated nearby prose.",
+          "evidence": "Engineering Takeaway"
+        }
+      },
+      "weak": [],
+      "missing": []
+    },
+    {
+      "file": "isohc_blog.md",
+      "articleSlug": "isohc-fixed-vector-isometric-residual-mixing",
+      "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
+      "dimensions": {
+        "problem": {
+          "status": "present",
+          "reason": "problem is explicit in a heading or repeated nearby prose.",
+          "evidence": "1. Motivation"
+        },
+        "mechanism": {
+          "status": "present",
+          "reason": "mechanism is explicit in a heading or repeated nearby prose.",
+          "evidence": "无论 $F$ 多复杂，$xl$ 至少有一条 identity path 穿过深度。很多深层网络的稳定性，都在某种程度上依赖这条路径。Hyper-Connection 这类多 stream 结构把残差流展开成矩阵："
+        },
+        "evidence": {
+          "status": "present",
+          "reason": "evidence is explicit in a heading or repeated nearby prose.",
+          "evidence": "10. What the Evidence Can and Cannot Claim"
+        },
+        "limitation": {
+          "status": "present",
+          "reason": "limitation is explicit in a heading or repeated nearby prose.",
+          "evidence": "这篇笔记只讲机制和数学边界，不把它写成“万能稳定性方案”。"
+        },
+        "implication": {
+          "status": "weak",
+          "reason": "implication appears once but may need clearer support.",
+          "evidence": "公开结论最好放窄："
+        }
+      },
+      "weak": [
+        "implication"
+      ],
+      "missing": []
+    },
+    {
+      "file": "llm_rl_post_training.md",
+      "articleSlug": "llm-rl-post-training-verifiable-rewards",
+      "title": "大模型强化学习：从 RLHF 到可验证奖励的后训练主线",
+      "dimensions": {
+        "problem": {
+          "status": "present",
+          "reason": "problem is explicit in a heading or repeated nearby prose.",
+          "evidence": "二、基础数学：奖励、回报、Bellman 方程与大模型 RL 目标"
+        },
+        "mechanism": {
+          "status": "present",
+          "reason": "mechanism is explicit in a heading or repeated nearby prose.",
+          "evidence": "4.1 从“标量奖励”走向“结构化反馈”"
+        },
+        "evidence": {
+          "status": "present",
+          "reason": "evidence is explicit in a heading or repeated nearby prose.",
+          "evidence": "大模型强化学习：从 RLHF 到可验证奖励的后训练主线"
+        },
+        "limitation": {
+          "status": "present",
+          "reason": "limitation is explicit in a heading or repeated nearby prose.",
+          "evidence": "这条公式是理解 RLHF、DPO、IPO、KTO、SimPO、ORPO 等方法的关键。大模型强化学习不是让模型无约束地追求奖励，而是在“奖励更高”和“不要偏离原始模型太远”之间做权衡。奖励过强、KL 太弱时，模型容易出现 reward hacking、长度偏置、模板化输出、过度拒答或者其他 Goodhart 式问题。关于 reward model overoptimization，已有工作系统研究了 reward 分数继续上升但真实偏好"
+        },
+        "implication": {
+          "status": "present",
+          "reason": "implication is explicit in a heading or repeated nearby prose.",
+          "evidence": "因此可以反过来把 reward 写成策略和 reference model 的 log-ratio："
+        }
+      },
+      "weak": [],
+      "missing": []
+    },
+    {
+      "file": "rag_evidence_packet_context_compiler.md",
+      "articleSlug": "rag-evidence-packet-context-compiler",
+      "title": "Evidence Packet: Agentic RAG 的上下文编译接口",
+      "dimensions": {
+        "problem": {
+          "status": "present",
+          "reason": "problem is explicit in a heading or repeated nearby prose.",
+          "evidence": "1. Problem Boundary"
+        },
+        "mechanism": {
+          "status": "present",
+          "reason": "mechanism is explicit in a heading or repeated nearby prose.",
+          "evidence": "4. RAG Pipeline Layers"
+        },
+        "evidence": {
+          "status": "present",
+          "reason": "evidence is explicit in a heading or repeated nearby prose.",
+          "evidence": "Evidence Packet: Agentic RAG 的上下文编译接口"
+        },
+        "limitation": {
+          "status": "present",
+          "reason": "limitation is explicit in a heading or repeated nearby prose.",
+          "evidence": "先限定边界"
+        },
+        "implication": {
+          "status": "present",
+          "reason": "implication is explicit in a heading or repeated nearby prose.",
+          "evidence": "因此，Agentic RAG 的接口应该从 Chunk 升级为一个 typed evidence object。这个对象既服务于模型上下文，也服务于 trace、debug、evaluation 和 citation。"
+        }
+      },
+      "weak": [],
+      "missing": []
+    }
+  ]
+}
