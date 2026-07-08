@@ -13,9 +13,13 @@ import {
   getDefaultAgentFrameState,
   getTraceStageDurations,
   inferAnswerMode,
-  isAgentNearBottom,
   isBlogAgentHiddenRoute,
 } from "./BlogAgentRoot";
+import {
+  getNextAgentStreamFollowState,
+  isAgentNearBottom,
+  shouldScrollAgentMessagesToEnd,
+} from "./agentScrollPolicy";
 import {
   AGENT_STREAM_TIMEOUT_MS,
   isAbortError,
@@ -189,19 +193,78 @@ describe("BlogAgent route context", () => {
   });
 
   it("only follows streaming output when the reader is near the bottom", () => {
+    const nearBottom = {
+      scrollHeight: 1200,
+      scrollTop: 680,
+      clientHeight: 440,
+    } as HTMLElement;
+    const awayFromBottom = {
+      scrollHeight: 1200,
+      scrollTop: 320,
+      clientHeight: 440,
+    } as HTMLElement;
+
+    expect(isAgentNearBottom(nearBottom)).toBe(true);
+    expect(isAgentNearBottom(awayFromBottom)).toBe(false);
     expect(
-      isAgentNearBottom({
-        scrollHeight: 1200,
-        scrollTop: 680,
-        clientHeight: 440,
-      } as HTMLElement)
+      getNextAgentStreamFollowState({
+        event: "stream_status",
+        scroller: nearBottom,
+      })
     ).toBe(true);
     expect(
-      isAgentNearBottom({
-        scrollHeight: 1200,
-        scrollTop: 320,
-        clientHeight: 440,
-      } as HTMLElement)
+      getNextAgentStreamFollowState({
+        event: "answer_delta",
+        scroller: awayFromBottom,
+      })
+    ).toBe(false);
+  });
+
+  it("starts following on submit but stops after final or failed events", () => {
+    const nearBottom = {
+      scrollHeight: 1200,
+      scrollTop: 680,
+      clientHeight: 440,
+    } as HTMLElement;
+
+    expect(
+      getNextAgentStreamFollowState({
+        event: "submit",
+        scroller: null,
+      })
+    ).toBe(true);
+    expect(
+      getNextAgentStreamFollowState({
+        event: "final",
+        scroller: nearBottom,
+      })
+    ).toBe(false);
+    expect(
+      getNextAgentStreamFollowState({
+        event: "failed",
+        scroller: nearBottom,
+      })
+    ).toBe(false);
+  });
+
+  it("scrolls message viewport only while streaming and following", () => {
+    expect(
+      shouldScrollAgentMessagesToEnd({
+        streaming: true,
+        shouldFollowStream: true,
+      })
+    ).toBe(true);
+    expect(
+      shouldScrollAgentMessagesToEnd({
+        streaming: true,
+        shouldFollowStream: false,
+      })
+    ).toBe(false);
+    expect(
+      shouldScrollAgentMessagesToEnd({
+        streaming: false,
+        shouldFollowStream: true,
+      })
     ).toBe(false);
   });
 

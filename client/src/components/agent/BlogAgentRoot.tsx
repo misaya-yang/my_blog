@@ -79,7 +79,10 @@ import {
   getAgentDisplayElapsedMs,
   getTraceStageDurations,
 } from "./agentElapsed";
-import { isAgentNearBottom } from "./agentScrollPolicy";
+import {
+  getNextAgentStreamFollowState,
+  shouldScrollAgentMessagesToEnd,
+} from "./agentScrollPolicy";
 import type {
   AgentTraceEntry,
   ChatMessage,
@@ -114,7 +117,11 @@ export {
   getTraceStageDurations,
 } from "./agentElapsed";
 export type { AgentTraceStageDuration } from "./agentElapsed";
-export { isAgentNearBottom } from "./agentScrollPolicy";
+export {
+  getNextAgentStreamFollowState,
+  isAgentNearBottom,
+  shouldScrollAgentMessagesToEnd,
+} from "./agentScrollPolicy";
 
 type AgentFrameControls = {
   isFloating: boolean;
@@ -242,7 +249,14 @@ export function BlogAgentRoot() {
 
   useEffect(() => {
     const scroller = messageScrollerRef.current;
-    if (!scroller || !streaming || !shouldFollowStreamRef.current) return;
+    if (
+      !scroller ||
+      !shouldScrollAgentMessagesToEnd({
+        streaming,
+        shouldFollowStream: shouldFollowStreamRef.current,
+      })
+    )
+      return;
     scroller.scrollTop = scroller.scrollHeight;
   }, [messages, streaming]);
 
@@ -320,7 +334,10 @@ export function BlogAgentRoot() {
     setDraft("");
     setStreaming(true);
     pendingAssistantFocusRef.current = assistantMessageId;
-    shouldFollowStreamRef.current = true;
+    shouldFollowStreamRef.current = getNextAgentStreamFollowState({
+      event: "submit",
+      scroller: messageScrollerRef.current,
+    });
     setMessages(current => [...current, userMessage, assistantDraft]);
     const controller = new AbortController();
     streamAbortRef.current = controller;
@@ -333,9 +350,10 @@ export function BlogAgentRoot() {
         answerMode: inferAnswerMode(trimmed, routeContext),
         signal: controller.signal,
         onStatus: event => {
-          shouldFollowStreamRef.current = isAgentNearBottom(
-            messageScrollerRef.current
-          );
+          shouldFollowStreamRef.current = getNextAgentStreamFollowState({
+            event: "stream_status",
+            scroller: messageScrollerRef.current,
+          });
           setMessages(current =>
             current.map(item =>
               item.id === assistantMessageId
@@ -354,9 +372,10 @@ export function BlogAgentRoot() {
           );
         },
         onAnswerDelta: delta => {
-          shouldFollowStreamRef.current = isAgentNearBottom(
-            messageScrollerRef.current
-          );
+          shouldFollowStreamRef.current = getNextAgentStreamFollowState({
+            event: "answer_delta",
+            scroller: messageScrollerRef.current,
+          });
           setMessages(current =>
             current.map(item =>
               item.id === assistantMessageId
@@ -368,7 +387,10 @@ export function BlogAgentRoot() {
         onFinal: event => {
           const response = event.output;
           setQuota(response.quota);
-          shouldFollowStreamRef.current = false;
+          shouldFollowStreamRef.current = getNextAgentStreamFollowState({
+            event: "final",
+            scroller: messageScrollerRef.current,
+          });
 
           if (response.status === "blocked") {
             setDraft(trimmed);
@@ -420,7 +442,10 @@ export function BlogAgentRoot() {
         },
       });
     } catch (error) {
-      shouldFollowStreamRef.current = false;
+      shouldFollowStreamRef.current = getNextAgentStreamFollowState({
+        event: "failed",
+        scroller: messageScrollerRef.current,
+      });
       setDraft(trimmed);
       const failure = getClientStreamFailure(error, t);
       setMessages(current =>
