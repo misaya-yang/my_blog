@@ -206,6 +206,7 @@ const home: TranslationDict = {
     zh: "阅读路径",
   },
   "discovery.articlesCount": { en: "{count} articles", zh: "{count} 篇文章" },
+  "discovery.moreTags": { en: "+{count}", zh: "+{count}" },
   "discovery.taxonomyResultRange": {
     en: "Showing {start}-{end} of {total}",
     zh: "正在显示 {start}-{end} / {total}",

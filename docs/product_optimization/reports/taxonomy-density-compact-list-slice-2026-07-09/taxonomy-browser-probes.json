@@ -1,0 +1,47 @@
+{
+  "generatedAt": "2026-07-08T19:41:57.176Z",
+  "results": [
+    {
+      "name": "tag-agent-systems-desktop-light",
+      "url": "http://localhost:3000/tags/agent-systems",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "screenshot": "docs/product_optimization/reports/taxonomy-density-compact-list-slice-2026-07-09/tag-agent-systems-desktop-light.png",
+      "metrics": {
+        "rowCount": 4,
+        "articleCardCount": 0,
+        "overflowTagCount": true,
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440,
+        "noHorizontalOverflow": true,
+        "titleFontSize": "16px",
+        "titleLineHeight": "23.2px",
+        "excerptFontSize": "14.08px",
+        "excerptLineHeight": "23.232px"
+      }
+    },
+    {
+      "name": "category-applications-mobile-dark",
+      "url": "http://localhost:3000/categories/ai-applications",
+      "theme": "dark",
+      "width": 390,
+      "height": 844,
+      "screenshot": "docs/product_optimization/reports/taxonomy-density-compact-list-slice-2026-07-09/category-applications-mobile-dark.png",
+      "metrics": {
+        "rowCount": 4,
+        "articleCardCount": 0,
+        "overflowTagCount": true,
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390,
+        "noHorizontalOverflow": true,
+        "titleFontSize": "16px",
+        "titleLineHeight": "23.2px",
+        "excerptFontSize": "14.08px",
+        "excerptLineHeight": "23.232px"
+      }
+    }
+  ]
+}

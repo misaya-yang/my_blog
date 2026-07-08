@@ -1,4 +1,3 @@
-import { ArticleCard } from "@/components/ArticleCard";
 import {
   EmptyState,
   LoadingState,
@@ -13,7 +12,11 @@ import { trackConfigs } from "@/lib/tracks";
 import { trpc } from "@/lib/trpc";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
 import { buildRouteMetadata } from "@shared/metadata";
+import React from "react";
 import {
+  ArrowRight,
+  BookOpen,
+  CalendarDays,
   ChevronLeft,
   ChevronRight,
   Folder,
@@ -74,6 +77,64 @@ export function buildTaxonomyPageHref(
 ) {
   const base = `/${kind === "tag" ? "tags" : "categories"}/${slug}`;
   return page <= 1 ? base : `${base}?page=${page}`;
+}
+
+type TaxonomyTag = {
+  id?: string | number;
+  name: string;
+  slug: string;
+};
+
+export type TaxonomyPost = {
+  id: string | number;
+  slug: string;
+  title: string;
+  excerpt?: string | null;
+  content?: string | null;
+  publishedAt?: string | Date | null;
+  readingMinutes?: number | null;
+  category?: { name?: string | null; slug?: string | null } | null;
+  tags?: TaxonomyTag[] | null;
+};
+
+const TAXONOMY_VISIBLE_TAG_LIMIT = 3;
+
+export function getVisibleTaxonomyTags(
+  tags: TaxonomyTag[] | null | undefined,
+  limit = TAXONOMY_VISIBLE_TAG_LIMIT
+) {
+  return Array.isArray(tags) ? tags.slice(0, Math.max(0, limit)) : [];
+}
+
+export function getHiddenTaxonomyTagCount(
+  tags: TaxonomyTag[] | null | undefined,
+  limit = TAXONOMY_VISIBLE_TAG_LIMIT
+) {
+  if (!Array.isArray(tags)) return 0;
+  return Math.max(0, tags.length - Math.max(0, limit));
+}
+
+export function getTaxonomyPostExcerpt(post: TaxonomyPost) {
+  if (post.excerpt?.trim()) return post.excerpt.trim();
+  const content =
+    post.content
+      ?.replace(/[#*$\\`]/g, "")
+      .replace(/\s+/g, " ")
+      .trim() ?? "";
+  return content ? `${content.slice(0, 180)}...` : "";
+}
+
+function formatTaxonomyDate(
+  value: string | Date | null | undefined,
+  locale: string,
+  fallback: string
+) {
+  if (!value) return fallback;
+  return new Date(value).toLocaleDateString(locale, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
 }
 
 function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
@@ -246,11 +307,10 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
 
               {data.posts?.length ? (
                 <div className="mt-5 grid gap-4">
-                  {data.posts.map((post: any, index: number) => (
-                    <ArticleCard
+                  {data.posts.map((post: TaxonomyPost) => (
+                    <TaxonomyArticleRow
                       key={post.id}
                       post={post}
-                      index={index}
                       language={language}
                       t={t}
                     />
@@ -285,6 +345,78 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
         )}
       </main>
     </div>
+  );
+}
+
+export function TaxonomyArticleRow({
+  post,
+  language,
+  t,
+}: {
+  post: TaxonomyPost;
+  language: "en" | "zh";
+  t: (key: string, vars?: Record<string, string | number>) => string;
+}) {
+  const locale = language === "zh" ? "zh-CN" : "en-US";
+  const visibleTags = getVisibleTaxonomyTags(post.tags);
+  const hiddenTagCount = getHiddenTaxonomyTagCount(post.tags);
+  const excerpt = getTaxonomyPostExcerpt(post);
+
+  return (
+    <article className="taxonomy-article-row">
+      <div className="taxonomy-article-main min-w-0">
+        <div className="taxonomy-article-meta">
+          <time
+            dateTime={
+              post.publishedAt
+                ? new Date(post.publishedAt).toISOString()
+                : undefined
+            }
+          >
+            <CalendarDays className="h-3.5 w-3.5" />
+            {formatTaxonomyDate(post.publishedAt, locale, t("common.draft"))}
+          </time>
+          <span>
+            <BookOpen className="h-3.5 w-3.5" />
+            {post.readingMinutes ?? 0} {t("home.minRead")}
+          </span>
+        </div>
+        <Link href={`/post/${post.slug}`} className="taxonomy-article-title">
+          {post.title}
+        </Link>
+        {excerpt && <p className="taxonomy-article-excerpt">{excerpt}</p>}
+        <div className="taxonomy-article-tags">
+          {post.category?.slug ? (
+            <Link
+              href={`/categories/${post.category.slug}`}
+              className="article-tag"
+            >
+              <Folder className="h-3.5 w-3.5" />
+              {post.category.name}
+            </Link>
+          ) : null}
+          {visibleTags.map(tag => (
+            <Link
+              key={tag.slug}
+              href={`/tags/${tag.slug}`}
+              className="article-tag"
+            >
+              <Tags className="h-3 w-3" />
+              {tag.name}
+            </Link>
+          ))}
+          {hiddenTagCount > 0 && (
+            <span className="article-tag article-tag-muted">
+              {t("discovery.moreTags", { count: hiddenTagCount })}
+            </span>
+          )}
+        </div>
+      </div>
+      <Link href={`/post/${post.slug}`} className="taxonomy-article-action">
+        <span>{t("home.readMore")}</span>
+        <ArrowRight className="h-4 w-4" />
+      </Link>
+    </article>
   );
 }
 
