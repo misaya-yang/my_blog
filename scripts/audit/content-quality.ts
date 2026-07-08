@@ -16,6 +16,8 @@ export type ContentQualityReport = {
   generatedAt: string;
   summary: {
     markdownFiles: number;
+    articleFiles: number;
+    skippedMarkdownFiles: number;
     seedPosts: number;
     warnings: number;
     failures: number;
@@ -90,16 +92,25 @@ export async function runContentQualityAudit(
   const seedPath = resolve(root, "seed-blog.mjs");
   const seedSource = await readFile(seedPath, "utf-8");
   const seedPosts = parseSeedPosts(seedSource);
-  const markdownFiles = (await readdir(root)).filter(isAuditedMarkdownFile);
+  const { articleFiles, skippedMarkdownFiles } = await buildMarkdownAuditScope(
+    root,
+    seedPosts
+  );
+  const postsByContentPath = new Map(
+    seedPosts
+      .map(post => [normalizeRootMarkdownPath(post.contentPath), post] as const)
+      .filter((entry): entry is [string, SeedPost] => Boolean(entry[0]))
+  );
   const issues: ContentQualityIssue[] = [];
 
   issues.push(...auditSeedPosts(root, seedPosts));
   issues.push(...auditSeries(seedPosts));
 
-  for (const file of markdownFiles) {
+  for (const file of articleFiles) {
+    if (!existsSync(resolve(root, file))) continue;
     const absolute = resolve(root, file);
     const markdown = await readFile(absolute, "utf-8");
-    const post = seedPosts.find(item => item.contentPath === `./${file}`);
+    const post = postsByContentPath.get(file);
     issues.push(...auditMarkdownFile(root, file, markdown, post));
   }
 
@@ -109,13 +120,38 @@ export async function runContentQualityAudit(
   return {
     generatedAt: new Date().toISOString(),
     summary: {
-      markdownFiles: markdownFiles.length,
+      markdownFiles: articleFiles.length,
+      articleFiles: articleFiles.length,
+      skippedMarkdownFiles: skippedMarkdownFiles.length,
       seedPosts: seedPosts.length,
       warnings,
       failures,
     },
     issues,
   };
+}
+
+async function buildMarkdownAuditScope(root: string, seedPosts: SeedPost[]) {
+  const seededFiles = new Set(
+    seedPosts
+      .map(post => normalizeRootMarkdownPath(post.contentPath))
+      .filter((file): file is string => Boolean(file))
+  );
+  const rootMarkdownFiles = (await readdir(root)).filter(isAuditedMarkdownFile);
+  const skippedMarkdownFiles = rootMarkdownFiles.filter(
+    file => !seededFiles.has(file)
+  );
+
+  return {
+    articleFiles: Array.from(seededFiles).sort(),
+    skippedMarkdownFiles,
+  };
+}
+
+function normalizeRootMarkdownPath(contentPath: string) {
+  const trimmed = contentPath.trim().replace(/\\/g, "/");
+  if (!trimmed.endsWith(".md")) return null;
+  return trimmed.replace(/^\.\//, "");
 }
 
 function isAuditedMarkdownFile(file: string) {

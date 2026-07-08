@@ -9,6 +9,7 @@ import {
   assertWindowRateLimit,
   recordWindowRateLimitHit,
 } from "./rateLimit.js";
+import { buildSearchMissSignals } from "./readerSignals.js";
 import {
   listSearchMissOpportunities,
   resetSearchMissesForTests,
@@ -289,6 +290,7 @@ function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
     )
     .slice(0, 6);
   const searchMissBacklog = searchMissOpportunities.slice(0, 8);
+  const searchMissSignals = buildSearchMissSignals(searchMissBacklog);
 
   return {
     feedback: {
@@ -321,6 +323,10 @@ function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
       total: searchMissOpportunities.reduce((sum, item) => sum + item.count, 0),
       uniqueQueries: searchMissOpportunities.length,
       opportunities: searchMissBacklog,
+    },
+    readerSignals: {
+      total: searchMissSignals.length,
+      items: searchMissSignals,
     },
     writingBacklog: buildWritingBacklog(
       feedbackOpportunities,

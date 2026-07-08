@@ -249,7 +249,7 @@ describe("content quality audit", () => {
     ).toEqual([9, 13]);
   });
 
-  it("distinguishes shell-provided titles from true missing H1 defects", async () => {
+  it("treats shell-provided seeded titles as warnings", async () => {
     const root = await createTempProject();
     await writeFile(
       join(root, "seed-blog.mjs"),
@@ -267,7 +267,6 @@ describe("content quality audit", () => {
       `
     );
     await writeFile(join(root, "shell.md"), "Body starts without an H1.");
-    await writeFile(join(root, "orphan.md"), "Orphan body starts without an H1.");
 
     const report = await runContentQualityAudit(root);
 
@@ -278,10 +277,48 @@ describe("content quality audit", () => {
           code: "content.shell_title_only",
           file: "shell.md",
         }),
+      ])
+    );
+    expect(report.issues).not.toEqual(
+      expect.arrayContaining([
         expect.objectContaining({
           severity: "failure",
           code: "content.missing_h1",
-          file: "orphan.md",
+        }),
+      ])
+    );
+  });
+
+  it("skips root project markdown that is not tied to a seeded article", async () => {
+    const root = await createTempProject();
+    await writeFile(
+      join(root, "seed-blog.mjs"),
+      `
+      const posts = [
+        {
+          title: "Seeded",
+          slug: "seeded",
+          contentPath: "./seeded.md",
+          status: "published",
+          visibility: "public",
+          excerpt: "Seeded note.",
+        },
+      ];
+      `
+    );
+    await writeFile(join(root, "seeded.md"), "# Seeded\n\nBody.");
+    await writeFile(join(root, "agent.md"), "Branch policy without article H1.");
+
+    const report = await runContentQualityAudit(root);
+
+    expect(report.summary.markdownFiles).toBe(1);
+    expect(report.summary.articleFiles).toBe(1);
+    expect(report.summary.skippedMarkdownFiles).toBe(1);
+    expect(report.issues).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: "content.missing_h1",
+          file: "agent.md",
         }),
       ])
     );

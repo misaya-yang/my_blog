@@ -392,9 +392,24 @@ describe("engagement router", () => {
       priority: "high",
       status: "new",
     });
+    expect(summary.readerSignals).toMatchObject({
+      total: 1,
+      items: [
+        expect.objectContaining({
+          id: "search_miss:uncovered agent memory pattern from [redacted-email]",
+          kind: "search_miss",
+          severity: "high",
+          query: "uncovered agent memory pattern from [redacted-email]",
+          count: 2,
+        }),
+      ],
+    });
     expect(summary.writingBacklog[0].draftHref).toContain("/write?idea=");
     expect(JSON.stringify(summary.searchMisses)).not.toContain("203.0.113.120");
     expect(JSON.stringify(summary.searchMisses)).not.toContain(
+      "reader@example.com"
+    );
+    expect(JSON.stringify(summary.readerSignals)).not.toContain(
       "reader@example.com"
     );
   });
