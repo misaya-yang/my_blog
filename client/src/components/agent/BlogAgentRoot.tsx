@@ -44,11 +44,16 @@ import {
   upsertTraceEntry,
 } from "./messageState";
 import {
-  isAbortError,
-  isTimeoutError,
   streamAgentMessage,
   type AgentAnswerMode,
 } from "./streamClient";
+import {
+  getAgentFailureNotice,
+  getAgentFailureState,
+  getClientStreamFailure,
+  getCompletedMessageState,
+  getQuotaBlockedNotice,
+} from "./agentFailure";
 import {
   getAgentFramePresetShortcut,
   type AgentFramePreset,
@@ -82,10 +87,8 @@ import {
 } from "./agentScrollPolicy";
 import type {
   ChatMessage,
-  ChatMessageState,
   ConversationItem,
   QuotaInfo,
-  SourceCard,
 } from "./types";
 
 const AgentMarkdown = lazy(() =>
@@ -1157,52 +1160,6 @@ export function isBlogAgentHiddenRoute(path: string) {
 
 function scopeLabel(scope: AgentScope, t: (key: string) => string) {
   return t(`agent.scope.${scope.type}`);
-}
-
-function getQuotaBlockedNotice(tier: string, t: (key: string) => string) {
-  return tier === "anonymous"
-    ? t("agent.quota.blockedAnonymous")
-    : t("agent.quota.blockedVisitor");
-}
-
-function getClientStreamFailure(
-  error: unknown,
-  t: (key: string) => string
-): { content: string; state: ChatMessageState } {
-  if (isTimeoutError(error)) {
-    return { content: t("agent.error.timeout"), state: "timeout" };
-  }
-  if (isAbortError(error)) {
-    return { content: t("agent.error.cancelled"), state: "cancelled" };
-  }
-  return { content: t("agent.error.send"), state: "failed" };
-}
-
-function getAgentFailureNotice(errorCode: string, t: (key: string) => string) {
-  if (errorCode === "agent_stream_aborted") return t("agent.error.cancelled");
-  if (errorCode === "agent_stream_timeout") return t("agent.error.timeout");
-  return errorCode === "model_not_configured"
-    ? t("agent.error.modelNotConfigured")
-    : t("agent.error.send");
-}
-
-function getAgentFailureState(errorCode: string): ChatMessageState {
-  if (errorCode === "agent_stream_aborted") return "cancelled";
-  if (errorCode === "agent_stream_timeout") return "timeout";
-  return "failed";
-}
-
-function getCompletedMessageState(response: {
-  answer: { refusalReason?: string };
-  sourceCards: SourceCard[];
-}): ChatMessageState | undefined {
-  if (
-    response.sourceCards.length === 0 &&
-    response.answer.refusalReason === "no_public_source"
-  ) {
-    return "no_source";
-  }
-  return undefined;
 }
 
 function getAgentSessionKey(session: ReturnType<typeof useAuth>["session"]) {
