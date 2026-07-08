@@ -6,6 +6,84 @@ const agentOps: TranslationDict = {
     en: "Check index freshness, retrieval misses, evals, traces, and reader questions from one console.",
     zh: "在一个控制台检查索引新鲜度、检索缺口、eval、trace 和读者问题。",
   },
+  "agentOps.overview.tab": { en: "Overview", zh: "总览" },
+  "agentOps.overview.title": {
+    en: "Quality overview",
+    zh: "质量总览",
+  },
+  "agentOps.overview.description": {
+    en: "Start from release risk and owner actions before opening raw traces or retrieval tools.",
+    zh: "先看发布风险和作者行动，再进入原始 trace 或检索工具。",
+  },
+  "agentOps.overview.knowledge": { en: "Knowledge", zh: "知识索引" },
+  "agentOps.overview.noSource": { en: "No-source runs", zh: "无来源运行" },
+  "agentOps.overview.failed": { en: "Failed runs", zh: "失败运行" },
+  "agentOps.overview.searchMisses": { en: "Search misses", zh: "搜索缺口" },
+  "agentOps.overview.actions": { en: "Action queue", zh: "行动队列" },
+  "agentOps.overview.actionsDescription": {
+    en: "Only owner-safe signals are shown here: counts, public slugs, scopes, run IDs, and public search queries.",
+    zh: "这里只显示作者安全信号：计数、公开 slug、范围、run ID 和公开搜索词。",
+  },
+  "agentOps.overview.actionCount": {
+    en: "{count} actions",
+    zh: "{count} 个行动",
+  },
+  "agentOps.overview.loadingBadge": { en: "Loading", zh: "加载中" },
+  "agentOps.overview.loading": {
+    en: "Loading Agent quality signals",
+    zh: "正在加载 Agent 质量信号",
+  },
+  "agentOps.overview.allClear": {
+    en: "No immediate Agent quality action",
+    zh: "暂无紧急 Agent 质量行动",
+  },
+  "agentOps.overview.allClearDescription": {
+    en: "Current owner-visible signals are clean. Continue with evals or retrieval debugging when reviewing a release.",
+    zh: "当前作者可见信号正常。发布审查时可继续运行 eval 或检索调试。",
+  },
+  "agentOps.overview.actionIndexTitle": {
+    en: "Refresh Agent knowledge",
+    zh: "刷新 Agent 知识",
+  },
+  "agentOps.overview.actionIndexDescription": {
+    en: "The public article inventory and Agent index are not aligned. Reindex before claiming Agent release readiness.",
+    zh: "公开文章清单与 Agent 索引未对齐。声明 Agent 发布就绪前需要重建索引。",
+  },
+  "agentOps.overview.actionRadarErrorTitle": {
+    en: "Question radar unavailable",
+    zh: "问题雷达不可用",
+  },
+  "agentOps.overview.actionRadarErrorDescription": {
+    en: "The owner signal surface could not load. Check admin auth, database connectivity, or the Agent runs table.",
+    zh: "作者信号面板加载失败。请检查管理员登录、数据库连接或 Agent 运行表。",
+  },
+  "agentOps.overview.actionNoSourceTitle": {
+    en: "No-source Agent runs",
+    zh: "无来源 Agent 运行",
+  },
+  "agentOps.overview.actionNoSourceDescription": {
+    en: "{count} completed runs had no public source. Review whether content, retrieval aliases, or refusal copy need work.",
+    zh: "{count} 次已完成运行没有公开来源。检查内容、检索别名或拒答文案是否需要优化。",
+  },
+  "agentOps.overview.actionFailedTitle": {
+    en: "Failed Agent runs",
+    zh: "失败 Agent 运行",
+  },
+  "agentOps.overview.actionFailedDescription": {
+    en: "{count} runs failed. Inspect recent traces before treating the issue as content backlog.",
+    zh: "{count} 次运行失败。先查看近期 trace，再判断是否转为内容 backlog。",
+  },
+  "agentOps.overview.actionSearchMissTitle": {
+    en: "Search misses",
+    zh: "搜索缺口",
+  },
+  "agentOps.overview.actionSearchMissDescription": {
+    en: "{count} zero-result public searches may need article links, aliases, or new sections.",
+    zh: "{count} 个公开零结果搜索可能需要补文章链接、别名或新小节。",
+  },
+  "agentOps.overview.unavailable": { en: "Unavailable", zh: "不可用" },
+  "agentOps.overview.fresh": { en: "Fresh", zh: "新鲜" },
+  "agentOps.overview.needsWork": { en: "Needs work", zh: "需处理" },
   "agentOps.loginRequired": {
     en: "Admin login is required to inspect agent operations.",
     zh: "需要管理员登录后查看 Agent 运维。",

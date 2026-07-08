@@ -1,0 +1,35 @@
+{
+  "baseUrl": "http://localhost:3001",
+  "probes": [
+    {
+      "viewport": "desktop",
+      "url": "http://localhost:3001/manage/agent",
+      "title": "Agent Operations",
+      "activeTab": "Overview",
+      "hasOverviewCopy": true,
+      "hasActionQueue": true,
+      "hasLoadingState": true,
+      "hasAllClear": false,
+      "hasAuthRequired": false,
+      "horizontalOverflow": false,
+      "panelTop": 303,
+      "panelWidth": 1084,
+      "bodyTextSample": "Back to content\nWrite\n中文\nMisaya\nAgent Operations\nAgent Operations\n\nCheck index freshness, retrieval misses, evals, traces, and reader questions from one console.\n\nBack to content\nOverview\nIndex Status\nRetrieval Debugger\nLocal Eval Runner\nRecent Traces\nContent Radar\nQuality overview\n\nStart from release risk and owner actions before opening raw traces or retrieval tools.\n\n...\nKnowledge\n...\nNo-source runs\n...\nFailed runs\n...\nSearch misses\nAction queue\n\nOnly owner-safe signals are shown here: counts"
+    },
+    {
+      "viewport": "mobile",
+      "url": "http://localhost:3001/manage/agent",
+      "title": "Agent Operations",
+      "activeTab": "Overview",
+      "hasOverviewCopy": true,
+      "hasActionQueue": true,
+      "hasLoadingState": true,
+      "hasAllClear": false,
+      "hasAuthRequired": false,
+      "horizontalOverflow": false,
+      "panelTop": 412,
+      "panelWidth": 358,
+      "bodyTextSample": "中文\nAgent Operations\nAgent Operations\n\nCheck index freshness, retrieval misses, evals, traces, and reader questions from one console.\n\nBack to content\nOverview\nIndex Status\nRetrieval Debugger\nLocal Eval Runner\nRecent Traces\nContent Radar\nQuality overview\n\nStart from release risk and owner actions before opening raw traces or retrieval tools.\n\n...\nKnowledge\n...\nNo-source runs\n...\nFailed runs\n...\nSearch misses\nAction queue\n\nOnly owner-safe signals are shown here: counts, public slugs, scopes, run I"
+    }
+  ]
+}

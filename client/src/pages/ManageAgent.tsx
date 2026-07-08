@@ -37,6 +37,7 @@ import {
   AgentIndexStatusPanel,
   type IndexStatus,
 } from "./manage-agent/AgentIndexStatusPanel";
+import { AgentQualityOverview } from "./manage-agent/AgentQualityOverview";
 
 type AgentSourceListItem = {
   sourceId: string;
@@ -227,8 +228,12 @@ export default function ManageAgent() {
           </Button>
         </div>
 
-        <Tabs defaultValue="index" className="agent-console-tabs">
+        <Tabs defaultValue="overview" className="agent-console-tabs">
           <TabsList className="agent-console-tab-list glass-dock w-full">
+            <TabsTrigger value="overview">
+              <ShieldCheck className="mr-2 h-4 w-4" />
+              {t("agentOps.overview.tab")}
+            </TabsTrigger>
             <TabsTrigger value="index">
               <Database className="mr-2 h-4 w-4" />
               {t("agentOps.index.title")}
@@ -250,6 +255,19 @@ export default function ManageAgent() {
               {t("agentOps.ideas.title")}
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="overview" className="research-surface agent-console-panel">
+            <AgentQualityOverview
+              indexLoading={indexStatus.isLoading}
+              indexError={indexStatus.isError}
+              indexStatus={indexStatus.data}
+              radarLoading={questionRadar.isLoading}
+              radarError={questionRadar.isError}
+              radar={questionRadar.data}
+              searchMissLoading={contentRadar.isLoading}
+              searchMisses={contentRadar.data?.searchMisses}
+            />
+          </TabsContent>
 
           <TabsContent value="index" className="research-surface agent-console-panel">
             <AgentIndexStatusPanel
