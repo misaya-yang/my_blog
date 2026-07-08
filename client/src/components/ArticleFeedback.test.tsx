@@ -1,8 +1,9 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
+import { FEEDBACK_REASONS } from "@shared/feedbackReasons";
 
-import { ARTICLE_FEEDBACK_REASONS, ArticleFeedback } from "./ArticleFeedback";
+import { ArticleFeedback } from "./ArticleFeedback";
 
 vi.mock("@/_core/hooks/useAuth", () => ({
   useAuth: () => ({
@@ -125,7 +126,7 @@ describe("ArticleFeedback reader trust copy", () => {
   });
 
   it("keeps a stable optional reason taxonomy for owner backlog routing", () => {
-    expect(ARTICLE_FEEDBACK_REASONS).toEqual([
+    expect(FEEDBACK_REASONS).toEqual([
       "unclear_mechanism",
       "needs_example",
       "unsupported_claim",

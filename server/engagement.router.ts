@@ -18,6 +18,12 @@ import {
   listSearchMissOpportunities,
   resetSearchMissesForTests,
 } from "./searchMisses.js";
+import {
+  FEEDBACK_REASONS,
+  formatFeedbackMessageWithReason,
+  parseFeedbackMessageWithReason,
+  type FeedbackReason,
+} from "@shared/feedbackReasons";
 
 const ENGAGEMENT_MAX_SUBMISSIONS = 4;
 const ENGAGEMENT_WINDOW_MS = 60 * 1000;
@@ -27,14 +33,7 @@ const engagementSubmissions = new Map<
 >();
 
 const feedbackStatusInput = z.enum(["new", "reviewed", "hidden"]);
-const feedbackReasonInput = z.enum([
-  "unclear_mechanism",
-  "needs_example",
-  "unsupported_claim",
-  "awkward_wording",
-  "missing_next_step",
-  "other",
-]);
+const feedbackReasonInput = z.enum(FEEDBACK_REASONS);
 
 const optionalTrimmedText = (maxLength: number) =>
   z
@@ -102,15 +101,6 @@ function recordEngagementSubmission(source: string, bucket: string) {
   });
 }
 
-function formatFeedbackMessage(
-  message: string | null | undefined,
-  reason: z.infer<typeof feedbackReasonInput> | undefined
-) {
-  if (!reason) return message ?? null;
-  const reasonLine = `Feedback reason: ${reason}`;
-  return message ? `${reasonLine}\n\n${message}` : reasonLine;
-}
-
 export function __resetEngagementRateLimitsForTests() {
   engagementSubmissions.clear();
   resetSearchMissesForTests();
@@ -162,7 +152,7 @@ export const engagementRouter = router({
           visitorId: visitor?.visitorId ?? null,
           visitorName: visitor?.displayName ?? input.visitorName,
           type: input.type,
-          message: formatFeedbackMessage(input.message, input.reason),
+          message: formatFeedbackMessageWithReason(input.message, input.reason),
           replyEmail: input.replyEmail,
           source,
           userAgent: getRequestHeader(ctx.req, "user-agent") ?? null,
@@ -251,6 +241,7 @@ function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
       messageCount: number;
       latestAt: Date | string | null;
       sampleMessages: string[];
+      reasonCounts: Map<FeedbackReason, number>;
     }
   >();
 
@@ -267,16 +258,24 @@ function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
       messageCount: 0,
       latestAt: null,
       sampleMessages: [] as string[],
+      reasonCounts: new Map<FeedbackReason, number>(),
     };
 
     entry.total += 1;
     if (item.type === "useful") entry.useful += 1;
     if (item.type === "not_useful") entry.notUseful += 1;
     if (item.status === "new") entry.newCount += 1;
-    if (item.message) {
+    const parsedMessage = parseFeedbackMessageWithReason(item.message);
+    if (parsedMessage.reason) {
+      entry.reasonCounts.set(
+        parsedMessage.reason,
+        (entry.reasonCounts.get(parsedMessage.reason) ?? 0) + 1
+      );
+    }
+    if (parsedMessage.message) {
       entry.messageCount += 1;
       if (entry.sampleMessages.length < 3)
-        entry.sampleMessages.push(redactDirectContact(item.message));
+        entry.sampleMessages.push(redactDirectContact(parsedMessage.message));
     }
     if (
       !entry.latestAt ||
@@ -303,6 +302,15 @@ function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
   }
 
   const feedbackOpportunities = Array.from(articleMap.values())
+    .map(entry => ({
+      ...entry,
+      reasonCounts: Array.from(entry.reasonCounts.entries())
+        .map(([reason, count]) => ({ reason, count }))
+        .sort(
+          (a, b) =>
+            b.count - a.count || a.reason.localeCompare(b.reason)
+        ),
+    }))
     .sort(
       (a, b) =>
         b.notUseful - a.notUseful ||
@@ -384,6 +392,7 @@ function buildWritingBacklog(
     newCount: number;
     latestAt: Date | string | null;
     sampleMessages: string[];
+    reasonCounts?: Array<{ reason: FeedbackReason; count: number }>;
   }>,
   searchMissOpportunities: Array<{
     query: string;

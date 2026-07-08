@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-07-08T22:31:25.861Z",
+  "results": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "screenshot": "manage-feedback-reasons-desktop.png",
+      "hasReasonLabel": true,
+      "hasCleanMessage": true,
+      "hasInternalPrefix": false,
+      "horizontalOverflowPx": 0,
+      "consoleErrors": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "manage-feedback-reasons-mobile.png",
+      "hasReasonLabel": true,
+      "hasCleanMessage": true,
+      "hasInternalPrefix": false,
+      "horizontalOverflowPx": 0,
+      "consoleErrors": []
+    }
+  ]
+}

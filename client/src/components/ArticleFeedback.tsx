@@ -7,6 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  FEEDBACK_REASONS,
+  type FeedbackReason,
+} from "@shared/feedbackReasons";
+import {
   ChevronDown,
   Loader2,
   MessageSquare,
@@ -18,22 +22,6 @@ import React, { FormEvent, useId, useState } from "react";
 import { toast } from "sonner";
 
 type FeedbackType = "useful" | "not_useful";
-export type FeedbackReason =
-  | "unclear_mechanism"
-  | "needs_example"
-  | "unsupported_claim"
-  | "awkward_wording"
-  | "missing_next_step"
-  | "other";
-
-export const ARTICLE_FEEDBACK_REASONS: FeedbackReason[] = [
-  "unclear_mechanism",
-  "needs_example",
-  "unsupported_claim",
-  "awkward_wording",
-  "missing_next_step",
-  "other",
-];
 
 type ArticleFeedbackProps = {
   postId: number;
@@ -187,7 +175,7 @@ export function ArticleFeedback({
                 {t("engagement.feedback.reasonLabel")}
               </p>
               <div className="flex flex-wrap gap-2">
-                {ARTICLE_FEEDBACK_REASONS.map(item => (
+                {FEEDBACK_REASONS.map(item => (
                   <button
                     key={item}
                     type="button"

@@ -343,7 +343,8 @@ describe("engagement router", () => {
         ...feedback,
         id: 12,
         type: "not_useful",
-        message: "Need implementation examples. Email me at followup@example.com.",
+        message:
+          "Feedback reason: needs_example\n\nNeed implementation examples. Email me at followup@example.com.",
         replyEmail: "followup@example.com",
       },
     ]);
@@ -367,6 +368,18 @@ describe("engagement router", () => {
       notUseful: 1,
       messageCount: 2,
     });
+    expect(summary.feedback.opportunities[0].reasonCounts).toEqual([
+      { reason: "needs_example", count: 1 },
+    ]);
+    expect(summary.feedback.opportunities[0].sampleMessages[0]).toContain(
+      "Clear and helpful."
+    );
+    expect(summary.feedback.opportunities[0].sampleMessages[1]).toContain(
+      "Need implementation examples."
+    );
+    expect(summary.feedback.opportunities[0].sampleMessages[1]).not.toContain(
+      "Feedback reason"
+    );
     expect(summary.writingBacklog[0]).toMatchObject({
       kind: "feedback",
       title: publishedPost.title,
@@ -377,6 +390,9 @@ describe("engagement router", () => {
       `article=${publishedPost.slug}`
     );
     expect(summary.writingBacklog[0].draftHref).toContain("source=feedback");
+    expect(summary.writingBacklog[0].evidence[0]).not.toContain(
+      "Feedback reason"
+    );
     expect(summary.readerSignals).toMatchObject({
       total: 1,
       items: [

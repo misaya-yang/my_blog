@@ -51,6 +51,11 @@ import { getClientSiteUrl, useSeo } from "@/lib/seo";
 import { buildRouteMetadata } from "@shared/metadata";
 import { getContentHealthSummary } from "@shared/content-ops";
 import {
+  getFeedbackReasonLabelKey,
+  parseFeedbackMessageWithReason,
+  type FeedbackReason,
+} from "@shared/feedbackReasons";
+import {
   getReaderSignalKindLabel,
   getReaderSignalPrimaryText,
   getReaderSignalSeverityLabel,
@@ -1165,98 +1170,120 @@ export default function Manage() {
               </div>
             ) : feedbackData?.length ? (
               <div className="grid gap-3">
-                {feedbackData.map((item: any) => (
-                  <article
-                    key={item.id}
-                    className="rounded-lg border border-primary/10 bg-slate-950/30 p-4"
-                  >
-                    <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                      <div className="min-w-0">
-                        <div className="mb-2 flex flex-wrap items-center gap-2">
-                          <Badge
-                            variant={
-                              item.type === "useful" ? "default" : "secondary"
-                            }
-                          >
-                            {item.type === "useful"
-                              ? t("manage.engagement.useful")
-                              : t("manage.engagement.notUseful")}
-                          </Badge>
-                          <Badge
-                            variant={
-                              item.status === "new" ? "default" : "secondary"
-                            }
-                          >
-                            {getFeedbackStatusLabel(item.status, t)}
-                          </Badge>
+                {feedbackData.map((item: any) => {
+                  const parsedFeedback = parseFeedbackMessageWithReason(
+                    item.message
+                  );
+
+                  return (
+                    <article
+                      key={item.id}
+                      className="rounded-lg border border-primary/10 bg-slate-950/30 p-4"
+                    >
+                      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                        <div className="min-w-0">
+                          <div className="mb-2 flex flex-wrap items-center gap-2">
+                            <Badge
+                              variant={
+                                item.type === "useful"
+                                  ? "default"
+                                  : "secondary"
+                              }
+                            >
+                              {item.type === "useful"
+                                ? t("manage.engagement.useful")
+                                : t("manage.engagement.notUseful")}
+                            </Badge>
+                            <Badge
+                              variant={
+                                item.status === "new" ? "default" : "secondary"
+                              }
+                            >
+                              {getFeedbackStatusLabel(item.status, t)}
+                            </Badge>
+                            {parsedFeedback.reason && (
+                              <Badge
+                                variant="outline"
+                                className="border-primary/20 text-primary"
+                              >
+                                {getFeedbackReasonLabel(
+                                  parsedFeedback.reason,
+                                  t
+                                )}
+                              </Badge>
+                            )}
+                          </div>
+                          <h4 className="line-clamp-1 text-sm font-semibold text-white">
+                            {item.postTitle ||
+                              t("manage.engagement.unknownPost")}
+                          </h4>
+                          <p className="mt-2 text-sm leading-6 text-slate-300">
+                            {parsedFeedback.message ||
+                              t("manage.engagement.noMessage")}
+                          </p>
+                          <p className="mt-2 text-xs text-slate-500">
+                            {item.visitorName ||
+                              t("manage.engagement.anonymous")}
+                            {item.replyEmail
+                              ? ` · ${maskEmail(item.replyEmail)}`
+                              : ""}
+                            {item.createdAt
+                              ? ` · ${new Date(item.createdAt).toLocaleString(language === "zh" ? "zh-CN" : "en-US")}`
+                              : ""}
+                          </p>
                         </div>
-                        <h4 className="line-clamp-1 text-sm font-semibold text-white">
-                          {item.postTitle || t("manage.engagement.unknownPost")}
-                        </h4>
-                        <p className="mt-2 text-sm leading-6 text-slate-300">
-                          {item.message || t("manage.engagement.noMessage")}
-                        </p>
-                        <p className="mt-2 text-xs text-slate-500">
-                          {item.visitorName || t("manage.engagement.anonymous")}
-                          {item.replyEmail
-                            ? ` · ${maskEmail(item.replyEmail)}`
-                            : ""}
-                          {item.createdAt
-                            ? ` · ${new Date(item.createdAt).toLocaleString(language === "zh" ? "zh-CN" : "en-US")}`
-                            : ""}
-                        </p>
+                        <div className="flex shrink-0 gap-2">
+                          {item.postSlug && (
+                            <Button
+                              asChild
+                              variant="outline"
+                              size="sm"
+                              className="owner-button"
+                            >
+                              <Link href={`/post/${item.postSlug}`}>
+                                {t("manage.action.view")}
+                              </Link>
+                            </Button>
+                          )}
+                          {item.status === "new" && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="owner-button"
+                              disabled={
+                                markFeedbackReviewed.isPending ||
+                                updateFeedbackStatus.isPending
+                              }
+                              onClick={() =>
+                                markFeedbackReviewed.mutate({ id: item.id })
+                              }
+                            >
+                              <CheckCircle2 className="h-4 w-4" />
+                              {t("manage.engagement.markReviewed")}
+                            </Button>
+                          )}
+                          {item.status !== "hidden" && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="border-amber-300/20 bg-amber-950/15 text-amber-100 hover:bg-amber-500/15"
+                              disabled={updateFeedbackStatus.isPending}
+                              onClick={() =>
+                                updateFeedbackStatus.mutate({
+                                  id: item.id,
+                                  status: "hidden",
+                                })
+                              }
+                            >
+                              <EyeOff className="h-4 w-4" />
+                              {t("manage.engagement.markHidden")}
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex shrink-0 gap-2">
-                        {item.postSlug && (
-                          <Button
-                            asChild
-                            variant="outline"
-                            size="sm"
-                            className="owner-button"
-                          >
-                            <Link href={`/post/${item.postSlug}`}>
-                              {t("manage.action.view")}
-                            </Link>
-                          </Button>
-                        )}
-                        {item.status === "new" && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="owner-button"
-                            disabled={
-                              markFeedbackReviewed.isPending ||
-                              updateFeedbackStatus.isPending
-                            }
-                            onClick={() =>
-                              markFeedbackReviewed.mutate({ id: item.id })
-                            }
-                          >
-                            <CheckCircle2 className="h-4 w-4" />
-                            {t("manage.engagement.markReviewed")}
-                          </Button>
-                        )}
-                        {item.status !== "hidden" && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="border-amber-300/20 bg-amber-950/15 text-amber-100 hover:bg-amber-500/15"
-                            disabled={updateFeedbackStatus.isPending}
-                            onClick={() =>
-                              updateFeedbackStatus.mutate({
-                                id: item.id,
-                                status: "hidden",
-                              })
-                            }
-                          >
-                            <EyeOff className="h-4 w-4" />
-                            {t("manage.engagement.markHidden")}
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  );
+                })}
               </div>
             ) : (
               <div className="rounded-lg border border-primary/10 bg-slate-950/25 py-10 text-center">
@@ -1441,6 +1468,28 @@ function ContentRadarPanel({
                           · {t("manage.engagement.notUseful")} {item.notUseful}{" "}
                           · {t("manage.engagement.statusNew")} {item.newCount}
                         </p>
+                        {item.reasonCounts?.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {item.reasonCounts.slice(0, 3).map(
+                              (reasonItem: {
+                                reason: FeedbackReason;
+                                count: number;
+                              }) => (
+                                <Badge
+                                  key={reasonItem.reason}
+                                  variant="outline"
+                                  className="border-primary/20 text-primary"
+                                >
+                                  {getFeedbackReasonLabel(
+                                    reasonItem.reason,
+                                    t
+                                  )}{" "}
+                                  · {reasonItem.count}
+                                </Badge>
+                              )
+                            )}
+                          </div>
+                        )}
                         {item.sampleMessages?.length > 0 && (
                           <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-300">
                             {item.sampleMessages[0]}
@@ -1760,6 +1809,13 @@ function getFeedbackStatusLabel(status: string, t: (key: string) => string) {
   if (status === "hidden") return t("manage.engagement.statusHidden");
   if (status === "reviewed") return t("manage.engagement.statusReviewed");
   return t("manage.engagement.statusNew");
+}
+
+function getFeedbackReasonLabel(
+  reason: FeedbackReason,
+  t: (key: string) => string
+) {
+  return t(getFeedbackReasonLabelKey(reason));
 }
 
 function getBacklogKindLabel(kind: string, t: (key: string) => string) {
