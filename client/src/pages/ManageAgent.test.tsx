@@ -2,7 +2,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import { IndexStatusPanel } from "./ManageAgent";
+import { AgentIndexStatusPanel } from "./manage-agent/AgentIndexStatusPanel";
 
 vi.mock("@/contexts/LanguageContext", () => ({
   useLanguage: () => ({
@@ -38,7 +38,7 @@ vi.mock("@/contexts/LanguageContext", () => ({
 describe("ManageAgent index status panel", () => {
   it("marks stale Agent knowledge as a release blocker with the verify sequence", () => {
     const html = renderToStaticMarkup(
-      <IndexStatusPanel
+      <AgentIndexStatusPanel
         loading={false}
         error={false}
         status={{
@@ -71,7 +71,7 @@ describe("ManageAgent index status panel", () => {
 
   it("does not show blocker language when Agent knowledge is fresh", () => {
     const html = renderToStaticMarkup(
-      <IndexStatusPanel
+      <AgentIndexStatusPanel
         loading={false}
         error={false}
         status={{
