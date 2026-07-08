@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-07-08T18:54:02.231Z",
+  "generatedAt": "2026-07-08T19:09:55.177Z",
   "git": {
     "branch": "dev",
-    "commit": "08fc12e",
+    "commit": "00067aa",
     "dirty": false
   },
   "baseUrl": "http://localhost:3000/",
@@ -236,15 +236,12 @@
     "configuredNonPublicSlugs": []
   },
   "agentKnowledge": {
-    "ok": false,
-    "chunkCount": 142,
+    "ok": true,
+    "chunkCount": 136,
     "publicPostCount": 8,
     "indexedPublicPostCount": 8,
     "hiddenOrDraftExcludedCount": 1,
-    "stalePublicPostSlugs": [
-      "flow-matching-generative-transport",
-      "isohc-fixed-vector-isometric-residual-mixing"
-    ],
+    "stalePublicPostSlugs": [],
     "extraIndexedPostSlugs": [],
     "indexedPostSlugs": [
       "agent-harness-engine-evaluating-tool-using-agents",
@@ -257,7 +254,7 @@
       "rag-evidence-packet-context-compiler"
     ],
     "nonPublicIndexedSlugs": [],
-    "lastReindexAt": "2026-06-19T17:09:35.070Z"
+    "lastReindexAt": "2026-07-08T19:09:20.105Z"
   },
   "dateDrift": null,
   "routeChecks": [
@@ -267,7 +264,5 @@
       "reason": "Set AUDIT_BASE_URL to run HTTP route freshness checks."
     }
   ],
-  "blockers": [
-    "Agent knowledge mismatch: 8/8 public posts indexed, stale=[flow-matching-generative-transport, isohc-fixed-vector-isometric-residual-mixing], extra=[], nonPublic=[]"
-  ]
+  "blockers": []
 }
