@@ -335,6 +335,10 @@ describe("engagement router", () => {
       priority: "high",
       status: "new",
     });
+    expect(summary.writingBacklog[0].draftHref).toContain(
+      `article=${publishedPost.slug}`
+    );
+    expect(summary.writingBacklog[0].draftHref).toContain("source=feedback");
     expect(summary.subscriptions).toMatchObject({
       total: 2,
       activeCount: 2,
@@ -350,6 +354,7 @@ describe("engagement router", () => {
     ).toContain("agents");
     expect(JSON.stringify(summary)).not.toContain("reader@example.com");
     expect(JSON.stringify(summary)).not.toContain("followup@example.com");
+    expect(summary.writingBacklog[0].draftHref).not.toContain("followup");
     expect(JSON.stringify(summary)).toContain("[redacted-email]");
   });
 
@@ -405,6 +410,10 @@ describe("engagement router", () => {
       ],
     });
     expect(summary.writingBacklog[0].draftHref).toContain("/write?idea=");
+    expect(summary.writingBacklog[0].draftHref).toContain(
+      "source=search_miss"
+    );
+    expect(summary.writingBacklog[0].draftHref).not.toContain("article=");
     expect(JSON.stringify(summary.searchMisses)).not.toContain("203.0.113.120");
     expect(JSON.stringify(summary.searchMisses)).not.toContain(
       "reader@example.com"

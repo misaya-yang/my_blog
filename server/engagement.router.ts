@@ -365,7 +365,11 @@ function buildWritingBacklog(
         : ("normal" as const),
     sourceLabel: "reader feedback",
     sourceHref: item.postSlug ? `/post/${item.postSlug}` : null,
-    draftHref: `/write?idea=${encodeURIComponent(item.postTitle)}&source=feedback`,
+    draftHref: buildEditorIntentHref({
+      idea: item.postTitle,
+      source: "feedback",
+      article: item.postSlug,
+    }),
     latestAt: item.latestAt,
     evidence: item.sampleMessages.slice(0, 2).map(redactDirectContact),
   }));
@@ -379,7 +383,10 @@ function buildWritingBacklog(
     priority: item.count > 1 ? ("high" as const) : ("normal" as const),
     sourceLabel: "zero-result search",
     sourceHref: null,
-    draftHref: `/write?idea=${encodeURIComponent(item.query)}&source=search_miss`,
+    draftHref: buildEditorIntentHref({
+      idea: item.query,
+      source: "search_miss",
+    }),
     latestAt: item.lastSeenAt,
     evidence: [redactDirectContact(item.suggestedPrompt)],
   }));
@@ -397,6 +404,19 @@ function buildWritingBacklog(
 
 function getPriorityWeight(priority: "high" | "normal") {
   return priority === "high" ? 1 : 0;
+}
+
+function buildEditorIntentHref(input: {
+  idea: string;
+  source: "feedback" | "search_miss";
+  article?: string | null;
+}) {
+  const params = new URLSearchParams({
+    idea: input.idea,
+    source: input.source,
+  });
+  if (input.article) params.set("article", input.article);
+  return `/write?${params.toString()}`;
 }
 
 function splitInterestPhrases(value: string | null | undefined) {
