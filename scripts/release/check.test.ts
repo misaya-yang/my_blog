@@ -63,6 +63,7 @@ describe("release check orchestration", () => {
       "content-verify",
       "build",
       "performance-audit",
+      "css-ownership",
       "ui-audit",
     ]);
     expect(steps.at(-1)).toEqual(
@@ -76,6 +77,13 @@ describe("release check orchestration", () => {
       expect.objectContaining({
         command: "corepack",
         args: ["pnpm", "audit:performance"],
+        blocking: true,
+      })
+    );
+    expect(steps.find(step => step.id === "css-ownership")).toEqual(
+      expect.objectContaining({
+        command: "corepack",
+        args: ["pnpm", "audit:css"],
         blocking: true,
       })
     );

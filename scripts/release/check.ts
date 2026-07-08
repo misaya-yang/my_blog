@@ -18,6 +18,7 @@ export type ReleaseStepId =
   | "content-verify"
   | "build"
   | "performance-audit"
+  | "css-ownership"
   | "ui-audit";
 
 export type ReleaseCheckOptions = {
@@ -211,6 +212,13 @@ export function buildReleaseSteps(options: ReleaseCheckOptions): ReleaseStep[] {
       label: "Performance budget audit",
       command: "corepack",
       args: ["pnpm", "audit:performance"],
+      blocking: true,
+    },
+    {
+      id: "css-ownership",
+      label: "CSS ownership audit",
+      command: "corepack",
+      args: ["pnpm", "audit:css"],
       blocking: true,
     },
     {

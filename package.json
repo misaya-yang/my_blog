@@ -14,6 +14,7 @@
     "audit:baseline:quick": "tsx scripts/audit/baseline.ts --skip-checks",
     "audit:ui": "tsx scripts/audit/ui-layout.ts",
     "audit:performance": "tsx scripts/audit/performance-budget.ts",
+    "audit:css": "tsx scripts/audit/css-ownership.ts",
     "release:check": "tsx scripts/release/check.ts",
     "ai:eval": "tsx scripts/ai/agent-eval-report.ts",
     "ai:reindex": "tsx scripts/ai/reindex-knowledge.ts",

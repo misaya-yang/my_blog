@@ -1,0 +1,903 @@
+{
+  "generatedAt": "2026-07-08T23:30:07.820Z",
+  "status": "passed",
+  "files": [
+    {
+      "path": "client/src/index.css",
+      "owner": "global-base",
+      "lineCount": 416,
+      "metrics": {
+        "important": {
+          "count": 4,
+          "samples": [
+            {
+              "line": 410,
+              "text": "animation-duration: 0.01ms !important;"
+            },
+            {
+              "line": 411,
+              "text": "animation-iteration-count: 1 !important;"
+            },
+            {
+              "line": 412,
+              "text": "scroll-behavior: auto !important;"
+            },
+            {
+              "line": 413,
+              "text": "transition-duration: 0.01ms !important;"
+            }
+          ]
+        },
+        "viewportFontSize": {
+          "count": 0,
+          "samples": []
+        },
+        "hardCodedColor": {
+          "count": 184,
+          "samples": [
+            {
+              "line": 153,
+              "text": "--liquid-surface-tint: oklch(0.99 0.004 220 / 66%);"
+            },
+            {
+              "line": 154,
+              "text": "--liquid-panel-tint: oklch(0.975 0.006 215 / 82%);"
+            },
+            {
+              "line": 155,
+              "text": "--liquid-readable-tint: oklch(0.985 0.004 230 / 96%);"
+            },
+            {
+              "line": 156,
+              "text": "--liquid-control-tint: oklch(0.98 0.006 210 / 76%);"
+            },
+            {
+              "line": 157,
+              "text": "--liquid-solid-surface: oklch(0.985 0.006 225);"
+            },
+            {
+              "line": 158,
+              "text": "--liquid-solid-panel: oklch(0.955 0.006 225);"
+            },
+            {
+              "line": 159,
+              "text": "--liquid-border: oklch(0.88 0.012 220 / 48%);"
+            },
+            {
+              "line": 160,
+              "text": "--liquid-border-strong: oklch(0.72 0.045 190 / 38%);"
+            }
+          ]
+        },
+        "broadSelector": {
+          "count": 4,
+          "samples": [
+            {
+              "line": 132,
+              "text": ":root"
+            },
+            {
+              "line": 381,
+              "text": "*"
+            },
+            {
+              "line": 384,
+              "text": "body"
+            },
+            {
+              "line": 407,
+              "text": "*"
+            }
+          ]
+        },
+        "agentRuntimeOutsideAgentCss": {
+          "count": 0,
+          "samples": []
+        }
+      }
+    },
+    {
+      "path": "client/src/styles/visual-refresh.css",
+      "owner": "public-visual",
+      "lineCount": 7497,
+      "metrics": {
+        "important": {
+          "count": 199,
+          "samples": [
+            {
+              "line": 703,
+              "text": "animation: none !important;"
+            },
+            {
+              "line": 704,
+              "text": "opacity: 1 !important;"
+            },
+            {
+              "line": 705,
+              "text": "transform: none !important;"
+            },
+            {
+              "line": 1398,
+              "text": "margin-top: 0.75rem !important;"
+            },
+            {
+              "line": 1410,
+              "text": "margin-top: 0.75rem !important;"
+            },
+            {
+              "line": 1514,
+              "text": "padding: 1rem !important;"
+            },
+            {
+              "line": 1670,
+              "text": "padding-top: clamp(1.35rem, 3vh, 2.1rem) !important;"
+            },
+            {
+              "line": 1671,
+              "text": "padding-bottom: clamp(1.2rem, 2.8vh, 1.9rem) !important;"
+            }
+          ]
+        },
+        "viewportFontSize": {
+          "count": 52,
+          "samples": [
+            {
+              "line": 244,
+              "text": "font-size: clamp(2.65rem, 5.6vw, 5.65rem);"
+            },
+            {
+              "line": 256,
+              "text": "font-size: clamp(1.06rem, 1.2vw, 1.22rem);"
+            },
+            {
+              "line": 309,
+              "text": "font-size: clamp(3.15rem, 6vw, 6rem);"
+            },
+            {
+              "line": 323,
+              "text": "font-size: clamp(1.1rem, 1.28vw, 1.3rem);"
+            },
+            {
+              "line": 591,
+              "text": "font-size: clamp(2.2rem, 4.5vw, 4.85rem);"
+            },
+            {
+              "line": 716,
+              "text": "font-size: clamp(2.7rem, 15vw, 4.1rem);"
+            },
+            {
+              "line": 1118,
+              "text": "font-size: clamp(2.2rem, 4vw, 4rem);"
+            },
+            {
+              "line": 1384,
+              "text": "font-size: clamp(2rem, 10vw, 2.75rem);"
+            }
+          ]
+        },
+        "hardCodedColor": {
+          "count": 357,
+          "samples": [
+            {
+              "line": 9,
+              "text": "oklch(0.062 0.018 252),"
+            },
+            {
+              "line": 10,
+              "text": "oklch(0.078 0.02 252) 42%,"
+            },
+            {
+              "line": 11,
+              "text": "oklch(0.05 0.016 252)"
+            },
+            {
+              "line": 22,
+              "text": "linear-gradient(90deg, oklch(0.86 0.08 235 / 4%) 1px, transparent 1px),"
+            },
+            {
+              "line": 23,
+              "text": "linear-gradient(180deg, oklch(0.86 0.08 235 / 3.2%) 1px, transparent 1px);"
+            },
+            {
+              "line": 35,
+              "text": "oklch(0.82 0.16 235 / 36%) 0 2px,"
+            },
+            {
+              "line": 42,
+              "text": "oklch(0.76 0.16 235 / 9%) 5.2rem calc(5.2rem + 1px),"
+            },
+            {
+              "line": 45,
+              "text": "linear-gradient(180deg, oklch(0.9 0.02 235 / 4%) 0 1px, transparent 1px);"
+            }
+          ]
+        },
+        "broadSelector": {
+          "count": 14,
+          "samples": [
+            {
+              "line": 4665,
+              "text": "body:has(.track-index-page) .agent-liquid-launcher"
+            },
+            {
+              "line": 4665,
+              "text": "body:has(.login-panel) .agent-liquid-launcher"
+            },
+            {
+              "line": 4665,
+              "text": "body:has(.auth-required-page) .agent-liquid-launcher"
+            },
+            {
+              "line": 4665,
+              "text": "body:has(.owner-editor-shell) .agent-liquid-launcher"
+            },
+            {
+              "line": 4665,
+              "text": "body:has(.owner-ops-page) .agent-liquid-launcher"
+            },
+            {
+              "line": 4665,
+              "text": "body:has(.agent-console-tabs) .agent-liquid-launcher"
+            },
+            {
+              "line": 4674,
+              "text": "body:has(.home-index-spread) .agent-liquid-launcher"
+            },
+            {
+              "line": 4685,
+              "text": "body:has(.home-index-spread) .agent-liquid-launcher > span:not(.agent-launcher-orb)"
+            }
+          ]
+        },
+        "agentRuntimeOutsideAgentCss": {
+          "count": 22,
+          "samples": [
+            {
+              "line": 2838,
+              "text": ".agent-liquid-launcher {"
+            },
+            {
+              "line": 2844,
+              "text": ".agent-liquid-panel {"
+            },
+            {
+              "line": 3480,
+              "text": ".agent-liquid-launcher {"
+            },
+            {
+              "line": 3489,
+              "text": ".agent-liquid-launcher .agent-launcher-orb {"
+            },
+            {
+              "line": 3494,
+              "text": ".agent-liquid-launcher > span:not(.agent-launcher-orb) {"
+            },
+            {
+              "line": 3686,
+              "text": ".agent-liquid-launcher {"
+            },
+            {
+              "line": 3693,
+              "text": ".agent-liquid-launcher .agent-launcher-orb {"
+            },
+            {
+              "line": 4665,
+              "text": "body:has(.track-index-page) .agent-liquid-launcher,"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "client/src/styles/public-components.css",
+      "owner": "public-components",
+      "lineCount": 1970,
+      "metrics": {
+        "important": {
+          "count": 0,
+          "samples": []
+        },
+        "viewportFontSize": {
+          "count": 3,
+          "samples": [
+            {
+              "line": 315,
+              "text": "font-size: clamp(3.05rem, 6.4vw, 6.2rem);"
+            },
+            {
+              "line": 334,
+              "text": "font-size: clamp(1.08rem, 1.42vw, 1.36rem);"
+            },
+            {
+              "line": 1469,
+              "text": "font-size: clamp(2.65rem, 17vw, 4.2rem);"
+            }
+          ]
+        },
+        "hardCodedColor": {
+          "count": 255,
+          "samples": [
+            {
+              "line": 36,
+              "text": "oklch(0.074 0.006 82),"
+            },
+            {
+              "line": 37,
+              "text": "oklch(0.092 0.007 86) 46%,"
+            },
+            {
+              "line": 38,
+              "text": "oklch(0.066 0.006 82)"
+            },
+            {
+              "line": 55,
+              "text": "oklch(0.72 0.022 156 / 7%) 5.2rem calc(5.2rem + 1px),"
+            },
+            {
+              "line": 58,
+              "text": "linear-gradient(180deg, oklch(0.88 0.005 100 / 3%) 0 1px, transparent 1px);"
+            },
+            {
+              "line": 73,
+              "text": "linear-gradient(oklch(0.84 0.006 100 / 3.8%) 1px, transparent 1px),"
+            },
+            {
+              "line": 74,
+              "text": "linear-gradient(90deg, oklch(0.84 0.006 100 / 2.2%) 1px, transparent 1px);"
+            },
+            {
+              "line": 95,
+              "text": "oklch(0.82 0.09 185 / 70%) 0 1.3px,"
+            }
+          ]
+        },
+        "broadSelector": {
+          "count": 0,
+          "samples": []
+        },
+        "agentRuntimeOutsideAgentCss": {
+          "count": 3,
+          "samples": [
+            {
+              "line": 1054,
+              "text": ".agent-liquid-launcher {"
+            },
+            {
+              "line": 1064,
+              "text": ".agent-launcher-orb {"
+            },
+            {
+              "line": 1070,
+              "text": ".agent-liquid-panel {"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "client/src/styles/owner-tools.css",
+      "owner": "owner-tools",
+      "lineCount": 2572,
+      "metrics": {
+        "important": {
+          "count": 404,
+          "samples": [
+            {
+              "line": 331,
+              "text": "oklch(0.095 0.014 252) !important;"
+            },
+            {
+              "line": 332,
+              "text": "border-color: var(--public-border-strong) !important;"
+            },
+            {
+              "line": 335,
+              "text": "0 22px 46px oklch(0.03 0.012 252 / 26%) !important;"
+            },
+            {
+              "line": 355,
+              "text": "border-color: var(--public-border) !important;"
+            },
+            {
+              "line": 356,
+              "text": "border-radius: 0.68rem !important;"
+            },
+            {
+              "line": 357,
+              "text": "background: oklch(0.055 0.014 252 / 86%) !important;"
+            },
+            {
+              "line": 399,
+              "text": "order: 0 !important;"
+            },
+            {
+              "line": 443,
+              "text": ") !important;"
+            }
+          ]
+        },
+        "viewportFontSize": {
+          "count": 14,
+          "samples": [
+            {
+              "line": 1384,
+              "text": "font-size: clamp(2.72rem, 3.7vw, 3.72rem) !important;"
+            },
+            {
+              "line": 1522,
+              "text": "font-size: clamp(1.92rem, 2.7vw, 2.76rem) !important;"
+            },
+            {
+              "line": 1561,
+              "text": "font-size: clamp(1.06rem, 0.98rem + 0.18vw, 1.15rem) !important;"
+            },
+            {
+              "line": 1751,
+              "text": "font-size: clamp(3rem, 4vw, 4.05rem) !important;"
+            },
+            {
+              "line": 1757,
+              "text": "font-size: clamp(1rem, 1vw, 1.08rem) !important;"
+            },
+            {
+              "line": 1788,
+              "text": "font-size: clamp(1.22rem, 1.45vw, 1.58rem) !important;"
+            },
+            {
+              "line": 1806,
+              "text": "font-size: clamp(1.65rem, 1.8vw, 2rem) !important;"
+            },
+            {
+              "line": 1893,
+              "text": "font-size: clamp(2.05rem, 3.4vw, 3.1rem) !important;"
+            }
+          ]
+        },
+        "hardCodedColor": {
+          "count": 255,
+          "samples": [
+            {
+              "line": 10,
+              "text": "var(--ui-surface-strong, oklch(0.12 0.026 248 / 92%)),"
+            },
+            {
+              "line": 11,
+              "text": "var(--ui-surface-muted, oklch(0.06 0.018 252 / 94%))"
+            },
+            {
+              "line": 14,
+              "text": "box-shadow: var(--ui-shadow, inset 0 1px 0 oklch(0.98 0.012 235 / 7%));"
+            },
+            {
+              "line": 18,
+              "text": "border-color: var(--ui-border, oklch(0.84 0.08 235 / 14%));"
+            },
+            {
+              "line": 19,
+              "text": "background: oklch(0.055 0.012 252 / 90%);"
+            },
+            {
+              "line": 20,
+              "text": "box-shadow: inset 0 -1px 0 oklch(0.84 0.08 235 / 5%);"
+            },
+            {
+              "line": 26,
+              "text": "border-color: var(--ui-border, oklch(0.84 0.08 235 / 16%));"
+            },
+            {
+              "line": 28,
+              "text": "background: oklch(0.055 0.012 252 / 66%);"
+            }
+          ]
+        },
+        "broadSelector": {
+          "count": 39,
+          "samples": [
+            {
+              "line": 655,
+              "text": ":root"
+            },
+            {
+              "line": 738,
+              "text": "html:not(.dark) .space-page .space-backdrop::before"
+            },
+            {
+              "line": 738,
+              "text": "html:not(.dark) .space-page .space-backdrop::after"
+            },
+            {
+              "line": 738,
+              "text": "html:not(.dark) .space-page .space-stars"
+            },
+            {
+              "line": 738,
+              "text": "html:not(.dark) .space-page .planet-horizon"
+            },
+            {
+              "line": 738,
+              "text": "html:not(.dark) .home-index-spread::before"
+            },
+            {
+              "line": 747,
+              "text": "html:not(.dark) .space-page .home-index-spread"
+            },
+            {
+              "line": 1076,
+              "text": "html:not(.dark) .space-page.owner-dark-scope .space-backdrop::before"
+            }
+          ]
+        },
+        "agentRuntimeOutsideAgentCss": {
+          "count": 3,
+          "samples": [
+            {
+              "line": 1014,
+              "text": ".agent-liquid-launcher {"
+            },
+            {
+              "line": 1481,
+              "text": ".agent-liquid-launcher {"
+            },
+            {
+              "line": 1488,
+              "text": ".agent-launcher-orb {"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "client/src/styles/agent-surfaces.css",
+      "owner": "agent-surfaces",
+      "lineCount": 747,
+      "metrics": {
+        "important": {
+          "count": 45,
+          "samples": [
+            {
+              "line": 269,
+              "text": "background: var(--liquid-reduced-bg) !important;"
+            },
+            {
+              "line": 270,
+              "text": "box-shadow: none !important;"
+            },
+            {
+              "line": 271,
+              "text": "backdrop-filter: none !important;"
+            },
+            {
+              "line": 272,
+              "text": "-webkit-backdrop-filter: none !important;"
+            },
+            {
+              "line": 357,
+              "text": "border-color: var(--agent-border) !important;"
+            },
+            {
+              "line": 358,
+              "text": "background: var(--agent-panel-bg) !important;"
+            },
+            {
+              "line": 361,
+              "text": "box-shadow: var(--agent-shadow) !important;"
+            },
+            {
+              "line": 367,
+              "text": "content: none !important;"
+            }
+          ]
+        },
+        "viewportFontSize": {
+          "count": 0,
+          "samples": []
+        },
+        "hardCodedColor": {
+          "count": 52,
+          "samples": [
+            {
+              "line": 17,
+              "text": "inset 0 1px 0 oklch(0.98 0.012 235 / 12%),"
+            },
+            {
+              "line": 18,
+              "text": "0 6px 10px oklch(0.02 0.018 255 / 28%),"
+            },
+            {
+              "line": 19,
+              "text": "0 0 12px oklch(0.72 0.16 235 / 16%);"
+            },
+            {
+              "line": 23,
+              "text": "border-color: oklch(0.78 0.16 235 / 34%);"
+            },
+            {
+              "line": 24,
+              "text": "background: oklch(0.18 0.05 245 / 58%);"
+            },
+            {
+              "line": 25,
+              "text": "color: oklch(0.86 0.12 225);"
+            },
+            {
+              "line": 30,
+              "text": "background-color: oklch(0.05 0.018 252);"
+            },
+            {
+              "line": 33,
+              "text": "oklch(0.105 0.024 250),"
+            }
+          ]
+        },
+        "broadSelector": {
+          "count": 38,
+          "samples": [
+            {
+              "line": 4,
+              "text": "body .agent-liquid-launcher"
+            },
+            {
+              "line": 59,
+              "text": ".agent-liquid-panel [class*=\"rounded-md\"]"
+            },
+            {
+              "line": 59,
+              "text": ".agent-liquid-panel [class*=\"rounded-lg\"]"
+            },
+            {
+              "line": 120,
+              "text": "body .agent-liquid-launcher"
+            },
+            {
+              "line": 140,
+              "text": "body .agent-liquid-launcher::before"
+            },
+            {
+              "line": 149,
+              "text": "body .agent-liquid-launcher .agent-launcher-orb"
+            },
+            {
+              "line": 161,
+              "text": "body .agent-liquid-panel"
+            },
+            {
+              "line": 179,
+              "text": "body .agent-liquid-panel::before"
+            }
+          ]
+        },
+        "agentRuntimeOutsideAgentCss": {
+          "count": 0,
+          "samples": []
+        }
+      }
+    },
+    {
+      "path": "client/src/styles/liquid-materials.css",
+      "owner": "legacy-materials",
+      "lineCount": 2750,
+      "metrics": {
+        "important": {
+          "count": 907,
+          "samples": [
+            {
+              "line": 137,
+              "text": "opacity: 0.12 !important;"
+            },
+            {
+              "line": 140,
+              "text": "linear-gradient(180deg, oklch(0.92 0.008 230 / 2.4%) 1px, transparent 1px) !important;"
+            },
+            {
+              "line": 141,
+              "text": "background-size: 5rem 5rem, 2.5rem 2.5rem !important;"
+            },
+            {
+              "line": 142,
+              "text": "mask-image: linear-gradient(180deg, black, transparent 72%) !important;"
+            },
+            {
+              "line": 149,
+              "text": "opacity: 0.18 !important;"
+            },
+            {
+              "line": 154,
+              "text": "display: none !important;"
+            },
+            {
+              "line": 175,
+              "text": "border-color: transparent !important;"
+            },
+            {
+              "line": 176,
+              "text": "background: transparent !important;"
+            }
+          ]
+        },
+        "viewportFontSize": {
+          "count": 1,
+          "samples": [
+            {
+              "line": 1450,
+              "text": "font-size: clamp(3rem, 4.6vw, 4.75rem) !important;"
+            }
+          ]
+        },
+        "hardCodedColor": {
+          "count": 72,
+          "samples": [
+            {
+              "line": 5,
+              "text": "--v2-bg: oklch(0.965 0.006 245);"
+            },
+            {
+              "line": 6,
+              "text": "--v2-bg-lower: oklch(0.925 0.008 245);"
+            },
+            {
+              "line": 7,
+              "text": "--v2-text: oklch(0.16 0.012 245);"
+            },
+            {
+              "line": 8,
+              "text": "--v2-muted: oklch(0.48 0.012 245);"
+            },
+            {
+              "line": 9,
+              "text": "--v2-faint: oklch(0.62 0.01 245);"
+            },
+            {
+              "line": 10,
+              "text": "--v2-accent: oklch(0.58 0.12 205);"
+            },
+            {
+              "line": 11,
+              "text": "--v2-accent-2: oklch(0.62 0.1 165);"
+            },
+            {
+              "line": 12,
+              "text": "--v2-hairline: oklch(0.82 0.01 245 / 58%);"
+            }
+          ]
+        },
+        "broadSelector": {
+          "count": 11,
+          "samples": [
+            {
+              "line": 4,
+              "text": ":root"
+            },
+            {
+              "line": 108,
+              "text": "html"
+            },
+            {
+              "line": 112,
+              "text": "body"
+            },
+            {
+              "line": 544,
+              "text": "html:not(.dark) .space-page :where(.home-index-search"
+            },
+            {
+              "line": 1280,
+              "text": "html[data-solid-surfaces=\"true\"] :is( .glass-popover"
+            },
+            {
+              "line": 1305,
+              "text": "html[data-route-motion=\"enter\"] :where(.space-page > main"
+            },
+            {
+              "line": 1796,
+              "text": "body:has(.track-index-page) .agent-liquid-launcher"
+            },
+            {
+              "line": 2102,
+              "text": "html:not(.dark) .space-page:not(.owner-dark-scope)"
+            }
+          ]
+        },
+        "agentRuntimeOutsideAgentCss": {
+          "count": 16,
+          "samples": [
+            {
+              "line": 341,
+              "text": ".agent-liquid-panel,"
+            },
+            {
+              "line": 1028,
+              "text": ".agent-liquid-launcher {"
+            },
+            {
+              "line": 1040,
+              "text": ".agent-liquid-launcher:hover,"
+            },
+            {
+              "line": 1041,
+              "text": ".agent-liquid-launcher[aria-expanded=\"true\"] {"
+            },
+            {
+              "line": 1050,
+              "text": ".agent-launcher-orb {"
+            },
+            {
+              "line": 1056,
+              "text": ".agent-liquid-panel {"
+            },
+            {
+              "line": 1063,
+              "text": ".agent-liquid-panel :where(article > div, textarea, input, .agent-source-card) {"
+            },
+            {
+              "line": 1270,
+              "text": ".agent-liquid-panel,"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "missingFiles": [],
+  "totals": {
+    "fileCount": 6,
+    "lineCount": 15952,
+    "important": 1559,
+    "viewportFontSize": 70,
+    "hardCodedColor": 1175,
+    "broadSelector": 106,
+    "agentRuntimeOutsideAgentCss": 44
+  },
+  "checks": [
+    {
+      "id": "css-files-present",
+      "label": "CSS ownership files present",
+      "state": "passed",
+      "blocking": true,
+      "evidence": "6 configured CSS files are present."
+    },
+    {
+      "id": "important-baseline",
+      "label": "`!important` baseline",
+      "state": "warning",
+      "blocking": false,
+      "evidence": "1559 found. `!important` declarations exist. New UI slices should avoid increasing this count without a waiver."
+    },
+    {
+      "id": "viewport-font-baseline",
+      "label": "Viewport font-size baseline",
+      "state": "warning",
+      "blocking": false,
+      "evidence": "70 found. Readable text should not add viewport-unit font-size rules."
+    },
+    {
+      "id": "hard-coded-color-baseline",
+      "label": "Hard-coded color baseline",
+      "state": "warning",
+      "blocking": false,
+      "evidence": "1175 found. Prefer semantic tokens over one-off color literals when touching CSS."
+    },
+    {
+      "id": "broad-selector-baseline",
+      "label": "Broad selector baseline",
+      "state": "warning",
+      "blocking": false,
+      "evidence": "106 found. Broad/global selectors should not grow for local component fixes."
+    },
+    {
+      "id": "agent-runtime-ownership-baseline",
+      "label": "Agent runtime selector ownership baseline",
+      "state": "warning",
+      "blocking": false,
+      "evidence": "44 found. Agent frame/panel runtime selectors outside agent-surfaces.css are legacy ownership debt."
+    }
+  ],
+  "failures": [],
+  "warnings": [
+    "`!important` baseline: 1559 found. `!important` declarations exist. New UI slices should avoid increasing this count without a waiver.",
+    "Viewport font-size baseline: 70 found. Readable text should not add viewport-unit font-size rules.",
+    "Hard-coded color baseline: 1175 found. Prefer semantic tokens over one-off color literals when touching CSS.",
+    "Broad selector baseline: 106 found. Broad/global selectors should not grow for local component fixes.",
+    "Agent runtime selector ownership baseline: 44 found. Agent frame/panel runtime selectors outside agent-surfaces.css are legacy ownership debt."
+  ],
+  "outputPath": "docs/product_optimization/reports/css-ownership-latest.json"
+}
