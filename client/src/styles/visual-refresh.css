@@ -6656,6 +6656,7 @@
   .article-reader-response-grid,
   .article-author-note,
   .article-feedback-panel,
+  .article-feedback-surface,
   .article-subscription-panel,
   .article-related-cluster {
     min-width: 0;
@@ -6694,9 +6695,137 @@
 
   .article-reader-response-grid {
     display: grid;
+    align-items: start;
     gap: 1rem;
     padding-top: 1.05rem;
     border-top: 1px solid var(--public-border);
+  }
+
+  .article-feedback-surface {
+    display: grid;
+    gap: 0.6rem;
+    overflow-x: hidden;
+    color: var(--public-muted);
+  }
+
+  .article-feedback-surface form {
+    gap: 0.6rem;
+  }
+
+  .article-feedback-head {
+    gap: 0.45rem;
+  }
+
+  .article-feedback-head h2 {
+    color: var(--public-text);
+  }
+
+  .article-feedback-head p {
+    margin-top: 0.4rem;
+    color: var(--public-muted);
+  }
+
+  .article-feedback-head p:last-child {
+    margin-top: 0.32rem;
+    color: var(--public-faint);
+  }
+
+  .article-feedback-trust {
+    border: 1px solid var(--public-border);
+    background: color-mix(in oklch, var(--public-inline-bg) 72%, transparent);
+    color: var(--public-faint);
+    overflow: hidden;
+  }
+
+  .article-feedback-trust summary {
+    color: var(--public-muted);
+  }
+
+  .article-feedback-trust summary svg:first-child {
+    color: var(--public-accent);
+  }
+
+  .article-feedback-trust summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .article-feedback-trust > div {
+    border-top: 1px solid var(--public-border);
+  }
+
+  .article-feedback-trust[open] summary svg:last-child {
+    transform: rotate(180deg);
+  }
+
+  .article-feedback-trust summary svg:last-child {
+    transition: transform 160ms ease;
+  }
+
+  .article-feedback-actions {
+    gap: 0.5rem;
+  }
+
+  .article-feedback-choice,
+  .article-feedback-detail-toggle {
+    border: 1px solid var(--public-border);
+    background: color-mix(in oklch, var(--public-input-bg) 86%, transparent);
+    color: var(--public-muted);
+  }
+
+  .article-feedback-choice:hover,
+  .article-feedback-choice:focus-visible,
+  .article-feedback-detail-toggle:hover,
+  .article-feedback-detail-toggle:focus-visible {
+    border-color: color-mix(in oklch, var(--public-accent) 42%, var(--public-border));
+    background: color-mix(in oklch, var(--public-inline-bg) 82%, var(--public-accent) 8%);
+    color: var(--public-text);
+  }
+
+  .article-feedback-choice[aria-pressed="true"][data-feedback-type="useful"] {
+    border-color: color-mix(in oklch, var(--public-accent) 58%, var(--public-border));
+    background: color-mix(in oklch, var(--public-inline-bg) 78%, var(--public-accent) 16%);
+    color: var(--public-text);
+  }
+
+  .article-feedback-choice[aria-pressed="true"][data-feedback-type="not_useful"] {
+    border-color: color-mix(in oklch, oklch(0.58 0.15 24) 48%, var(--public-border));
+    background: color-mix(in oklch, var(--public-inline-bg) 84%, oklch(0.58 0.15 24) 10%);
+    color: var(--public-text);
+  }
+
+  .article-feedback-detail-toggle {
+    width: 100%;
+  }
+
+  .article-feedback-details {
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  .article-feedback-details :where(textarea, input) {
+    max-width: 100%;
+  }
+
+  .article-feedback-field {
+    border-color: var(--public-border);
+    background: var(--public-input-bg);
+    color: var(--public-text);
+  }
+
+  .article-feedback-field::placeholder {
+    color: var(--public-faint);
+  }
+
+  .article-feedback-surface [aria-live="polite"] {
+    color: var(--public-faint);
+  }
+
+  .article-feedback-success {
+    color: var(--public-accent-bright);
+  }
+
+  .article-feedback-error {
+    color: var(--destructive);
   }
 
   @media (min-width: 900px) {

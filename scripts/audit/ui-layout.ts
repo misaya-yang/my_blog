@@ -170,10 +170,34 @@ async function inspectPost(browser: BrowserLike, viewport: Viewport) {
     const header = document.querySelector(".site-header");
     const prose = document.querySelector(".article-prose");
     const entry = document.querySelector(".article-entry-layer");
+    const feedback = document.querySelector<HTMLElement>(
+      ".article-feedback-panel"
+    );
+    const feedbackSubmit = feedback?.querySelector<HTMLButtonElement>(
+      'button[type="submit"]'
+    );
     return {
       headerHeight: rectHeight(header),
       proseY: rectTop(prose),
       entryHeight: rectHeight(entry),
+      feedbackHeight: rectHeight(feedback),
+      feedbackClientWidth: feedback?.clientWidth ?? null,
+      feedbackScrollWidth: feedback?.scrollWidth ?? null,
+      feedbackSentimentButtons: feedback?.querySelectorAll(
+        'button[aria-pressed="false"], button[aria-pressed="true"]'
+      ).length ?? 0,
+      feedbackDetailToggle: Boolean(
+        feedback?.querySelector(".article-feedback-detail-toggle")
+      ),
+      feedbackDetailExpanded:
+        feedback
+          ?.querySelector(".article-feedback-detail-toggle")
+          ?.getAttribute("aria-expanded") ?? null,
+      feedbackTextareaCount:
+        feedback?.querySelectorAll("textarea").length ?? 0,
+      feedbackInputCount: feedback?.querySelectorAll("input").length ?? 0,
+      feedbackSubmitExists: Boolean(feedbackSubmit),
+      feedbackSubmitDisabled: feedbackSubmit?.disabled ?? null,
       bodyScrollWidth: document.body.scrollWidth,
       documentScrollWidth: document.documentElement.scrollWidth,
       viewportWidth: window.innerWidth,
@@ -206,6 +230,22 @@ async function inspectPost(browser: BrowserLike, viewport: Viewport) {
       entryLayerCompact:
         Number(measurements.entryHeight ?? Infinity) <=
         (viewport.width < 768 ? 390 : 300),
+      feedbackNoHorizontalOverflow:
+        Number(measurements.feedbackScrollWidth ?? Infinity) <=
+        Number(measurements.feedbackClientWidth ?? 0) + 1,
+      feedbackProgressiveDefault:
+        Number(measurements.feedbackTextareaCount) === 0 &&
+        Number(measurements.feedbackInputCount) === 0 &&
+        measurements.feedbackDetailExpanded === "false",
+      feedbackActionsAvailable:
+        Number(measurements.feedbackSentimentButtons) === 2 &&
+        Boolean(measurements.feedbackDetailToggle) &&
+        Boolean(measurements.feedbackSubmitExists),
+      feedbackCompact:
+        Number(measurements.feedbackHeight ?? Infinity) <=
+        (viewport.width < 768 ? 360 : 330),
+      feedbackSubmitWaitsForSignal:
+        measurements.feedbackSubmitDisabled === true,
     },
   };
 }

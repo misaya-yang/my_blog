@@ -155,8 +155,8 @@ const common: TranslationDict = {
     zh: "{title} 的私密反馈",
   },
   "engagement.feedback.description": {
-    en: "Send a short private note about what worked, what was unclear, or what should be added next.",
-    zh: "提交一条简短私密反馈，说明哪里有帮助、哪里不清楚，或后续应该补什么。",
+    en: "A quick signal is enough. Add context only when it helps revise the article.",
+    zh: "点一下就够了；只有在需要帮助修订文章时再补充说明。",
   },
   "engagement.feedback.visitorIdentity": {
     en: "Submitting as {name}",
@@ -178,8 +178,20 @@ const common: TranslationDict = {
     en: "Useful for revisions, examples, and follow-up notes.",
     zh: "用于后续修订、补充例子和规划新文章。",
   },
+  "engagement.feedback.trustSummary": {
+    en: "Private, optional, and used only for article improvements.",
+    zh: "私密、可选，只用于改进文章。",
+  },
   "engagement.feedback.useful": { en: "Useful", zh: "有帮助" },
   "engagement.feedback.notUseful": { en: "Not useful", zh: "帮助不大" },
+  "engagement.feedback.detailsToggle": {
+    en: "Add a private note",
+    zh: "补充私密说明",
+  },
+  "engagement.feedback.detailsHide": {
+    en: "Hide private note",
+    zh: "收起补充说明",
+  },
   "engagement.feedback.messagePlaceholder": {
     en: "Optional note: what was clear or missing?",
     zh: "可选补充：哪里清楚，哪里还缺？",
@@ -205,6 +217,10 @@ const common: TranslationDict = {
   "engagement.feedback.privacy": {
     en: "Reply email is optional and only used when follow-up is needed.",
     zh: "回复邮箱完全可选，仅在需要跟进时使用。",
+  },
+  "engagement.feedback.quickHint": {
+    en: "Choose one signal. Details are optional.",
+    zh: "选择一个反馈即可提交；补充说明可选。",
   },
   "engagement.feedback.loading": { en: "Sending...", zh: "发送中..." },
   "engagement.feedback.submit": { en: "Send feedback", zh: "发送反馈" },

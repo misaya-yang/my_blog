@@ -19,7 +19,7 @@ vi.mock("@/contexts/LanguageContext", () => ({
           "engagement.feedback.title": "Was this useful?",
           "engagement.feedback.ariaLabel": `Private feedback for ${vars?.title}`,
           "engagement.feedback.description":
-            "Send a short private note about what worked, what was unclear, or what should be added next.",
+            "A quick signal is enough. Add context only when it helps revise the article.",
           "engagement.feedback.anonymousIdentity":
             "You can submit anonymously.",
           "engagement.feedback.privateNote":
@@ -27,14 +27,20 @@ vi.mock("@/contexts/LanguageContext", () => ({
           "engagement.feedback.optionalReply": "Reply email is optional.",
           "engagement.feedback.afterSubmit":
             "Useful for revisions, examples, and follow-up notes.",
+          "engagement.feedback.trustSummary":
+            "Private, optional, and used only for article improvements.",
           "engagement.feedback.useful": "Useful",
           "engagement.feedback.notUseful": "Not useful",
+          "engagement.feedback.detailsToggle": "Add a private note",
+          "engagement.feedback.detailsHide": "Hide private note",
           "engagement.feedback.messagePlaceholder":
             "Optional note: what was clear or missing?",
           "engagement.feedback.namePlaceholder": "Optional nickname",
           "engagement.feedback.emailPlaceholder": "Optional reply email",
           "engagement.feedback.privacy":
             "Reply email is optional and only used when follow-up is needed.",
+          "engagement.feedback.quickHint":
+            "Choose one signal. Details are optional.",
           "engagement.feedback.submit": "Send feedback",
           "engagement.feedback.loading": "Sending...",
           "engagement.feedback.error": "Feedback failed",
@@ -73,12 +79,32 @@ vi.mock("sonner", () => ({
 }));
 
 describe("ArticleFeedback reader trust copy", () => {
-  it("keeps the form as the primary path instead of a direct email CTA", () => {
+  it("keeps quick feedback visible without exposing optional fields by default", () => {
     const html = renderToStaticMarkup(
       <ArticleFeedback postId={1} postTitle="Agent Harness Engine" />
     );
 
     expect(html).toContain("Private feedback for Agent Harness Engine");
+    expect(html).toContain("A quick signal is enough.");
+    expect(html).toContain("Useful");
+    expect(html).toContain("Not useful");
+    expect(html).toContain("Add a private note");
+    expect(html).toContain('aria-expanded="false"');
+    expect(html).toContain("Send feedback");
+    expect(html).toContain("Choose one signal. Details are optional.");
+    expect(html).not.toContain("Optional note: what was clear or missing?");
+    expect(html).not.toContain("Optional nickname");
+    expect(html).not.toContain("Optional reply email");
+  });
+
+  it("keeps trust details available without a direct email CTA", () => {
+    const html = renderToStaticMarkup(
+      <ArticleFeedback postId={1} postTitle="Agent Harness Engine" />
+    );
+
+    expect(html).toContain(
+      "Private, optional, and used only for article improvements."
+    );
     expect(html).toContain("Stored privately for the owner backlog.");
     expect(html).toContain("Reply email is optional.");
     expect(html).toContain("Useful for revisions, examples, and follow-up notes.");

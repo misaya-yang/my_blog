@@ -6,7 +6,14 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ShieldCheck, ThumbsDown, ThumbsUp } from "lucide-react";
+import {
+  ChevronDown,
+  Loader2,
+  MessageSquare,
+  ShieldCheck,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react";
 import React, { FormEvent, useId, useState } from "react";
 import { toast } from "sonner";
 
@@ -32,10 +39,12 @@ export function ArticleFeedback({
   const [replyEmail, setReplyEmail] = useState("");
   const [visitorName, setVisitorName] = useState("");
   const [sent, setSent] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const messageId = useId();
   const visitorNameId = useId();
   const replyEmailId = useId();
   const statusId = useId();
+  const detailsId = useId();
 
   const feedback = trpc.engagement.feedback.create.useMutation({
     onSuccess: () => {
@@ -45,6 +54,7 @@ export function ArticleFeedback({
       setMessage("");
       setReplyEmail("");
       setVisitorName("");
+      setDetailsOpen(false);
       toast.success(t("engagement.feedback.toastSuccess"));
     },
     onError: (error) => {
@@ -68,136 +78,160 @@ export function ArticleFeedback({
   return (
     <section
       className={cn(
-        embedded ? "space-y-5" : "glass-panel p-5",
+        "article-feedback-surface",
+        embedded ? "space-y-4" : "glass-panel p-5",
         className
       )}
       aria-label={t("engagement.feedback.ariaLabel", { title: postTitle })}
     >
-      <div className="flex flex-col gap-3">
+      <div className="article-feedback-head flex flex-col gap-3">
         <div>
-          <h2 className="text-base font-semibold text-white">{t("engagement.feedback.title")}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+          <h2 className="text-base font-semibold">{t("engagement.feedback.title")}</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6">
             {t("engagement.feedback.description")}
           </p>
-          <p className="mt-2 text-xs text-slate-500">
+          <p className="mt-2 text-xs">
             {isVisitor && displayName
               ? t("engagement.feedback.visitorIdentity", { name: displayName })
               : t("engagement.feedback.anonymousIdentity")}
           </p>
         </div>
-        <div className="grid gap-2 rounded-md border border-sky-200/10 bg-slate-950/25 p-3 text-xs leading-5 text-slate-500 sm:grid-cols-3">
-          <span className="inline-flex min-w-0 items-start gap-2">
-            <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-300" />
-            {t("engagement.feedback.privateNote")}
-          </span>
-          <span>{t("engagement.feedback.optionalReply")}</span>
-          <span>{t("engagement.feedback.afterSubmit")}</span>
-        </div>
+        <details className="article-feedback-trust rounded-md text-xs leading-5">
+          <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-1.5">
+            <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+            <span className="min-w-0 flex-1 truncate">
+              {t("engagement.feedback.trustSummary")}
+            </span>
+            <ChevronDown className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          </summary>
+          <div className="grid gap-2 px-3 py-2 sm:grid-cols-3">
+            <span>{t("engagement.feedback.privateNote")}</span>
+            <span>{t("engagement.feedback.optionalReply")}</span>
+            <span>{t("engagement.feedback.afterSubmit")}</span>
+          </div>
+        </details>
       </div>
 
       <form onSubmit={submitFeedback} className="grid gap-4">
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="article-feedback-actions grid grid-cols-2 gap-2">
           <button
             type="button"
+            data-feedback-type="useful"
             aria-pressed={type === "useful"}
             onClick={() => setType("useful")}
-            className={cn(
-              "flex h-11 items-center justify-center gap-2 rounded-md border px-3 text-sm font-medium transition",
-              type === "useful"
-                ? "border-sky-300/60 bg-sky-400/15 text-sky-100"
-                : "border-sky-200/15 bg-slate-950/35 text-slate-300 hover:border-sky-300/45 hover:text-white"
-            )}
+            className="article-feedback-choice flex h-9 items-center justify-center gap-2 rounded-md px-3 text-sm font-medium transition"
           >
             <ThumbsUp className="h-4 w-4" />
             {t("engagement.feedback.useful")}
           </button>
           <button
             type="button"
+            data-feedback-type="not_useful"
             aria-pressed={type === "not_useful"}
             onClick={() => setType("not_useful")}
-            className={cn(
-              "flex h-11 items-center justify-center gap-2 rounded-md border px-3 text-sm font-medium transition",
-              type === "not_useful"
-                ? "border-rose-300/55 bg-rose-400/12 text-rose-100"
-                : "border-sky-200/15 bg-slate-950/35 text-slate-300 hover:border-sky-300/45 hover:text-white"
-            )}
+            className="article-feedback-choice flex h-9 items-center justify-center gap-2 rounded-md px-3 text-sm font-medium transition"
           >
             <ThumbsDown className="h-4 w-4" />
             {t("engagement.feedback.notUseful")}
           </button>
         </div>
 
-        <div>
-          <label className="sr-only" htmlFor={messageId}>
-            {t("engagement.feedback.messagePlaceholder")}
-          </label>
-          <Textarea
-            id={messageId}
-            value={message}
-            onChange={(event) => setMessage(event.target.value)}
-            maxLength={600}
-            placeholder={t("engagement.feedback.messagePlaceholder")}
-            aria-describedby={statusId}
-            className="min-h-24 border-sky-200/15 bg-slate-950/35 text-white placeholder:text-slate-500"
+        <button
+          type="button"
+          aria-expanded={detailsOpen}
+          aria-controls={detailsId}
+          onClick={() => setDetailsOpen(value => !value)}
+          className="article-feedback-detail-toggle inline-flex min-h-9 items-center justify-center gap-2 rounded-md px-3 text-sm font-medium transition"
+        >
+          <MessageSquare className="h-4 w-4" />
+          {detailsOpen
+            ? t("engagement.feedback.detailsHide")
+            : t("engagement.feedback.detailsToggle")}
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 transition-transform",
+              detailsOpen && "rotate-180"
+            )}
+            aria-hidden="true"
           />
-        </div>
+        </button>
 
-        <div className="grid gap-3 md:grid-cols-2">
-          {!isVisitor && (
+        {detailsOpen && (
+          <div id={detailsId} className="article-feedback-details grid gap-3">
             <div>
-              <label className="sr-only" htmlFor={visitorNameId}>
-                {t("engagement.feedback.namePlaceholder")}
+              <label className="sr-only" htmlFor={messageId}>
+                {t("engagement.feedback.messagePlaceholder")}
               </label>
-              <Input
-                id={visitorNameId}
-                value={visitorName}
-                onChange={(event) => setVisitorName(event.target.value)}
-                maxLength={80}
-                placeholder={t("engagement.feedback.namePlaceholder")}
-                autoComplete="name"
+              <Textarea
+                id={messageId}
+                value={message}
+                onChange={(event) => setMessage(event.target.value)}
+                maxLength={600}
+                placeholder={t("engagement.feedback.messagePlaceholder")}
                 aria-describedby={statusId}
-                className="border-sky-200/15 bg-slate-950/35 text-white placeholder:text-slate-500"
+                className="article-feedback-field min-h-24"
               />
             </div>
-          )}
-          <div>
-            <label className="sr-only" htmlFor={replyEmailId}>
-              {t("engagement.feedback.emailPlaceholder")}
-            </label>
-            <Input
-              id={replyEmailId}
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              value={replyEmail}
-              onChange={(event) => setReplyEmail(event.target.value)}
-              placeholder={t("engagement.feedback.emailPlaceholder")}
-              aria-describedby={statusId}
-              className="border-sky-200/15 bg-slate-950/35 text-white placeholder:text-slate-500"
-            />
+
+            <div className="grid gap-3 md:grid-cols-2">
+              {!isVisitor && (
+                <div>
+                  <label className="sr-only" htmlFor={visitorNameId}>
+                    {t("engagement.feedback.namePlaceholder")}
+                  </label>
+                  <Input
+                    id={visitorNameId}
+                    value={visitorName}
+                    onChange={(event) => setVisitorName(event.target.value)}
+                    maxLength={80}
+                    placeholder={t("engagement.feedback.namePlaceholder")}
+                    autoComplete="name"
+                    aria-describedby={statusId}
+                    className="article-feedback-field"
+                  />
+                </div>
+              )}
+              <div>
+                <label className="sr-only" htmlFor={replyEmailId}>
+                  {t("engagement.feedback.emailPlaceholder")}
+                </label>
+                <Input
+                  id={replyEmailId}
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  value={replyEmail}
+                  onChange={(event) => setReplyEmail(event.target.value)}
+                  placeholder={t("engagement.feedback.emailPlaceholder")}
+                  aria-describedby={statusId}
+                  className="article-feedback-field"
+                />
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p
             id={statusId}
-            className="min-h-5 text-xs leading-5 text-slate-500"
+            className="min-h-5 text-xs leading-5"
             aria-live="polite"
           >
             {feedback.error ? (
-              <span className="text-red-200">
+              <span className="article-feedback-error">
                 {feedback.error.message.includes("Too many")
                   ? t("engagement.feedback.rateLimited")
                   : t("engagement.feedback.error")}
               </span>
             ) : sent ? (
-              <span className="text-sky-200">{t("engagement.feedback.success")}</span>
+              <span className="article-feedback-success">{t("engagement.feedback.success")}</span>
             ) : (
-              t("engagement.feedback.privacy")
+              t("engagement.feedback.quickHint")
             )}
           </p>
           <Button
             type="submit"
+            variant={type ? "default" : "outline"}
             disabled={!type || feedback.isPending}
           >
             {feedback.isPending ? (
