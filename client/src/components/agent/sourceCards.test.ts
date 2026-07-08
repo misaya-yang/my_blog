@@ -10,6 +10,12 @@ import {
   getSourcePreviewTitle,
   getVisibleSourceCards,
 } from "./agentSourceSummary";
+import {
+  getSourceLinkAction,
+  getSourceSectionLabel,
+  isCurrentPathSource,
+  normalizePathWithoutHash,
+} from "./AgentSourceCards";
 import { markAssistantMessageRecoverable, toChatMessage } from "./messageState";
 import type { SourceCard } from "./types";
 
@@ -274,5 +280,51 @@ describe("Agent source cards", () => {
         "Site"
       )
     ).toBe("Site");
+  });
+
+  it("derives source section labels for blog and session context cards", () => {
+    const t = (key: string) =>
+      ({
+        "agent.sources.context": "Session context",
+        "agent.sources.site": "Site",
+      })[key] ?? key;
+
+    expect(getSourceSectionLabel(source, t)).toBe("3. Exact Invariants");
+    expect(getSourceSectionLabel({ ...source, heading: undefined }, t)).toBe(
+      "IsoHC: Fixed-Vector Isometric Residual Mixing"
+    );
+    expect(
+      getSourceSectionLabel(
+        {
+          ...source,
+          sourceType: "user_context",
+          heading: undefined,
+          postTitle: "",
+        },
+        t
+      )
+    ).toBe("Session context");
+  });
+
+  it("detects current-path sources without query or hash state", () => {
+    expect(
+      isCurrentPathSource(
+        source,
+        "/post/isohc-fixed-vector-isometric-residual-mixing"
+      )
+    ).toBe(true);
+    expect(isCurrentPathSource(source, "/archive")).toBe(false);
+  });
+
+  it("keeps same-page source links as scroll actions", () => {
+    expect(normalizePathWithoutHash("/post/current?view=read#section")).toBe(
+      "/post/current"
+    );
+    expect(getSourceLinkAction("/post/current#section", "/post/current")).toBe(
+      "scroll"
+    );
+    expect(getSourceLinkAction("/post/next#section", "/post/current")).toBe(
+      "navigate"
+    );
   });
 });
