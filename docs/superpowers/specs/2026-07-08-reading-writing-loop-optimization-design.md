@@ -4,6 +4,19 @@ Date: 2026-07-08
 Status: Proposed
 Primary track: Reading and writing feedback loop first
 
+## Spec Package
+
+This overview is the parent spec. The complete review package is split into focused child specs so implementation can start later without mixing unrelated concerns:
+
+- [UI visual contract](./2026-07-08-ui-visual-contract-design.md)
+- [Article reading and Markdown rendering](./2026-07-08-article-reading-rendering-design.md)
+- [Agent reading companion](./2026-07-08-agent-reading-companion-design.md)
+- [Reader signal backlog and owner cockpit](./2026-07-08-reader-signal-owner-cockpit-design.md)
+- [Content quality and writing style system](./2026-07-08-content-quality-style-system-design.md)
+- [Engineering simplification and release gates](./2026-07-08-engineering-release-gates-design.md)
+
+The intended review flow is: read this parent spec first, then inspect the child specs that match the highest-risk area. No implementation should begin until this package is reviewed.
+
 ## Summary
 
 This project should be treated as a personal AI research archive with a grounded reading assistant and an owner publishing cockpit, not as a generic SaaS dashboard or static portfolio. The next optimization pass should make the product better in one loop:
