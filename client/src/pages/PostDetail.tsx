@@ -798,7 +798,7 @@ export default function PostDetail() {
 
       <SiteHeader backHref="/" backLabel={t("nav.back")} compact />
 
-      <div className="paper-reader-container container relative z-10 max-w-7xl px-4 py-8 sm:px-6 md:py-12">
+      <main className="paper-reader-container container relative z-10 max-w-7xl px-4 py-8 sm:px-6 md:py-12">
         <div
           className="paper-reader-cockpit"
           data-toc-rail-min-width={ARTICLE_READER_LAYOUT.tocRailMinViewportPx}
@@ -1335,7 +1335,7 @@ export default function PostDetail() {
             </div>
           </aside>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

@@ -154,6 +154,7 @@ export function SiteHeader({
       key={href}
       href={href}
       className={cn("nav-ink", active === key && "nav-ink-active")}
+      aria-current={active === key ? "page" : undefined}
     >
       {label}
     </Link>
@@ -195,6 +196,7 @@ export function SiteHeader({
                 "nav-ink gap-2",
                 active === "write" && "nav-ink-active"
               )}
+              aria-current={active === "write" ? "page" : undefined}
             >
               <Edit className="h-4 w-4" />
               <span className="hidden sm:inline">{t("nav.write")}</span>
@@ -206,6 +208,7 @@ export function SiteHeader({
               "nav-icon-button",
               active === "search" && "nav-icon-button-active"
             )}
+            aria-current={active === "search" ? "page" : undefined}
             aria-label={t("nav.search")}
             title={t("nav.search")}
           >
@@ -551,6 +554,7 @@ export function AuthRequiredState({
       <SpaceBackdrop subtle />
       <SiteHeader active="login" backHref="/" backLabel={backLabel} compact />
       <main className="auth-required-shell container relative z-10 px-4 sm:px-6">
+        <h1 className="sr-only">{title}</h1>
         <EmptyState
           icon={icon}
           title={title}

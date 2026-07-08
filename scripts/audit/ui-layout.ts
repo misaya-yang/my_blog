@@ -68,7 +68,37 @@ async function main() {
         name: "desktop",
         width: 1440,
         height: 900,
-      })
+      }),
+      await inspectAccessibilityRoute(
+        browser,
+        { name: "a11y-home-320", width: 320, height: 844 },
+        "/",
+        "main"
+      ),
+      await inspectAccessibilityRoute(
+        browser,
+        { name: "a11y-post-320", width: 320, height: 844 },
+        "/post/goal-harness-agent-phase-protocol",
+        ".article-prose"
+      ),
+      await inspectAccessibilityRoute(
+        browser,
+        { name: "a11y-search-zero-320", width: 320, height: 844 },
+        "/search?q=zzzz-no-hit-ui-audit",
+        ".search-recovery-primary"
+      ),
+      await inspectAccessibilityRoute(
+        browser,
+        { name: "a11y-manage-320", width: 320, height: 844 },
+        "/manage",
+        "main"
+      ),
+      await inspectAccessibilityRoute(
+        browser,
+        { name: "a11y-manage-agent-320", width: 320, height: 844 },
+        "/manage/agent",
+        "main"
+      )
     );
   } finally {
     await browser.close();
@@ -651,6 +681,111 @@ async function inspectAgentAnswerFixture(
         sourceSummaryBottom <= composerTop,
       composerReachable:
         composerTop < viewportHeight && composerBottom <= viewportHeight + 1,
+    },
+  };
+}
+
+async function inspectAccessibilityRoute(
+  browser: BrowserLike,
+  viewport: Viewport,
+  routePath: string,
+  selector: string
+) {
+  const page = await newMeasuredPage(browser, viewport);
+  await gotoAndWait(page, `${baseUrl}${routePath}`, selector);
+
+  const measurements = await page.evaluate(() => {
+    const mainCount = document.querySelectorAll("main, [role='main']").length;
+    const primaryHeadingCount = document.querySelectorAll(
+      "h1, [role='heading'][aria-level='1']"
+    ).length;
+    const focusableSelector = [
+      "a[href]",
+      "button:not([disabled])",
+      "input:not([disabled])",
+      "textarea:not([disabled])",
+      "select:not([disabled])",
+      "[tabindex]:not([tabindex='-1'])",
+    ].join(",");
+    const focusableCount = Array.from(
+      document.querySelectorAll<HTMLElement>(focusableSelector)
+    ).filter(element => element.getAttribute("aria-hidden") !== "true").length;
+    const unnamedIconOnlyButtonCount = Array.from(
+      document.querySelectorAll<HTMLButtonElement>("button")
+    ).filter(button => isIconOnlyButton(button) && !hasAccessibleName(button))
+      .length;
+    const timeWithoutDateTimeCount = Array.from(
+      document.querySelectorAll<HTMLTimeElement>("time")
+    ).filter(time => !time.dateTime).length;
+    const activeNavWithoutCurrentCount = Array.from(
+      document.querySelectorAll<HTMLElement>(".nav-ink-active, .nav-icon-button-active")
+    ).filter(element => element.getAttribute("aria-current") !== "page").length;
+
+    return {
+      mainCount,
+      primaryHeadingCount,
+      focusableCount,
+      unnamedIconOnlyButtonCount,
+      timeWithoutDateTimeCount,
+      activeNavWithoutCurrentCount,
+      reducedMotionRulePresent: hasReducedMotionRule(),
+      bodyScrollWidth: document.body.scrollWidth,
+      documentScrollWidth: document.documentElement.scrollWidth,
+      viewportWidth: window.innerWidth,
+    };
+
+    function isIconOnlyButton(button: HTMLButtonElement) {
+      const text = (button.textContent ?? "").replace(/\s+/g, "").trim();
+      if (text.length > 0) return false;
+      return Boolean(button.querySelector("svg, img, [aria-hidden='true']"));
+    }
+
+    function hasAccessibleName(element: HTMLElement) {
+      if (element.getAttribute("aria-label")?.trim()) return true;
+      if (element.getAttribute("title")?.trim()) return true;
+      const labelledBy = element.getAttribute("aria-labelledby");
+      if (!labelledBy) return false;
+      return labelledBy
+        .split(/\s+/)
+        .some(id => document.getElementById(id)?.textContent?.trim());
+    }
+
+    function hasReducedMotionRule() {
+      for (const sheet of Array.from(document.styleSheets)) {
+        try {
+          for (const rule of Array.from(sheet.cssRules)) {
+            if (rule.cssText.includes("prefers-reduced-motion")) return true;
+          }
+        } catch {
+          continue;
+        }
+      }
+      return false;
+    }
+  });
+
+  await page.close();
+
+  return {
+    route: `${routePath}#accessibility-baseline`,
+    viewport,
+    measurements,
+    checks: {
+      hasMainLandmark: Number(measurements.mainCount) >= 1,
+      hasSinglePrimaryHeading: Number(measurements.primaryHeadingCount) === 1,
+      focusableControlsAvailable: Number(measurements.focusableCount) > 0,
+      iconOnlyButtonsHaveNames:
+        Number(measurements.unnamedIconOnlyButtonCount) === 0,
+      timeElementsHaveDateTime:
+        Number(measurements.timeWithoutDateTimeCount) === 0,
+      activeNavigationUsesAriaCurrent:
+        Number(measurements.activeNavWithoutCurrentCount) === 0,
+      reducedMotionRulePresent: Boolean(measurements.reducedMotionRulePresent),
+      noHorizontalOverflowAt320:
+        Number(measurements.bodyScrollWidth) <=
+          Number(measurements.viewportWidth) &&
+        Number(measurements.documentScrollWidth) <=
+          Number(measurements.viewportWidth),
     },
   };
 }
