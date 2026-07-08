@@ -347,10 +347,10 @@ export function AgentPanel({
                 )}
                 <div
                   className={cn(
-                    "agent-message-bubble max-w-[86%] rounded-md px-3.5 py-2.5 text-sm leading-6",
+                    "agent-message-bubble rounded-md px-3.5 py-2.5 text-sm leading-6",
                     message.role === "user"
-                      ? "border border-slate-600/50 bg-slate-100/10 text-slate-100"
-                      : "border border-slate-700/70 bg-slate-950/35 text-slate-200"
+                      ? "agent-message-bubble-user max-w-[82%] border border-slate-600/50 bg-slate-100/10 text-slate-100"
+                      : "agent-message-bubble-assistant w-full max-w-[calc(100%-2.75rem)] border border-slate-700/70 bg-slate-950/35 text-slate-200"
                   )}
                 >
                   {message.role === "assistant" ? (

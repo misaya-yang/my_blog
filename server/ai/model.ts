@@ -73,7 +73,10 @@ export const defaultAgentModel: AgentModel = {
       ...buildSourceCards(sources),
       ...buildContextSourceCards(contextSources),
     ];
-    const answer = normalizeAgentAnswer(parsed, sourceCards);
+    const answer = normalizeAgentAnswer(parsed, sourceCards, {
+      message: input.message,
+      routeContext: input.routeContext,
+    });
 
     return {
       answer,
@@ -131,7 +134,11 @@ export const defaultAgentModel: AgentModel = {
     ];
     const answer = normalizeAgentAnswer(
       parseMarkdownAnswerWithSourceMarker(result.content.trim()),
-      sourceCards
+      sourceCards,
+      {
+        message: input.message,
+        routeContext: input.routeContext,
+      }
     );
 
     return {
@@ -187,6 +194,7 @@ function buildJsonPrompt(
     "answerType must be one of: direct, explanation, comparison, reading_path, refusal.",
     "sourceIds must be copied exactly from the source identifiers above.",
     "answerMarkdown may contain Markdown and math using $...$ or $$...$$ delimiters.",
+    "relatedQuestions must be concise reading-task follow-ups in the user's language, not generic chat suggestions.",
   ].join("\n");
 }
 
@@ -412,7 +420,11 @@ function splitSourceMarkerIds(rawSourceIds: string) {
 
 export function normalizeAgentAnswer(
   parsed: Partial<AgentAnswer>,
-  sourceCards: AgentSourceCard[]
+  sourceCards: AgentSourceCard[],
+  options: {
+    message?: string;
+    routeContext?: AgentRouteContext;
+  } = {}
 ): AgentModelResult["answer"] {
   const sourceIds = sourceCards.map(source => source.sourceId);
   const hasSources = sourceCards.length > 0;
@@ -441,7 +453,8 @@ export function normalizeAgentAnswer(
     sourceCards: finalSourceCards,
     relatedQuestions: normalizeRelatedQuestions(
       parsed.relatedQuestions,
-      finalSourceCards
+      finalSourceCards,
+      options
     ),
     confidence: parsed.confidence ?? "medium",
     refusalReason: undefined,
@@ -837,23 +850,58 @@ export function buildContextSourceCards(
 
 function normalizeRelatedQuestions(
   relatedQuestions: unknown,
-  sourceCards: AgentSourceCard[]
+  sourceCards: AgentSourceCard[],
+  options: {
+    message?: string;
+    routeContext?: AgentRouteContext;
+  } = {}
 ) {
-  const explicit = Array.isArray(relatedQuestions)
-    ? relatedQuestions.filter(isNonEmptyString)
-    : [];
+  const explicit = normalizeExplicitRelatedQuestions(relatedQuestions);
   if (explicit.length > 0) return explicit.slice(0, 4);
 
   const primary =
-    sourceCards.find(source => source.postSlug)?.postTitle ?? "this topic";
+    sourceCards.find(source => source.postSlug)?.postTitle?.trim() ?? "";
+  const zh = prefersChinese(options.message ?? "", options.routeContext?.locale);
+
+  if (zh) {
+    const primaryTask = primary
+      ? `继续梳理《${primary}》的核心论证。`
+      : "继续梳理这个主题的核心论证。";
+    return [
+      primaryTask,
+      "把这篇文章放进一条公开阅读路径。",
+      "找出下一篇应连读的公开笔记。",
+    ];
+  }
+
+  const primaryTask = primary
+    ? `Continue with the core argument of ${primary}.`
+    : "Continue with the core argument of this topic.";
   return [
-    `What is the core argument of ${primary}?`,
-    "What should I read next on this blog?",
+    primaryTask,
+    "Place this note inside a source-grounded reading path.",
+    "Find the next related public note to read.",
   ];
 }
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
+}
+
+function normalizeExplicitRelatedQuestions(relatedQuestions: unknown) {
+  if (!Array.isArray(relatedQuestions)) return [];
+
+  const seen = new Set<string>();
+  const normalized: string[] = [];
+  for (const question of relatedQuestions) {
+    if (!isNonEmptyString(question)) continue;
+    const value = question.replace(/\s+/g, " ").trim();
+    const key = value.toLocaleLowerCase();
+    if (!value || seen.has(key)) continue;
+    seen.add(key);
+    normalized.push(value);
+  }
+  return normalized;
 }
 
 function prefersChinese(message: string, locale?: string) {

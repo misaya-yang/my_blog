@@ -557,6 +557,14 @@
     overflow-wrap: anywhere;
   }
 
+  .agent-message-bubble-assistant {
+    flex: 1 1 auto;
+  }
+
+  .agent-message-bubble-user {
+    flex: 0 1 auto;
+  }
+
   .agent-message-bubble .prose {
     color: var(--agent-text);
   }
@@ -611,6 +619,7 @@
 
   .agent-source-list {
     max-height: min(35vh, 20rem);
+    max-width: 100%;
     overscroll-behavior: contain;
   }
 
@@ -643,6 +652,35 @@
 
   .agent-source-detail summary {
     color: var(--agent-faint);
+  }
+
+  .agent-source-detail p,
+  .agent-related-button span {
+    overflow-wrap: anywhere;
+  }
+
+  .agent-related-tasks {
+    overflow-x: hidden;
+  }
+
+  .agent-related-title {
+    color: var(--agent-faint);
+  }
+
+  .agent-related-button {
+    max-width: 100%;
+    background: var(--agent-control-bg);
+  }
+
+  .agent-related-button:hover,
+  .agent-related-button:focus-visible {
+    background: var(--agent-control-hover);
+  }
+
+  @media (min-width: 700px) {
+    .agent-related-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   @media (max-width: 640px) {

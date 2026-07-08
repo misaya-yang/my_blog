@@ -1,4 +1,6 @@
-import { describe, expect, it } from "vitest";
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it, vi } from "vitest";
 import {
   formatSourceExcerpt,
   getSourceAnchorId,
@@ -11,6 +13,7 @@ import {
   getVisibleSourceCards,
 } from "./agentSourceSummary";
 import {
+  AgentSourceCards,
   getSourceLinkAction,
   getSourceSectionLabel,
   isCurrentPathSource,
@@ -18,6 +21,37 @@ import {
 } from "./AgentSourceCards";
 import { markAssistantMessageRecoverable, toChatMessage } from "./messageState";
 import type { SourceCard } from "./types";
+
+vi.mock("@/contexts/LanguageContext", () => ({
+  useLanguage: () => ({
+    t: (key: string, values?: Record<string, string | number>) => {
+      if (key === "agent.sources.summary") return `${values?.count} sources`;
+      if (key === "agent.sources.previewMore") return `+${values?.count}`;
+      return (
+        (
+          {
+            "agent.sources.view": "View sources",
+            "agent.sources.hide": "Hide sources",
+            "agent.sources.site": "Site",
+            "agent.sources.blog": "Blog",
+            "agent.sources.context": "Session context",
+            "agent.sources.currentPage": "Current page",
+            "agent.sources.open": "Open source",
+            "agent.sources.details": "Excerpt and match",
+            "agent.sources.reason": "Match basis",
+          } satisfies Record<string, string>
+        )[key] ?? key
+      );
+    },
+  }),
+}));
+
+vi.mock("wouter", () => ({
+  useLocation: () => [
+    "/post/isohc-fixed-vector-isometric-residual-mixing",
+    () => undefined,
+  ],
+}));
 
 const source: SourceCard = {
   sourceId: "isohc-fixed-vector-isometric-residual-mixing:4",
@@ -247,6 +281,23 @@ describe("Agent source cards", () => {
     expect(getVisibleSourceCards(sources, false)).toHaveLength(2);
     expect(getVisibleSourceCards(sources, true)).toHaveLength(5);
     expect(getHiddenSourceCount(sources)).toBe(3);
+  });
+
+  it("renders collapsed source summary with controlled expanded list target", () => {
+    const sources = Array.from({ length: 5 }, (_, index) => ({
+      ...source,
+      sourceId: `source-${index}`,
+    }));
+    const html = renderToStaticMarkup(
+      React.createElement(AgentSourceCards, { sources })
+    );
+
+    expect(html).toContain("5 sources");
+    expect(html).toContain("View sources");
+    expect(html).toContain('aria-expanded="false"');
+    expect(html).toContain("aria-controls=");
+    expect(html).toContain("+3");
+    expect(html).not.toContain("agent-source-list");
   });
 
   it("keeps source preview titles compact and stable", () => {

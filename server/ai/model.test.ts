@@ -94,6 +94,75 @@ describe("agent answer quality normalization", () => {
     expect(answer.relatedQuestions.length).toBeGreaterThan(0);
   });
 
+  it("builds English reading-task follow-ups when the model omits them", () => {
+    const answer = normalizeAgentAnswer(
+      {
+        answerMarkdown: "The article explains the harness boundary.",
+        sourceIds: [harnessSource.sourceId],
+      },
+      [harnessSource],
+      {
+        message: "Explain the core abstraction.",
+        routeContext: {
+          path: "/post/agent-harness-engine",
+          routeType: "post",
+          locale: "en",
+        },
+      }
+    );
+
+    expect(answer.relatedQuestions).toEqual([
+      "Continue with the core argument of Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context.",
+      "Place this note inside a source-grounded reading path.",
+      "Find the next related public note to read.",
+    ]);
+  });
+
+  it("builds Chinese reading-task follow-ups when the model omits them", () => {
+    const answer = normalizeAgentAnswer(
+      {
+        answerMarkdown: "这篇文章解释了 Harness 边界。",
+        sourceIds: [harnessSource.sourceId],
+      },
+      [harnessSource],
+      {
+        message: "解释这篇文章里的核心抽象。",
+        routeContext: {
+          path: "/post/agent-harness-engine",
+          routeType: "post",
+          locale: "zh",
+        },
+      }
+    );
+
+    expect(answer.relatedQuestions).toEqual([
+      "继续梳理《Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context》的核心论证。",
+      "把这篇文章放进一条公开阅读路径。",
+      "找出下一篇应连读的公开笔记。",
+    ]);
+  });
+
+  it("trims and deduplicates explicit related questions", () => {
+    const answer = normalizeAgentAnswer(
+      {
+        answerMarkdown: "Harness engines make agent evaluation repeatable.",
+        sourceIds: [harnessSource.sourceId],
+        relatedQuestions: [
+          "  Compare this with Agent Loop.  ",
+          "Compare this with Agent Loop.",
+          "",
+          "Build a reading path.",
+        ],
+      },
+      [harnessSource]
+    );
+
+    expect(answer.relatedQuestions).toEqual([
+      "Compare this with Agent Loop.",
+      "Build a reading path.",
+    ]);
+  });
+
   it("removes visible model work notes from the answer body", () => {
     const answer = normalizeAgentAnswer(
       {

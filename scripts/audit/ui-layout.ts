@@ -340,6 +340,12 @@ async function inspectAgentAnswerFixture(
         sourceTotal: 0,
         sourceChipCount: 0,
         sourceListCount: 0,
+        expandedSourceClientWidth: null,
+        expandedSourceScrollWidth: null,
+        expandedSourceClientHeight: null,
+        expandedSourceScrollHeight: null,
+        relatedClientWidth: null,
+        relatedScrollWidth: null,
         sourceToggleExpanded: null,
         panelTop: null,
         panelBottom: null,
@@ -358,7 +364,7 @@ async function inspectAgentAnswerFixture(
       <div class="space-y-4">
         <article class="agent-message-row flex min-w-0 gap-3 justify-start">
           <span class="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-md border border-slate-700 bg-slate-950/55 text-slate-300" aria-hidden="true"></span>
-          <div class="agent-message-bubble max-w-[86%] rounded-md border border-slate-700/70 bg-slate-950/35 px-3.5 py-2.5 text-sm leading-6 text-slate-200">
+          <div class="agent-message-bubble agent-message-bubble-assistant w-full max-w-[calc(100%-2.75rem)] rounded-md border border-slate-700/70 bg-slate-950/35 px-3.5 py-2.5 text-sm leading-6 text-slate-200">
             <div class="prose prose-sm prose-invert max-w-none prose-p:my-2 prose-li:my-1">
               <p class="agent-fixture-answer-start">这是一段足够长的伴读回答，用于验证回答完成后读者仍然先看到答案，而不是被来源区块推到面板底部。它覆盖中文长句、英文术语 RLHF / retrieval / source grounding，以及不会自动产生横向滚动的超长词 longretrievalgroundingcitationidentifierwithoutspaces。</p>
               <p>第二段继续模拟真实回答内容，包含列表、解释和小结。布局要求是正文仍然可读，来源入口保持可追溯但默认收起，输入框在当前视口内可继续使用。</p>
@@ -374,6 +380,17 @@ async function inspectAgentAnswerFixture(
                   </div>
                 </div>
                 <button type="button" aria-expanded="false" class="agent-source-toggle inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-slate-700 bg-white/[0.025] px-2.5 py-1.5 text-xs font-medium text-slate-300">查看来源</button>
+              </div>
+            </div>
+            <div class="agent-related-tasks mt-3 border-t border-slate-800 pt-3">
+              <div class="agent-related-title mb-2 flex items-center gap-1.5 text-[0.72rem] font-semibold text-slate-500">继续阅读</div>
+              <div class="agent-related-list grid gap-1.5">
+                <button type="button" class="agent-related-button inline-flex min-w-0 items-center justify-between gap-2 rounded-md border border-slate-700 bg-white/[0.025] px-2.5 py-1.5 text-left text-xs leading-5 text-slate-300">
+                  <span class="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">把这篇文章放进一条公开阅读路径。</span>
+                </button>
+                <button type="button" class="agent-related-button inline-flex min-w-0 items-center justify-between gap-2 rounded-md border border-slate-700 bg-white/[0.025] px-2.5 py-1.5 text-left text-xs leading-5 text-slate-300">
+                  <span class="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">继续梳理 longfollowupreadingtaskwithoutspacesandwithoutscrolling。</span>
+                </button>
               </div>
             </div>
           </div>
@@ -395,6 +412,41 @@ async function inspectAgentAnswerFixture(
     const sourceToggle = document.querySelector<HTMLElement>(
       ".agent-source-toggle"
     );
+    const collapsedSourceListCount =
+      document.querySelectorAll(".agent-source-list").length;
+    const relatedTasks = document.querySelector<HTMLElement>(
+      ".agent-related-tasks"
+    );
+    let expandedSourceClientWidth: number | null = null;
+    let expandedSourceScrollWidth: number | null = null;
+    let expandedSourceClientHeight: number | null = null;
+    let expandedSourceScrollHeight: number | null = null;
+    if (sources) {
+      const expandedList = document.createElement("div");
+      expandedList.className =
+        "agent-source-list mt-2 grid gap-2 overflow-y-auto overflow-x-hidden pr-1";
+      expandedList.innerHTML = Array.from(
+        { length: 8 },
+        (_, index) => `
+          <div class="agent-source-card rounded-md border border-slate-700/80 bg-slate-950/30 px-2.5 py-2">
+            <div class="flex min-w-0 items-start gap-2.5">
+              <span class="agent-source-icon mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-md border" aria-hidden="true"></span>
+              <div class="min-w-0 flex-1">
+                <div class="truncate text-sm font-semibold text-slate-100">来源 ${index + 1}：longsourceheadingwithoutspacesandwithoutlayoutoverflow</div>
+                <details class="agent-source-detail mt-1">
+                  <summary class="cursor-pointer list-none text-[0.7rem] font-medium text-slate-500">摘录与匹配依据</summary>
+                  <p class="mt-1 text-xs leading-5 text-slate-500">这是一段展开来源摘录，包含 longsourceexcerptidentifierwithoutspacesandwithwrappingrequirements。</p>
+                </details>
+              </div>
+            </div>
+          </div>`
+      ).join("");
+      sources.appendChild(expandedList);
+      expandedSourceClientWidth = expandedList.clientWidth;
+      expandedSourceScrollWidth = expandedList.scrollWidth;
+      expandedSourceClientHeight = expandedList.clientHeight;
+      expandedSourceScrollHeight = expandedList.scrollHeight;
+    }
     const composer = document.querySelector<HTMLElement>(
       ".agent-liquid-panel form"
     );
@@ -416,9 +468,15 @@ async function inspectAgentAnswerFixture(
       messageBubbleScrollWidth: messageBubble?.scrollWidth ?? null,
       sourceClientWidth: sources?.clientWidth ?? null,
       sourceScrollWidth: sources?.scrollWidth ?? null,
+      expandedSourceClientWidth,
+      expandedSourceScrollWidth,
+      expandedSourceClientHeight,
+      expandedSourceScrollHeight,
       sourceTotal: Number(sources?.dataset.sourceTotal ?? 0),
       sourceChipCount: document.querySelectorAll(".agent-source-chip").length,
-      sourceListCount: document.querySelectorAll(".agent-source-list").length,
+      sourceListCount: collapsedSourceListCount,
+      relatedClientWidth: relatedTasks?.clientWidth ?? null,
+      relatedScrollWidth: relatedTasks?.scrollWidth ?? null,
       sourceToggleExpanded:
         sourceToggle?.getAttribute("aria-expanded") ?? null,
       panelTop: panelRect.top,
@@ -459,6 +517,22 @@ async function inspectAgentAnswerFixture(
   const sourceScrollWidth = Number(
     measurements.sourceScrollWidth ?? Infinity
   );
+  const expandedSourceClientWidth = Number(
+    measurements.expandedSourceClientWidth ?? 0
+  );
+  const expandedSourceScrollWidth = Number(
+    measurements.expandedSourceScrollWidth ?? Infinity
+  );
+  const expandedSourceClientHeight = Number(
+    measurements.expandedSourceClientHeight ?? 0
+  );
+  const expandedSourceScrollHeight = Number(
+    measurements.expandedSourceScrollHeight ?? 0
+  );
+  const relatedClientWidth = Number(measurements.relatedClientWidth ?? 0);
+  const relatedScrollWidth = Number(
+    measurements.relatedScrollWidth ?? Infinity
+  );
   const answerTop = Number(measurements.answerTop ?? Infinity);
   const answerBottom = Number(measurements.answerBottom ?? Infinity);
   const scrollerTop = Number(measurements.scrollerTop ?? -Infinity);
@@ -487,6 +561,13 @@ async function inspectAgentAnswerFixture(
         Number(measurements.sourceTotal) === 5 &&
         Number(measurements.sourceListCount) === 0 &&
         measurements.sourceToggleExpanded === "false",
+      expandedSourcesBounded:
+        expandedSourceScrollHeight > expandedSourceClientHeight &&
+        expandedSourceClientHeight <= Math.min(viewportHeight * 0.35, 320) + 1,
+      expandedSourcesNoHorizontalOverflow:
+        expandedSourceScrollWidth <= expandedSourceClientWidth + 1,
+      relatedTasksNoHorizontalOverflow:
+        relatedScrollWidth <= relatedClientWidth + 1,
       sourceSummaryCompact:
         Number(measurements.sourceChipCount) <= 3 &&
         sourceSummaryBottom <= composerTop,

@@ -1,4 +1,4 @@
-import React, { useState, type MouseEvent } from "react";
+import React, { useId, useState, type MouseEvent } from "react";
 import { ExternalLink, FileText } from "lucide-react";
 import { useLocation } from "wouter";
 
@@ -21,6 +21,7 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
   const { t } = useLanguage();
   const [location, navigate] = useLocation();
   const [expanded, setExpanded] = useState(false);
+  const sourceListId = useId();
   const currentPath = normalizePathWithoutHash(location);
   const visibleSources = getVisibleSourceCards(sources, expanded);
   const previewSources = getVisibleSourceCards(sources, false);
@@ -49,6 +50,7 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
         <button
           type="button"
           aria-expanded={expanded}
+          aria-controls={sourceListId}
           onClick={() => setExpanded(value => !value)}
           className="agent-source-toggle inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-slate-700 bg-white/[0.025] px-2.5 py-1.5 text-xs font-medium text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 hover:text-slate-100"
         >
@@ -56,7 +58,10 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
         </button>
       </div>
       {expanded && (
-        <div className="agent-source-list mt-2 grid gap-2 overflow-y-auto pr-1">
+        <div
+          id={sourceListId}
+          className="agent-source-list mt-2 grid gap-2 overflow-y-auto overflow-x-hidden pr-1"
+        >
           {visibleSources.map(source => {
             const title = source.postTitle || t("agent.sources.site");
             const hasBlogLink =

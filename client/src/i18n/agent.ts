@@ -446,8 +446,8 @@ const agent: TranslationDict = {
     zh: "保存回答与来源卡片",
   },
   "agent.related.title": {
-    en: "Related questions",
-    zh: "相关问题",
+    en: "Continue reading",
+    zh: "继续阅读",
   },
   "agent.quota.remaining": {
     en: "{remaining} of {limit} left today",
