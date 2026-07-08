@@ -86,6 +86,23 @@ const post: TranslationDict = {
   "post.series.next": { en: "Next in series", zh: "系列下一篇" },
   "post.series.track": { en: "View path", zh: "查看路径" },
   "post.series.continuity": { en: "Series continuity", zh: "系列延续" },
+  "post.handoff.kicker": { en: "After reading", zh: "读完之后" },
+  "post.handoff.title": {
+    en: "Choose the next useful step",
+    zh: "选择下一步",
+  },
+  "post.handoff.body": {
+    en: "Continue the path, open a nearby note, or ask the reader to compress the argument.",
+    zh: "继续当前路径、打开相邻笔记，或让伴读压缩论证主线。",
+  },
+  "post.handoff.actions": { en: "Next reading actions", zh: "下一步阅读动作" },
+  "post.handoff.nextInSeries": {
+    en: "Next in series",
+    zh: "系列下一篇",
+  },
+  "post.handoff.nextArticle": { en: "Next article", zh: "下一篇" },
+  "post.handoff.continueTrack": { en: "Continue path", zh: "继续路径" },
+  "post.handoff.related": { en: "Related note", zh: "相关笔记" },
   "post.discoveryTitle": { en: "Continue reading", zh: "继续阅读" },
   "post.previous": { en: "Previous", zh: "上一篇" },
   "post.next": { en: "Next", zh: "下一篇" },

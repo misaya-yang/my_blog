@@ -124,10 +124,82 @@ type SeriesContext = {
   isFirst: boolean;
 };
 
+export type ArticleCompletionLink = {
+  kind: "series-next" | "post-next" | "track" | "related";
+  href: string;
+  label: string;
+  title: string;
+  primary: boolean;
+};
+
 const articleAgentPromptKeys = [
   "agent.prompts.postAbstraction",
   "agent.prompts.nextReading",
 ];
+
+export function buildArticleCompletionLinks({
+  seriesNext,
+  postNext,
+  related = [],
+  continueTrackHref,
+  continueTrackLabel,
+  t,
+}: {
+  seriesNext?: PostLink | null;
+  postNext?: PostLink | null;
+  related?: PostLink[] | null;
+  continueTrackHref: string;
+  continueTrackLabel: string;
+  t: Translate;
+}): ArticleCompletionLink[] {
+  const links: ArticleCompletionLink[] = [];
+  const usedSlugs = new Set<string>();
+  let hasPrimary = false;
+
+  const addArticleLink = (
+    kind: ArticleCompletionLink["kind"],
+    label: string,
+    link?: PostLink | null,
+    primary = false
+  ) => {
+    if (!link || usedSlugs.has(link.slug)) return;
+    links.push({
+      kind,
+      href: `/post/${link.slug}`,
+      label,
+      title: link.title,
+      primary,
+    });
+    usedSlugs.add(link.slug);
+    hasPrimary ||= primary;
+  };
+
+  addArticleLink(
+    "series-next",
+    t("post.handoff.nextInSeries"),
+    seriesNext,
+    true
+  );
+
+  if (!hasPrimary) {
+    addArticleLink("post-next", t("post.handoff.nextArticle"), postNext, true);
+  }
+
+  links.push({
+    kind: "track",
+    href: continueTrackHref,
+    label: t("post.handoff.continueTrack"),
+    title: continueTrackLabel,
+    primary: !hasPrimary,
+  });
+
+  for (const link of related ?? []) {
+    if (links.length >= 3) break;
+    addArticleLink("related", t("post.handoff.related"), link);
+  }
+
+  return links.slice(0, 3);
+}
 
 function buildArticleEntryItems(
   post: ArticlePostModel,
@@ -643,9 +715,10 @@ export default function PostDetail() {
   const secondaryEntryItems = articleEntryItems.filter(
     item => item.key !== primaryEntryItem?.key
   );
+  const articlePostContext = postContext as PostContextModel | undefined;
   const seriesContext = buildSeriesContext(
     articlePost,
-    postContext as PostContextModel | undefined,
+    articlePostContext,
     t
   );
   const seriesLinks: SeriesProgressLink[] = seriesContext
@@ -695,6 +768,14 @@ export default function PostDetail() {
             },
       ]
     : [];
+  const articleCompletionLinks = buildArticleCompletionLinks({
+    seriesNext: seriesContext?.next,
+    postNext: articlePostContext?.next,
+    related: articlePostContext?.related,
+    continueTrackHref,
+    continueTrackLabel,
+    t,
+  });
 
   return (
     <div className="space-page text-foreground">
@@ -902,30 +983,6 @@ export default function PostDetail() {
                     </details>
                   )}
 
-                  <div
-                    className="article-agent-prompts glass-dock liquid-surface"
-                    aria-label={t("post.agentCompanion.title")}
-                  >
-                    <div className="article-agent-prompts-heading">
-                      <BookOpen className="h-4 w-4 text-sky-200" />
-                      <span>{t("post.agentCompanion.title")}</span>
-                    </div>
-                    <div className="article-agent-prompt-list">
-                      {articleAgentPromptKeys.map(key => {
-                        const prompt = t(key);
-                        return (
-                          <button
-                            key={key}
-                            type="button"
-                            className="article-agent-prompt"
-                            onClick={() => openBlogAgentWithPrompt(prompt)}
-                          >
-                            {prompt}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
                 </section>
               )}
             </div>
@@ -961,6 +1018,65 @@ export default function PostDetail() {
                 />
               </Suspense>
             </div>
+
+            <section
+              className="article-reading-handoff"
+              aria-labelledby="article-reading-handoff-title"
+            >
+              <div className="article-reading-handoff-copy">
+                <p className="technical-label">{t("post.handoff.kicker")}</p>
+                <h2 id="article-reading-handoff-title">
+                  {t("post.handoff.title")}
+                </h2>
+                <p>{t("post.handoff.body")}</p>
+              </div>
+
+              <div
+                className="article-reading-handoff-actions"
+                aria-label={t("post.handoff.actions")}
+              >
+                {articleCompletionLinks.map(link => (
+                  <Link
+                    key={`${link.kind}-${link.href}`}
+                    href={link.href}
+                    className={
+                      link.primary
+                        ? "article-handoff-link article-handoff-link-primary"
+                        : "article-handoff-link"
+                    }
+                  >
+                    <span>{link.label}</span>
+                    <strong>{link.title}</strong>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                ))}
+
+                <div
+                  className="article-handoff-agent"
+                  aria-label={t("post.agentCompanion.title")}
+                >
+                  <span className="article-handoff-agent-label">
+                    <BookOpen className="h-4 w-4" />
+                    {t("post.agentCompanion.title")}
+                  </span>
+                  <div className="article-handoff-agent-prompts">
+                    {articleAgentPromptKeys.map(key => {
+                      const prompt = t(key);
+                      return (
+                        <button
+                          key={key}
+                          type="button"
+                          className="article-handoff-agent-prompt"
+                          onClick={() => openBlogAgentWithPrompt(prompt)}
+                        >
+                          {prompt}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </section>
 
             <div
               className="article-secondary-actions glass-dock liquid-surface"

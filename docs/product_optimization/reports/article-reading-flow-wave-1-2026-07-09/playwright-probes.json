@@ -1,0 +1,69 @@
+{
+  "url": "http://localhost:3000/post/goal-harness-agent-phase-protocol",
+  "results": [
+    {
+      "case": "desktop-light",
+      "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
+      "htmlTheme": "light",
+      "overflowX": 0,
+      "bodyOverflowX": 0,
+      "handoffExists": true,
+      "handoffAfterProse": true,
+      "headerPromptCount": 0,
+      "handoffPromptCount": 2,
+      "handoffLabelBackground": "rgba(0, 0, 0, 0)",
+      "handoffLabelDisplay": "inline-flex",
+      "proseTop": 569,
+      "entryHeight": 106,
+      "viewportHeight": 900
+    },
+    {
+      "case": "desktop-dark",
+      "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
+      "htmlTheme": "dark",
+      "overflowX": 0,
+      "bodyOverflowX": 0,
+      "handoffExists": true,
+      "handoffAfterProse": true,
+      "headerPromptCount": 0,
+      "handoffPromptCount": 2,
+      "handoffLabelBackground": "rgba(0, 0, 0, 0)",
+      "handoffLabelDisplay": "inline-flex",
+      "proseTop": 569,
+      "entryHeight": 106,
+      "viewportHeight": 900
+    },
+    {
+      "case": "mobile-light",
+      "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
+      "htmlTheme": "light",
+      "overflowX": 0,
+      "bodyOverflowX": 0,
+      "handoffExists": true,
+      "handoffAfterProse": true,
+      "headerPromptCount": 0,
+      "handoffPromptCount": 2,
+      "handoffLabelBackground": "rgba(0, 0, 0, 0)",
+      "handoffLabelDisplay": "inline-flex",
+      "proseTop": 639,
+      "entryHeight": 106,
+      "viewportHeight": 844
+    },
+    {
+      "case": "mobile-dark",
+      "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
+      "htmlTheme": "dark",
+      "overflowX": 0,
+      "bodyOverflowX": 0,
+      "handoffExists": true,
+      "handoffAfterProse": true,
+      "headerPromptCount": 0,
+      "handoffPromptCount": 2,
+      "handoffLabelBackground": "rgba(0, 0, 0, 0)",
+      "handoffLabelDisplay": "inline-flex",
+      "proseTop": 639,
+      "entryHeight": 106,
+      "viewportHeight": 844
+    }
+  ]
+}
