@@ -6,7 +6,11 @@ import {
   getArticleRailMode,
   isArticleProseMeasureHealthy,
 } from "../lib/articleLayout";
-import { buildArticleCompletionLinks } from "./PostDetail";
+import {
+  buildArticleCompletionLinks,
+  getArticleHeadingScrollBehavior,
+  resolveArticleHashTarget,
+} from "./PostDetail";
 
 const t = (key: string) =>
   ({
@@ -129,5 +133,33 @@ describe("article reader layout contract", () => {
     expect(getArticleContinuationMode(899)).toBe("stacked");
     expect(getArticleContinuationMode(900)).toBe("split");
     expect(getArticleContinuationMode(1440)).toBe("split");
+  });
+});
+
+describe("article heading continuity", () => {
+  const headings = [
+    { id: "method", text: "Method", level: 2 },
+    { id: "中文小节", text: "中文小节", level: 2 },
+  ];
+
+  it("resolves only known article hash targets", () => {
+    expect(resolveArticleHashTarget("#method", headings)).toBe("method");
+    expect(
+      resolveArticleHashTarget(
+        `#${encodeURIComponent("中文小节")}`,
+        headings
+      )
+    ).toBe("中文小节");
+    expect(resolveArticleHashTarget("#missing", headings)).toBeNull();
+    expect(resolveArticleHashTarget("", headings)).toBeNull();
+  });
+
+  it("ignores malformed article hashes instead of throwing", () => {
+    expect(resolveArticleHashTarget("#%", headings)).toBeNull();
+  });
+
+  it("respects reduced motion for article heading jumps", () => {
+    expect(getArticleHeadingScrollBehavior(false)).toBe("smooth");
+    expect(getArticleHeadingScrollBehavior(true)).toBe("auto");
   });
 });

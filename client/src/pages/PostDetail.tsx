@@ -109,7 +109,7 @@ type PostContextModel = {
   related?: PostLink[] | null;
 };
 
-type ArticleHeading = {
+export type ArticleHeading = {
   id: string;
   text: string;
   level: number;
@@ -216,6 +216,36 @@ export function buildArticleCompletionLinks({
   }
 
   return links.slice(0, 3);
+}
+
+export function resolveArticleHashTarget(
+  hash: string,
+  headings: ArticleHeading[]
+) {
+  const encodedTarget = hash.startsWith("#") ? hash.slice(1) : hash;
+  if (!encodedTarget) return null;
+
+  let targetId: string;
+  try {
+    targetId = decodeURIComponent(encodedTarget);
+  } catch {
+    return null;
+  }
+
+  if (!targetId) return null;
+  return headings.some(heading => heading.id === targetId) ? targetId : null;
+}
+
+export function getArticleHeadingScrollBehavior(
+  prefersReducedMotion: boolean
+): ScrollBehavior {
+  return prefersReducedMotion ? "auto" : "smooth";
+}
+
+function getPreferredArticleHeadingScrollBehavior() {
+  return getArticleHeadingScrollBehavior(
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false
+  );
 }
 
 function buildArticleEntryItems(
@@ -506,7 +536,11 @@ function MobileToc({
   );
 }
 
-function scrollToArticleHeading(id: string, updateHash = false) {
+function scrollToArticleHeading(
+  id: string,
+  updateHash = false,
+  behavior = getPreferredArticleHeadingScrollBehavior()
+) {
   const element = document.getElementById(id);
   if (!element) return;
 
@@ -515,7 +549,7 @@ function scrollToArticleHeading(id: string, updateHash = false) {
   }
 
   element.scrollIntoView({
-    behavior: "smooth",
+    behavior,
     block: "start",
   });
 }
@@ -598,7 +632,9 @@ export default function PostDetail() {
   useEffect(() => {
     if (headings.length === 0 || !window.location.hash) return;
 
-    const targetId = decodeURIComponent(window.location.hash.slice(1));
+    const targetId = resolveArticleHashTarget(window.location.hash, headings);
+    if (!targetId) return;
+
     window.requestAnimationFrame(() => {
       scrollToArticleHeading(targetId);
     });
