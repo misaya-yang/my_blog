@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-08T16:10:22.517Z",
+  "generatedAt": "2026-07-08T16:32:09.581Z",
   "baseUrl": "http://localhost:3000",
   "passed": true,
   "results": [
@@ -99,8 +99,8 @@
         "height": 844
       },
       "measurements": {
-        "recoveryY": 501.140625,
-        "actionY": 501.140625,
+        "recoveryY": 455.515625,
+        "actionY": 584.9375,
         "clearExists": true,
         "bodyScrollWidth": 390,
         "documentScrollWidth": 390,

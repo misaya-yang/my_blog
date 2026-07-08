@@ -41,19 +41,46 @@ function formatDate(value: string | Date | null, locale: string) {
   });
 }
 
-function HighlightedText({ text, query }: { text: string; query: string }) {
-  const normalized = query.trim().toLowerCase();
-  if (!normalized) return <>{text}</>;
-  const index = text.toLowerCase().indexOf(normalized);
-  if (index === -1) return <>{text}</>;
+export type HighlightedTextPart = {
+  text: string;
+  highlighted: boolean;
+};
 
+export function getHighlightedTextParts(
+  text: string,
+  query: string
+): HighlightedTextPart[] {
+  const normalized = query.trim().toLowerCase();
+  if (!normalized) return [{ text, highlighted: false }];
+
+  const index = text.toLowerCase().indexOf(normalized);
+  if (index === -1) return [{ text, highlighted: false }];
+
+  return [
+    { text: text.slice(0, index), highlighted: false },
+    {
+      text: text.slice(index, index + normalized.length),
+      highlighted: true,
+    },
+    {
+      text: text.slice(index + normalized.length),
+      highlighted: false,
+    },
+  ].filter(part => part.text.length > 0);
+}
+
+function HighlightedText({ text, query }: { text: string; query: string }) {
   return (
     <>
-      {text.slice(0, index)}
-      <mark className="rounded bg-slate-100/12 px-1 text-slate-100">
-        {text.slice(index, index + normalized.length)}
-      </mark>
-      {text.slice(index + normalized.length)}
+      {getHighlightedTextParts(text, query).map((part, index) =>
+        part.highlighted ? (
+          <mark key={`${part.text}-${index}`} className="search-highlight">
+            {part.text}
+          </mark>
+        ) : (
+          <span key={`${part.text}-${index}`}>{part.text}</span>
+        )
+      )}
     </>
   );
 }
@@ -167,7 +194,7 @@ export default function Search() {
               value={input}
               onChange={event => setInput(event.target.value)}
               placeholder={t("discovery.searchPlaceholder")}
-              className="h-11 border-0 bg-transparent px-0 text-base text-white shadow-none placeholder:text-slate-500 focus-visible:ring-0"
+              className="search-query-input h-11 border-0 bg-transparent px-0 text-base shadow-none focus-visible:ring-0"
             />
             <Button
               type="submit"
@@ -201,6 +228,8 @@ export default function Search() {
               </Link>
             }
           />
+
+          {!query && !isError && <SearchStartPanel topics={suggestedTopics} />}
 
           {isLoading ? (
             query && showSlowSearchRecovery ? (
@@ -269,11 +298,11 @@ export default function Search() {
                 <article key={post.id} className="search-result-row py-5">
                   <Link
                     href={`/post/${post.slug}`}
-                    className="text-xl font-semibold leading-8 text-white hover:text-slate-200"
+                    className="search-result-title text-xl font-semibold leading-8"
                   >
                     {post.title}
                   </Link>
-                  <p className="mt-2 max-w-4xl text-sm leading-7 text-slate-300">
+                  <p className="search-result-excerpt mt-2 max-w-4xl text-sm leading-7">
                     <HighlightedText
                       text={
                         post.matchExcerpt ||
@@ -284,7 +313,7 @@ export default function Search() {
                       query={query}
                     />
                   </p>
-                  <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                  <div className="search-result-meta mt-3 flex flex-wrap items-center gap-2 text-xs">
                     <span className="inline-flex items-center gap-1.5">
                       <Calendar className="h-3.5 w-3.5" />
                       {formatDate(post.publishedAt, locale)}
@@ -335,6 +364,61 @@ export default function Search() {
   );
 }
 
+function SearchStartPanel({ topics }: { topics: RecoveryTopic[] }) {
+  const { t } = useLanguage();
+
+  return (
+    <div className="search-start-panel mt-5">
+      <div className="search-start-copy">
+        <h3>{t("discovery.searchStartTitle")}</h3>
+        <p>{t("discovery.searchStartBody")}</p>
+      </div>
+
+      <div className="search-start-block">
+        <span className="search-start-label">
+          {t("discovery.searchStartTopics")}
+        </span>
+        <div className="search-topic-grid">
+          {topics.map(topic => (
+            <Link
+              key={topic.query}
+              href={topic.href}
+              className="search-topic-chip"
+              aria-label={t("discovery.recoveryTopicQuery", {
+                query: topic.query,
+              })}
+            >
+              <GitBranch className="search-topic-icon h-4 w-4" />
+              <span>{t(topic.labelKey)}</span>
+              <ArrowRight className="search-topic-icon h-4 w-4" />
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      <div className="search-start-block">
+        <span className="search-start-label">
+          {t("discovery.searchStartPaths")}
+        </span>
+        <div className="search-start-paths">
+          <Link href="/applications" className="search-start-link">
+            <Map className="h-4 w-4" />
+            <span>{t("home.applicationsLabel")}</span>
+          </Link>
+          <Link href="/algorithms" className="search-start-link">
+            <Map className="h-4 w-4" />
+            <span>{t("home.algorithmsLabel")}</span>
+          </Link>
+          <Link href="/archive" className="search-start-link">
+            <Calendar className="h-4 w-4" />
+            <span>{t("nav.archive")}</span>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SearchRecoveryPanel({
   query,
   topics,
@@ -374,7 +458,7 @@ function SearchRecoveryPanel({
 
       <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div>
-          <h3 className="mb-3 text-sm font-semibold text-white">
+          <h3 className="search-recovery-heading mb-3 text-sm font-semibold">
             {t("discovery.recoveryTopics")}
           </h3>
           <div className="search-topic-grid">
@@ -387,17 +471,17 @@ function SearchRecoveryPanel({
                   query: topic.query,
                 })}
               >
-                <GitBranch className="h-4 w-4 text-slate-400" />
+                <GitBranch className="search-topic-icon h-4 w-4" />
                 <span>{t(topic.labelKey)}</span>
-                <ArrowRight className="h-4 w-4 text-slate-400" />
+                <ArrowRight className="search-topic-icon h-4 w-4" />
               </Link>
             ))}
           </div>
         </div>
 
         <aside className="search-recovery-paths">
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
-            <Map className="h-4 w-4 text-slate-400" />
+          <h3 className="search-recovery-heading flex items-center gap-2 text-sm font-semibold">
+            <Map className="search-topic-icon h-4 w-4" />
             {t("discovery.recoveryPaths")}
           </h3>
           <div className="mt-3 grid gap-2">

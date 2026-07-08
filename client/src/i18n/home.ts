@@ -181,6 +181,30 @@ const home: TranslationDict = {
     en: "No public articles are archived yet.",
     zh: "暂无可归档的公开文章。",
   },
+  "discovery.archiveSummaryNotesLabel": {
+    en: "Public notes",
+    zh: "公开笔记",
+  },
+  "discovery.archiveSummaryNotes": {
+    en: "{count} notes",
+    zh: "{count} 篇",
+  },
+  "discovery.archiveSummaryMonthsLabel": {
+    en: "Time span",
+    zh: "时间跨度",
+  },
+  "discovery.archiveSummaryMonths": {
+    en: "{count} months",
+    zh: "{count} 个月份",
+  },
+  "discovery.archiveSummarySearch": {
+    en: "Search archive",
+    zh: "搜索归档",
+  },
+  "discovery.archiveSummaryPaths": {
+    en: "Reading paths",
+    zh: "阅读路径",
+  },
   "discovery.articlesCount": { en: "{count} articles", zh: "{count} 篇文章" },
   "discovery.updated": { en: "Updated {date}", zh: "更新于 {date}" },
   "discovery.searchKicker": { en: "Full-site search", zh: "全站搜索" },
@@ -221,6 +245,22 @@ const home: TranslationDict = {
     en: "The request failed. Retry, or browse the archive while it recovers.",
     zh: "请求没有成功。可以重试，或先浏览归档。",
   },
+  "discovery.searchStartTitle": {
+    en: "Start with a nearby thread",
+    zh: "从相近线索开始",
+  },
+  "discovery.searchStartBody": {
+    en: "Use topic cues, reading paths, or the archive before typing a precise query.",
+    zh: "在输入精确问题前，可以先从主题线索、阅读路径或归档进入。",
+  },
+  "discovery.searchStartTopics": {
+    en: "Nearby topics",
+    zh: "相近主题",
+  },
+  "discovery.searchStartPaths": {
+    en: "Reading paths",
+    zh: "阅读路径",
+  },
   "discovery.recoveryTitle": {
     en: "No direct match yet",
     zh: "还没有直接命中",
@@ -250,8 +290,8 @@ const home: TranslationDict = {
     zh: "搜索 {query}",
   },
   "discovery.recoveryPaths": {
-    en: "Research paths",
-    zh: "研究路径",
+    en: "Reading paths",
+    zh: "阅读路径",
   },
   "discovery.recoverySignal": {
     en: "This no-result search is saved as an author-only topic cue, without email, IP, or visitor details.",
