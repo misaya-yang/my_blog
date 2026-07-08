@@ -37,10 +37,16 @@ Recommended review order:
 21. Theme and language runtime: [2026-07-09-theme-language-runtime-contract-design.md](./2026-07-09-theme-language-runtime-contract-design.md)
 22. Route contract sync: [2026-07-09-route-contract-sync-design.md](./2026-07-09-route-contract-sync-design.md)
 23. Performance budget: [2026-07-09-performance-budget-design.md](./2026-07-09-performance-budget-design.md)
-24. CSS ownership and style debt: [2026-07-09-css-ownership-style-debt-budget-design.md](./2026-07-09-css-ownership-style-debt-budget-design.md)
-25. Test matrix ownership: [2026-07-09-test-matrix-ownership-design.md](./2026-07-09-test-matrix-ownership-design.md)
-26. Engineering release gates: [2026-07-08-engineering-release-gates-design.md](./2026-07-08-engineering-release-gates-design.md)
-27. Release gate orchestration: [2026-07-09-release-gate-orchestration-design.md](./2026-07-09-release-gate-orchestration-design.md)
+24. Design system component contract: [2026-07-09-design-system-component-contract-design.md](./2026-07-09-design-system-component-contract-design.md)
+25. CSS ownership and style debt: [2026-07-09-css-ownership-style-debt-budget-design.md](./2026-07-09-css-ownership-style-debt-budget-design.md)
+26. Test matrix ownership: [2026-07-09-test-matrix-ownership-design.md](./2026-07-09-test-matrix-ownership-design.md)
+27. SEO and public distribution: [2026-07-09-seo-distribution-public-index-contract-design.md](./2026-07-09-seo-distribution-public-index-contract-design.md)
+28. Production observability and runbook: [2026-07-09-production-observability-runbook-design.md](./2026-07-09-production-observability-runbook-design.md)
+29. Admin auth and session boundary: [2026-07-09-admin-auth-session-boundary-design.md](./2026-07-09-admin-auth-session-boundary-design.md)
+30. Data model and content operations: [2026-07-09-data-model-content-ops-contract-design.md](./2026-07-09-data-model-content-ops-contract-design.md)
+31. Engineering release gates: [2026-07-08-engineering-release-gates-design.md](./2026-07-08-engineering-release-gates-design.md)
+32. Release gate orchestration: [2026-07-09-release-gate-orchestration-design.md](./2026-07-09-release-gate-orchestration-design.md)
+33. Completion crosswalk: [2026-07-09-product-optimization-spec-completion-crosswalk.md](./2026-07-09-product-optimization-spec-completion-crosswalk.md)
 
 After approval, implementation can proceed without per-slice confirmation. Each slice must still be bounded, tested, reported, committed, and stopped before irreversible actions, schema migration, force push, credential handling, or deployment.
 
@@ -98,6 +104,7 @@ Current branch state when this package was generated:
 | Content quality | Covered, partially implemented | Content quality and writing style | Detect vague claims, subjective filler, AI-ish phrasing, and structural issues. |
 | Performance/a11y/i18n | Newly added | Performance, accessibility, and i18n gates | Prevent visual regressions across theme, language, zoom, keyboard, and route states. |
 | Runtime contracts | Newly added | Theme/language, route sync, accessibility, performance, CSS, test matrix | Cross-cutting behavior is encoded as gates, not tribal knowledge. |
+| System boundaries | Newly added | Design system, SEO distribution, observability, auth/session, data/content ops | Non-visual regressions are covered before implementation begins. |
 | Engineering gates | Covered | Engineering release gates | Bounded commits, tests, reports, browser evidence, no broad rewrites. |
 | Release orchestration | Newly added | Release gate orchestration | One local release contract records commands, failures, waivers, commit, and dirty state. |
 

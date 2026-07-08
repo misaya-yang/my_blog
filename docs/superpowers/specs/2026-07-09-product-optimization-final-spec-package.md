@@ -63,9 +63,15 @@ Use these files as the module specs:
 21. Route sync: `docs/superpowers/specs/2026-07-09-route-contract-sync-design.md`
 22. Accessibility automation: `docs/superpowers/specs/2026-07-09-accessibility-automation-matrix-design.md`
 23. Performance budget: `docs/superpowers/specs/2026-07-09-performance-budget-design.md`
-24. CSS ownership: `docs/superpowers/specs/2026-07-09-css-ownership-style-debt-budget-design.md`
-25. Test ownership: `docs/superpowers/specs/2026-07-09-test-matrix-ownership-design.md`
-26. Release orchestration: `docs/superpowers/specs/2026-07-09-release-gate-orchestration-design.md`
+24. Design system component contract: `docs/superpowers/specs/2026-07-09-design-system-component-contract-design.md`
+25. CSS ownership: `docs/superpowers/specs/2026-07-09-css-ownership-style-debt-budget-design.md`
+26. Test ownership: `docs/superpowers/specs/2026-07-09-test-matrix-ownership-design.md`
+27. SEO and public distribution: `docs/superpowers/specs/2026-07-09-seo-distribution-public-index-contract-design.md`
+28. Production observability and runbook: `docs/superpowers/specs/2026-07-09-production-observability-runbook-design.md`
+29. Admin auth and session boundary: `docs/superpowers/specs/2026-07-09-admin-auth-session-boundary-design.md`
+30. Data model and content operations: `docs/superpowers/specs/2026-07-09-data-model-content-ops-contract-design.md`
+31. Release orchestration: `docs/superpowers/specs/2026-07-09-release-gate-orchestration-design.md`
+32. Completion crosswalk: `docs/superpowers/specs/2026-07-09-product-optimization-spec-completion-crosswalk.md`
 
 The older review package `docs/superpowers/specs/2026-07-09-product-optimization-spec-review-package.md` remains valid. This file is the final review index and execution contract.
 
@@ -362,6 +368,35 @@ Acceptance:
 - Public route, RSS, sitemap, Agent source, and search visibility boundaries are checked.
 - `git diff --check`, `corepack pnpm check`, `corepack pnpm test`, `corepack pnpm build`, and relevant audits are run before any "done" claim.
 
+### SPEC-SYSTEM: Design System, SEO, Ops, Auth, And Data Boundaries
+
+Goal: make the product optimization program safe to execute after review by covering the non-visual contracts that usually create regressions.
+
+Functional requirements:
+
+- Design-system ownership is explicit across global tokens, public visual CSS, owner tools, Agent surfaces, legacy materials, and primitive UI components.
+- Public distribution surfaces share the same visibility boundary as public discovery and Agent sources.
+- SEO metadata, sitemap/RSS/static-index output, and social previews remain factual and never expose hidden/draft/admin content.
+- Production runbooks cover app boot, auth, public content, search, Agent, reindex, owner tools, and release failures.
+- Admin auth/session behavior protects owner routes and mutations without printing or committing credentials.
+- Data/content-ops slices preserve existing route, API, and DB contracts unless a separately approved plan changes them.
+- Schema migrations, new auth providers, new observability vendors, and production credential changes remain stop conditions.
+
+Primary specs:
+
+- `docs/superpowers/specs/2026-07-09-design-system-component-contract-design.md`
+- `docs/superpowers/specs/2026-07-09-seo-distribution-public-index-contract-design.md`
+- `docs/superpowers/specs/2026-07-09-production-observability-runbook-design.md`
+- `docs/superpowers/specs/2026-07-09-admin-auth-session-boundary-design.md`
+- `docs/superpowers/specs/2026-07-09-data-model-content-ops-contract-design.md`
+
+Acceptance:
+
+- Every implementation slice can name the owning style layer, route/API visibility boundary, and focused test set.
+- Public distribution, Agent source cards, search, sitemap/RSS/static output, and article routes align on public visibility.
+- Owner-only screenshots and reports avoid secrets, credentials, private pasted context, and direct contact data.
+- Any schema migration, dependency, auth-provider, or observability-provider change stops for owner approval.
+
 ## Implementation Waves After Approval
 
 ### Wave 0: Freeze And Preflight
@@ -380,7 +415,7 @@ git diff --check
 
 ### Wave 1: Public UI And Reading Calm
 
-Use `SPEC-UI`, `SPEC-READ`, public i18n, theme runtime, CSS ownership, and accessibility specs.
+Use `SPEC-UI`, `SPEC-READ`, public i18n, theme runtime, design-system, CSS ownership, SEO distribution, and accessibility specs.
 
 Likely first slices:
 
@@ -399,7 +434,7 @@ corepack pnpm build
 
 ### Wave 2: Agent Companion Completion
 
-Use `SPEC-AGENT`, privacy, theme runtime, CSS ownership, and accessibility specs.
+Use `SPEC-AGENT`, privacy, theme runtime, design-system, CSS ownership, observability, auth boundary, and accessibility specs.
 
 Likely first slices:
 
@@ -418,7 +453,7 @@ corepack pnpm build
 
 ### Wave 3: Agent Quality Operations
 
-Use `SPEC-OPS`, signal lifecycle, privacy, and release orchestration specs.
+Use `SPEC-OPS`, signal lifecycle, privacy, data/content-ops, observability, and release orchestration specs.
 
 Likely first slices:
 
@@ -436,7 +471,7 @@ corepack pnpm build
 
 ### Wave 4: Owner Cockpit And Writing Studio
 
-Use `SPEC-OWNER`, `SPEC-CONTENT`, publish freshness bridge, privacy, and reader signal specs.
+Use `SPEC-OWNER`, `SPEC-CONTENT`, publish freshness bridge, privacy, auth boundary, data/content-ops, and reader signal specs.
 
 Likely first slices:
 
@@ -474,7 +509,7 @@ corepack pnpm build
 
 ### Wave 6: Final Release Evidence
 
-Use `SPEC-GATES` and the full spec inventory.
+Use `SPEC-GATES`, `SPEC-SYSTEM`, and the full spec inventory.
 
 Gates:
 
@@ -535,6 +570,7 @@ Stop and ask before:
 - Owner requirements turn feedback, search misses, Agent gaps, audit findings, and freshness failures into writing work.
 - Content requirements reduce awkward phrasing without blocking valid author voice.
 - Release requirements are strict enough to prevent "looks changed but not verified" regressions.
+- System boundary requirements cover design-system ownership, SEO/public indexing, observability, auth/session, and data model discipline.
 
 ## Approval Prompt
 
