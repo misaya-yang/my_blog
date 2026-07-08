@@ -42,6 +42,7 @@ const richArticleFixture = [
   "[^trace]: Footnote text with [archive link](/archive).",
   "",
   "![Evidence mesh](/images/article-thumbs/retrieval-evidence-mesh.jpg)",
+  "_Figure: Evidence mesh connects retrieval and source cards._",
 ].join("\n");
 
 describe("MarkdownRenderer", () => {
@@ -86,13 +87,16 @@ describe("MarkdownRenderer", () => {
     expect(html).toContain("Claim");
     expect(html).toContain("The answer should stay readable");
     expect(html).toContain("code-block-meta");
+    expect(html).toContain("code-block-shell");
+    expect(html).toContain("code-block-pre");
+    expect(html).toContain("code-copy-button");
     expect(html).toContain("server/ai/harness.ts");
     expect(html).toContain("ts");
     expect(html).toContain("hljs");
     expect(html).toContain('class="hljs-keyword">const</span>');
     expect(html).toContain("verifier");
     expect(html).toContain(
-      '<pre class="overflow-x-auto"><code>plain fenced block'
+      '<pre class="code-block-pre overflow-x-auto"><code>plain fenced block'
     );
     expect(html).toContain(
       '<code class="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-sm">token</code>'
@@ -103,7 +107,10 @@ describe("MarkdownRenderer", () => {
     expect(html).toContain('href="/archive"');
     expect(html).toContain('loading="lazy"');
     expect(html).toContain('decoding="async"');
+    expect(html).toContain("article-figure");
+    expect(html).toContain("article-figure-caption");
     expect(html).toContain('alt="Evidence mesh"');
+    expect(html).toContain("Figure: Evidence mesh connects retrieval");
   });
 
   it("allows article pages to localize the table scroll label", () => {

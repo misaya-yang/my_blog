@@ -91,6 +91,37 @@ export default function MarkdownRenderer({
           headingIdResolver,
           "mb-2 mt-5 text-sm font-semibold"
         ),
+        p: ({ node: _node, children, ...props }: any) => {
+          const inlineFigure = extractInlineFigure(children);
+          if (inlineFigure) {
+            return (
+              <figure className="article-figure" {...props}>
+                {inlineFigure.image}
+                <figcaption className="article-figure-caption">
+                  {inlineFigure.caption}
+                </figcaption>
+              </figure>
+            );
+          }
+
+          if (isImageOnlyParagraph(children)) {
+            return (
+              <figure className="article-figure" {...props}>
+                {children}
+              </figure>
+            );
+          }
+
+          if (isFigureCaption(children)) {
+            return (
+              <p className="article-figure-caption" {...props}>
+                {children}
+              </p>
+            );
+          }
+
+          return <p {...props}>{children}</p>;
+        },
         img: ({ node: _node, alt, ...props }: any) => (
           <img
             {...props}
@@ -107,7 +138,7 @@ export default function MarkdownRenderer({
           const meta = extractRenderedCodeMeta(children);
 
           return (
-            <div className="group relative">
+            <div className="code-block-shell group relative">
               {meta.language || meta.filename ? (
                 <div className="code-block-meta flex items-center justify-between gap-3 rounded-t-lg border border-slate-200 bg-slate-100/80 px-4 py-2 text-xs text-slate-600 dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-300">
                   <span className="min-w-0 truncate">
@@ -120,14 +151,14 @@ export default function MarkdownRenderer({
                   ) : null}
                 </div>
               ) : null}
-              <pre className="overflow-x-auto" {...props}>
+              <pre className="code-block-pre overflow-x-auto" {...props}>
                 {children}
               </pre>
               {code && onCopyCode ? (
                 <button
                   aria-label={copyCodeLabel}
                   onClick={() => onCopyCode(code, codeId)}
-                  className="absolute right-3 top-3 rounded-md bg-slate-900/85 p-2 opacity-90 transition-colors hover:bg-slate-800 hover:opacity-100 focus-visible:opacity-100"
+                  className="code-copy-button absolute right-3 top-3 rounded-md bg-slate-900/85 p-2 opacity-90 transition-colors hover:bg-slate-800 hover:opacity-100 focus-visible:opacity-100"
                 >
                   {copiedCode === codeId ? (
                     <Check className="h-4 w-4 text-sky-300" />
@@ -291,6 +322,54 @@ function extractText(node: ReactNode): string {
     return extractText((node.props as { children?: ReactNode }).children);
   }
   return "";
+}
+
+function isImageOnlyParagraph(children: ReactNode) {
+  const nodes = meaningfulChildren(children);
+  return nodes.length === 1 && isImageElement(nodes[0]);
+}
+
+function isFigureCaption(children: ReactNode) {
+  const nodes = meaningfulChildren(children);
+  const text = extractText(children).trim();
+  return (
+    nodes.length === 1 &&
+    isEmphasisElement(nodes[0]) &&
+    /^(?:figure|fig\.|图)\s*[:：]/i.test(text)
+  );
+}
+
+function extractInlineFigure(children: ReactNode) {
+  const nodes = meaningfulChildren(children);
+  if (nodes.length !== 2) return null;
+
+  const [image, caption] = nodes;
+  if (!isImageElement(image) || !isEmphasisElement(caption)) return null;
+
+  const captionText = extractText(caption).trim();
+  if (!/^(?:figure|fig\.|图)\s*[:：]/i.test(captionText)) return null;
+
+  const captionElement = caption as ReactElement<{ children?: ReactNode }>;
+  return {
+    image,
+    caption: captionElement.props.children,
+  };
+}
+
+function meaningfulChildren(children: ReactNode) {
+  return Children.toArray(children).filter(
+    child => !(typeof child === "string" && child.trim() === "")
+  );
+}
+
+function isImageElement(node: ReactNode) {
+  if (!isValidElement(node)) return false;
+  const props = node.props as { src?: unknown };
+  return typeof props.src === "string";
+}
+
+function isEmphasisElement(node: ReactNode) {
+  return isValidElement(node) && node.type === "em";
 }
 
 function stripCalloutMarker(children: ReactNode) {

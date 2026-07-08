@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-07-08T17:02:28.298Z",
+  "results": [
+    {
+      "case": "goal-harness-desktop-light",
+      "url": "http://localhost:3000/post/goal-harness-agent-phase-protocol",
+      "title": "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
+      "theme": "light",
+      "overflowX": 0,
+      "bodyOverflowX": 0,
+      "codeBlocks": 10,
+      "codeMeta": 10,
+      "copyButtons": 10,
+      "tables": 3,
+      "displayMath": 0,
+      "figures": 0,
+      "captions": 0,
+      "tableHeaderColor": "oklch(0.18 0.018 260)",
+      "tableCellColor": "oklch(0.38 0.016 252)",
+      "targets": [
+        {
+          "selector": ".code-block-shell",
+          "exists": true,
+          "width": 668,
+          "scrollWidth": 668,
+          "clientWidth": 668,
+          "containsOwnOverflow": true
+        },
+        {
+          "selector": ".technical-table-wrap",
+          "exists": true,
+          "width": 668,
+          "scrollWidth": 672,
+          "clientWidth": 666,
+          "containsOwnOverflow": true
+        }
+      ]
+    },
+    {
+      "case": "gated-ffn-mobile-dark",
+      "url": "http://localhost:3000/post/gated-ffn-multiplicative-channel-control",
+      "title": "Gated FFN: Transformer 里的乘法通道",
+      "theme": "dark",
+      "overflowX": 0,
+      "bodyOverflowX": 0,
+      "codeBlocks": 11,
+      "codeMeta": 11,
+      "copyButtons": 11,
+      "tables": 2,
+      "displayMath": 22,
+      "figures": 0,
+      "captions": 0,
+      "tableHeaderColor": "oklch(0.94 0.008 240)",
+      "tableCellColor": "oklch(0.76 0.014 238)",
+      "targets": [
+        {
+          "selector": ".katex-display",
+          "exists": true,
+          "width": 326,
+          "scrollWidth": 342,
+          "clientWidth": 326,
+          "containsOwnOverflow": true
+        },
+        {
+          "selector": ".technical-table-wrap",
+          "exists": true,
+          "width": 326,
+          "scrollWidth": 672,
+          "clientWidth": 324,
+          "containsOwnOverflow": true
+        }
+      ]
+    }
+  ]
+}
