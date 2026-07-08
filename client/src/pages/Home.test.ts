@@ -4,8 +4,10 @@ import type { ArticleCardPost } from "@/components/ArticleCard";
 import { getPublicTrackSeries } from "@/lib/tracks";
 
 import {
+  getHomeResearchMapSummary,
   getPrimarySeries,
   getRepresentativePosts,
+  getTrackTopicKeys,
   sortPostsNewestFirst,
 } from "./Home";
 
@@ -104,5 +106,32 @@ describe("home page article selection", () => {
     expect(getPrimarySeries(publicSeries, posts)?.slug).toBe(
       "llm-post-training-rl"
     );
+  });
+
+  it("builds the homepage research map summary from public track data", () => {
+    const publicSeriesByTrack = {
+      algorithms: getPublicTrackSeries("algorithms", posts),
+      applications: getPublicTrackSeries("applications", posts),
+    };
+
+    expect(getHomeResearchMapSummary(posts, publicSeriesByTrack)).toEqual({
+      trackCount: 2,
+      publicNoteCount: 5,
+      readingPathCount:
+        publicSeriesByTrack.algorithms.length +
+        publicSeriesByTrack.applications.length,
+    });
+  });
+
+  it("uses stable track topic keys for the homepage map chips", () => {
+    expect(getTrackTopicKeys("algorithms")).toEqual([
+      "home.focusTag1",
+      "home.focusTag2",
+      "home.focusTag3",
+    ]);
+    expect(getTrackTopicKeys("applications", 2)).toEqual([
+      "track.applications.focus1",
+      "track.applications.focus2",
+    ]);
   });
 });

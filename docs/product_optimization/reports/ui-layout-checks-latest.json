@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-08T15:57:36.719Z",
+  "generatedAt": "2026-07-08T16:06:18.671Z",
   "baseUrl": "http://localhost:3000",
   "passed": true,
   "results": [
@@ -11,9 +11,9 @@
         "height": 844
       },
       "measurements": {
-        "firstArticleY": 742.984375,
+        "firstArticleY": 946.171875,
         "headerHeight": 72,
-        "searchDockY": 386.578125,
+        "searchDockY": 589.765625,
         "bodyScrollWidth": 390,
         "documentScrollWidth": 390,
         "viewportWidth": 390
@@ -33,9 +33,9 @@
         "height": 1000
       },
       "measurements": {
-        "firstArticleY": 774.359375,
+        "firstArticleY": 850.359375,
         "headerHeight": 72,
-        "searchDockY": 471.6875,
+        "searchDockY": 547.6875,
         "bodyScrollWidth": 1440,
         "documentScrollWidth": 1440,
         "viewportWidth": 1440

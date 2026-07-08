@@ -91,9 +91,22 @@ const home: TranslationDict = {
   "home.researchIndexKicker": { en: "Index", zh: "索引" },
   "home.activeSeries": { en: "Reading threads", zh: "阅读线索" },
   "home.trackPathLabel": { en: "Reading path", zh: "阅读路径" },
+  "home.mapSummaryLabel": {
+    en: "Notebook structure summary",
+    zh: "笔记结构概览",
+  },
+  "home.mapTracks": { en: "Tracks", zh: "方向" },
+  "home.mapPaths": { en: "Paths", zh: "路径" },
+  "home.mapNotes": { en: "Notes", zh: "笔记" },
+  "home.trackCount": { en: "{count} tracks", zh: "{count} 个方向" },
+  "home.trackTopicLabel": { en: "Track concepts", zh: "方向概念" },
   "home.algorithmsPathTitle": {
     en: "Residual, feed-forward, long-context",
     zh: "残差、前馈、长上下文",
+  },
+  "home.applicationsPathTitle": {
+    en: "Agents, retrieval, evaluation",
+    zh: "Agent、检索、评测",
   },
   "home.algorithmsPathSummary": {
     en: "Mechanism notes that start from model internals and end at implementation constraints.",

@@ -38,10 +38,19 @@ type TrackPanelModel = {
   title: string;
   subtitle: string;
   meta: string;
+  topicKeys: string[];
   pathTitle: string;
   pathSummary: string;
   actionLabel: string;
   posts: ArticleCardPost[];
+};
+
+type PublicSeriesByTrack = Record<TrackKind, TrackSeriesConfig[]>;
+
+export type HomeResearchMapSummary = {
+  trackCount: number;
+  publicNoteCount: number;
+  readingPathCount: number;
 };
 
 function getArticleTrack(post: ArticleCardPost): ArticleTrack {
@@ -130,6 +139,27 @@ export function getRepresentativePosts(
   );
 
   return sortPostsNewestFirst(trackPosts).slice(0, 2);
+}
+
+export function getTrackTopicKeys(track: TrackKind, limit = 3) {
+  return trackConfigs[track].focusKeys.slice(0, limit);
+}
+
+export function getHomeResearchMapSummary(
+  posts: ArticleCardPost[],
+  publicSeriesByTrack: PublicSeriesByTrack
+): HomeResearchMapSummary {
+  return {
+    trackCount: portalTracks.length,
+    publicNoteCount: portalTracks.reduce(
+      (total, track) => total + countTrackPosts(posts, track),
+      0
+    ),
+    readingPathCount: portalTracks.reduce(
+      (total, track) => total + publicSeriesByTrack[track].length,
+      0
+    ),
+  };
 }
 
 function getPanelPathSummary(
@@ -248,6 +278,14 @@ function TrackPanel({
             {model.actionLabel}
             <ArrowRight className="h-4 w-4" />
           </Link>
+          <div
+            className="home-track-topics"
+            aria-label={t("home.trackTopicLabel")}
+          >
+            {model.topicKeys.map(key => (
+              <span key={key}>{t(key)}</span>
+            ))}
+          </div>
         </div>
 
         <div className="home-track-panel-detail">
@@ -379,6 +417,7 @@ export default function Home() {
           ),
           title: t(config.titleKey),
           subtitle: t(config.subtitleKey),
+          topicKeys: getTrackTopicKeys(track),
           meta: isLoading
             ? t("home.pathsPending")
             : `${t("home.pathCount", { count: pathCount })} · ${t(
@@ -387,7 +426,9 @@ export default function Home() {
               )}`,
           pathTitle: primarySeries
             ? t(primarySeries.titleKey)
-            : t("home.algorithmsPathTitle"),
+            : track === "applications"
+              ? t("home.applicationsPathTitle")
+              : t("home.algorithmsPathTitle"),
           pathSummary: getPanelPathSummary(track, primarySeries, t),
           actionLabel:
             track === "applications"
@@ -399,6 +440,10 @@ export default function Home() {
     [isLoading, publishedPosts, publicSeriesByTrack, t]
   );
 
+  const mapSummary = useMemo(
+    () => getHomeResearchMapSummary(publishedPosts, publicSeriesByTrack),
+    [publishedPosts, publicSeriesByTrack]
+  );
   const featuredPost = publishedPosts[0];
   const morePosts = publishedPosts.slice(1, 5);
 
@@ -428,6 +473,51 @@ export default function Home() {
               <p className="home-subtitle text-slate-300">
                 {t("home.subtitle")}
               </p>
+
+              <dl
+                className="home-map-summary"
+                aria-label={t("home.mapSummaryLabel")}
+              >
+                <div>
+                  <dt>
+                    <Route className="h-4 w-4" aria-hidden="true" />
+                    {t("home.mapTracks")}
+                  </dt>
+                  <dd>
+                    {isLoading
+                      ? t("home.pathsPending")
+                      : t("home.trackCount", {
+                          count: mapSummary.trackCount,
+                        })}
+                  </dd>
+                </div>
+                <div>
+                  <dt>
+                    <GitBranch className="h-4 w-4" aria-hidden="true" />
+                    {t("home.mapPaths")}
+                  </dt>
+                  <dd>
+                    {isLoading
+                      ? t("home.pathsPending")
+                      : t("home.pathCount", {
+                          count: mapSummary.readingPathCount,
+                        })}
+                  </dd>
+                </div>
+                <div>
+                  <dt>
+                    <FileText className="h-4 w-4" aria-hidden="true" />
+                    {t("home.mapNotes")}
+                  </dt>
+                  <dd>
+                    {isLoading
+                      ? t("home.notesPending")
+                      : t("home.publicNotes", {
+                          count: mapSummary.publicNoteCount,
+                        })}
+                  </dd>
+                </div>
+              </dl>
 
               <form
                 onSubmit={submitSearch}

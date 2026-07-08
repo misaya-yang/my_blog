@@ -6116,6 +6116,48 @@
     overflow-wrap: anywhere;
   }
 
+  .home-map-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+    margin: clamp(0.85rem, 1.6vw, 1.1rem) 0 0;
+  }
+
+  .home-map-summary div {
+    min-width: 0;
+    border: 1px solid var(--public-border);
+    border-radius: var(--public-radius);
+    background: color-mix(in oklch, var(--public-inline-bg) 86%, transparent);
+    padding: 0.58rem 0.64rem;
+  }
+
+  .home-map-summary dt {
+    display: flex;
+    align-items: center;
+    gap: 0.34rem;
+    min-width: 0;
+    color: var(--public-faint);
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .home-map-summary dt svg {
+    flex: 0 0 auto;
+    color: var(--public-accent);
+  }
+
+  .home-map-summary dd {
+    margin-top: 0.24rem;
+    min-width: 0;
+    color: var(--public-text);
+    font-size: 0.86rem;
+    font-weight: 700;
+    line-height: 1.22;
+    overflow-wrap: anywhere;
+  }
+
   .home-search-submit,
   .home-index-search .home-search-submit,
   .search-recovery-agent-button {
@@ -6187,9 +6229,56 @@
     line-height: 1.46 !important;
   }
 
+  .home-track-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.36rem;
+    margin-top: 0.85rem;
+    min-width: 0;
+  }
+
+  .home-track-topics span {
+    max-width: 100%;
+    border: 1px solid var(--public-border);
+    border-radius: 999px;
+    background: var(--public-inline-bg);
+    color: var(--public-muted);
+    padding: 0.22rem 0.5rem;
+    font-size: 0.76rem;
+    font-weight: 640;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
   @media (max-width: 760px) {
     .home-index-spread {
       padding-top: 0.75rem !important;
+    }
+
+    .home-map-summary {
+      grid-template-columns: 1fr;
+    }
+
+    .home-track-panel-main {
+      grid-template-columns: minmax(0, 1fr) !important;
+      gap: 0.85rem !important;
+    }
+
+    .home-track-panel-detail {
+      border-left: 0 !important;
+      border-top: 1px solid var(--public-border) !important;
+      padding-left: 0 !important;
+      padding-top: 0.85rem !important;
+    }
+
+    .home-track-post-list a {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    .home-track-post-list strong {
+      overflow-wrap: anywhere;
+      word-break: normal;
     }
 
     .home-intro-rail {
