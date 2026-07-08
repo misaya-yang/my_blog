@@ -8,14 +8,16 @@ Primary track: Reading and writing feedback loop first
 
 This overview is the parent spec. The complete review package is split into focused child specs so implementation can start later without mixing unrelated concerns:
 
+- [Product optimization spec review package](./2026-07-08-product-optimization-spec-review-package.md)
 - [UI visual contract](./2026-07-08-ui-visual-contract-design.md)
+- [Discovery and research map](./2026-07-08-discovery-research-map-design.md)
 - [Article reading and Markdown rendering](./2026-07-08-article-reading-rendering-design.md)
 - [Agent reading companion](./2026-07-08-agent-reading-companion-design.md)
 - [Reader signal backlog and owner cockpit](./2026-07-08-reader-signal-owner-cockpit-design.md)
 - [Content quality and writing style system](./2026-07-08-content-quality-style-system-design.md)
 - [Engineering simplification and release gates](./2026-07-08-engineering-release-gates-design.md)
 
-The intended review flow is: read this parent spec first, then inspect the child specs that match the highest-risk area. No implementation should begin until this package is reviewed.
+The intended review flow is: read the review package first, then inspect this parent spec and the child specs that match the highest-risk area. No new implementation wave should begin until this package is reviewed.
 
 ## Summary
 
@@ -378,6 +380,8 @@ Acceptance criteria:
 
 ## Recommended Execution Order
 
+This section describes the product dependency logic. The concrete no-confirmation execution waves are defined in [the review package](./2026-07-08-product-optimization-spec-review-package.md).
+
 ### Slice 1: Audit Scope And Visual Contract
 
 Why first: it removes current false failures and creates stable UI rules before visible redesign.
@@ -517,6 +521,6 @@ Mitigation: keep research tracks and search prominent, but reduce equal-weight c
 
 ## Decision Needed Before Implementation
 
-Approve this design direction, then create an implementation plan under `docs/superpowers/plans/` with concrete file-by-file steps and tests.
+Approve this design direction and the review package. After approval, implementation can proceed wave by wave without asking for per-slice confirmation, as long as each wave stays inside the named scope and records evidence.
 
-Implementation should begin with Slice 1 only. Later slices should start after Slice 1 screenshots and checks are reviewed.
+Implementation should begin with the next unstarted wave from [the review package](./2026-07-08-product-optimization-spec-review-package.md). Stop only for irreversible actions, credential issues, schema migrations, force pushes, or deploys.
