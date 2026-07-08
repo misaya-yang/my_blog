@@ -1,0 +1,55 @@
+{
+  "baseURL": "http://localhost:4179",
+  "mockedContentRadar": true,
+  "checkedAt": "2026-07-08T22:03:38.448Z",
+  "results": [
+    {
+      "name": "manage-reader-signals-desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "url": "http://localhost:4179/manage",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "hasHorizontalOverflow": false,
+      "hasLoginRequiredText": false,
+      "hasNormalizedSignalsText": true,
+      "hasSignalFixtureText": true,
+      "hasContentRadarText": true,
+      "headings": [
+        "Writing Backlog",
+        "Content Radar",
+        "Writing opportunities",
+        "Subscription interest summary",
+        "Normalized signals",
+        "Reader Feedback",
+        "Subscribers"
+      ]
+    },
+    {
+      "name": "manage-reader-signals-mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "url": "http://localhost:4179/manage",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "hasHorizontalOverflow": false,
+      "hasLoginRequiredText": false,
+      "hasNormalizedSignalsText": true,
+      "hasSignalFixtureText": true,
+      "hasContentRadarText": true,
+      "headings": [
+        "Writing Backlog",
+        "Content Radar",
+        "Writing opportunities",
+        "Subscription interest summary",
+        "Normalized signals",
+        "Reader Feedback",
+        "Subscribers"
+      ]
+    }
+  ]
+}

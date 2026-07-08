@@ -310,6 +310,66 @@ const manage: TranslationDict = {
     en: "No topic interests yet.",
     zh: "暂无主题偏好。",
   },
+  "manage.readerSignals.title": {
+    en: "Normalized signals",
+    zh: "规范化信号",
+  },
+  "manage.readerSignals.description": {
+    en: "Safe owner-readable signals from feedback, search misses, Agent runs, audits, and freshness checks.",
+    zh: "来自反馈、搜索缺口、Agent 运行、审查和新鲜度检查的作者安全信号。",
+  },
+  "manage.readerSignals.count": {
+    en: "{count} signals",
+    zh: "{count} 个信号",
+  },
+  "manage.readerSignals.signalCount": {
+    en: "{count}x",
+    zh: "{count} 次",
+  },
+  "manage.readerSignals.empty": {
+    en: "No normalized reader signals yet.",
+    zh: "暂无规范化读者信号。",
+  },
+  "manage.readerSignals.kind.searchMiss": {
+    en: "Search miss",
+    zh: "搜索缺口",
+  },
+  "manage.readerSignals.kind.articleFeedback": {
+    en: "Feedback",
+    zh: "反馈",
+  },
+  "manage.readerSignals.kind.agentQuestion": {
+    en: "Agent question",
+    zh: "Agent 问题",
+  },
+  "manage.readerSignals.kind.agentLowConfidence": {
+    en: "Low confidence",
+    zh: "低置信",
+  },
+  "manage.readerSignals.kind.agentRefusal": {
+    en: "Agent refusal",
+    zh: "Agent 拒答",
+  },
+  "manage.readerSignals.kind.contentAudit": {
+    en: "Content audit",
+    zh: "内容审查",
+  },
+  "manage.readerSignals.kind.publishFreshness": {
+    en: "Freshness",
+    zh: "新鲜度",
+  },
+  "manage.readerSignals.severity.high": {
+    en: "High",
+    zh: "高",
+  },
+  "manage.readerSignals.severity.medium": {
+    en: "Medium",
+    zh: "中",
+  },
+  "manage.readerSignals.severity.low": {
+    en: "Low",
+    zh: "低",
+  },
 
   // Actions
   "manage.writeArticle": { en: "Write Article", zh: "撰写文章" },

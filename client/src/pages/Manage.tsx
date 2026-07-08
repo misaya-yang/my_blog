@@ -51,6 +51,12 @@ import { getClientSiteUrl, useSeo } from "@/lib/seo";
 import { buildRouteMetadata } from "@shared/metadata";
 import { getContentHealthSummary } from "@shared/content-ops";
 import {
+  getReaderSignalKindLabel,
+  getReaderSignalPrimaryText,
+  getReaderSignalSeverityLabel,
+  type ManageReaderSignal,
+} from "./manageReaderSignals";
+import {
   Plus,
   Search,
   MoreHorizontal,
@@ -97,6 +103,10 @@ type EngagementRadarSummary = {
   writingBacklog?: BacklogItem[];
   feedback?: { newCount?: number };
   searchMisses?: { uniqueQueries?: number };
+  readerSignals?: {
+    total?: number;
+    items?: ManageReaderSignal[];
+  };
 };
 type AgentQuestionRadarSummary = {
   summary?: {
@@ -1350,6 +1360,7 @@ function ContentRadarPanel({
 }) {
   const { language, t } = useLanguage();
   const opportunities = radar?.feedback?.opportunities ?? [];
+  const readerSignals = (radar?.readerSignals?.items ?? []).slice(0, 5);
   const topInterests = radar?.subscriptions?.topInterests ?? [];
   const languageBreakdown = radar?.subscriptions?.languageBreakdown ?? {
     zh: 0,
@@ -1463,37 +1474,98 @@ function ContentRadarPanel({
             </div>
           </div>
 
-          <div className="rounded-lg border border-primary/10 bg-slate-950/30 p-4">
-            <h4 className="text-sm font-semibold text-white">
-              {t("manage.engagement.subscriptionSummary")}
-            </h4>
-            <p className="mt-2 text-sm leading-6 text-slate-400">
-              {t("manage.engagement.languageBreakdown", {
-                zh: languageBreakdown.zh,
-                en: languageBreakdown.en,
-                unknown: languageBreakdown.unknown,
-              })}
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {topInterests.length > 0 ? (
-                topInterests.map((item: any) => (
-                  <Badge
-                    key={item.phrase}
-                    variant="outline"
-                    className="border-primary/20 text-primary"
-                  >
-                    {item.phrase} · {item.count}
-                  </Badge>
-                ))
-              ) : (
-                <span className="text-sm text-slate-500">
-                  {t("manage.engagement.noInterests")}
-                </span>
-              )}
+          <div className="grid gap-5">
+            <div className="rounded-lg border border-primary/10 bg-slate-950/30 p-4">
+              <h4 className="text-sm font-semibold text-white">
+                {t("manage.engagement.subscriptionSummary")}
+              </h4>
+              <p className="mt-2 text-sm leading-6 text-slate-400">
+                {t("manage.engagement.languageBreakdown", {
+                  zh: languageBreakdown.zh,
+                  en: languageBreakdown.en,
+                  unknown: languageBreakdown.unknown,
+                })}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {topInterests.length > 0 ? (
+                  topInterests.map((item: any) => (
+                    <Badge
+                      key={item.phrase}
+                      variant="outline"
+                      className="border-primary/20 text-primary"
+                    >
+                      {item.phrase} · {item.count}
+                    </Badge>
+                  ))
+                ) : (
+                  <span className="text-sm text-slate-500">
+                    {t("manage.engagement.noInterests")}
+                  </span>
+                )}
+              </div>
+              <p className="mt-4 text-xs leading-5 text-slate-500">
+                {t("manage.engagement.deliveryDescription")}
+              </p>
             </div>
-            <p className="mt-4 text-xs leading-5 text-slate-500">
-              {t("manage.engagement.deliveryDescription")}
-            </p>
+
+            <div className="rounded-lg border border-primary/10 bg-slate-950/30 p-4">
+              <div className="mb-3 flex items-start justify-between gap-3">
+                <div>
+                  <h4 className="text-sm font-semibold text-white">
+                    {t("manage.readerSignals.title")}
+                  </h4>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">
+                    {t("manage.readerSignals.description")}
+                  </p>
+                </div>
+                <Badge
+                  variant="outline"
+                  className="shrink-0 border-primary/20 text-primary"
+                >
+                  {t("manage.readerSignals.count", {
+                    count: radar?.readerSignals?.total ?? 0,
+                  })}
+                </Badge>
+              </div>
+              <div className="grid gap-2">
+                {readerSignals.length === 0 ? (
+                  <p className="rounded-md border border-primary/10 bg-slate-950/25 p-3 text-sm text-slate-500">
+                    {t("manage.readerSignals.empty")}
+                  </p>
+                ) : (
+                  readerSignals.map((signal: ManageReaderSignal) => (
+                    <article
+                      key={signal.id}
+                      className="rounded-md border border-primary/10 bg-slate-950/25 p-3"
+                    >
+                      <div className="mb-2 flex flex-wrap items-center gap-2">
+                        <Badge variant="secondary">
+                          {getReaderSignalKindLabel(signal.kind, t)}
+                        </Badge>
+                        <Badge variant="outline" className="border-primary/20">
+                          {getReaderSignalSeverityLabel(signal.severity, t)}
+                        </Badge>
+                        {typeof signal.count === "number" && (
+                          <span className="text-xs text-slate-500">
+                            {t("manage.readerSignals.signalCount", {
+                              count: signal.count,
+                            })}
+                          </span>
+                        )}
+                      </div>
+                      <p className="line-clamp-1 text-sm font-medium text-slate-200">
+                        {getReaderSignalPrimaryText(signal)}
+                      </p>
+                      {signal.excerpt && (
+                        <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-500">
+                          {signal.excerpt}
+                        </p>
+                      )}
+                    </article>
+                  ))
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}
