@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-06-19T17:09:55.599Z",
+  "generatedAt": "2026-07-08T18:54:02.231Z",
   "git": {
-    "branch": "main",
-    "commit": "43cbf84",
-    "dirty": true
+    "branch": "dev",
+    "commit": "08fc12e",
+    "dirty": false
   },
   "baseUrl": "http://localhost:3000/",
   "publicInventory": [
@@ -23,7 +23,7 @@
         "verifier"
       ],
       "publishedAt": "2026-06-17T00:00:00.000Z",
-      "updatedAt": "2026-06-19T17:08:42.342Z",
+      "updatedAt": "2026-06-28T02:14:37.951Z",
       "seriesSlug": "llm-post-training-rl",
       "seriesOrder": 1
     },
@@ -41,7 +41,7 @@
         "transformer"
       ],
       "publishedAt": "2026-06-16T00:00:00.000Z",
-      "updatedAt": "2026-06-19T17:08:32.875Z",
+      "updatedAt": "2026-06-24T03:36:12.074Z",
       "seriesSlug": "generative-modeling",
       "seriesOrder": 1
     },
@@ -59,7 +59,7 @@
         "transformer"
       ],
       "publishedAt": "2026-06-06T00:00:00.000Z",
-      "updatedAt": "2026-06-19T17:08:24.680Z",
+      "updatedAt": "2026-06-19T17:42:55.925Z",
       "seriesSlug": "feed-forward-mechanisms",
       "seriesOrder": 1
     },
@@ -78,7 +78,7 @@
         "tool-use"
       ],
       "publishedAt": "2026-05-31T00:40:00.000Z",
-      "updatedAt": "2026-06-19T17:09:23.311Z",
+      "updatedAt": "2026-07-08T18:51:38.652Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 4
     },
@@ -154,7 +154,7 @@
         "transformer"
       ],
       "publishedAt": "2026-05-31T00:00:00.000Z",
-      "updatedAt": "2026-06-19T17:08:16.627Z",
+      "updatedAt": "2026-06-22T13:35:59.938Z",
       "seriesSlug": "residual-stability",
       "seriesOrder": 1
     }
@@ -236,12 +236,15 @@
     "configuredNonPublicSlugs": []
   },
   "agentKnowledge": {
-    "ok": true,
+    "ok": false,
     "chunkCount": 142,
     "publicPostCount": 8,
     "indexedPublicPostCount": 8,
     "hiddenOrDraftExcludedCount": 1,
-    "stalePublicPostSlugs": [],
+    "stalePublicPostSlugs": [
+      "flow-matching-generative-transport",
+      "isohc-fixed-vector-isometric-residual-mixing"
+    ],
     "extraIndexedPostSlugs": [],
     "indexedPostSlugs": [
       "agent-harness-engine-evaluating-tool-using-agents",
@@ -256,11 +259,7 @@
     "nonPublicIndexedSlugs": [],
     "lastReindexAt": "2026-06-19T17:09:35.070Z"
   },
-  "dateDrift": {
-    "comparedPublicPosts": 8,
-    "publishedAtChanged": [],
-    "updatedAtChangedWithoutMaterialChange": []
-  },
+  "dateDrift": null,
   "routeChecks": [
     {
       "path": "(all)",
@@ -268,5 +267,7 @@
       "reason": "Set AUDIT_BASE_URL to run HTTP route freshness checks."
     }
   ],
-  "blockers": []
+  "blockers": [
+    "Agent knowledge mismatch: 8/8 public posts indexed, stale=[flow-matching-generative-transport, isohc-fixed-vector-isometric-residual-mixing], extra=[], nonPublic=[]"
+  ]
 }
