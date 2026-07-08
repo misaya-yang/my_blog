@@ -157,6 +157,44 @@ const GENERIC_EXCERPT_PATTERNS: Array<{
   },
 ];
 
+const GENERIC_TITLE_VOICE_PATTERNS: Array<{
+  phrase: string;
+  pattern: RegExp;
+}> = [
+  { phrase: "一文看懂", pattern: /一文看懂/ },
+  { phrase: "一文读懂", pattern: /一文读懂/ },
+  { phrase: "一文搞懂", pattern: /一文搞懂/ },
+  { phrase: "全面解析", pattern: /全面解析/ },
+  { phrase: "全面梳理", pattern: /全面梳理/ },
+  { phrase: "终极指南", pattern: /终极指南/ },
+  { phrase: "范式变革", pattern: /范式变革/ },
+  { phrase: "革命性", pattern: /革命性/ },
+  { phrase: "ultimate guide", pattern: /\bultimate guide\b/i },
+  { phrase: "complete guide", pattern: /\bcomplete guide\b/i },
+  { phrase: "comprehensive guide", pattern: /\bcomprehensive guide\b/i },
+  { phrase: "deep dive", pattern: /\bdeep dive\b/i },
+  { phrase: "game-changing", pattern: /\bgame[- ]changing\b/i },
+  { phrase: "revolutionary", pattern: /\brevolutionary\b/i },
+  { phrase: "paradigm shift", pattern: /\bparadigm shift\b/i },
+];
+
+const GENERIC_EXCERPT_VOICE_SUGGESTION_PATTERNS: Array<{
+  phrase: string;
+  pattern: RegExp;
+}> = [
+  { phrase: "一文看懂", pattern: /一文看懂/ },
+  { phrase: "全面解析", pattern: /全面解析/ },
+  { phrase: "终极指南", pattern: /终极指南/ },
+  { phrase: "范式变革", pattern: /范式变革/ },
+  { phrase: "革命性", pattern: /革命性/ },
+  { phrase: "deep dive", pattern: /\bdeep dive\b/i },
+  { phrase: "game-changing", pattern: /\bgame[- ]changing\b/i },
+  { phrase: "revolutionary", pattern: /\brevolutionary\b/i },
+  { phrase: "paradigm shift", pattern: /\bparadigm shift\b/i },
+  { phrase: "significantly improves", pattern: /\bsignificantly improves\b/i },
+  { phrase: "dramatically improves", pattern: /\bdramatically improves\b/i },
+];
+
 const LINK_PATTERN = /\[[^\]]+]\(([^)]+)\)/g;
 
 export async function runContentQualityAudit(
@@ -277,6 +315,8 @@ function auditSeedPosts(
     }
     seenSlugs.add(post.slug);
 
+    const isPublicPost = isPublicPublishedPost(post);
+
     if (!post.title.trim()) {
       issues.push(
         failure(
@@ -285,6 +325,21 @@ function auditSeedPosts(
           `Missing title for ${post.slug}.`
         )
       );
+    } else if (isPublicPost) {
+      for (const { phrase, pattern } of GENERIC_TITLE_VOICE_PATTERNS) {
+        if (!pattern.test(post.title)) continue;
+        issues.push(
+          suggestion(
+            "seed.generic_title_voice",
+            "style",
+            "seed-blog.mjs",
+            `Review generic title phrasing: ${phrase}. Slug: ${post.slug}`,
+            undefined,
+            post.title,
+            "Use the specific mechanism, object, or failure boundary instead of generic guide or hype phrasing."
+          )
+        );
+      }
     }
     if (!post.excerpt.trim()) {
       issues.push(
@@ -294,7 +349,7 @@ function auditSeedPosts(
           `Missing excerpt for ${post.slug}.`
         )
       );
-    } else if (post.status === "published" && post.visibility === "public") {
+    } else if (isPublicPost) {
       for (const { pattern, message } of GENERIC_EXCERPT_PATTERNS) {
         if (!pattern.test(post.excerpt)) continue;
         issues.push(
@@ -305,6 +360,23 @@ function auditSeedPosts(
             `${message} Slug: ${post.slug}`,
             undefined,
             post.excerpt
+          )
+        );
+      }
+      for (const {
+        phrase,
+        pattern,
+      } of GENERIC_EXCERPT_VOICE_SUGGESTION_PATTERNS) {
+        if (!pattern.test(post.excerpt)) continue;
+        issues.push(
+          suggestion(
+            "seed.generic_excerpt_voice_suggestion",
+            "style",
+            "seed-blog.mjs",
+            `Review generic excerpt phrasing: ${phrase}. Slug: ${post.slug}`,
+            undefined,
+            post.excerpt,
+            "Lead with the concrete problem, mechanism, metric, or reader decision instead of generic guide or hype phrasing."
           )
         );
       }
@@ -339,6 +411,10 @@ function auditSeedPosts(
   }
 
   return issues;
+}
+
+function isPublicPublishedPost(post: SeedPost) {
+  return post.status === "published" && post.visibility === "public";
 }
 
 function auditSeries(seedPosts: SeedPost[]): ContentQualityIssue[] {

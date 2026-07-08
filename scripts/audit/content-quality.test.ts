@@ -251,6 +251,74 @@ describe("content quality audit", () => {
     );
   });
 
+  it("flags generic public seed titles and excerpts as voice suggestions", async () => {
+    const root = await createTempProject();
+    await writeFile(
+      join(root, "seed-blog.mjs"),
+      `
+      const posts = [
+        {
+          title: "Agent RAG Ultimate Guide: 一文看懂范式变革",
+          slug: "generic-title",
+          contentPath: "./generic.md",
+          status: "published",
+          visibility: "public",
+          excerpt: "A deep dive into a revolutionary paradigm shift that dramatically improves retrieval.",
+        },
+      ];
+      `
+    );
+    await writeFile(join(root, "generic.md"), "# Agent RAG Ultimate Guide: 一文看懂范式变革\n\nBody.");
+
+    const report = await runContentQualityAudit(root);
+
+    expect(report.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          severity: "suggestion",
+          category: "style",
+          code: "seed.generic_title_voice",
+          evidence: expect.stringContaining("Ultimate Guide"),
+        }),
+        expect.objectContaining({
+          severity: "suggestion",
+          category: "style",
+          code: "seed.generic_excerpt_voice_suggestion",
+          evidence: expect.stringContaining("deep dive"),
+        }),
+      ])
+    );
+  });
+
+  it("keeps hidden draft seed titles and excerpts out of public voice suggestions", async () => {
+    const root = await createTempProject();
+    await writeFile(
+      join(root, "seed-blog.mjs"),
+      `
+      const posts = [
+        {
+          title: "Agent RAG Ultimate Guide: 一文看懂范式变革",
+          slug: "hidden-generic-title",
+          contentPath: "./hidden.md",
+          status: "draft",
+          visibility: "hidden",
+          excerpt: "A deep dive into a revolutionary paradigm shift.",
+        },
+      ];
+      `
+    );
+    await writeFile(join(root, "hidden.md"), "# Agent RAG Ultimate Guide: 一文看懂范式变革\n\nBody.");
+
+    const report = await runContentQualityAudit(root);
+
+    expect(
+      report.issues.filter(issue =>
+        issue.code.startsWith("seed.generic_") &&
+        issue.category === "style"
+      )
+    ).toEqual([]);
+  });
+
   it("keeps hidden draft excerpts out of public voice warnings", async () => {
     const root = await createTempProject();
     await writeFile(
