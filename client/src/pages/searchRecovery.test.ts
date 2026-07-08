@@ -16,6 +16,15 @@ describe("search recovery", () => {
     });
   });
 
+  it("uses shared concept aliases for recovery topic ordering", () => {
+    const topics = getRecoveryTopics("证据包 retrieval");
+
+    expect(topics[0]).toMatchObject({
+      query: "Evidence Packet",
+      href: "/search?q=Evidence%20Packet",
+    });
+  });
+
   it("opens the reader with a query-aware recovery prompt", () => {
     const dispatchEvent = vi.fn();
     vi.stubGlobal("window", {

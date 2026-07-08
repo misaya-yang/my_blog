@@ -1,4 +1,10 @@
 import type { Category, Post, Tag } from "../drizzle/schema";
+import {
+  expandSearchToken,
+  getAliasGroupsForQuery,
+  normalizeSearchText,
+  tokenizeSearchQuery,
+} from "../shared/search-aliases.js";
 export { estimateReadingMinutes } from "../shared/reading-time.js";
 
 export type DiscoveryPost = Post & {
@@ -153,10 +159,6 @@ function publishedTime(post: DiscoveryPost) {
   return post.publishedAt ? new Date(post.publishedAt).getTime() : 0;
 }
 
-function normalize(value: string | null | undefined) {
-  return (value ?? "").trim().toLowerCase().replace(/\s+/g, " ");
-}
-
 function postMatchesSearch(post: DiscoveryPost, searchPlan: SearchPlan) {
   const corpus = searchCorpus(post);
   if (corpus.includes(searchPlan.normalizedQuery)) return true;
@@ -166,7 +168,7 @@ function postMatchesSearch(post: DiscoveryPost, searchPlan: SearchPlan) {
 }
 
 function searchCorpus(post: DiscoveryPost) {
-  return normalize(
+  return normalizeSearchText(
     [
       post.title,
       post.excerpt,
@@ -186,61 +188,15 @@ type SearchPlan = {
   excerptNeedles: string[];
 };
 
-const DISCOVERY_ALIASES: Record<string, string[]> = {
-  agent: ["agent", "agents", "智能体", "agentloop", "loop", "runtime", "运行时"],
-  agents: ["agent", "agents", "智能体", "agentloop", "loop", "runtime", "运行时"],
-  智能体: [
-    "agent systems",
-    "agent harness",
-    "agentloop",
-    "agent routing",
-    "loop",
-    "runtime",
-    "运行时",
-  ],
-  循环: ["agentloop", "loop", "runtime", "运行时"],
-  rag: ["rag", "retrieval", "检索", "证据", "evidence", "packet", "证据包"],
-  retrieval: ["rag", "retrieval", "检索", "evidence", "packet"],
-  检索: ["rag", "retrieval", "evidence", "packet"],
-  证据: ["rag", "evidence", "packet", "证据包"],
-  harness: ["harness", "evaluation", "评测", "trace", "tool", "工具"],
-  eval: ["harness", "evaluation", "评测", "trace"],
-  iso: ["isohc", "residual", "残差", "稳定性", "正交", "invariant", "不变量"],
-  isohc: ["iso", "residual", "残差", "稳定性", "正交", "invariant", "不变量"],
-  残差: ["isohc", "residual", "stability", "稳定性"],
-  rope: ["rope", "position", "位置编码", "long context", "长上下文"],
-  位置编码: ["rope", "position", "position encoding", "long context", "长上下文"],
-  context: ["context", "上下文", "long context", "context engineering"],
-  上下文: ["context", "context engineering", "long context"],
-  ffn: ["ffn", "gated ffn", "swiglu", "geglu", "门控", "通道", "mlp"],
-  swiglu: ["ffn", "gated ffn", "swiglu", "门控"],
-  门控: ["ffn", "gated ffn", "swiglu", "通道"],
-  flow: ["flow matching", "diffusion", "生成", "扩散", "transport", "运输"],
-  diffusion: ["flow matching", "diffusion", "生成", "扩散", "transport"],
-  生成: ["flow matching", "diffusion", "generative", "transport", "运输"],
-  扩散: ["flow matching", "diffusion", "generative"],
-  rlhf: ["rlhf", "reinforcement learning", "强化学习", "post-training", "后训练"],
-  rlvr: ["rlvr", "verifiable rewards", "可验证奖励", "强化学习", "后训练"],
-  dpo: ["dpo", "preference optimization", "偏好优化", "rlhf"],
-  grpo: ["grpo", "reinforcement learning", "强化学习", "rlvr"],
-  强化学习: ["rlhf", "reinforcement learning", "rlvr", "grpo", "后训练"],
-  后训练: ["post-training", "rlhf", "dpo", "rlvr", "偏好优化"],
-  偏好优化: ["preference optimization", "dpo", "rlhf"],
-};
-
 function buildSearchPlan(query: string): SearchPlan {
-  const normalizedQuery = normalize(query);
+  const normalizedQuery = normalizeSearchText(query);
   if (!normalizedQuery) {
     return { normalizedQuery, groups: [], excerptNeedles: [] };
   }
 
-  const groups = tokenizeSearchQuery(normalizedQuery).map(token =>
-    expandSearchToken(token)
-  );
   const queryTokens = tokenizeSearchQuery(normalizedQuery);
-  const aliasGroups = Object.entries(DISCOVERY_ALIASES)
-    .filter(([alias]) => queryContainsAlias(normalizedQuery, queryTokens, alias))
-    .map(([, expansions]) => expansions.map(normalize).filter(Boolean));
+  const groups = queryTokens.map(token => expandSearchToken(token));
+  const aliasGroups = getAliasGroupsForQuery(normalizedQuery, queryTokens);
   const allGroups = [...groups, ...aliasGroups].filter(group => group.length > 0);
   const excerptNeedles = Array.from(
     new Set([normalizedQuery, ...allGroups.flat()].filter(Boolean))
@@ -251,31 +207,6 @@ function buildSearchPlan(query: string): SearchPlan {
     groups: allGroups.length > 0 ? allGroups : [[normalizedQuery]],
     excerptNeedles,
   };
-}
-
-function tokenizeSearchQuery(normalizedQuery: string) {
-  if (!/\s/.test(normalizedQuery)) return [normalizedQuery];
-  return normalizedQuery
-    .split(/\s+/)
-    .map(token => token.trim())
-    .filter(token => token.length >= 2 && !["ai", "the", "and"].includes(token));
-}
-
-function queryContainsAlias(
-  normalizedQuery: string,
-  queryTokens: string[],
-  alias: string
-) {
-  const normalizedAlias = normalize(alias);
-  if (!normalizedAlias) return false;
-  if (/^[a-z0-9-]+$/.test(normalizedAlias)) {
-    return queryTokens.includes(normalizedAlias);
-  }
-  return normalizedQuery.includes(normalizedAlias);
-}
-
-function expandSearchToken(token: string) {
-  return Array.from(new Set([token, ...(DISCOVERY_ALIASES[token] ?? [])].map(normalize).filter(Boolean)));
 }
 
 function buildMatchExcerpt(post: DiscoveryPost, searchPlan: SearchPlan) {
@@ -292,7 +223,7 @@ function buildMatchExcerpt(post: DiscoveryPost, searchPlan: SearchPlan) {
     post.excerpt ??
     post.content ??
     post.title;
-  const normalizedSource = normalize(source);
+  const normalizedSource = normalizeSearchText(source);
   const needle = match?.needle ?? searchPlan.normalizedQuery;
   const index = normalizedSource.indexOf(needle);
 
@@ -309,7 +240,7 @@ function buildMatchExcerpt(post: DiscoveryPost, searchPlan: SearchPlan) {
 
 function findExcerptMatch(sources: string[], needles: string[]) {
   for (const needle of needles) {
-    const source = sources.find(value => normalize(value).includes(needle));
+    const source = sources.find(value => normalizeSearchText(value).includes(needle));
     if (source) return { source, needle };
   }
   return null;

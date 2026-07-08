@@ -13,6 +13,7 @@ import { trpc } from "@/lib/trpc";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
 import { trackAnalyticsEvent } from "@/lib/analytics";
 import { buildRouteMetadata } from "@shared/metadata";
+import { getSearchHighlightNeedles } from "@shared/search-aliases";
 import {
   getRecoveryTopics,
   openSearchRecoveryAgent,
@@ -50,23 +51,54 @@ export function getHighlightedTextParts(
   text: string,
   query: string
 ): HighlightedTextPart[] {
-  const normalized = query.trim().toLowerCase();
-  if (!normalized) return [{ text, highlighted: false }];
+  const needles = getSearchHighlightNeedles(query);
+  if (needles.length === 0) return [{ text, highlighted: false }];
 
-  const index = text.toLowerCase().indexOf(normalized);
-  if (index === -1) return [{ text, highlighted: false }];
+  const lowerText = text.toLowerCase();
+  const parts: HighlightedTextPart[] = [];
+  let cursor = 0;
 
-  return [
-    { text: text.slice(0, index), highlighted: false },
-    {
-      text: text.slice(index, index + normalized.length),
+  while (cursor < text.length) {
+    const match = findNextHighlightMatch(lowerText, needles, cursor);
+    if (!match) {
+      parts.push({ text: text.slice(cursor), highlighted: false });
+      break;
+    }
+
+    if (match.index > cursor) {
+      parts.push({ text: text.slice(cursor, match.index), highlighted: false });
+    }
+
+    parts.push({
+      text: text.slice(match.index, match.index + match.needle.length),
       highlighted: true,
-    },
-    {
-      text: text.slice(index + normalized.length),
-      highlighted: false,
-    },
-  ].filter(part => part.text.length > 0);
+    });
+    cursor = match.index + match.needle.length;
+  }
+
+  return parts.filter(part => part.text.length > 0);
+}
+
+function findNextHighlightMatch(
+  lowerText: string,
+  needles: string[],
+  startIndex: number
+) {
+  let nextMatch: { index: number; needle: string } | null = null;
+
+  for (const needle of needles) {
+    const index = lowerText.indexOf(needle, startIndex);
+    if (index === -1) continue;
+    if (
+      !nextMatch ||
+      index < nextMatch.index ||
+      (index === nextMatch.index && needle.length > nextMatch.needle.length)
+    ) {
+      nextMatch = { index, needle };
+    }
+  }
+
+  return nextMatch;
 }
 
 function HighlightedText({ text, query }: { text: string; query: string }) {

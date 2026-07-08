@@ -170,6 +170,12 @@ describe("reader discovery logic", () => {
       }).results.map(item => item.slug)
     ).toEqual(["llm-rl"]);
     expect(
+      searchDiscoveryPosts(posts, "偏好优化", {
+        limit: 10,
+        offset: 0,
+      }).results.map(item => item.slug)
+    ).toEqual(["llm-rl"]);
+    expect(
       searchDiscoveryPosts(posts, "hidden 智能体", { limit: 10, offset: 0 }).results.map(
         item => item.slug
       )

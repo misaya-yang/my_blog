@@ -1,54 +1,20 @@
 import { openBlogAgentWithPrompt } from "@/components/agent/routeContext";
 import { trackAnalyticsEvent } from "@/lib/analytics";
+import {
+  SEARCH_RECOVERY_TOPICS,
+  normalizeSearchText,
+} from "@shared/search-aliases";
 
-export const recoveryTopics = [
-  {
-    labelKey: "track.topic.agentSystems",
-    query: "AgentLoop",
-    href: "/search?q=AgentLoop",
-    aliases: ["agent", "agentloop", "智能体", "loop", "runtime", "运行时"],
-  },
-  {
-    labelKey: "track.topic.ragRetrieval",
-    query: "Evidence Packet",
-    href: "/search?q=Evidence%20Packet",
-    aliases: ["rag", "retrieval", "检索", "证据", "evidence", "packet"],
-  },
-  {
-    labelKey: "track.topic.harnessEngine",
-    query: "Harness Engine",
-    href: "/search?q=Harness%20Engine",
-    aliases: ["harness", "eval", "评测", "trace", "tool", "工具"],
-  },
-  {
-    labelKey: "track.topic.isohc",
-    query: "IsoHC",
-    href: "/search?q=IsoHC",
-    aliases: ["iso", "isohc", "残差", "稳定性", "正交", "不变量"],
-  },
-  {
-    labelKey: "track.topic.longContext",
-    query: "Long Context",
-    href: "/algorithms",
-    aliases: ["long", "context", "上下文", "rope", "位置编码"],
-  },
-  {
-    labelKey: "track.topic.contextEngineering",
-    query: "Context Engineering",
-    href: "/applications",
-    aliases: ["context", "上下文", "rag", "agent", "evidence"],
-  },
-];
-
+export const recoveryTopics = SEARCH_RECOVERY_TOPICS;
 export type RecoveryTopic = (typeof recoveryTopics)[number];
 
 export function getRecoveryTopics(query: string): RecoveryTopic[] {
-  const normalized = query.toLowerCase();
+  const normalized = normalizeSearchText(query);
   return recoveryTopics
     .map(topic => ({
       ...topic,
       score: topic.aliases.filter(alias =>
-        normalized.includes(alias.toLowerCase())
+        normalized.includes(normalizeSearchText(alias))
       ).length,
     }))
     .sort((a, b) => b.score - a.score || a.query.localeCompare(b.query))
