@@ -1,5 +1,7 @@
 # Article Rendering Slice 2 Implementation Plan
 
+Status: Completed
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Upgrade the existing Markdown renderer with visible heading anchors, article callouts, and code block metadata without changing persisted post content.
@@ -41,7 +43,7 @@
 - Consumes: `<MarkdownRenderer content headings copiedCode copyCodeLabel onCopyCode />`
 - Produces: static markup containing `article-callout`, `heading-anchor-link`, `code-block-meta`, and unchanged copied code payload.
 
-- [ ] **Step 1: Extend the rich fixture**
+- [x] **Step 1: Extend the rich fixture**
 
 Add callout and titled code samples:
 
@@ -54,7 +56,7 @@ const verifier = (reward: number) => reward > 0;
 ```
 ````
 
-- [ ] **Step 2: Add assertions**
+- [x] **Step 2: Add assertions**
 
 Assert:
 
@@ -70,7 +72,7 @@ expect(html).toContain("server/ai/harness.ts");
 expect(html).toContain('aria-label="Copy code"');
 ```
 
-- [ ] **Step 3: Run test to verify failure**
+- [x] **Step 3: Run test to verify failure**
 
 Run:
 
@@ -89,7 +91,7 @@ Expected before implementation: FAIL because the new class names and metadata la
 - Consumes: `headings: Array<{ id: string; text: string; level: number }>`
 - Produces: headings with `id` and optional `<a className="heading-anchor-link" href="#id">#</a>`
 
-- [ ] **Step 1: Update heading component**
+- [x] **Step 1: Update heading component**
 
 Render anchor links only when an id exists:
 
@@ -111,7 +113,7 @@ return (
 );
 ```
 
-- [ ] **Step 2: Run renderer test**
+- [x] **Step 2: Run renderer test**
 
 Run:
 
@@ -130,7 +132,7 @@ Expected: heading anchor assertions pass after implementation.
 - Consumes Markdown blockquote markers `[!NOTE]`, `[!CLAIM]`, `[!CAVEAT]`, `[!IMPLEMENTATION]`, `[!SOURCE]`
 - Produces semantic callout markup while preserving normal blockquotes for unrecognized markers.
 
-- [ ] **Step 1: Add callout helpers**
+- [x] **Step 1: Add callout helpers**
 
 Add:
 
@@ -147,7 +149,7 @@ const CALLOUT_LABELS: Record<CalloutType, string> = {
 
 Add recursive text extraction and marker stripping helpers.
 
-- [ ] **Step 2: Render callout blockquote component**
+- [x] **Step 2: Render callout blockquote component**
 
 Add `blockquote` component:
 
@@ -164,7 +166,7 @@ blockquote: ({ node: _node, children, ...props }: any) => {
 }
 ```
 
-- [ ] **Step 3: Run renderer test**
+- [x] **Step 3: Run renderer test**
 
 Run:
 
@@ -183,7 +185,7 @@ Expected: callout assertions pass and existing footnotes still render.
 - Consumes code block `className` and optional node metadata.
 - Produces visible language and filename label without changing copied code text.
 
-- [ ] **Step 1: Parse code metadata in `code` component**
+- [x] **Step 1: Parse code metadata in `code` component**
 
 Add `data-language` and `data-filename` attributes to block code elements:
 
@@ -201,7 +203,7 @@ return (
 );
 ```
 
-- [ ] **Step 2: Render metadata in `pre` component**
+- [x] **Step 2: Render metadata in `pre` component**
 
 Read the attributes from the child code element:
 
@@ -214,7 +216,7 @@ Read the attributes from the child code element:
 ) : null}
 ```
 
-- [ ] **Step 3: Run renderer test**
+- [x] **Step 3: Run renderer test**
 
 Run:
 
@@ -229,7 +231,7 @@ Expected: code metadata assertions pass.
 **Files:**
 - Create: `docs/product_optimization/reports/article-rendering-slice-2-2026-07-08/summary.md`
 
-- [ ] **Step 1: Run final checks**
+- [x] **Step 1: Run final checks**
 
 Run:
 
@@ -242,11 +244,11 @@ corepack pnpm build
 
 Expected: all PASS.
 
-- [ ] **Step 2: Write evidence summary**
+- [x] **Step 2: Write evidence summary**
 
 Record the passed commands and remaining renderer work.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 Run:
 

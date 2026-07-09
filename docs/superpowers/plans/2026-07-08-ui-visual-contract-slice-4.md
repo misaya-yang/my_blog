@@ -1,5 +1,7 @@
 # UI Visual Contract Slice 4 Implementation Plan
 
+Status: Completed
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Establish a calmer public visual contract for the blog homepage and article reader without changing routes, data contracts, or component dependencies.
@@ -30,7 +32,7 @@
 - Consumes: existing `--bg`, `--fg`, `--surface-card`, `--border`, `--accent-bright`, and `.dark` theme tokens.
 - Produces: `--surface-page`, `--surface-reading`, `--surface-rail`, `--surface-muted`, `--surface-overlay`, `--text-primary`, `--text-secondary`, `--text-tertiary`, `--text-link`, `--border-subtle`, `--border-strong`, `--accent-action`, `--accent-reading`, `--focus-ring`, plus public aliases.
 
-- [ ] **Step 1: Add light-mode tokens**
+- [x] **Step 1: Add light-mode tokens**
 
 Add semantic variables inside `:root` after the existing base color tokens:
 
@@ -51,7 +53,7 @@ Add semantic variables inside `:root` after the existing base color tokens:
   --focus-ring: oklch(0.5 0.11 220 / 38%);
 ```
 
-- [ ] **Step 2: Add dark-mode tokens**
+- [x] **Step 2: Add dark-mode tokens**
 
 Add the same token names inside `.dark`:
 
@@ -72,7 +74,7 @@ Add the same token names inside `.dark`:
   --focus-ring: oklch(0.76 0.08 198 / 42%);
 ```
 
-- [ ] **Step 3: Run diff check**
+- [x] **Step 3: Run diff check**
 
 Run: `git diff -- client/src/index.css`
 
@@ -88,11 +90,11 @@ Expected: only additive tokens in `:root` and `.dark`.
 - Consumes: tokens from Task 1.
 - Produces: final public-facing CSS layer for `.space-page`, `.site-header`, `.home-index-spread`, `.home-intro-rail`, `.home-track-panel`, `.home-featured-note`, `.paper-reader-main`, `.article-prose`, and related public controls.
 
-- [ ] **Step 1: Append final convergence layer**
+- [x] **Step 1: Append final convergence layer**
 
 Append a new `@layer components` block at the end of `visual-refresh.css` with comment `PVC-04 public visual contract`, then update the existing public token block in `owner-tools.css` because `owner-tools.css` is imported after `visual-refresh.css` and currently owns several public `!important` overrides.
 
-- [ ] **Step 2: Define public aliases**
+- [x] **Step 2: Define public aliases**
 
 Inside `.space-page:not(.owner-dark-scope)`, map public aliases to semantic tokens:
 
@@ -118,7 +120,7 @@ Inside `.space-page:not(.owner-dark-scope)`, map public aliases to semantic toke
 --public-panel-shadow: 0 1px 2px oklch(0.32 0.018 250 / 7%);
 ```
 
-- [ ] **Step 3: Calm homepage and reader surfaces**
+- [x] **Step 3: Calm homepage and reader surfaces**
 
 Use existing class names to remove neon/glass emphasis, reduce crowding, and keep layout stable:
 
@@ -148,7 +150,7 @@ Use existing class names to remove neon/glass emphasis, reduce crowding, and kee
 }
 ```
 
-- [ ] **Step 4: Normalize article typography**
+- [x] **Step 4: Normalize article typography**
 
 Add reader-specific typography rules:
 
@@ -165,7 +167,7 @@ Add reader-specific typography rules:
 }
 ```
 
-- [ ] **Step 5: Prevent horizontal overflow**
+- [x] **Step 5: Prevent horizontal overflow**
 
 Add overflow guards for public reader and homepage containers:
 
@@ -184,7 +186,7 @@ Add overflow guards for public reader and homepage containers:
 }
 ```
 
-- [ ] **Step 6: Run CSS diff check**
+- [x] **Step 6: Run CSS diff check**
 
 Run: `git diff -- client/src/styles/visual-refresh.css client/src/styles/owner-tools.css`
 
@@ -199,7 +201,7 @@ Expected: one final layer appended plus the existing public token override align
 - Consumes: existing reader selectors in `visual-refresh.css`.
 - Produces: additive class hooks `liquid-readable`, `liquid-panel`, and `liquid-surface` only where they already match existing selector intent.
 
-- [ ] **Step 1: Add reader main hook**
+- [x] **Step 1: Add reader main hook**
 
 Change:
 
@@ -213,7 +215,7 @@ To:
 <article className="reading-surface solid-reading liquid-readable paper-reader-main p-5 sm:p-8 lg:p-10">
 ```
 
-- [ ] **Step 2: Add rail and reader helper hooks**
+- [x] **Step 2: Add rail and reader helper hooks**
 
 Change the relevant `glass-dock` class strings:
 
@@ -237,7 +239,7 @@ To additive variants:
 "toc-surface glass-dock liquid-panel sticky top-24 p-5"
 ```
 
-- [ ] **Step 3: Run type-aware check**
+- [x] **Step 3: Run type-aware check**
 
 Run: `corepack pnpm check`
 
@@ -252,7 +254,7 @@ Expected: no TypeScript or lint errors.
 - Consumes: verification command output.
 - Produces: a concise evidence report for user review.
 
-- [ ] **Step 1: Run targeted and full gates**
+- [x] **Step 1: Run targeted and full gates**
 
 Run:
 
@@ -266,7 +268,7 @@ corepack pnpm build
 
 Expected: all commands pass. If the test script runs the full suite, record the actual total.
 
-- [ ] **Step 2: Run browser UI audit**
+- [x] **Step 2: Run browser UI audit**
 
 Start local server:
 
@@ -282,11 +284,11 @@ corepack pnpm audit:ui
 
 Expected: UI audit passes without horizontal overflow regressions. Stop the dev server after the audit.
 
-- [ ] **Step 3: Restore generated timestamp noise if needed**
+- [x] **Step 3: Restore generated timestamp noise if needed**
 
 If `docs/product_optimization/reports/ui-layout-checks-latest.json` only changes `generatedAt`, restore that line to the previous timestamp so the commit stays meaningful.
 
-- [ ] **Step 4: Write evidence report**
+- [x] **Step 4: Write evidence report**
 
 Record:
 
@@ -318,11 +320,11 @@ Branch: dev
 - Existing component structure is preserved.
 ```
 
-- [ ] **Step 5: Simplification pass**
+- [x] **Step 5: Simplification pass**
 
 Review only modified code for repeated selectors, unnecessary `!important`, and accidental overreach. Do not reformat unrelated CSS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 Run:
 

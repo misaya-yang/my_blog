@@ -1,5 +1,7 @@
 # Agent Helper Extraction Slice 3 Implementation Plan
 
+Status: Completed
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Extract Agent frame, scroll, and elapsed-time pure helpers from `BlogAgentRoot.tsx` without changing public Agent behavior.
@@ -50,11 +52,11 @@
 - Produces: `isAgentFramePreset(value)`
 - Produces: `getAgentFramePresetShortcut(preset)`
 
-- [ ] **Step 1: Move frame constants and helpers**
+- [x] **Step 1: Move frame constants and helpers**
 
 Create `agentFrameState.ts` with the exact existing constants and functions from `BlogAgentRoot.tsx`.
 
-- [ ] **Step 2: Import and re-export from root**
+- [x] **Step 2: Import and re-export from root**
 
 In `BlogAgentRoot.tsx`, import frame helpers and add:
 
@@ -71,7 +73,7 @@ export {
 export type { AgentFramePreset, AgentFrameState } from "./agentFrameState";
 ```
 
-- [ ] **Step 3: Run Agent tests**
+- [x] **Step 3: Run Agent tests**
 
 Run:
 
@@ -90,11 +92,11 @@ Expected: PASS.
 **Interfaces:**
 - Produces: `isAgentNearBottom(element, threshold?)`
 
-- [ ] **Step 1: Move helper**
+- [x] **Step 1: Move helper**
 
 Move `isAgentNearBottom` unchanged into `agentScrollPolicy.ts`.
 
-- [ ] **Step 2: Import and re-export from root**
+- [x] **Step 2: Import and re-export from root**
 
 In `BlogAgentRoot.tsx`:
 
@@ -103,7 +105,7 @@ import { isAgentNearBottom } from "./agentScrollPolicy";
 export { isAgentNearBottom } from "./agentScrollPolicy";
 ```
 
-- [ ] **Step 3: Run Agent tests**
+- [x] **Step 3: Run Agent tests**
 
 Run:
 
@@ -125,11 +127,11 @@ Expected: PASS.
 - Produces: `getAgentDisplayElapsedMs(message)`
 - Produces: `getTraceStageDurations(entries)`
 
-- [ ] **Step 1: Move helpers**
+- [x] **Step 1: Move helpers**
 
 Move the existing elapsed helpers into `agentElapsed.ts`, importing only types from `./types`.
 
-- [ ] **Step 2: Import and re-export from root**
+- [x] **Step 2: Import and re-export from root**
 
 In `BlogAgentRoot.tsx`:
 
@@ -145,7 +147,7 @@ export {
 export type { AgentTraceStageDuration } from "./agentElapsed";
 ```
 
-- [ ] **Step 3: Run Agent tests**
+- [x] **Step 3: Run Agent tests**
 
 Run:
 
@@ -160,7 +162,7 @@ Expected: PASS.
 **Files:**
 - Create: `docs/product_optimization/reports/agent-helper-extraction-slice-3-2026-07-08/summary.md`
 
-- [ ] **Step 1: Run final checks**
+- [x] **Step 1: Run final checks**
 
 Run:
 
@@ -173,11 +175,11 @@ corepack pnpm build
 
 Expected: all PASS.
 
-- [ ] **Step 2: Write evidence summary**
+- [x] **Step 2: Write evidence summary**
 
 Record passed commands and state that this slice is behavior-preserving extraction only.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 Run:
 
