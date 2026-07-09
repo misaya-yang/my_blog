@@ -1122,7 +1122,6 @@
     .stat-value,
     .home-search-dock-title,
     .home-search-dock-title span,
-    .article-entry-heading h2,
     .about-links-rail p,
     .about-focus-ledger h2,
     .route-loading-shell h1,
@@ -1950,11 +1949,6 @@
     box-shadow: none !important;
   }
 
-  .paper-reader-main .article-entry-heading {
-    margin-bottom: 0.32rem !important;
-  }
-
-  .paper-reader-main .article-entry-heading h2,
   .paper-reader-main .article-entry-details,
   .paper-reader-main .article-agent-prompts,
   .paper-reader-main .article-entry-layer .series-progress-compact {

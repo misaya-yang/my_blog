@@ -599,7 +599,6 @@
     background: oklch(0.08 0.018 252 / 36%);
   }
 
-  .article-entry-kicker,
   .article-series-label,
   .article-secondary-label,
   .article-entry-item dt {
@@ -1137,10 +1136,6 @@
     min-width: 0;
   }
 
-  .article-entry-heading {
-    margin-bottom: 0.6rem;
-  }
-
   .article-entry-grid-compact {
     grid-template-columns: 1fr;
   }
@@ -1610,10 +1605,6 @@
       -webkit-line-clamp: 2;
     }
 
-    .article-entry-heading {
-      margin-bottom: 0.4rem;
-    }
-
     .series-progress-compact {
       gap: 0.55rem;
       padding: 0.52rem;
@@ -1895,7 +1886,6 @@
 
   .series-card-track,
   .series-step span,
-  .article-entry-kicker,
   .article-series-label,
   .article-secondary-label,
   .article-entry-item dt {
@@ -3308,7 +3298,6 @@
   .home-track-number,
   .series-progress-label,
   .technical-label,
-  .article-entry-kicker,
   .article-series-label,
   .article-secondary-label {
     color: oklch(0.8 0.1 226);
@@ -4396,11 +4385,6 @@
     padding: 0.62rem;
   }
 
-  .paper-reader-main .article-entry-heading h2 {
-    font-size: 1.02rem;
-    line-height: 1.18;
-  }
-
   .paper-reader-main .article-entry-item dd {
     -webkit-line-clamp: 2;
     font-size: 0.86rem;
@@ -4700,7 +4684,6 @@
       padding: 0.48rem;
     }
 
-    .paper-reader-main .article-entry-heading h2,
     .paper-reader-main .article-entry-details {
       display: none;
     }
@@ -4959,7 +4942,6 @@
 
   .series-card-track,
   .series-step span,
-  .article-entry-kicker,
   .article-series-label,
   .article-secondary-label,
   .article-entry-item dt {
@@ -5417,11 +5399,6 @@
       padding: 0.48rem !important;
     }
 
-    .paper-reader-main .article-entry-heading {
-      display: block !important;
-    }
-
-    .paper-reader-main .article-entry-heading h2,
     .paper-reader-main .article-entry-details {
       display: none !important;
     }
@@ -6533,11 +6510,6 @@
     box-shadow: none !important;
   }
 
-  .paper-reader-main .article-entry-heading {
-    margin-bottom: 0.32rem !important;
-  }
-
-  .paper-reader-main .article-entry-heading h2,
   .paper-reader-main .article-entry-details,
   .paper-reader-main .article-agent-prompts,
   .paper-reader-main .article-entry-layer .series-progress-compact {
