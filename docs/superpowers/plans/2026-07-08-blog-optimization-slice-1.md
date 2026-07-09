@@ -1,5 +1,9 @@
 # Blog Optimization Slice 1 Implementation Plan
 
+Status: Completed
+Evidence commit: `2e6040d feat: add blog optimization gate foundations`
+Evidence report: `docs/product_optimization/reports/blog-optimization-slice-1-2026-07-08/summary.md`
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Fix the current content audit release gate and add the first normalized reader-signal foundation required by the approved blog optimization specs.
@@ -51,7 +55,7 @@
 - Produces: `runContentQualityAudit(projectRoot?: string): Promise<ContentQualityReport>`
 - Produces summary fields: `markdownFiles`, `articleFiles`, `skippedMarkdownFiles`, `seedPosts`, `warnings`, `failures`
 
-- [ ] **Step 1: Write failing tests for skipped root docs**
+- [x] **Step 1: Write failing tests for skipped root docs**
 
 Add a test that creates `agent.md` without H1 and expects no `content.missing_h1` failure:
 
@@ -92,7 +96,7 @@ it("skips root project markdown that is not tied to a seeded article", async () 
 });
 ```
 
-- [ ] **Step 2: Run test to verify failure**
+- [x] **Step 2: Run test to verify failure**
 
 Run:
 
@@ -102,7 +106,7 @@ corepack pnpm test -- scripts/audit/content-quality.test.ts
 
 Expected before implementation: FAIL because `summary.articleFiles` or `summary.skippedMarkdownFiles` is missing, or because `agent.md` is audited.
 
-- [ ] **Step 3: Implement seed-linked Markdown discovery**
+- [x] **Step 3: Implement seed-linked Markdown discovery**
 
 Add a helper that audits only Markdown files referenced by seed posts and counts other root Markdown files as skipped:
 
@@ -126,7 +130,7 @@ async function buildMarkdownAuditScope(root: string, seedPosts: SeedPost[]) {
 
 Implement it with `async`, then use `articleFiles` for the audit loop.
 
-- [ ] **Step 4: Preserve existing summary compatibility**
+- [x] **Step 4: Preserve existing summary compatibility**
 
 Return `markdownFiles` as the audited article file count and add the new explicit fields:
 
@@ -141,7 +145,7 @@ summary: {
 }
 ```
 
-- [ ] **Step 5: Run focused and real audit**
+- [x] **Step 5: Run focused and real audit**
 
 Run:
 
@@ -165,7 +169,7 @@ Expected: both PASS. `content:audit` should no longer fail on `agent.md`.
 - Produces: `buildSearchMissSignals(inputs): ReaderSignal[]`
 - Consumes in `server/engagement.router.ts`: existing `listSearchMissOpportunities()` output.
 
-- [ ] **Step 1: Write tests for signal normalization**
+- [x] **Step 1: Write tests for signal normalization**
 
 Create `server/readerSignals.test.ts`:
 
@@ -223,7 +227,7 @@ describe("reader signal normalization", () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify failure**
+- [x] **Step 2: Run test to verify failure**
 
 Run:
 
@@ -233,7 +237,7 @@ corepack pnpm test -- server/readerSignals.test.ts
 
 Expected before implementation: FAIL because `server/readerSignals.ts` does not exist.
 
-- [ ] **Step 3: Implement pure signal helpers**
+- [x] **Step 3: Implement pure signal helpers**
 
 Create `server/readerSignals.ts`:
 
@@ -274,7 +278,7 @@ export type ReaderSignal = {
 
 Add `buildSearchMissSignal`, `buildContentAuditSignal`, and a local redaction helper.
 
-- [ ] **Step 4: Run focused tests**
+- [x] **Step 4: Run focused tests**
 
 Run:
 
@@ -284,7 +288,7 @@ corepack pnpm test -- server/readerSignals.test.ts
 
 Expected: PASS.
 
-- [ ] **Step 5: Expose search-miss reader signals in owner content radar**
+- [x] **Step 5: Expose search-miss reader signals in owner content radar**
 
 In `server/engagement.router.ts`, import and use `buildSearchMissSignals`:
 
@@ -317,7 +321,7 @@ Add an assertion to `server/engagement.router.test.ts` that `summary.readerSigna
 **Interfaces:**
 - Produces a human-readable implementation evidence report.
 
-- [ ] **Step 1: Create summary with concrete command results**
+- [x] **Step 1: Create summary with concrete command results**
 
 Write:
 
@@ -347,7 +351,7 @@ Branch: dev
 - Owner cockpit integration.
 ```
 
-- [ ] **Step 2: Update command status after running final checks**
+- [x] **Step 2: Update command status after running final checks**
 
 Replace each command line with pass or fail status based on actual command output.
 
@@ -356,7 +360,7 @@ Replace each command line with pass or fail status based on actual command outpu
 **Files:**
 - Modified and created files from Tasks 1 to 3.
 
-- [ ] **Step 1: Run final gates**
+- [x] **Step 1: Run final gates**
 
 Run:
 
@@ -369,7 +373,7 @@ corepack pnpm check
 
 Expected: all PASS.
 
-- [ ] **Step 2: Inspect diff scope**
+- [x] **Step 2: Inspect diff scope**
 
 Run:
 
@@ -380,7 +384,7 @@ git diff --stat
 
 Expected: only the plan, content audit files, reader signal files, and evidence report changed.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 Run:
 
