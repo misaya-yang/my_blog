@@ -13,6 +13,7 @@ import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
+import { getSafeAdminReturnPath } from "@/lib/adminReturnTo";
 import { buildRouteMetadata } from "@shared/metadata";
 
 export default function Login() {
@@ -34,7 +35,7 @@ export default function Login() {
     onSuccess: async () => {
       await utils.auth.session.invalidate();
       toast.success(t("login.toast.welcomeBack"));
-      navigate("/");
+      navigate(getSafeAdminReturnPath(window.location.search));
     },
     onError: error => {
       toast.error(error.message || t("login.toast.adminFailed"));

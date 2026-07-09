@@ -10,6 +10,10 @@ import {
 } from "@/components/ui/sheet";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import {
+  buildAdminLoginHref,
+  getCurrentAdminReturnPath,
+} from "@/lib/adminReturnTo";
 import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
@@ -549,6 +553,8 @@ export function AuthRequiredState({
   homeLabel: string;
   backLabel: string;
 }) {
+  const loginHref = buildAdminLoginHref(getCurrentAdminReturnPath());
+
   return (
     <div className="space-page owner-dark-scope min-h-screen">
       <SpaceBackdrop subtle />
@@ -562,7 +568,7 @@ export function AuthRequiredState({
           action={
             <div className="auth-required-actions">
               <Button asChild className="owner-primary-action">
-                <Link href="/login">{loginLabel}</Link>
+                <Link href={loginHref}>{loginLabel}</Link>
               </Button>
               <Button asChild variant="outline" className="glass-button">
                 <Link href="/">{homeLabel}</Link>
