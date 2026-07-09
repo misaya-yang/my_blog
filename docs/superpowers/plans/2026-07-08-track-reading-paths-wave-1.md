@@ -1,7 +1,7 @@
 # Track Reading Paths Wave 1 Plan
 
 Date: 2026-07-08
-Status: In progress
+Status: Completed
 Spec source: `docs/superpowers/specs/2026-07-08-discovery-research-map-design.md`
 
 ## Scope

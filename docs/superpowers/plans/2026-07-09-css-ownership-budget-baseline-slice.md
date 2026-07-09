@@ -36,7 +36,7 @@ Out:
 - [x] Run `corepack pnpm build`.
 - [x] Run `git diff --check`.
 - [x] Write slice report.
-- [ ] Commit with `feat: add css ownership audit`.
+- [x] Commit with `feat: add css ownership audit`.
 
 ## Verification Commands
 
