@@ -35,6 +35,8 @@ vi.mock("@/contexts/LanguageContext", () => ({
           "nav.menu": "Open navigation",
           "nav.switchToZh": "中文",
           "nav.switchToEn": "EN",
+          "nav.switchLanguageToZh": "Switch language to Chinese",
+          "nav.switchLanguageToEn": "Switch language to English",
           "nav.switchToLight": "Switch to light mode",
           "nav.switchToDark": "Switch to dark mode",
           "nav.brand": "Misaya Notes",
@@ -78,6 +80,8 @@ describe("SiteHeader public access model", () => {
 
     expect(html).toContain("Misaya Notes");
     expect(html).toContain('aria-label="Switch to light mode"');
+    expect(html).toContain('aria-label="Switch language to Chinese"');
+    expect(html).toContain('title="Switch language to Chinese"');
     expect(html).not.toContain('href="/login"');
     expect(html).not.toContain(">Login<");
   });

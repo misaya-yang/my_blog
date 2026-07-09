@@ -132,6 +132,10 @@ export function SiteHeader({
   const themeToggleLabel =
     theme === "dark" ? t("nav.switchToLight") : t("nav.switchToDark");
   const ThemeIcon = theme === "dark" ? Sun : Moon;
+  const languageToggleLabel =
+    language === "en"
+      ? t("nav.switchLanguageToZh")
+      : t("nav.switchLanguageToEn");
   const primaryLinks: Array<{
     href: string;
     key: NonNullable<SiteHeaderProps["active"]>;
@@ -238,6 +242,8 @@ export function SiteHeader({
             type="button"
             className="nav-ink px-3 glass-control"
             onClick={toggleLanguage}
+            aria-label={languageToggleLabel}
+            title={languageToggleLabel}
           >
             {language === "en" ? t("nav.switchToZh") : t("nav.switchToEn")}
           </button>
@@ -306,6 +312,8 @@ export function SiteHeader({
                   type="button"
                   className="nav-ink glass-control h-11 justify-start"
                   onClick={toggleLanguage}
+                  aria-label={languageToggleLabel}
+                  title={languageToggleLabel}
                 >
                   {language === "en"
                     ? t("nav.switchToZh")
