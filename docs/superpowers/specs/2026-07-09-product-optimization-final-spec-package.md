@@ -1,8 +1,8 @@
 # Product Optimization Final Spec Package
 
 Date: 2026-07-09
-Status: Ready for owner review
-Implementation status: Paused until owner approval
+Status: Owner-approved execution baseline
+Implementation status: Active on `dev`; keep slice-level reports and commits. Push, deploy, schema migration, and credential changes still require explicit owner approval.
 Branch: dev
 
 ## Design Read

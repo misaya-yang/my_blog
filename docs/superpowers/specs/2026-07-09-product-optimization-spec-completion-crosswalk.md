@@ -1,12 +1,12 @@
 # Product Optimization Spec Completion Crosswalk
 
 Date: 2026-07-09
-Status: Ready for owner review
+Status: Covered by owner-approved execution baseline
 Parent package: [2026-07-09-product-optimization-final-spec-package.md](./2026-07-09-product-optimization-final-spec-package.md)
 
 ## Summary
 
-This crosswalk marks the complete review set before implementation starts. It exists to prevent ambiguity about which specs are in scope and which areas are intentionally out of scope.
+This crosswalk marks the complete review set now used as the execution baseline. It exists to prevent ambiguity about which specs are in scope and which areas are intentionally out of scope.
 
 ## Complete Spec Set
 
