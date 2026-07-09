@@ -128,6 +128,70 @@ const editor: TranslationDict = {
   "editor.featuredRankPlaceholder": { en: "Featured rank", zh: "首页精选排序" },
   "editor.pinnedTrackPlaceholder": { en: "Pinned track", zh: "置顶技术区" },
   "editor.pinnedTrackNone": { en: "No track pin", zh: "不置顶" },
+  "editor.preflight.title": { en: "Preflight", zh: "发布检查" },
+  "editor.preflight.ready": { en: "Ready", zh: "可发布" },
+  "editor.preflight.readyDescription": {
+    en: "No blockers or warnings are currently detected.",
+    zh: "当前没有检测到阻断项或提醒项。",
+  },
+  "editor.preflight.blocked": {
+    en: "Resolve publish blockers before publishing.",
+    zh: "发布前请先处理阻断项。",
+  },
+  "editor.preflight.blockers": { en: "Blockers", zh: "阻断项" },
+  "editor.preflight.warnings": { en: "Warnings", zh: "提醒项" },
+  "editor.preflight.blockerCount": {
+    en: "{count} blockers",
+    zh: "{count} 个阻断",
+  },
+  "editor.preflight.warningCount": {
+    en: "{count} warnings",
+    zh: "{count} 个提醒",
+  },
+  "editor.preflight.ariaLabel": {
+    en: "Publish preflight: {blockers} blockers and {warnings} warnings.",
+    zh: "发布检查：{blockers} 个阻断项，{warnings} 个提醒项。",
+  },
+  "editor.preflight.issue.missing_title": {
+    en: "Add a title before publishing.",
+    zh: "发布前需要填写标题。",
+  },
+  "editor.preflight.issue.missing_content": {
+    en: "Add article content before publishing.",
+    zh: "发布前需要填写正文。",
+  },
+  "editor.preflight.issue.invalid_series_order": {
+    en: "Series order must be a positive number.",
+    zh: "系列顺序必须是正数。",
+  },
+  "editor.preflight.issue.invalid_featured_rank": {
+    en: "Featured rank must be a positive number.",
+    zh: "首页精选排序必须是正数。",
+  },
+  "editor.preflight.issue.missing_excerpt": {
+    en: "Add an excerpt for public discovery and feeds.",
+    zh: "建议补充摘要，方便公开发现和订阅源展示。",
+  },
+  "editor.preflight.issue.missing_category": {
+    en: "Choose a category for public placement.",
+    zh: "建议选择分类，明确公开归档位置。",
+  },
+  "editor.preflight.issue.missing_tags": {
+    en: "Add at least one tag for search and taxonomy.",
+    zh: "建议至少添加一个标签，帮助搜索和分类页聚合。",
+  },
+  "editor.preflight.issue.short_content": {
+    en: "The article body is very short; verify it is intentional.",
+    zh: "正文偏短，请确认这是有意为之。",
+  },
+  "editor.preflight.issue.series_without_order": {
+    en: "Add a series order or clear the series slug.",
+    zh: "请补充系列顺序，或清空系列 slug。",
+  },
+  "editor.preflight.issue.track_without_taxonomy": {
+    en: "Pinned track works best with category and tag placement.",
+    zh: "置顶技术区建议同时配置分类和标签。",
+  },
   "editor.versionHistoryTitle": { en: "Version history", zh: "版本历史" },
   "editor.versionHistoryEmpty": {
     en: "No saved versions yet.",

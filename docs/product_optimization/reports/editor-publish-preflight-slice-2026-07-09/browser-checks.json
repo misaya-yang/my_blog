@@ -1,0 +1,13 @@
+{
+  "route": "/write?idea=Agent%20preflight%20reading%20path&source=agent_question",
+  "viewport": "1440x900",
+  "language": "en",
+  "topbarText": "PreflightReady2 warnings",
+  "blockerItems": [],
+  "warningItems": [
+    "Choose a category for public placement.",
+    "Add at least one tag for search and taxonomy."
+  ],
+  "screenshot": "editor-preflight-desktop.png",
+  "credentialMode": "temporary local test password set after dotenv load"
+}

@@ -77,6 +77,7 @@ import {
   Hash,
   Type,
   AlignLeft,
+  AlertTriangle,
   History,
   RotateCcw,
   Star,
@@ -93,6 +94,10 @@ import {
 import { Link as RouterLink, useParams, useLocation } from "wouter";
 import { toast } from "sonner";
 import { normalizeBacklogSource } from "./editorBacklogSource";
+import {
+  buildEditorPublishPreflight,
+  type EditorPreflightIssue,
+} from "./editorPublishPreflight";
 
 const MarkdownRenderer = lazy(() => import("@/components/MarkdownRenderer"));
 
@@ -241,6 +246,37 @@ export default function Editor() {
   const codeBlockCount = useMemo(() => {
     return Math.floor((content.match(/```/g) || []).length / 2);
   }, [content]);
+
+  const publishPreflight = useMemo(
+    () =>
+      buildEditorPublishPreflight({
+        title,
+        content,
+        excerpt,
+        categoryId,
+        selectedTags,
+        seriesSlug,
+        seriesOrder,
+        featuredRank,
+        pinnedTrack,
+      }),
+    [
+      title,
+      content,
+      excerpt,
+      categoryId,
+      selectedTags,
+      seriesSlug,
+      seriesOrder,
+      featuredRank,
+      pinnedTrack,
+    ]
+  );
+
+  const getPreflightIssueLabel = useCallback(
+    (issue: EditorPreflightIssue) => t(`editor.preflight.issue.${issue.code}`),
+    [t]
+  );
 
   // 加载现有文章
   useEffect(() => {
@@ -659,12 +695,13 @@ export default function Editor() {
 
   // 发布文章
   const handlePublish = useCallback(async () => {
-    if (!title.trim()) {
-      toast.error(t("editor.toast.titleRequired"));
-      return;
-    }
-    if (!content.trim()) {
-      toast.error(t("editor.toast.contentRequired"));
+    if (!publishPreflight.canPublish) {
+      const firstBlocker = publishPreflight.blockers[0];
+      toast.error(
+        firstBlocker
+          ? getPreflightIssueLabel(firstBlocker)
+          : t("editor.preflight.blocked")
+      );
       return;
     }
 
@@ -725,6 +762,8 @@ export default function Editor() {
     buildCurationPayload,
     navigate,
     notifyKnowledgeRefresh,
+    publishPreflight,
+    getPreflightIssueLabel,
     t,
   ]);
 
@@ -882,6 +921,41 @@ export default function Editor() {
               )}
             </ToolbarButton>
 
+            <div
+              className={`hidden items-center gap-2 rounded-full border px-3 py-1.5 text-xs md:flex ${
+                publishPreflight.blockers.length > 0
+                  ? "border-amber-300/30 bg-amber-300/10 text-amber-100"
+                  : "border-emerald-300/25 bg-emerald-300/10 text-emerald-100"
+              }`}
+              aria-label={t("editor.preflight.ariaLabel", {
+                blockers: publishPreflight.blockers.length,
+                warnings: publishPreflight.warnings.length,
+              })}
+            >
+              {publishPreflight.blockers.length > 0 ? (
+                <AlertTriangle className="h-3.5 w-3.5" />
+              ) : (
+                <Check className="h-3.5 w-3.5" />
+              )}
+              <span className="font-medium">
+                {t("editor.preflight.title")}
+              </span>
+              <span>
+                {publishPreflight.blockers.length > 0
+                  ? t("editor.preflight.blockerCount", {
+                      count: publishPreflight.blockers.length,
+                    })
+                  : t("editor.preflight.ready")}
+              </span>
+              {publishPreflight.warnings.length > 0 && (
+                <span className="text-slate-300">
+                  {t("editor.preflight.warningCount", {
+                    count: publishPreflight.warnings.length,
+                  })}
+                </span>
+              )}
+            </div>
+
             <Sheet open={showSettings} onOpenChange={setShowSettings}>
               <SheetTrigger asChild>
                 <Button
@@ -1035,6 +1109,54 @@ export default function Editor() {
                         </SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  <div className="space-y-3 rounded-lg border border-primary/10 bg-slate-950/35 p-4">
+                    <div className="flex items-center gap-2">
+                      {publishPreflight.blockers.length > 0 ? (
+                        <AlertTriangle className="h-4 w-4 text-amber-200" />
+                      ) : (
+                        <Check className="h-4 w-4 text-emerald-200" />
+                      )}
+                      <Label>{t("editor.preflight.title")}</Label>
+                    </div>
+                    {publishPreflight.blockers.length === 0 &&
+                    publishPreflight.warnings.length === 0 ? (
+                      <p className="text-sm leading-6 text-slate-400">
+                        {t("editor.preflight.readyDescription")}
+                      </p>
+                    ) : (
+                      <div className="grid gap-3 text-sm">
+                        {publishPreflight.blockers.length > 0 && (
+                          <div className="space-y-1.5">
+                            <p className="font-medium text-amber-100">
+                              {t("editor.preflight.blockers")}
+                            </p>
+                            <ul className="grid gap-1 text-slate-300">
+                              {publishPreflight.blockers.map(issue => (
+                                <li key={issue.code}>
+                                  {getPreflightIssueLabel(issue)}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {publishPreflight.warnings.length > 0 && (
+                          <div className="space-y-1.5">
+                            <p className="font-medium text-slate-100">
+                              {t("editor.preflight.warnings")}
+                            </p>
+                            <ul className="grid gap-1 text-slate-400">
+                              {publishPreflight.warnings.map(issue => (
+                                <li key={issue.code}>
+                                  {getPreflightIssueLabel(issue)}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {postId && (
