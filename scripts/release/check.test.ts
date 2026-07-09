@@ -61,6 +61,7 @@ describe("release check orchestration", () => {
       "unit-tests",
       "content-audit",
       "content-verify",
+      "i18n-audit",
       "build",
       "performance-audit",
       "css-ownership",
@@ -77,6 +78,13 @@ describe("release check orchestration", () => {
       expect.objectContaining({
         command: "corepack",
         args: ["pnpm", "audit:performance"],
+        blocking: true,
+      })
+    );
+    expect(steps.find(step => step.id === "i18n-audit")).toEqual(
+      expect.objectContaining({
+        command: "corepack",
+        args: ["pnpm", "audit:i18n"],
         blocking: true,
       })
     );

@@ -16,6 +16,7 @@ export type ReleaseStepId =
   | "unit-tests"
   | "content-audit"
   | "content-verify"
+  | "i18n-audit"
   | "build"
   | "performance-audit"
   | "css-ownership"
@@ -199,6 +200,13 @@ export function buildReleaseSteps(options: ReleaseCheckOptions): ReleaseStep[] {
       skipReason: options.skipContentVerify
         ? "Skipped by --skip-content-verify."
         : undefined,
+    },
+    {
+      id: "i18n-audit",
+      label: "I18n completeness audit",
+      command: "corepack",
+      args: ["pnpm", "audit:i18n"],
+      blocking: true,
     },
     {
       id: "build",

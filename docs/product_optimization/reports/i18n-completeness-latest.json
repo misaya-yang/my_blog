@@ -1,0 +1,11 @@
+{
+  "generatedAt": "2026-07-09T00:11:20.341Z",
+  "status": "passed",
+  "totals": {
+    "keyCount": 1135,
+    "issueCount": 0,
+    "placeholderIssueCount": 0
+  },
+  "issues": [],
+  "outputPath": "docs/product_optimization/reports/i18n-completeness-latest.json"
+}
