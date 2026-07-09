@@ -406,6 +406,38 @@ const manage: TranslationDict = {
     en: "No normalized reader signals yet.",
     zh: "暂无规范化读者信号。",
   },
+  "manage.readerSignals.localStatus": {
+    en: "Local status",
+    zh: "本地状态",
+  },
+  "manage.readerSignals.localStatusNote": {
+    en: "Browser-local only; not saved as durable review history.",
+    zh: "仅保存在当前浏览器，不作为持久审查记录。",
+  },
+  "manage.readerSignals.status.new": {
+    en: "New",
+    zh: "新建",
+  },
+  "manage.readerSignals.status.triaged": {
+    en: "Triaged",
+    zh: "已分拣",
+  },
+  "manage.readerSignals.status.planned": {
+    en: "Planned",
+    zh: "已计划",
+  },
+  "manage.readerSignals.status.inRevision": {
+    en: "In revision",
+    zh: "修改中",
+  },
+  "manage.readerSignals.status.resolved": {
+    en: "Resolved",
+    zh: "已解决",
+  },
+  "manage.readerSignals.status.ignored": {
+    en: "Ignored",
+    zh: "已忽略",
+  },
   "manage.readerSignals.kind.searchMiss": {
     en: "Search miss",
     zh: "搜索缺口",

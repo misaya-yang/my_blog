@@ -62,6 +62,15 @@ import {
   type ManageReaderSignal,
 } from "./manageReaderSignals";
 import {
+  getReaderSignalDisplayStatus,
+  isReaderSignalLocalStatus,
+  readReaderSignalStatusMap,
+  READER_SIGNAL_LOCAL_STATUSES,
+  setReaderSignalLocalStatus,
+  writeReaderSignalStatusMap,
+  type ReaderSignalLocalStatus,
+} from "./manageReaderSignalLifecycle";
+import {
   getOwnerCockpitSummary,
   type OwnerCockpitNextAction,
 } from "./manageOwnerCockpit";
@@ -1399,11 +1408,24 @@ function ContentRadarPanel({
   const { language, t } = useLanguage();
   const opportunities = radar?.feedback?.opportunities ?? [];
   const readerSignals = (radar?.readerSignals?.items ?? []).slice(0, 5);
+  const [readerSignalStatuses, setReaderSignalStatuses] = useState(() =>
+    readReaderSignalStatusMap()
+  );
   const topInterests = radar?.subscriptions?.topInterests ?? [];
   const languageBreakdown = radar?.subscriptions?.languageBreakdown ?? {
     zh: 0,
     en: 0,
     unknown: 0,
+  };
+  const handleReaderSignalStatusChange = (
+    signalId: string,
+    status: ReaderSignalLocalStatus
+  ) => {
+    setReaderSignalStatuses(prev => {
+      const next = setReaderSignalLocalStatus(prev, signalId, status);
+      writeReaderSignalStatusMap(next);
+      return next;
+    });
   };
 
   return (
@@ -1598,21 +1620,38 @@ function ContentRadarPanel({
                       key={signal.id}
                       className="rounded-md border border-primary/10 bg-slate-950/25 p-3"
                     >
-                      <div className="mb-2 flex flex-wrap items-center gap-2">
-                        <Badge variant="secondary">
-                          {getReaderSignalKindLabel(signal.kind, t)}
-                        </Badge>
-                        <Badge variant="outline" className="border-primary/20">
-                          {getReaderSignalSeverityLabel(signal.severity, t)}
-                        </Badge>
-                        {typeof signal.count === "number" && (
-                          <span className="text-xs text-slate-500">
-                            {t("manage.readerSignals.signalCount", {
-                              count: signal.count,
-                            })}
-                          </span>
-                        )}
+                      <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="flex min-w-0 flex-wrap items-center gap-2">
+                          <Badge variant="secondary">
+                            {getReaderSignalKindLabel(signal.kind, t)}
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className="border-primary/20"
+                          >
+                            {getReaderSignalSeverityLabel(signal.severity, t)}
+                          </Badge>
+                          {typeof signal.count === "number" && (
+                            <span className="text-xs text-slate-500">
+                              {t("manage.readerSignals.signalCount", {
+                                count: signal.count,
+                              })}
+                            </span>
+                          )}
+                        </div>
+                        <ReaderSignalStatusSelect
+                          value={getReaderSignalDisplayStatus(
+                            signal,
+                            readerSignalStatuses
+                          )}
+                          onChange={status =>
+                            handleReaderSignalStatusChange(signal.id, status)
+                          }
+                        />
                       </div>
+                      <p className="mb-2 text-[11px] leading-4 text-slate-600">
+                        {t("manage.readerSignals.localStatusNote")}
+                      </p>
                       <p className="line-clamp-1 text-sm font-medium text-slate-200">
                         {getReaderSignalPrimaryText(signal)}
                       </p>
@@ -1929,6 +1968,39 @@ function OwnerCockpitPanel({
   );
 }
 
+function ReaderSignalStatusSelect({
+  value,
+  onChange,
+}: {
+  value: ReaderSignalLocalStatus;
+  onChange: (value: ReaderSignalLocalStatus) => void;
+}) {
+  const { t } = useLanguage();
+
+  return (
+    <Select
+      value={value}
+      onValueChange={status => {
+        if (isReaderSignalLocalStatus(status)) onChange(status);
+      }}
+    >
+      <SelectTrigger
+        className="h-8 w-full min-w-0 border-primary/10 bg-slate-950/40 text-xs sm:w-36"
+        aria-label={t("manage.readerSignals.localStatus")}
+      >
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {READER_SIGNAL_LOCAL_STATUSES.map(status => (
+          <SelectItem key={status} value={status}>
+            {getReaderSignalStatusLabel(status, t)}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 function RadarMetric({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-primary/10 bg-slate-950/30 p-3">
@@ -1953,6 +2025,21 @@ function getOwnerCockpitActionDescriptionKey(action: OwnerCockpitNextAction) {
   if (action === "agent_gap")
     return "manage.ownerCockpit.actionAgentDescription";
   return "manage.ownerCockpit.actionClearDescription";
+}
+
+function getReaderSignalStatusLabel(
+  status: ReaderSignalLocalStatus,
+  t: (key: string) => string
+) {
+  const labels: Record<ReaderSignalLocalStatus, string> = {
+    new: t("manage.readerSignals.status.new"),
+    triaged: t("manage.readerSignals.status.triaged"),
+    planned: t("manage.readerSignals.status.planned"),
+    in_revision: t("manage.readerSignals.status.inRevision"),
+    resolved: t("manage.readerSignals.status.resolved"),
+    ignored: t("manage.readerSignals.status.ignored"),
+  };
+  return labels[status];
 }
 
 function getFeedbackStatusLabel(status: string, t: (key: string) => string) {
