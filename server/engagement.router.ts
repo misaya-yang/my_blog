@@ -14,6 +14,7 @@ import {
   buildSearchMissSignals,
   sortReaderSignals,
 } from "./readerSignals.js";
+import { loadLatestPublishFreshnessSignals } from "./publishFreshnessSignals.js";
 import {
   listSearchMissOpportunities,
   resetSearchMissesForTests,
@@ -220,12 +221,12 @@ export const engagementRouter = router({
         db.listPostFeedback({ limit: 100 }),
         db.listSubscribers(),
       ]);
-      return buildEngagementContentRadar(feedback, subscribers);
+      return await buildEngagementContentRadar(feedback, subscribers);
     }),
   }),
 });
 
-function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
+async function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
   const visibleFeedback = feedback.filter(item => item.status !== "hidden");
   const searchMissOpportunities = listSearchMissOpportunities();
   const articleMap = new Map<
@@ -334,9 +335,11 @@ function buildEngagementContentRadar(feedback: any[], subscribers: any[]) {
       lastSeenAt: item.latestAt ?? new Date(0),
     })
   );
+  const publishFreshnessSignals = await loadLatestPublishFreshnessSignals();
   const readerSignalItems = sortReaderSignals([
     ...feedbackSignals,
     ...searchMissSignals,
+    ...publishFreshnessSignals,
   ]);
 
   return {

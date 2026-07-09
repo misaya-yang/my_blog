@@ -345,6 +345,7 @@ function getArticleFeedbackSeverity(
 }
 
 function getPublishFreshnessSeverity(checkCode: string): ReaderSignalSeverity {
+  if (checkCode.startsWith("release_blocker")) return "high";
   if (
     [
       "hidden_draft_exposed",
@@ -354,12 +355,21 @@ function getPublishFreshnessSeverity(checkCode: string): ReaderSignalSeverity {
       "missing_sitemap",
       "missing_rss",
       "missing_archive",
+      "missing_track",
+      "route_check_failed",
       "stale_public_agent_index",
+      "extra_agent_index",
     ].includes(checkCode)
   ) {
     return "high";
   }
-  if (checkCode.includes("unavailable")) return "medium";
+  if (
+    checkCode.includes("unavailable") ||
+    checkCode === "missing_freshness_timestamp" ||
+    checkCode === "track_mismatch"
+  ) {
+    return "medium";
+  }
   return "low";
 }
 

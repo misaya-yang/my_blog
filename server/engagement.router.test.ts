@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as routers from "./routers";
 import type { TrpcContext } from "./_core/context";
 import * as db from "./db";
+import * as publishFreshnessSignals from "./publishFreshnessSignals";
 
 const publishedPost = {
   id: 1,
@@ -87,6 +88,10 @@ vi.mock("./db", () => ({
   searchPublicPosts: vi.fn(async () => ({ results: [], total: 0 })),
 }));
 
+vi.mock("./publishFreshnessSignals", () => ({
+  loadLatestPublishFreshnessSignals: vi.fn(async () => []),
+}));
+
 function createContext(
   cookie = "",
   source = "203.0.113.10"
@@ -138,6 +143,9 @@ async function createAdminCaller() {
 describe("engagement router", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(
+      publishFreshnessSignals.loadLatestPublishFreshnessSignals
+    ).mockResolvedValue([]);
     (
       routers as { __resetEngagementRateLimitsForTests?: () => void }
     ).__resetEngagementRateLimitsForTests?.();
@@ -484,6 +492,40 @@ describe("engagement router", () => {
     expect(JSON.stringify(summary.searchMisses)).not.toContain(
       "reader@example.com"
     );
+    expect(JSON.stringify(summary.readerSignals)).not.toContain(
+      "reader@example.com"
+    );
+  });
+
+  it("adds publish freshness findings to owner-only reader signals", async () => {
+    vi.mocked(
+      publishFreshnessSignals.loadLatestPublishFreshnessSignals
+    ).mockResolvedValueOnce([
+      {
+        id: "publish_freshness:stale_public_agent_index:agent-harness-engine",
+        kind: "publish_freshness",
+        status: "new",
+        severity: "high",
+        articleSlug: publishedPost.slug,
+        excerpt: "Agent knowledge index is stale for public article.",
+        sourceRef:
+          "docs/product_optimization/reports/po-08-publish-freshness-latest.json",
+        firstSeenAt: "2026-07-09T01:00:00.000Z",
+        lastSeenAt: "2026-07-09T01:00:00.000Z",
+        suggestedAction: "Run content verification and inspect release readiness.",
+      },
+    ]);
+    const adminCaller = (await createAdminCaller()) as any;
+
+    const summary = await adminCaller.engagement.contentRadar.summary();
+
+    expect(summary.readerSignals.items[0]).toMatchObject({
+      id: "publish_freshness:stale_public_agent_index:agent-harness-engine",
+      kind: "publish_freshness",
+      severity: "high",
+      articleSlug: publishedPost.slug,
+    });
+    expect(summary.readerSignals.total).toBe(2);
     expect(JSON.stringify(summary.readerSignals)).not.toContain(
       "reader@example.com"
     );
