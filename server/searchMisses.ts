@@ -1,3 +1,5 @@
+import { redactDirectContact } from "../shared/redaction.js";
+
 const SEARCH_MISS_MAX_ENTRIES = 100;
 
 const searchMisses = new Map<
@@ -71,9 +73,7 @@ export function listSearchMissOpportunities() {
 }
 
 function sanitizeSearchMissQuery(query: string) {
-  return query
-    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]")
-    .replace(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g, "[redacted-ip]");
+  return redactDirectContact(query);
 }
 
 export function resetSearchMissesForTests() {

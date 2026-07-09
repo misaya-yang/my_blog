@@ -1,3 +1,5 @@
+import { redactDirectContact } from "../shared/redaction.js";
+
 export type ReaderSignalKind =
   | "search_miss"
   | "agent_question"
@@ -418,10 +420,4 @@ function toIsoString(value: Date | string) {
   return value instanceof Date
     ? value.toISOString()
     : new Date(value).toISOString();
-}
-
-function redactDirectContact(value: string) {
-  return value
-    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]")
-    .replace(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g, "[redacted-ip]");
 }

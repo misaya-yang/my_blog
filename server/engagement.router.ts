@@ -25,6 +25,7 @@ import {
   parseFeedbackMessageWithReason,
   type FeedbackReason,
 } from "@shared/feedbackReasons";
+import { redactDirectContact } from "../shared/redaction.js";
 
 const ENGAGEMENT_MAX_SUBMISSIONS = 4;
 const ENGAGEMENT_WINDOW_MS = 60 * 1000;
@@ -476,10 +477,4 @@ function splitInterestPhrases(value: string | null | undefined) {
     .map(item => item.trim().toLowerCase())
     .filter(item => item.length >= 2)
     .slice(0, 20);
-}
-
-function redactDirectContact(value: string) {
-  return value
-    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]")
-    .replace(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g, "[redacted-ip]");
 }
