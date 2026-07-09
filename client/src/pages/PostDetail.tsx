@@ -33,7 +33,6 @@ import {
   BookOpen,
   Calendar,
   Eye,
-  User,
   Edit,
   Copy,
   Folder,
@@ -895,35 +894,15 @@ export default function PostDetail() {
             <div className="article-reading-header">
               <h1 className="article-page-title mb-5">{post.title}</h1>
 
-              {/* Author Info */}
-              <div className="mb-5 flex flex-wrap items-center gap-3 border-b border-white/10 pb-5">
-                <div className="flex items-center gap-2 text-sm">
-                  <User className="h-4 w-4 text-sky-200" />
-                  <span className="font-medium text-white">
-                    {t("post.authorName")}
-                  </span>
-                </div>
-                <div className="h-4 w-px bg-white/15" />
-                <a
-                  href="https://scholar.google.com/citations?user=6X9HlDAAAAAJ"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sky-100"
+              <div className="article-reading-meta">
+                <time
+                  dateTime={
+                    post.publishedAt
+                      ? new Date(post.publishedAt).toISOString()
+                      : undefined
+                  }
+                  className="flex items-center gap-1.5"
                 >
-                  <GraduationCap className="h-3.5 w-3.5" />
-                  {t("nav.scholar")}
-                </a>
-                <button
-                  onClick={copyEmail}
-                  className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sky-100"
-                >
-                  <Mail className="h-3.5 w-3.5" />
-                  {t("nav.email")}
-                </button>
-              </div>
-
-              <div className="mb-6 flex flex-wrap items-center gap-4 text-sm text-slate-400">
-                <span className="flex items-center gap-1.5">
                   <Calendar className="h-4 w-4" />
                   {post.publishedAt
                     ? new Date(post.publishedAt).toLocaleDateString(
@@ -935,7 +914,7 @@ export default function PostDetail() {
                         }
                       )
                     : t("post.unpublished")}
-                </span>
+                </time>
                 <span className="flex items-center gap-1.5">
                   <Eye className="h-4 w-4" />
                   {post.viewCount} {t("post.reads")}
@@ -947,7 +926,7 @@ export default function PostDetail() {
               </div>
 
               {(postCategory || visibleHeaderTags.length > 0) && (
-                <div className="mb-6 flex flex-wrap gap-2">
+                <div className="article-reading-tags">
                   {postCategory && (
                     <Link
                       href={`/categories/${postCategory.slug}`}
@@ -978,16 +957,9 @@ export default function PostDetail() {
               {(primaryEntryItem || seriesContext) && (
                 <section
                   className="article-entry-layer glass-dock liquid-panel"
-                  aria-labelledby="article-entry-title"
+                  aria-label={t("post.entry.title")}
                 >
                   <div className="article-entry-brief">
-                    <div className="article-entry-heading">
-                      <p className="article-entry-kicker">
-                        {t("post.entry.kicker")}
-                      </p>
-                      <h2 id="article-entry-title">{t("post.entry.title")}</h2>
-                    </div>
-
                     {primaryEntryItem && (
                       <dl className="article-entry-grid article-entry-grid-compact">
                         <div

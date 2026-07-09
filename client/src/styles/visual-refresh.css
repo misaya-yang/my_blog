@@ -6385,6 +6385,28 @@
     box-shadow: none;
   }
 
+  .paper-reader-main .article-reading-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem 0.95rem;
+    margin-bottom: 0.85rem;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .paper-reader-main .article-reading-meta > * {
+    min-width: 0;
+  }
+
+  .paper-reader-main .article-reading-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 0.95rem;
+  }
+
   .paper-reader-main .article-prose {
     max-width: min(100%, var(--article-prose-target, 74ch));
     margin-right: auto;
@@ -7089,6 +7111,16 @@
   }
 
   @media (max-width: 760px) {
+    .paper-reader-main .article-reading-meta {
+      gap: 0.38rem 0.7rem;
+      margin-bottom: 0.65rem;
+      font-size: 0.8rem;
+    }
+
+    .paper-reader-main .article-reading-tags {
+      margin-bottom: 0.7rem;
+    }
+
     .paper-reader-main .article-reading-handoff {
       grid-template-columns: 1fr;
       margin-top: 2rem;

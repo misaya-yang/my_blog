@@ -235,6 +235,9 @@ async function inspectPost(browser: BrowserLike, viewport: Viewport) {
       headerHeight: rectHeight(header),
       proseY: rectTop(prose),
       entryHeight: rectHeight(entry),
+      preBodyAuthorUtilityCount: document.querySelectorAll(
+        '.article-reading-header a[href*="scholar.google"], .article-reading-header button'
+      ).length,
       feedbackHeight: rectHeight(feedback),
       feedbackClientWidth: feedback?.clientWidth ?? null,
       feedbackScrollWidth: feedback?.scrollWidth ?? null,
@@ -299,8 +302,10 @@ async function inspectPost(browser: BrowserLike, viewport: Viewport) {
       headerHeightWithinLimit: Number(measurements.headerHeight ?? 0) <= 72,
       proseStartsSoon:
         viewport.width < 768
-          ? Number(measurements.proseY ?? Infinity) <= 950
-          : Number(measurements.proseY ?? Infinity) <= 1050,
+          ? Number(measurements.proseY ?? Infinity) <= 590
+          : Number(measurements.proseY ?? Infinity) <= 520,
+      noPreBodyAuthorUtilities:
+        Number(measurements.preBodyAuthorUtilityCount) === 0,
       entryLayerCompact:
         Number(measurements.entryHeight ?? Infinity) <=
         (viewport.width < 768 ? 390 : 300),
