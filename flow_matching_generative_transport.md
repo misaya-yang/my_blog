@@ -224,7 +224,7 @@ Discrete Flow Matching 则把 flow paradigm 推向语言和离散数据。连续
 
 几何空间上的 Flow Matching 也很有意义。蛋白质、分子、材料和机器人轨迹不是普通欧氏像素数据，往往带有旋转、平移、刚体或流形约束。Riemannian Flow Matching、SE(3) Flow Matching、FoldFlow 等工作把路径设计和等变架构结合起来，让生成过程尊重数据本身的几何结构。
 
-## 10. 不要把它神化
+## 10. 边界：不要把它神化
 
 Flow Matching 很强，但不是免费午餐。
 
