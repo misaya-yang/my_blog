@@ -1,0 +1,570 @@
+{
+  "generatedAt": "2026-07-09T04:44:29.199Z",
+  "baseUrl": "http://localhost:3000",
+  "passed": true,
+  "results": [
+    {
+      "route": "/",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "measurements": {
+        "firstArticleY": 946.171875,
+        "headerHeight": 72,
+        "searchDockY": 589.765625,
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390
+      },
+      "checks": {
+        "noHorizontalOverflow": true,
+        "headerHeightWithinLimit": true,
+        "firstArticleVisibleSoon": true,
+        "searchDockEarly": true
+      }
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 1000
+      },
+      "measurements": {
+        "firstArticleY": 850.359375,
+        "headerHeight": 72,
+        "searchDockY": 547.6875,
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440
+      },
+      "checks": {
+        "noHorizontalOverflow": true,
+        "headerHeightWithinLimit": true,
+        "firstArticleVisibleSoon": true,
+        "searchDockEarly": true
+      }
+    },
+    {
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "measurements": {
+        "headerHeight": 72,
+        "proseY": 639.3125,
+        "entryHeight": 106.09375,
+        "feedbackHeight": 355.59375,
+        "feedbackClientWidth": 326,
+        "feedbackScrollWidth": 326,
+        "feedbackSentimentButtons": 2,
+        "feedbackDetailToggle": true,
+        "feedbackDetailExpanded": "false",
+        "feedbackTextareaCount": 0,
+        "feedbackInputCount": 0,
+        "feedbackSubmitExists": true,
+        "feedbackSubmitDisabled": true,
+        "subscriptionHeight": 316,
+        "subscriptionClientWidth": 326,
+        "subscriptionScrollWidth": 326,
+        "subscriptionInputCount": 1,
+        "subscriptionLanguageControl": false,
+        "subscriptionDetailToggle": true,
+        "subscriptionDetailExpanded": "false",
+        "subscriptionSubmitExists": true,
+        "subscriptionRssLink": true,
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390
+      },
+      "checks": {
+        "noHorizontalOverflow": true,
+        "headerHeightWithinLimit": true,
+        "proseStartsSoon": true,
+        "entryLayerCompact": true,
+        "feedbackNoHorizontalOverflow": true,
+        "feedbackProgressiveDefault": true,
+        "feedbackActionsAvailable": true,
+        "feedbackCompact": true,
+        "feedbackSubmitWaitsForSignal": true,
+        "subscriptionNoHorizontalOverflow": true,
+        "subscriptionProgressiveDefault": true,
+        "subscriptionActionsAvailable": true,
+        "subscriptionCompact": true
+      }
+    },
+    {
+      "route": "/post/goal-harness-agent-phase-protocol",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 1000
+      },
+      "measurements": {
+        "headerHeight": 72,
+        "proseY": 569.265625,
+        "entryHeight": 106.09375,
+        "feedbackHeight": 319.59375,
+        "feedbackClientWidth": 368,
+        "feedbackScrollWidth": 368,
+        "feedbackSentimentButtons": 2,
+        "feedbackDetailToggle": true,
+        "feedbackDetailExpanded": "false",
+        "feedbackTextareaCount": 0,
+        "feedbackInputCount": 0,
+        "feedbackSubmitExists": true,
+        "feedbackSubmitDisabled": true,
+        "subscriptionHeight": 284,
+        "subscriptionClientWidth": 320,
+        "subscriptionScrollWidth": 320,
+        "subscriptionInputCount": 1,
+        "subscriptionLanguageControl": false,
+        "subscriptionDetailToggle": true,
+        "subscriptionDetailExpanded": "false",
+        "subscriptionSubmitExists": true,
+        "subscriptionRssLink": true,
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440
+      },
+      "checks": {
+        "noHorizontalOverflow": true,
+        "headerHeightWithinLimit": true,
+        "proseStartsSoon": true,
+        "entryLayerCompact": true,
+        "feedbackNoHorizontalOverflow": true,
+        "feedbackProgressiveDefault": true,
+        "feedbackActionsAvailable": true,
+        "feedbackCompact": true,
+        "feedbackSubmitWaitsForSignal": true,
+        "subscriptionNoHorizontalOverflow": true,
+        "subscriptionProgressiveDefault": true,
+        "subscriptionActionsAvailable": true,
+        "subscriptionCompact": true
+      }
+    },
+    {
+      "route": "/search?q=zzzz-no-hit-ui-audit",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "measurements": {
+        "recoveryY": 455.515625,
+        "actionY": 629.90625,
+        "clearExists": true,
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390
+      },
+      "checks": {
+        "noHorizontalOverflow": true,
+        "primaryRecoveryVisible": true,
+        "agentActionVisible": true,
+        "clearSearchAvailable": true
+      }
+    },
+    {
+      "route": "/archive",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "measurements": {
+        "summaryTop": 341.484375,
+        "firstRowTop": 719.34375,
+        "firstRowHeight": 240.71875,
+        "firstTitleLineHeight": "28px",
+        "rowCount": 8,
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390
+      },
+      "checks": {
+        "noHorizontalOverflow": true,
+        "archiveRowsPresent": true,
+        "summaryVisibleSoon": true,
+        "firstRowVisibleSoon": true,
+        "rowDensityReadable": true,
+        "titleLineHeightReadable": true
+      }
+    },
+    {
+      "route": "/archive",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 1000
+      },
+      "measurements": {
+        "summaryTop": 340.734375,
+        "firstRowTop": 549.125,
+        "firstRowHeight": 90.75,
+        "firstTitleLineHeight": "28px",
+        "rowCount": 8,
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440
+      },
+      "checks": {
+        "noHorizontalOverflow": true,
+        "archiveRowsPresent": true,
+        "summaryVisibleSoon": true,
+        "firstRowVisibleSoon": true,
+        "rowDensityReadable": true,
+        "titleLineHeightReadable": true
+      }
+    },
+    {
+      "route": "/categories/ai-applications",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "measurements": {
+        "sidePanelTop": 1682.171875,
+        "sidePanelHeight": 707.734375,
+        "notesTop": 381.25,
+        "firstRowTop": 576.640625,
+        "firstRowHeight": 259.53125,
+        "firstTitleLineHeight": "23.2px",
+        "rowCount": 4,
+        "sideTagCount": 11,
+        "bodyScrollWidth": 390,
+        "documentScrollWidth": 390,
+        "viewportWidth": 390
+      },
+      "checks": {
+        "noHorizontalOverflow": true,
+        "taxonomyRowsPresent": true,
+        "relatedTagsBounded": true,
+        "sidePanelAfterNotesOnMobile": true,
+        "notesSurfaceVisibleSoon": true,
+        "firstRowVisibleSoon": true,
+        "rowDensityReadable": true,
+        "titleLineHeightReadable": true
+      }
+    },
+    {
+      "route": "/categories/ai-applications",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 1000
+      },
+      "measurements": {
+        "sidePanelTop": 128,
+        "sidePanelHeight": 723.734375,
+        "notesTop": 407.484375,
+        "firstRowTop": 560.46875,
+        "firstRowHeight": 170.234375,
+        "firstTitleLineHeight": "23.2px",
+        "rowCount": 4,
+        "sideTagCount": 11,
+        "bodyScrollWidth": 1440,
+        "documentScrollWidth": 1440,
+        "viewportWidth": 1440
+      },
+      "checks": {
+        "noHorizontalOverflow": true,
+        "taxonomyRowsPresent": true,
+        "relatedTagsBounded": true,
+        "sidePanelAfterNotesOnMobile": true,
+        "notesSurfaceVisibleSoon": true,
+        "firstRowVisibleSoon": true,
+        "rowDensityReadable": true,
+        "titleLineHeightReadable": true
+      }
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "measurements": {
+        "launcherExpanded": "true",
+        "launcherControls": "blog-agent-panel",
+        "panelRole": "dialog",
+        "panelModal": "true",
+        "panelLabelledBy": "blog-agent-title",
+        "activeElementInsidePanel": true,
+        "panelExists": false,
+        "activeIsLauncher": true
+      },
+      "checks": {
+        "launcherControlsPanel": true,
+        "panelIsDialog": true,
+        "panelIsModal": true,
+        "panelHasName": true,
+        "focusEnteredPanel": true,
+        "escapeClosesPanel": true,
+        "focusReturnsToLauncher": true
+      }
+    },
+    {
+      "route": "/post/goal-harness-agent-phase-protocol#agent-answer-fixture",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "measurements": {
+        "fixtureMounted": true,
+        "viewportHeight": 844,
+        "viewportWidth": 390,
+        "panelClientWidth": 364,
+        "panelScrollWidth": 364,
+        "scrollerClientWidth": 364,
+        "scrollerScrollWidth": 364,
+        "messageBubbleClientWidth": 286,
+        "messageBubbleScrollWidth": 286,
+        "sourceClientWidth": 258,
+        "sourceScrollWidth": 258,
+        "expandedSourceClientWidth": 258,
+        "expandedSourceScrollWidth": 258,
+        "expandedSourceClientHeight": 256,
+        "expandedSourceScrollHeight": 584,
+        "sourceTotal": 5,
+        "sourceChipCount": 3,
+        "sourceListCount": 0,
+        "relatedClientWidth": 258,
+        "relatedScrollWidth": 258,
+        "sourceToggleExpanded": "false",
+        "panelTop": 44,
+        "panelBottom": 764,
+        "scrollerTop": 202.1875,
+        "scrollerBottom": 599,
+        "answerTop": 229.1875,
+        "answerBottom": 421.1875,
+        "sourceSummaryTop": 542.1875,
+        "sourceSummaryBottom": 578.1875,
+        "composerTop": 660,
+        "composerBottom": 763
+      },
+      "checks": {
+        "fixtureMounted": true,
+        "noPanelHorizontalOverflow": true,
+        "noMessageHorizontalOverflow": true,
+        "answerStartsVisible": true,
+        "sourcesCollapsedByDefault": true,
+        "expandedSourcesBounded": true,
+        "expandedSourcesNoHorizontalOverflow": true,
+        "relatedTasksNoHorizontalOverflow": true,
+        "sourceSummaryCompact": true,
+        "composerReachable": true
+      }
+    },
+    {
+      "route": "/post/goal-harness-agent-phase-protocol#agent-answer-fixture",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "measurements": {
+        "fixtureMounted": true,
+        "viewportHeight": 900,
+        "viewportWidth": 1440,
+        "panelClientWidth": 518,
+        "panelScrollWidth": 518,
+        "scrollerClientWidth": 518,
+        "scrollerScrollWidth": 518,
+        "messageBubbleClientWidth": 440,
+        "messageBubbleScrollWidth": 440,
+        "sourceClientWidth": 412,
+        "sourceScrollWidth": 412,
+        "expandedSourceClientWidth": 412,
+        "expandedSourceScrollWidth": 412,
+        "expandedSourceClientHeight": 315,
+        "expandedSourceScrollHeight": 584,
+        "sourceTotal": 5,
+        "sourceChipCount": 3,
+        "sourceListCount": 0,
+        "relatedClientWidth": 412,
+        "relatedScrollWidth": 412,
+        "sourceToggleExpanded": "false",
+        "panelTop": 124,
+        "panelBottom": 804,
+        "scrollerTop": 241,
+        "scrollerBottom": 657.515625,
+        "answerTop": 268,
+        "answerBottom": 388,
+        "sourceSummaryTop": 485,
+        "sourceSummaryBottom": 521,
+        "composerTop": 698.515625,
+        "composerBottom": 783
+      },
+      "checks": {
+        "fixtureMounted": true,
+        "noPanelHorizontalOverflow": true,
+        "noMessageHorizontalOverflow": true,
+        "answerStartsVisible": true,
+        "sourcesCollapsedByDefault": true,
+        "expandedSourcesBounded": true,
+        "expandedSourcesNoHorizontalOverflow": true,
+        "relatedTasksNoHorizontalOverflow": true,
+        "sourceSummaryCompact": true,
+        "composerReachable": true
+      }
+    },
+    {
+      "route": "/#accessibility-baseline",
+      "viewport": {
+        "name": "a11y-home-320",
+        "width": 320,
+        "height": 844
+      },
+      "measurements": {
+        "mainCount": 1,
+        "primaryHeadingCount": 1,
+        "focusableCount": 20,
+        "unnamedIconOnlyButtonCount": 0,
+        "timeWithoutDateTimeCount": 0,
+        "activeNavWithoutCurrentCount": 0,
+        "reducedMotionRulePresent": true,
+        "bodyScrollWidth": 320,
+        "documentScrollWidth": 320,
+        "viewportWidth": 320
+      },
+      "checks": {
+        "hasMainLandmark": true,
+        "hasSinglePrimaryHeading": true,
+        "focusableControlsAvailable": true,
+        "iconOnlyButtonsHaveNames": true,
+        "timeElementsHaveDateTime": true,
+        "activeNavigationUsesAriaCurrent": true,
+        "reducedMotionRulePresent": true,
+        "noHorizontalOverflowAt320": true
+      }
+    },
+    {
+      "route": "/post/goal-harness-agent-phase-protocol#accessibility-baseline",
+      "viewport": {
+        "name": "a11y-post-320",
+        "width": 320,
+        "height": 844
+      },
+      "measurements": {
+        "mainCount": 1,
+        "primaryHeadingCount": 1,
+        "focusableCount": 101,
+        "unnamedIconOnlyButtonCount": 0,
+        "timeWithoutDateTimeCount": 0,
+        "activeNavWithoutCurrentCount": 0,
+        "reducedMotionRulePresent": true,
+        "bodyScrollWidth": 320,
+        "documentScrollWidth": 320,
+        "viewportWidth": 320
+      },
+      "checks": {
+        "hasMainLandmark": true,
+        "hasSinglePrimaryHeading": true,
+        "focusableControlsAvailable": true,
+        "iconOnlyButtonsHaveNames": true,
+        "timeElementsHaveDateTime": true,
+        "activeNavigationUsesAriaCurrent": true,
+        "reducedMotionRulePresent": true,
+        "noHorizontalOverflowAt320": true
+      }
+    },
+    {
+      "route": "/search?q=zzzz-no-hit-ui-audit#accessibility-baseline",
+      "viewport": {
+        "name": "a11y-search-zero-320",
+        "width": 320,
+        "height": 844
+      },
+      "measurements": {
+        "mainCount": 1,
+        "primaryHeadingCount": 1,
+        "focusableCount": 23,
+        "unnamedIconOnlyButtonCount": 0,
+        "timeWithoutDateTimeCount": 0,
+        "activeNavWithoutCurrentCount": 0,
+        "reducedMotionRulePresent": true,
+        "bodyScrollWidth": 320,
+        "documentScrollWidth": 320,
+        "viewportWidth": 320
+      },
+      "checks": {
+        "hasMainLandmark": true,
+        "hasSinglePrimaryHeading": true,
+        "focusableControlsAvailable": true,
+        "iconOnlyButtonsHaveNames": true,
+        "timeElementsHaveDateTime": true,
+        "activeNavigationUsesAriaCurrent": true,
+        "reducedMotionRulePresent": true,
+        "noHorizontalOverflowAt320": true
+      }
+    },
+    {
+      "route": "/manage#accessibility-baseline",
+      "viewport": {
+        "name": "a11y-manage-320",
+        "width": 320,
+        "height": 844
+      },
+      "measurements": {
+        "mainCount": 1,
+        "primaryHeadingCount": 1,
+        "focusableCount": 7,
+        "unnamedIconOnlyButtonCount": 0,
+        "timeWithoutDateTimeCount": 0,
+        "activeNavWithoutCurrentCount": 0,
+        "reducedMotionRulePresent": true,
+        "bodyScrollWidth": 320,
+        "documentScrollWidth": 320,
+        "viewportWidth": 320
+      },
+      "checks": {
+        "hasMainLandmark": true,
+        "hasSinglePrimaryHeading": true,
+        "focusableControlsAvailable": true,
+        "iconOnlyButtonsHaveNames": true,
+        "timeElementsHaveDateTime": true,
+        "activeNavigationUsesAriaCurrent": true,
+        "reducedMotionRulePresent": true,
+        "noHorizontalOverflowAt320": true
+      }
+    },
+    {
+      "route": "/manage/agent#accessibility-baseline",
+      "viewport": {
+        "name": "a11y-manage-agent-320",
+        "width": 320,
+        "height": 844
+      },
+      "measurements": {
+        "mainCount": 1,
+        "primaryHeadingCount": 1,
+        "focusableCount": 7,
+        "unnamedIconOnlyButtonCount": 0,
+        "timeWithoutDateTimeCount": 0,
+        "activeNavWithoutCurrentCount": 0,
+        "reducedMotionRulePresent": true,
+        "bodyScrollWidth": 320,
+        "documentScrollWidth": 320,
+        "viewportWidth": 320
+      },
+      "checks": {
+        "hasMainLandmark": true,
+        "hasSinglePrimaryHeading": true,
+        "focusableControlsAvailable": true,
+        "iconOnlyButtonsHaveNames": true,
+        "timeElementsHaveDateTime": true,
+        "activeNavigationUsesAriaCurrent": true,
+        "reducedMotionRulePresent": true,
+        "noHorizontalOverflowAt320": true
+      }
+    }
+  ]
+}

@@ -5957,6 +5957,18 @@
   }
 
   @media (max-width: 1023px) {
+    .taxonomy-hero {
+      order: 1;
+    }
+
+    .taxonomy-notes-surface {
+      order: 2;
+    }
+
+    .taxonomy-side-panel {
+      order: 3;
+    }
+
     .home-index-grid {
       grid-template-columns: 1fr;
       grid-template-areas:

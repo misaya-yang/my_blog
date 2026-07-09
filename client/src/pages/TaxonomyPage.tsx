@@ -236,63 +236,6 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
               </div>
             </section>
 
-            <Surface
-              as="aside"
-              className="taxonomy-side-panel"
-              variant="floating"
-            >
-              <SectionHeader
-                icon={<Tags className="h-4 w-4" />}
-                title={t("discovery.siblingTags")}
-              />
-              <div className="mt-4 flex flex-wrap gap-2">
-                {visibleSiblingTags.length ? (
-                  <>
-                    {visibleSiblingTags.map(tag => (
-                      <Link
-                        key={tag.slug}
-                        href={`/tags/${tag.slug}`}
-                        className="article-tag px-3 py-1.5"
-                      >
-                        {tag.name}
-                      </Link>
-                    ))}
-                    {hiddenSiblingTagCount > 0 && (
-                      <span className="article-tag article-tag-muted px-3 py-1.5">
-                        {t("discovery.moreTags", {
-                          count: hiddenSiblingTagCount,
-                        })}
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <span className="text-sm text-slate-400">
-                    {t("discovery.noSiblingTags")}
-                  </span>
-                )}
-              </div>
-
-              {matchingTrack && (
-                <div className="mt-7">
-                  <SectionHeader
-                    icon={<Network className="h-4 w-4" />}
-                    title={t(matchingTrack.topicTitleKey)}
-                  />
-                  <div className="mt-4 grid gap-2">
-                    {matchingTrack.topics.map(topic => (
-                      <div
-                        key={topic.labelKey}
-                        className="research-index-row min-h-[3.5rem] px-4 py-3 text-sm"
-                      >
-                        <span>{t(topic.labelKey)}</span>
-                        <span className="text-sky-300">{t(topic.metaKey)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </Surface>
-
             <Surface className="taxonomy-notes-surface hairline-list">
               <SectionHeader
                 title={t("track.articles")}
@@ -347,6 +290,63 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
 
               {(pageInfo.totalPages > 1 || pageInfo.page > 1) && (
                 <TaxonomyPager kind={kind} slug={slug} pageInfo={pageInfo} />
+              )}
+            </Surface>
+
+            <Surface
+              as="aside"
+              className="taxonomy-side-panel"
+              variant="floating"
+            >
+              <SectionHeader
+                icon={<Tags className="h-4 w-4" />}
+                title={t("discovery.siblingTags")}
+              />
+              <div className="mt-4 flex flex-wrap gap-2">
+                {visibleSiblingTags.length ? (
+                  <>
+                    {visibleSiblingTags.map(tag => (
+                      <Link
+                        key={tag.slug}
+                        href={`/tags/${tag.slug}`}
+                        className="article-tag px-3 py-1.5"
+                      >
+                        {tag.name}
+                      </Link>
+                    ))}
+                    {hiddenSiblingTagCount > 0 && (
+                      <span className="article-tag article-tag-muted px-3 py-1.5">
+                        {t("discovery.moreTags", {
+                          count: hiddenSiblingTagCount,
+                        })}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span className="text-sm text-slate-400">
+                    {t("discovery.noSiblingTags")}
+                  </span>
+                )}
+              </div>
+
+              {matchingTrack && (
+                <div className="mt-7">
+                  <SectionHeader
+                    icon={<Network className="h-4 w-4" />}
+                    title={t(matchingTrack.topicTitleKey)}
+                  />
+                  <div className="mt-4 grid gap-2">
+                    {matchingTrack.topics.map(topic => (
+                      <div
+                        key={topic.labelKey}
+                        className="research-index-row min-h-[3.5rem] px-4 py-3 text-sm"
+                      >
+                        <span>{t(topic.labelKey)}</span>
+                        <span className="text-sky-300">{t(topic.metaKey)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
             </Surface>
           </div>

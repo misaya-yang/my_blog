@@ -499,12 +499,16 @@ async function inspectTaxonomy(browser: BrowserLike, viewport: Viewport) {
           Number(measurements.viewportWidth),
       taxonomyRowsPresent: Number(measurements.rowCount) > 0,
       relatedTagsBounded: Number(measurements.sideTagCount) <= 12,
+      sidePanelAfterNotesOnMobile:
+        viewport.width >= 1024 ||
+        Number(measurements.sidePanelTop ?? Infinity) >
+          Number(measurements.notesTop ?? -Infinity),
       notesSurfaceVisibleSoon:
         Number(measurements.notesTop ?? Infinity) <=
-        (viewport.width < 768 ? 1250 : 520),
+        (viewport.width < 768 ? 760 : 520),
       firstRowVisibleSoon:
         Number(measurements.firstRowTop ?? Infinity) <=
-        (viewport.width < 768 ? 1500 : 760),
+        (viewport.width < 768 ? 980 : 760),
       rowDensityReadable:
         Number(measurements.firstRowHeight ?? 0) >= 88 &&
         Number(measurements.firstRowHeight ?? Infinity) <=
