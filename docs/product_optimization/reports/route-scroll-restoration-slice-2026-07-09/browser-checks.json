@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-07-09T00:00:16.871Z",
+  "baseUrl": "http://localhost:3000",
+  "checks": {
+    "normalNavigationScrollsTop": true,
+    "homeScrollWasSaved": true,
+    "backRestoresHomeScroll": true
+  },
+  "measurements": {
+    "homeScrollBeforeArticle": 900,
+    "articleScrollAfterNormalNavigation": 0,
+    "savedHomeScroll": "362",
+    "homeScrollAfterBack": 362
+  },
+  "passed": true
+}

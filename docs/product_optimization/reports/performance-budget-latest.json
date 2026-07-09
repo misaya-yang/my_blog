@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-07-08T23:40:40.277Z",
+  "generatedAt": "2026-07-09T00:00:33.667Z",
   "status": "passed",
   "distDir": "dist/public",
   "totals": {
-    "javascriptRawBytes": 1532577,
-    "javascriptGzipBytes": 467045,
+    "javascriptRawBytes": 1535625,
+    "javascriptGzipBytes": 468173,
     "cssRawBytes": 506876,
     "cssGzipBytes": 84563,
     "javascriptAssetCount": 42,
@@ -23,34 +23,34 @@
         "gzipBytes": 90823
       },
       {
-        "file": "assets/index-C9R5iJgP.js",
-        "rawBytes": 244447,
-        "gzipBytes": 76432
+        "file": "assets/index-DLM9EQqM.js",
+        "rawBytes": 247150,
+        "gzipBytes": 77372
       },
       {
-        "file": "assets/MarkdownRenderer-BdtRkhTB.js",
+        "file": "assets/MarkdownRenderer-DFtN-pGX.js",
         "rawBytes": 179947,
-        "gzipBytes": 55225
+        "gzipBytes": 55223
       },
       {
-        "file": "assets/knowledgeRefresh-D30SNZiG.js",
+        "file": "assets/knowledgeRefresh-DmvFETEy.js",
         "rawBytes": 50512,
-        "gzipBytes": 18031
+        "gzipBytes": 18032
       },
       {
-        "file": "assets/Manage-DLPHbiOy.js",
+        "file": "assets/Manage-C0QJhx1r.js",
         "rawBytes": 63407,
-        "gzipBytes": 15572
+        "gzipBytes": 15574
       },
       {
-        "file": "assets/Editor-Df8U2Udw.js",
+        "file": "assets/Editor-CYZRaaBQ.js",
         "rawBytes": 40868,
-        "gzipBytes": 11491
+        "gzipBytes": 11494
       },
       {
-        "file": "assets/PostDetail-CiNlfsoW.js",
-        "rawBytes": 37145,
-        "gzipBytes": 10378
+        "file": "assets/PostDetail-BJydrnhV.js",
+        "rawBytes": 37490,
+        "gzipBytes": 10541
       }
     ],
     "css": [

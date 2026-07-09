@@ -4,6 +4,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider, useLanguage } from "./contexts/LanguageContext";
 import { trackPageView } from "@/lib/analytics";
+import { usePublicRouteScrollRestoration } from "@/lib/routeScrollRestoration";
 import { BlogAgentRoot } from "@/components/agent/BlogAgentRoot";
 import { BrandMark, SpaceBackdrop } from "@/components/ResearchShell";
 import { classifyProductRoute } from "@shared/route-contract";
@@ -103,6 +104,7 @@ function getRouteKind(location: string) {
 function RouteEffectController() {
   const [location] = useLocation();
   const didMount = useRef(false);
+  usePublicRouteScrollRestoration(location);
 
   useEffect(() => {
     const root = document.documentElement;
