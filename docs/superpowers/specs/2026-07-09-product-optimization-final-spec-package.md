@@ -1,8 +1,8 @@
 # Product Optimization Final Spec Package
 
 Date: 2026-07-09
-Status: Owner-approved execution baseline
-Implementation status: Active on `dev`; keep slice-level reports and commits. Push, deploy, schema migration, and credential changes still require explicit owner approval.
+Status: Ready for owner review; execution baseline after approval
+Implementation status: Spec package complete. Existing slice reports remain evidence; new implementation should start only after owner approval. Push, deploy, schema migration, and credential changes still require explicit owner approval.
 Branch: dev
 
 ## Design Read
@@ -17,7 +17,11 @@ Recommended dials:
 
 ## Purpose
 
-This file is the single owner-review entry point before the next implementation pass. It consolidates the existing product optimization specs, the completed implementation slices, and the remaining work into reviewable execution specs. After owner approval, implementation can proceed without per-slice confirmation, but each slice must stay bounded, tested, reported, and committed.
+This file is the execution contract behind the owner-review guide. It consolidates the existing product optimization specs, the completed implementation slices, and the remaining work into reviewable execution specs. After owner approval, implementation can proceed without per-slice confirmation, but each slice must stay bounded, tested, reported, and committed.
+
+Owner review guide:
+
+- `docs/superpowers/specs/2026-07-09-product-optimization-owner-review-guide.md`
 
 ## Current Evidence
 

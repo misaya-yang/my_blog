@@ -73,6 +73,10 @@ Three read-only review tracks informed the spec set:
 
 Start here:
 
+- `docs/superpowers/specs/2026-07-09-product-optimization-owner-review-guide.md`
+
+Then use the execution contract:
+
 - `docs/superpowers/specs/2026-07-09-product-optimization-final-spec-package.md`
 
 Then use the crosswalk if you want to confirm coverage:

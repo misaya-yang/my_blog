@@ -6,6 +6,9 @@ Implementation status: Paused until owner approval
 Scope: public UI, reading, Agent, owner cockpit, writing workflow, reader relationship, content quality, release gates
 
 Latest owner-review entry:
+[2026-07-09-product-optimization-owner-review-guide.md](./2026-07-09-product-optimization-owner-review-guide.md).
+
+Execution contract after approval:
 [2026-07-09-product-optimization-final-spec-package.md](./2026-07-09-product-optimization-final-spec-package.md).
 
 ## How To Review
