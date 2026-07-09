@@ -54,6 +54,26 @@ async function main() {
         width: 390,
         height: 844,
       }),
+      await inspectArchive(browser, {
+        name: "mobile",
+        width: 390,
+        height: 844,
+      }),
+      await inspectArchive(browser, {
+        name: "desktop",
+        width: 1440,
+        height: 1000,
+      }),
+      await inspectTaxonomy(browser, {
+        name: "mobile",
+        width: 390,
+        height: 844,
+      }),
+      await inspectTaxonomy(browser, {
+        name: "desktop",
+        width: 1440,
+        height: 1000,
+      }),
       await inspectAgentDialog(browser, {
         name: "mobile",
         width: 390,
@@ -358,6 +378,139 @@ async function inspectSearchZero(browser: BrowserLike, viewport: Viewport) {
       agentActionVisible:
         Number(measurements.actionY ?? Infinity) < viewport.height,
       clearSearchAvailable: Boolean(measurements.clearExists),
+    },
+  };
+}
+
+async function inspectArchive(browser: BrowserLike, viewport: Viewport) {
+  const page = await newMeasuredPage(browser, viewport);
+  await gotoAndWait(page, `${baseUrl}/archive`, ".archive-post-row");
+
+  const measurements = await page.evaluate(() => {
+    const summary = document.querySelector(".archive-summary-strip");
+    const firstRow = document.querySelector(".archive-post-row");
+    const firstTitle = document.querySelector(".archive-post-title");
+    return {
+      summaryTop: rectTop(summary),
+      firstRowTop: rectTop(firstRow),
+      firstRowHeight: rectHeight(firstRow),
+      firstTitleLineHeight: computedLineHeight(firstTitle),
+      rowCount: document.querySelectorAll(".archive-post-row").length,
+      bodyScrollWidth: document.body.scrollWidth,
+      documentScrollWidth: document.documentElement.scrollWidth,
+      viewportWidth: window.innerWidth,
+    };
+
+    function rectTop(element: Element | null) {
+      return element?.getBoundingClientRect().top ?? null;
+    }
+
+    function rectHeight(element: Element | null) {
+      return element?.getBoundingClientRect().height ?? null;
+    }
+
+    function computedLineHeight(element: Element | null) {
+      if (!element) return null;
+      return window.getComputedStyle(element).lineHeight;
+    }
+  });
+
+  await page.close();
+
+  return {
+    route: "/archive",
+    viewport,
+    measurements,
+    checks: {
+      noHorizontalOverflow:
+        Number(measurements.bodyScrollWidth) <=
+          Number(measurements.viewportWidth) &&
+        Number(measurements.documentScrollWidth) <=
+          Number(measurements.viewportWidth),
+      archiveRowsPresent: Number(measurements.rowCount) > 0,
+      summaryVisibleSoon:
+        Number(measurements.summaryTop ?? Infinity) <=
+        (viewport.width < 768 ? viewport.height + 80 : 520),
+      firstRowVisibleSoon:
+        Number(measurements.firstRowTop ?? Infinity) <=
+        (viewport.width < 768 ? 1200 : 760),
+      rowDensityReadable:
+        Number(measurements.firstRowHeight ?? 0) >= 56 &&
+        Number(measurements.firstRowHeight ?? Infinity) <=
+          (viewport.width < 768 ? 260 : 150),
+      titleLineHeightReadable:
+        parseFloat(String(measurements.firstTitleLineHeight ?? "0")) >= 22,
+    },
+  };
+}
+
+async function inspectTaxonomy(browser: BrowserLike, viewport: Viewport) {
+  const page = await newMeasuredPage(browser, viewport);
+  await gotoAndWait(
+    page,
+    `${baseUrl}/categories/ai-applications`,
+    ".taxonomy-article-row"
+  );
+
+  const measurements = await page.evaluate(() => {
+    const sidePanel = document.querySelector(".taxonomy-side-panel");
+    const notesSurface = document.querySelector(".taxonomy-notes-surface");
+    const firstRow = document.querySelector(".taxonomy-article-row");
+    const firstTitle = document.querySelector(".taxonomy-article-title");
+    return {
+      sidePanelTop: rectTop(sidePanel),
+      sidePanelHeight: rectHeight(sidePanel),
+      notesTop: rectTop(notesSurface),
+      firstRowTop: rectTop(firstRow),
+      firstRowHeight: rectHeight(firstRow),
+      firstTitleLineHeight: computedLineHeight(firstTitle),
+      rowCount: document.querySelectorAll(".taxonomy-article-row").length,
+      sideTagCount: sidePanel?.querySelectorAll(".article-tag").length ?? 0,
+      bodyScrollWidth: document.body.scrollWidth,
+      documentScrollWidth: document.documentElement.scrollWidth,
+      viewportWidth: window.innerWidth,
+    };
+
+    function rectTop(element: Element | null) {
+      return element?.getBoundingClientRect().top ?? null;
+    }
+
+    function rectHeight(element: Element | null) {
+      return element?.getBoundingClientRect().height ?? null;
+    }
+
+    function computedLineHeight(element: Element | null) {
+      if (!element) return null;
+      return window.getComputedStyle(element).lineHeight;
+    }
+  });
+
+  await page.close();
+
+  return {
+    route: "/categories/ai-applications",
+    viewport,
+    measurements,
+    checks: {
+      noHorizontalOverflow:
+        Number(measurements.bodyScrollWidth) <=
+          Number(measurements.viewportWidth) &&
+        Number(measurements.documentScrollWidth) <=
+          Number(measurements.viewportWidth),
+      taxonomyRowsPresent: Number(measurements.rowCount) > 0,
+      relatedTagsBounded: Number(measurements.sideTagCount) <= 12,
+      notesSurfaceVisibleSoon:
+        Number(measurements.notesTop ?? Infinity) <=
+        (viewport.width < 768 ? 1250 : 520),
+      firstRowVisibleSoon:
+        Number(measurements.firstRowTop ?? Infinity) <=
+        (viewport.width < 768 ? 1500 : 760),
+      rowDensityReadable:
+        Number(measurements.firstRowHeight ?? 0) >= 88 &&
+        Number(measurements.firstRowHeight ?? Infinity) <=
+          (viewport.width < 768 ? 260 : 190),
+      titleLineHeightReadable:
+        parseFloat(String(measurements.firstTitleLineHeight ?? "0")) >= 22,
     },
   };
 }
