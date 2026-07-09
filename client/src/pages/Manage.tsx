@@ -62,6 +62,10 @@ import {
   type ManageReaderSignal,
 } from "./manageReaderSignals";
 import {
+  getOwnerCockpitSummary,
+  type OwnerCockpitNextAction,
+} from "./manageOwnerCockpit";
+import {
   Plus,
   Search,
   MoreHorizontal,
@@ -1130,6 +1134,13 @@ export default function Manage() {
           </Surface>
         </section>
 
+        <OwnerCockpitPanel
+          loading={contentRadarLoading || agentRadarLoading}
+          radar={contentRadarData}
+          agentRadar={agentRadarData}
+          hasError={contentRadarError || agentRadarError}
+        />
+
         <WritingBacklogPanel
           loading={contentRadarLoading}
           radar={contentRadarData}
@@ -1637,18 +1648,22 @@ function WritingBacklogPanel({
 }) {
   const { language, t } = useLanguage();
   const engagementItems = radar?.writingBacklog ?? [];
-  const agentItems: BacklogItem[] = (agentRadar?.suggestedIdeas ?? []).map(idea => ({
-    id: idea.ideaId,
-    kind: "agent_question",
-    title: idea.proposedTitle,
-    signalCount: idea.supportCount,
-    status: idea.status ?? "new",
-    priority: idea.supportCount > 1 ? "high" : "normal",
-    sourceHref: "/manage/agent",
-    draftHref: `/write?idea=${encodeURIComponent(idea.proposedTitle)}&source=agent_question`,
-    latestAt: null,
-    evidence: [idea.rationale],
-  }));
+  const agentItems: BacklogItem[] = (agentRadar?.suggestedIdeas ?? []).map(
+    idea => ({
+      id: idea.ideaId,
+      kind: "agent_question",
+      title: idea.proposedTitle,
+      signalCount: idea.supportCount,
+      status: idea.status ?? "new",
+      priority: idea.supportCount > 1 ? "high" : "normal",
+      sourceHref: "/manage/agent",
+      draftHref: `/write?idea=${encodeURIComponent(
+        idea.proposedTitle
+      )}&source=agent_question`,
+      latestAt: null,
+      evidence: [idea.rationale],
+    })
+  );
   const backlogItems = [...engagementItems, ...agentItems].slice(0, 10);
   const isLoading = loading || agentLoading;
   const noSourceCount = agentRadar?.summary?.noSourceRuns ?? 0;
@@ -1735,7 +1750,9 @@ function WritingBacklogPanel({
                       {getBacklogKindLabel(item.kind, t)}
                     </Badge>
                     <Badge
-                      variant={item.priority === "high" ? "default" : "secondary"}
+                      variant={
+                        item.priority === "high" ? "default" : "secondary"
+                      }
                     >
                       {getBacklogPriorityLabel(item.priority, t)}
                     </Badge>
@@ -1796,6 +1813,122 @@ function WritingBacklogPanel({
   );
 }
 
+function OwnerCockpitPanel({
+  loading,
+  radar,
+  agentRadar,
+  hasError,
+}: {
+  loading: boolean;
+  radar?: EngagementRadarSummary;
+  agentRadar?: AgentQuestionRadarSummary;
+  hasError: boolean;
+}) {
+  const { t } = useLanguage();
+  const summary = getOwnerCockpitSummary(radar, agentRadar);
+  const actionLabelKey = getOwnerCockpitActionLabelKey(summary.nextAction);
+  const actionDescriptionKey = getOwnerCockpitActionDescriptionKey(
+    summary.nextAction
+  );
+  const actionTone =
+    summary.nextAction === "release_risk"
+      ? "border-amber-400/25 bg-amber-500/10 text-amber-100"
+      : "border-primary/15 bg-slate-950/30 text-slate-200";
+
+  return (
+    <section className="owner-panel mt-8 p-5">
+      <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <div className="mb-2 flex items-center gap-2 text-white">
+            <ShieldCheck className="h-5 w-5 owner-icon-accent" />
+            <h3 className="text-lg font-semibold">
+              {t("manage.ownerCockpit.title")}
+            </h3>
+          </div>
+          <p className="max-w-3xl text-sm leading-6 text-slate-400">
+            {t("manage.ownerCockpit.description")}
+          </p>
+        </div>
+        <Badge
+          variant="outline"
+          className={
+            summary.nextAction === "clear"
+              ? "w-fit border-emerald-400/30 text-emerald-200"
+              : "w-fit border-primary/20 text-primary"
+          }
+        >
+          {summary.nextAction === "clear"
+            ? t("manage.ownerCockpit.statusClear")
+            : t("manage.ownerCockpit.statusNeedsReview")}
+        </Badge>
+      </div>
+
+      {hasError && (
+        <div className="mb-4 rounded-lg border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-sm leading-6 text-amber-100">
+          {t("manage.ownerCockpit.partial")}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin owner-icon-accent" />
+        </div>
+      ) : (
+        <>
+          <div className="mb-4 grid gap-3 md:grid-cols-4">
+            <RadarMetric
+              label={t("manage.ownerCockpit.releaseRisk")}
+              value={String(summary.releaseRiskCount)}
+            />
+            <RadarMetric
+              label={t("manage.ownerCockpit.highSignals")}
+              value={String(summary.highSignalCount)}
+            />
+            <RadarMetric
+              label={t("manage.ownerCockpit.backlogCount")}
+              value={String(summary.backlogCount)}
+            />
+            <RadarMetric
+              label={t("manage.ownerCockpit.agentGaps")}
+              value={String(summary.agentGapCount)}
+            />
+          </div>
+          <div className={`rounded-lg border px-4 py-3 ${actionTone}`}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
+                <h4 className="text-sm font-semibold">
+                  {t(actionLabelKey)}
+                </h4>
+                <p className="mt-1 text-sm leading-6 opacity-85">
+                  {t(actionDescriptionKey)}
+                </p>
+                {summary.topSignal && (
+                  <p className="mt-2 line-clamp-1 text-xs opacity-70">
+                    {getReaderSignalKindLabel(summary.topSignal.kind, t)} ·{" "}
+                    {getReaderSignalPrimaryText(summary.topSignal)}
+                  </p>
+                )}
+              </div>
+              <div className="flex shrink-0 flex-wrap gap-2">
+                <Badge variant="secondary">
+                  {t("manage.ownerCockpit.newFeedback", {
+                    count: summary.newFeedbackCount,
+                  })}
+                </Badge>
+                <Badge variant="secondary">
+                  {t("manage.ownerCockpit.searchGaps", {
+                    count: summary.searchGapCount,
+                  })}
+                </Badge>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
 function RadarMetric({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-primary/10 bg-slate-950/30 p-3">
@@ -1803,6 +1936,23 @@ function RadarMetric({ label, value }: { label: string; value: string }) {
       <p className="mt-1 text-xl font-semibold text-white">{value}</p>
     </div>
   );
+}
+
+function getOwnerCockpitActionLabelKey(action: OwnerCockpitNextAction) {
+  if (action === "release_risk") return "manage.ownerCockpit.actionRelease";
+  if (action === "backlog") return "manage.ownerCockpit.actionBacklog";
+  if (action === "agent_gap") return "manage.ownerCockpit.actionAgent";
+  return "manage.ownerCockpit.actionClear";
+}
+
+function getOwnerCockpitActionDescriptionKey(action: OwnerCockpitNextAction) {
+  if (action === "release_risk")
+    return "manage.ownerCockpit.actionReleaseDescription";
+  if (action === "backlog")
+    return "manage.ownerCockpit.actionBacklogDescription";
+  if (action === "agent_gap")
+    return "manage.ownerCockpit.actionAgentDescription";
+  return "manage.ownerCockpit.actionClearDescription";
 }
 
 function getFeedbackStatusLabel(status: string, t: (key: string) => string) {

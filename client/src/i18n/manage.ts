@@ -175,6 +175,82 @@ const manage: TranslationDict = {
     en: "No email delivery provider is connected yet. Export subscribers when you are ready to send updates, and keep RSS available.",
     zh: "当前尚未接入邮件发送服务。需要发送更新时先导出订阅列表，同时继续保留 RSS。",
   },
+  "manage.ownerCockpit.title": {
+    en: "Owner Cockpit",
+    zh: "作者驾驶舱",
+  },
+  "manage.ownerCockpit.description": {
+    en: "Release risk, writing backlog, and Agent gaps summarized before the longer operational lists.",
+    zh: "在较长的运营列表前，先汇总发布风险、写作 backlog 和 Agent 缺口。",
+  },
+  "manage.ownerCockpit.statusClear": {
+    en: "Clear",
+    zh: "无阻塞",
+  },
+  "manage.ownerCockpit.statusNeedsReview": {
+    en: "Needs review",
+    zh: "需要查看",
+  },
+  "manage.ownerCockpit.partial": {
+    en: "Some owner signals could not be loaded. Showing available data.",
+    zh: "部分作者信号暂时无法加载，当前仅显示已获取的数据。",
+  },
+  "manage.ownerCockpit.releaseRisk": {
+    en: "Release risk",
+    zh: "发布风险",
+  },
+  "manage.ownerCockpit.highSignals": {
+    en: "High signals",
+    zh: "高风险信号",
+  },
+  "manage.ownerCockpit.backlogCount": {
+    en: "Backlog",
+    zh: "Backlog",
+  },
+  "manage.ownerCockpit.agentGaps": {
+    en: "Agent gaps",
+    zh: "Agent 缺口",
+  },
+  "manage.ownerCockpit.actionRelease": {
+    en: "Review release readiness first",
+    zh: "先查看发布就绪状态",
+  },
+  "manage.ownerCockpit.actionReleaseDescription": {
+    en: "A freshness or public-index signal needs attention before treating the current content as publish-ready.",
+    zh: "新鲜度或公开索引信号需要先处理，然后再把当前内容视为可发布状态。",
+  },
+  "manage.ownerCockpit.actionBacklog": {
+    en: "Pick the top backlog item",
+    zh: "处理最高优先级 backlog",
+  },
+  "manage.ownerCockpit.actionBacklogDescription": {
+    en: "Reader feedback, search misses, or Agent questions are ready to become an edit, link, or new draft.",
+    zh: "读者反馈、搜索缺口或 Agent 问题已经可以转成修改、补链或新草稿。",
+  },
+  "manage.ownerCockpit.actionAgent": {
+    en: "Inspect Agent quality gaps",
+    zh: "检查 Agent 质量缺口",
+  },
+  "manage.ownerCockpit.actionAgentDescription": {
+    en: "No-source or failed Agent runs need review in the Agent operations cockpit.",
+    zh: "无来源或失败的 Agent 运行需要到 Agent 运营页查看。",
+  },
+  "manage.ownerCockpit.actionClear": {
+    en: "No urgent owner action",
+    zh: "暂无紧急动作",
+  },
+  "manage.ownerCockpit.actionClearDescription": {
+    en: "No release blocker, high-signal backlog, or Agent gap is currently visible in the owner summary.",
+    zh: "作者摘要里暂未看到发布阻塞、高风险 backlog 或 Agent 缺口。",
+  },
+  "manage.ownerCockpit.newFeedback": {
+    en: "{count} new feedback",
+    zh: "{count} 条新反馈",
+  },
+  "manage.ownerCockpit.searchGaps": {
+    en: "{count} search gaps",
+    zh: "{count} 个搜索缺口",
+  },
   "manage.engagement.radarNewFeedback": { en: "New feedback", zh: "新反馈" },
   "manage.engagement.radarNotUseful": {
     en: "Confusion signals",
