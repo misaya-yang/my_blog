@@ -1,5 +1,9 @@
 # Taxonomy Density Compact List Implementation Plan
 
+Status: Completed
+Evidence commit: `373b742 feat: compact taxonomy article lists`
+Evidence report: `docs/product_optimization/reports/taxonomy-density-compact-list-slice-2026-07-09/summary.md`
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace taxonomy full article cards with compact scan-friendly rows while preserving public route, pagination, and public-only data boundaries.
@@ -533,6 +537,6 @@ Expected: commit succeeds and worktree is clean except unrelated user changes if
 ## Self-Review
 
 - Spec coverage: covers `SPEC-UI`, `SPEC-READ`, archive/taxonomy density, CSS debt no-growth, and evidence reporting for the first Wave 1 slice.
-- Scope gap: does not change search result rows or browser screenshots; those remain separate slices.
+- Scope gap: does not change search result rows; browser screenshots and probes were added in the evidence report.
 - Placeholder scan: no TBD/TODO/fill-later placeholders.
 - Type consistency: `TaxonomyPost`, `TaxonomyTag`, helper names, and test imports match Task 1.
