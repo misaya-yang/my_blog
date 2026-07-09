@@ -284,7 +284,7 @@ const RUBRIC_RULES: Record<
     label: "limitation",
     patterns: [
       /限制|边界|风险|失败模式|代价|权衡|不足|例外/,
-      /\b(?:limitation|boundary|risk|trade[- ]off|failure mode|caveat|cost)\b/i,
+      /\b(?:limitation|boundary|risk|trade[- ]off|failure (?:mode|modes|boundary|boundaries)|caveat|cost)\b/i,
     ],
   },
   implication: {

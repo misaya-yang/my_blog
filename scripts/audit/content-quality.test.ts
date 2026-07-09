@@ -212,6 +212,57 @@ describe("content quality audit", () => {
     expect(report.summary.rubricMissingDimensions).toBe(1);
   });
 
+  it("recognizes failure boundaries as limitation coverage", async () => {
+    const root = await createTempProject();
+    await writeFile(
+      join(root, "seed-blog.mjs"),
+      `
+      const posts = [
+        {
+          title: "Gated Note",
+          slug: "gated-note",
+          contentPath: "./boundary.md",
+          status: "published",
+          visibility: "public",
+          excerpt: "Concrete boundary note.",
+        },
+      ];
+      `
+    );
+    await writeFile(
+      join(root, "boundary.md"),
+      [
+        "# Gated Note",
+        "",
+        "## Problem",
+        "The model comparison can fail when parameter budgets are not controlled.",
+        "",
+        "## Mechanism",
+        "The gated branch multiplies a value projection by an input-conditioned gate.",
+        "",
+        "## Evidence",
+        "The implementation test compares shape and budget assumptions.",
+        "",
+        "## Failure Boundaries",
+        "The result does not claim every task improves or every optimizer stays stable.",
+        "",
+        "## Takeaway",
+        "Therefore the article should frame the mechanism as conditional channel control.",
+      ].join("\n")
+    );
+
+    const report = await runContentQualityAudit(root);
+    const rubric = report.rubrics.find(item => item.file === "boundary.md");
+
+    expect(rubric?.dimensions.limitation).toEqual(
+      expect.objectContaining({
+        status: "present",
+        evidence: "Failure Boundaries",
+      })
+    );
+    expect(rubric?.missing).not.toContain("limitation");
+  });
+
   it("flags awkward expression and translationese as metadata-rich suggestions", async () => {
     const root = await createTempProject();
     await writeFile(
