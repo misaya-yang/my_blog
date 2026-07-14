@@ -446,10 +446,23 @@ export function BlogAgentRoot() {
     }
   }
 
+  function focusAgentTrigger() {
+    const target = isMobile
+      ? document.querySelector<HTMLButtonElement>("[data-mobile-agent-trigger]")
+      : launcherRef.current;
+    target?.focus({ preventScroll: true });
+  }
+
+  function cancelAgentBootstrapQueries() {
+    void utils.agent.bootstrap.cancel();
+    void utils.agent.listConversations.cancel();
+  }
+
   function closeAgent() {
+    cancelAgentBootstrapQueries();
     setOpen(false);
     window.requestAnimationFrame(() => {
-      launcherRef.current?.focus({ preventScroll: true });
+      focusAgentTrigger();
     });
   }
 
@@ -457,8 +470,9 @@ export function BlogAgentRoot() {
     setOpen(value => {
       const next = !value;
       if (!next) {
+        cancelAgentBootstrapQueries();
         window.requestAnimationFrame(() => {
-          launcherRef.current?.focus({ preventScroll: true });
+          focusAgentTrigger();
         });
       }
       return next;

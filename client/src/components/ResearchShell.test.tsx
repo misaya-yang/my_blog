@@ -41,6 +41,8 @@ vi.mock("@/contexts/LanguageContext", () => ({
           "nav.switchToDark": "Switch to dark mode",
           "nav.brand": "Misaya Notes",
           "nav.back": "Back",
+          "agent.launcher.label": "Ask the blog",
+          "agent.launcher.tooltip": "Open the blog agent",
         } satisfies Record<string, string>
       )[key] ?? key,
   }),
@@ -82,6 +84,8 @@ describe("SiteHeader public access model", () => {
     expect(html).toContain('aria-label="Switch to light mode"');
     expect(html).toContain('aria-label="Switch language to Chinese"');
     expect(html).toContain('title="Switch language to Chinese"');
+    expect(html).toContain("data-mobile-agent-trigger");
+    expect(html).toContain('aria-label="Ask the blog"');
     expect(html).not.toContain('href="/login"');
     expect(html).not.toContain(">Login<");
   });
@@ -112,5 +116,14 @@ describe("SiteHeader public access model", () => {
 
     expect(html).not.toContain("Switch to light mode");
     expect(html).not.toContain("Switch to dark mode");
+    expect(html).not.toContain("data-mobile-agent-trigger");
+  });
+
+  it("lets system pages disable the mobile Agent entry explicitly", () => {
+    const html = renderToStaticMarkup(
+      <SiteHeader active="home" showAgent={false} />
+    );
+
+    expect(html).not.toContain("data-mobile-agent-trigger");
   });
 });

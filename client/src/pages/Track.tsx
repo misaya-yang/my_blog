@@ -2,7 +2,6 @@ import { ArticleCard, type ArticleCardPost } from "@/components/ArticleCard";
 import {
   SiteHeader,
   SpaceBackdrop,
-  StatTile,
   EmptyState,
 } from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,6 @@ import { buildRouteMetadata } from "@shared/metadata";
 import {
   ArrowLeft,
   ArrowRight,
-  Eye,
   FileText,
   Folder,
   GitBranch,
@@ -79,10 +77,6 @@ function TrackPage({ kind }: { kind: TrackKind }) {
   const publicSeries = getPublicTrackSeries(kind, trackPosts);
   const startPostSlug = getTrackStartPostSlug(publicSeries);
   const readingPathStats = getTrackReadingPathStats(publicSeries);
-  const totalViews = trackPosts.reduce(
-    (sum, post) => sum + (post.viewCount || 0),
-    0
-  );
 
   useSeo(
     buildRouteMetadata(siteUrl, {
@@ -167,42 +161,6 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                 </strong>
               </Link>
             </nav>
-
-            <div className="track-stat-grid track-stat-row mt-6 grid max-w-4xl grid-cols-3 gap-2 sm:gap-3">
-              <StatTile
-                icon={<FileText className="h-5 w-5" />}
-                value={
-                  hasLoadedPosts ? (
-                    trackPosts.length
-                  ) : (
-                    <span
-                      className="stat-value-skeleton"
-                      aria-label={t("common.ui.loading")}
-                    />
-                  )
-                }
-                label={t("home.statArticles")}
-              />
-              <StatTile
-                icon={<Folder className="h-5 w-5" />}
-                value={config.topics.length}
-                label={t("track.statTopics")}
-              />
-              <StatTile
-                icon={<Eye className="h-5 w-5" />}
-                value={
-                  hasLoadedPosts ? (
-                    totalViews
-                  ) : (
-                    <span
-                      className="stat-value-skeleton"
-                      aria-label={t("common.ui.loading")}
-                    />
-                  )
-                }
-                label={t("home.statViews")}
-              />
-            </div>
 
             {publicSeries.length > 0 && (
               <section
@@ -328,7 +286,6 @@ function TrackPage({ kind }: { kind: TrackKind }) {
               />
             )}
           </div>
-
         </section>
       </main>
     </div>

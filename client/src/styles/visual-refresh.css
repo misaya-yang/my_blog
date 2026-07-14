@@ -7570,3 +7570,202 @@
     }
   }
 }
+
+@layer components {
+  /* Approved UI pass A: make the first reading action immediate, keep track
+     orientation compact, and give lazy routes one stable loading surface. */
+  .home-index-grid {
+    grid-template-areas: "intro tracks";
+    align-items: start;
+  }
+
+  .home-intro-rail {
+    min-height: 0;
+  }
+
+  .home-intro-featured {
+    margin-top: clamp(0.9rem, 1.8vw, 1.15rem);
+  }
+
+  .home-intro-featured .home-featured-note {
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr) !important;
+    margin: 0 !important;
+    padding: 0.9rem !important;
+  }
+
+  .home-intro-featured .home-featured-note-body {
+    gap: 0.62rem;
+    padding-top: 0.78rem;
+  }
+
+  .home-intro-featured .home-featured-note-body h2 {
+    max-width: 30ch;
+    font-size: clamp(1.18rem, 1.55vw, 1.45rem);
+    line-height: 1.2;
+  }
+
+  .home-intro-featured .home-featured-note-body p {
+    -webkit-line-clamp: 2;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .home-intro-featured .home-inline-action {
+    min-height: 2rem;
+  }
+
+  .home-map-summary {
+    margin-top: 0.8rem;
+  }
+
+  .home-index-search {
+    margin-top: 0.75rem;
+  }
+
+  .route-loading-main {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: 100%;
+    min-height: 100dvh;
+    place-items: center;
+    padding: 1rem;
+  }
+
+  .route-loading-page-public {
+    display: block;
+    min-height: 100dvh;
+    padding: 0;
+  }
+
+  .route-loading-page-public .route-loading-main {
+    min-height: calc(100dvh - 68px);
+  }
+
+  @media (max-width: 1023px) {
+    .home-index-grid {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "intro"
+        "tracks";
+    }
+  }
+
+  @media (max-width: 760px) {
+    .home-intro-rail .home-title {
+      margin-top: 0.72rem;
+      font-size: clamp(1.98rem, 8.5vw, 2.22rem) !important;
+      line-height: 1.03;
+    }
+
+    .home-intro-rail .home-subtitle {
+      margin-top: 0.68rem;
+      font-size: 0.94rem;
+      line-height: 1.46;
+    }
+
+    .home-intro-featured {
+      margin-top: 0.78rem;
+    }
+
+    .home-intro-featured .home-featured-note {
+      padding: 0.78rem !important;
+    }
+
+    .home-intro-featured .home-featured-note-body h2 {
+      font-size: 1.12rem;
+    }
+
+    .home-intro-featured .home-featured-note-body p {
+      font-size: 0.86rem;
+    }
+
+    .home-map-summary {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.35rem;
+      margin-top: 0.7rem;
+    }
+
+    .home-map-summary div {
+      padding: 0.48rem;
+    }
+
+    .home-map-summary dt {
+      gap: 0.22rem;
+      font-size: 0.62rem;
+    }
+
+    .home-map-summary dt svg {
+      width: 0.78rem;
+      height: 0.78rem;
+    }
+
+    .home-map-summary dd {
+      font-size: 0.74rem;
+    }
+
+    .home-index-search {
+      margin-top: 0.7rem;
+    }
+
+    .track-index-page {
+      padding-top: 1.15rem !important;
+      padding-bottom: 1.25rem !important;
+    }
+
+    .track-index-hero .signal-chip {
+      margin-bottom: 0.65rem !important;
+    }
+
+    .track-page-title {
+      font-size: 2.16rem !important;
+    }
+
+    .track-page-copy {
+      margin-top: 0.65rem !important;
+      font-size: 0.96rem;
+      line-height: 1.48;
+    }
+
+    .track-context-strip {
+      gap: 0.55rem;
+      margin-top: 0.7rem !important;
+      padding: 0.55rem 0;
+    }
+
+    .track-focus-chips {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 0.12rem;
+      scrollbar-width: none;
+    }
+
+    .track-focus-chips::-webkit-scrollbar {
+      display: none;
+    }
+
+    .track-focus-chips span {
+      flex: 0 0 auto;
+    }
+
+    .track-orientation-strip {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.45rem;
+      margin-top: 0.75rem;
+    }
+
+    .track-orientation-strip a:first-child {
+      grid-column: 1 / -1;
+    }
+
+    .track-path-section {
+      margin-top: 0.9rem !important;
+    }
+
+    .route-loading-page-public .route-loading-main {
+      align-items: start;
+      padding-top: 1rem;
+    }
+  }
+}

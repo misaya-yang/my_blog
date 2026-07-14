@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sheet";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { openBlogAgentWithPrompt } from "@/components/agent/routeContext";
 import {
   buildAdminLoginHref,
   getCurrentAdminReturnPath,
@@ -17,6 +18,7 @@ import {
 import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
+  BookOpen,
   Edit,
   FileText,
   LogOut,
@@ -44,6 +46,7 @@ type SiteHeaderProps = {
   backHref?: string;
   backLabel?: string;
   compact?: boolean;
+  showAgent?: boolean;
 };
 
 export function SpaceBackdrop({ subtle = false }: { subtle?: boolean }) {
@@ -123,11 +126,18 @@ export function SiteHeader({
   backHref,
   backLabel,
   compact,
+  showAgent = true,
 }: SiteHeaderProps) {
   const { isAdmin, isAuthenticated, displayName, logout } = useAuth();
   const { language, toggleLanguage, t } = useLanguage();
   const { theme, toggleTheme, switchable } = useTheme();
   const ownerThemeLocked = active === "manage" || active === "agent";
+  const canShowAgent =
+    showAgent &&
+    active !== "write" &&
+    active !== "manage" &&
+    active !== "agent" &&
+    active !== "login";
   const canToggleTheme = switchable && toggleTheme && !ownerThemeLocked;
   const themeToggleLabel =
     theme === "dark" ? t("nav.switchToLight") : t("nav.switchToDark");
@@ -213,7 +223,7 @@ export function SiteHeader({
           <Link
             href="/search"
             className={cn(
-              "nav-icon-button",
+              "nav-icon-button hidden md:inline-flex",
               active === "search" && "nav-icon-button-active"
             )}
             aria-current={active === "search" ? "page" : undefined}
@@ -225,7 +235,7 @@ export function SiteHeader({
           {canToggleTheme ? (
             <button
               type="button"
-              className="nav-icon-button nav-theme-toggle"
+              className="nav-icon-button nav-theme-toggle hidden md:inline-flex"
               onClick={toggleTheme}
               aria-label={themeToggleLabel}
               aria-pressed={theme === "dark"}
@@ -235,18 +245,32 @@ export function SiteHeader({
             </button>
           ) : null}
           <span
-            className="site-header-divider mx-1 hidden h-5 w-px sm:block"
+            className="site-header-divider mx-1 hidden h-5 w-px md:block"
             aria-hidden="true"
           />
           <button
             type="button"
-            className="nav-ink px-3 glass-control"
+            className="nav-ink hidden px-3 glass-control md:inline-flex"
             onClick={toggleLanguage}
             aria-label={languageToggleLabel}
             title={languageToggleLabel}
           >
             {language === "en" ? t("nav.switchToZh") : t("nav.switchToEn")}
           </button>
+          {canShowAgent ? (
+            <button
+              type="button"
+              className="nav-icon-button h-11 w-11 md:hidden"
+              data-mobile-agent-trigger
+              aria-controls="blog-agent-panel"
+              aria-haspopup="dialog"
+              aria-label={t("agent.launcher.label")}
+              title={t("agent.launcher.tooltip")}
+              onClick={() => openBlogAgentWithPrompt()}
+            >
+              <BookOpen className="h-4 w-4" />
+            </button>
+          ) : null}
           {isAuthenticated ? (
             <Button
               variant="outline"
@@ -267,13 +291,16 @@ export function SiteHeader({
                 type="button"
                 variant="outline"
                 size="icon"
-                className="glass-button glass-control lg:hidden"
+                className="glass-button glass-control h-11 w-11 lg:hidden"
                 aria-label={t("nav.menu")}
               >
                 <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="site-mobile-sheet glass-popover w-[20rem] p-0">
+            <SheetContent
+              className="site-mobile-sheet glass-popover w-[20rem] p-0"
+              aria-describedby={undefined}
+            >
               <SheetHeader className="site-mobile-sheet-header p-5">
                 <SheetTitle className="site-mobile-sheet-title flex items-center gap-3">
                   <BrandMark />

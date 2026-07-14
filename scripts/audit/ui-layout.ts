@@ -111,13 +111,13 @@ async function main() {
         browser,
         { name: "a11y-manage-320", width: 320, height: 844 },
         "/manage",
-        "main"
+        ".auth-required-shell, .owner-ops-page"
       ),
       await inspectAccessibilityRoute(
         browser,
         { name: "a11y-manage-agent-320", width: 320, height: 844 },
         "/manage/agent",
-        "main"
+        ".auth-required-shell, .agent-console-page"
       )
     );
   } finally {
@@ -526,7 +526,12 @@ async function inspectTaxonomy(browser: BrowserLike, viewport: Viewport) {
 
 async function inspectAgentDialog(browser: BrowserLike, viewport: Viewport) {
   const page = await newMeasuredPage(browser, viewport);
-  await gotoAndWait(page, `${baseUrl}/`, ".agent-liquid-launcher");
+  const triggerSelector =
+    viewport.width < 768
+      ? "[data-mobile-agent-trigger]"
+      : ".agent-liquid-launcher";
+  await gotoAndWait(page, `${baseUrl}/`, ".home-index-spread");
+  await page.waitForSelector(triggerSelector);
   await page
     .getByRole("button", { name: /Blog Agent|阅读助手|Reader/i })
     .click();
@@ -534,11 +539,19 @@ async function inspectAgentDialog(browser: BrowserLike, viewport: Viewport) {
   await page.waitForTimeout(120);
 
   const measurements = await page.evaluate(() => {
+    const trigger = document.querySelector(
+      window.innerWidth < 768
+        ? "[data-mobile-agent-trigger]"
+        : ".agent-liquid-launcher"
+    );
     const launcher = document.querySelector(".agent-liquid-launcher");
     const panel = document.querySelector(".agent-liquid-panel");
     return {
-      launcherExpanded: launcher?.getAttribute("aria-expanded") ?? null,
-      launcherControls: launcher?.getAttribute("aria-controls") ?? null,
+      triggerControls: trigger?.getAttribute("aria-controls") ?? null,
+      floatingLauncherHidden:
+        launcher instanceof HTMLElement
+          ? window.getComputedStyle(launcher).display === "none"
+          : true,
       panelRole: panel?.getAttribute("role") ?? null,
       panelModal: panel?.getAttribute("aria-modal") ?? null,
       panelLabelledBy: panel?.getAttribute("aria-labelledby") ?? null,
@@ -551,9 +564,12 @@ async function inspectAgentDialog(browser: BrowserLike, viewport: Viewport) {
   await page.waitForTimeout(120);
   const afterEscape = await page.evaluate(() => ({
     panelExists: Boolean(document.querySelector(".agent-liquid-panel")),
-    activeIsLauncher:
-      document.activeElement?.classList.contains("agent-liquid-launcher") ??
-      false,
+    activeIsTrigger:
+      document.activeElement?.matches(
+        window.innerWidth < 768
+          ? "[data-mobile-agent-trigger]"
+          : ".agent-liquid-launcher"
+      ) ?? false,
   }));
   await page.close();
 
@@ -562,13 +578,15 @@ async function inspectAgentDialog(browser: BrowserLike, viewport: Viewport) {
     viewport,
     measurements: { ...measurements, ...afterEscape },
     checks: {
-      launcherControlsPanel: Boolean(measurements.launcherControls),
+      triggerControlsPanel: Boolean(measurements.triggerControls),
+      mobileFloatingLauncherHidden:
+        viewport.width >= 768 || Boolean(measurements.floatingLauncherHidden),
       panelIsDialog: measurements.panelRole === "dialog",
       panelIsModal: measurements.panelModal === "true",
       panelHasName: Boolean(measurements.panelLabelledBy),
       focusEnteredPanel: Boolean(measurements.activeElementInsidePanel),
       escapeClosesPanel: !afterEscape.panelExists,
-      focusReturnsToLauncher: afterEscape.activeIsLauncher,
+      focusReturnsToTrigger: afterEscape.activeIsTrigger,
     },
   };
 }
@@ -578,11 +596,16 @@ async function inspectAgentAnswerFixture(
   viewport: Viewport
 ) {
   const page = await newMeasuredPage(browser, viewport);
+  const triggerSelector =
+    viewport.width < 768
+      ? "[data-mobile-agent-trigger]"
+      : ".agent-liquid-launcher";
   await gotoAndWait(
     page,
     `${baseUrl}/post/goal-harness-agent-phase-protocol`,
-    ".agent-liquid-launcher"
+    ".article-prose"
   );
+  await page.waitForSelector(triggerSelector);
   await page
     .getByRole("button", { name: /Blog Agent|阅读助手|Reader/i })
     .click();

@@ -744,3 +744,27 @@
     }
   }
 }
+
+@layer components {
+  /* Mobile exposes the Agent from the persistent site header so the launcher
+     never covers prose, code, or first-viewport actions. */
+  @media (max-width: 767px) {
+    body:has([data-mobile-agent-trigger]) .agent-liquid-launcher {
+      display: none !important;
+    }
+
+    [data-mobile-agent-trigger] {
+      flex: 0 0 44px !important;
+      width: 44px !important;
+      min-width: 44px !important;
+      height: 44px !important;
+      min-height: 44px !important;
+    }
+  }
+
+  body:has(.site-mobile-sheet[data-state="open"]) .agent-liquid-launcher {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}

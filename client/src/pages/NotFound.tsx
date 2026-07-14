@@ -26,7 +26,12 @@ export default function NotFound() {
   return (
     <div className="space-page">
       <SpaceBackdrop subtle />
-      <SiteHeader compact backHref="/" backLabel={t("nav.backToHome")} />
+      <SiteHeader
+        compact
+        showAgent={false}
+        backHref="/"
+        backLabel={t("nav.backToHome")}
+      />
       <main className="container relative z-10 flex min-h-[calc(100vh-68px)] items-center px-4 py-12 sm:px-6">
         <section className="page-hero open-group max-w-2xl">
           <div className="signal-chip mb-6">{t("notFound.title")}</div>

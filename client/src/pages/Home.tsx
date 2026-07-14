@@ -318,38 +318,6 @@ function TrackPanel({
   );
 }
 
-function StartHerePath({
-  featuredPost,
-  t,
-}: {
-  featuredPost?: ArticleCardPost;
-  t: (key: string, vars?: Record<string, string | number>) => string;
-}) {
-  return (
-    <nav
-      className="home-start-path glass-dock"
-      aria-label={t("home.startHere")}
-    >
-      <div className="home-start-path-copy">
-        <Route className="h-4 w-4 text-sky-200" aria-hidden="true" />
-        <div>
-          <strong>{t("home.startHere")}</strong>
-          <span>{t("home.startHereHint")}</span>
-        </div>
-      </div>
-      <div className="home-start-path-actions">
-        {featuredPost && (
-          <Link href={`/post/${featuredPost.slug}`}>
-            {t("home.startLatest")}
-          </Link>
-        )}
-        <Link href="/applications">{t("home.startApplications")}</Link>
-        <Link href="/algorithms">{t("home.startAlgorithms")}</Link>
-      </div>
-    </nav>
-  );
-}
-
 export default function Home() {
   const { isAdmin } = useAuth();
   const { language, t } = useLanguage();
@@ -474,6 +442,16 @@ export default function Home() {
                 {t("home.subtitle")}
               </p>
 
+              <div className="home-intro-featured">
+                <FeaturedNote
+                  post={featuredPost}
+                  isLoading={isLoading}
+                  showSlowLoading={showSlowLoading}
+                  t={t}
+                  isAdmin={isAdmin}
+                />
+              </div>
+
               <dl
                 className="home-map-summary"
                 aria-label={t("home.mapSummaryLabel")}
@@ -542,8 +520,6 @@ export default function Home() {
                   </Button>
                 </div>
               </form>
-
-              <StartHerePath featuredPost={featuredPost} t={t} />
             </section>
 
             <section
@@ -554,16 +530,6 @@ export default function Home() {
                 <TrackPanel key={model.track} model={model} t={t} />
               ))}
             </section>
-
-            <div className="home-featured-band">
-              <FeaturedNote
-                post={featuredPost}
-                isLoading={isLoading}
-                showSlowLoading={showSlowLoading}
-                t={t}
-                isAdmin={isAdmin}
-              />
-            </div>
           </div>
         </section>
 

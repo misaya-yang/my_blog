@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -6,7 +6,11 @@ import { LanguageProvider, useLanguage } from "./contexts/LanguageContext";
 import { trackPageView } from "@/lib/analytics";
 import { usePublicRouteScrollRestoration } from "@/lib/routeScrollRestoration";
 import { BlogAgentRoot } from "@/components/agent/BlogAgentRoot";
-import { BrandMark, SpaceBackdrop } from "@/components/ResearchShell";
+import {
+  BrandMark,
+  SiteHeader,
+  SpaceBackdrop,
+} from "@/components/ResearchShell";
 import { classifyProductRoute } from "@shared/route-contract";
 
 const Home = lazy(() => import("./pages/Home"));
@@ -35,27 +39,65 @@ const CategoryPage = lazy(() =>
   import("./pages/TaxonomyPage").then((module) => ({ default: module.CategoryPage }))
 );
 
+function getLoadingHeaderActive(pathname: string) {
+  switch (pathname) {
+    case "/":
+      return "home";
+    case "/algorithms":
+      return "algorithms";
+    case "/applications":
+      return "applications";
+    case "/archive":
+      return "archive";
+    case "/search":
+      return "search";
+    case "/about":
+      return "about";
+    default:
+      return undefined;
+  }
+}
+
 function RouteLoading() {
   const { t } = useLanguage();
+  const [location] = useLocation();
+  const route = classifyProductRoute(location);
+  const isPublicRoute =
+    route.kind === "home" || route.kind === "public" || route.kind === "reader";
+  const active = getLoadingHeaderActive(route.pathname);
 
   return (
-    <div className="space-page route-loading-page">
+    <div
+      className={`space-page route-loading-page${
+        isPublicRoute ? " route-loading-page-public" : ""
+      }`}
+    >
       <SpaceBackdrop subtle />
-      <div className="route-loading-shell">
-        <div className="flex items-center gap-3">
-          <BrandMark />
-          <div>
-            <p className="technical-label">{t("common.loading")}</p>
-            <h1>{t("common.loadingNotes")}</h1>
+      {isPublicRoute ? (
+        <SiteHeader
+          active={active}
+          compact={route.kind === "reader"}
+          backHref={route.kind === "reader" ? "/" : undefined}
+          backLabel={route.kind === "reader" ? t("nav.back") : undefined}
+        />
+      ) : null}
+      <main className="route-loading-main">
+        <div className="route-loading-shell">
+          <div className="flex items-center gap-3">
+            <BrandMark />
+            <div>
+              <p className="technical-label">{t("common.loading")}</p>
+              <h1>{t("common.loadingNotes")}</h1>
+            </div>
+          </div>
+          <p>{t("common.loadingHint")}</p>
+          <div className="route-loading-lines" aria-hidden="true">
+            <span />
+            <span />
+            <span />
           </div>
         </div>
-        <p>{t("common.loadingHint")}</p>
-        <div className="route-loading-lines" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
-      </div>
+      </main>
     </div>
   );
 }
@@ -103,39 +145,15 @@ function getRouteKind(location: string) {
 
 function RouteEffectController() {
   const [location] = useLocation();
-  const didMount = useRef(false);
   usePublicRouteScrollRestoration(location);
 
   useEffect(() => {
     const root = document.documentElement;
-    const reducedMotion =
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
 
     root.dataset.routeKind = getRouteKind(location);
     root.dataset.viewTransitionSupport =
       "startViewTransition" in document ? "true" : "false";
-
-    if (!didMount.current) {
-      didMount.current = true;
-      delete root.dataset.routeMotion;
-      return;
-    }
-
-    if (reducedMotion) {
-      delete root.dataset.routeMotion;
-      return;
-    }
-
-    root.dataset.routeMotion = "enter";
-    const timer = window.setTimeout(() => {
-      if (root.dataset.routeMotion === "enter") {
-        delete root.dataset.routeMotion;
-      }
-    }, 320);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
+    delete root.dataset.routeMotion;
   }, [location]);
 
   return null;
