@@ -1,6 +1,15 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+
+function collectRuntimeTypeScriptFiles(directory: string): string[] {
+  return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) return collectRuntimeTypeScriptFiles(path);
+    if (!entry.name.endsWith(".ts") || entry.name.endsWith(".test.ts")) return [];
+    return [path];
+  });
+}
 
 describe("Vercel routing guardrails", () => {
   it("routes unmatched browser paths through the app shell function", () => {
@@ -49,5 +58,20 @@ describe("Vercel routing guardrails", () => {
         destination: "/api/index",
       });
     }
+  });
+
+  it("keeps serverless runtime imports independent from TypeScript path aliases", () => {
+    const runtimeFiles = [
+      ...collectRuntimeTypeScriptFiles(join(process.cwd(), "api")),
+      ...collectRuntimeTypeScriptFiles(join(process.cwd(), "server")),
+    ];
+    const aliasedImports = runtimeFiles.flatMap(file => {
+      const source = readFileSync(file, "utf8");
+      return /(?:from\s+|import\()\s*["'](?:@shared\/|@\/)/.test(source)
+        ? [file]
+        : [];
+    });
+
+    expect(aliasedImports).toEqual([]);
   });
 });

@@ -24,7 +24,7 @@ import {
   formatFeedbackMessageWithReason,
   parseFeedbackMessageWithReason,
   type FeedbackReason,
-} from "@shared/feedbackReasons";
+} from "../shared/feedbackReasons.js";
 import { redactDirectContact } from "../shared/redaction.js";
 
 const ENGAGEMENT_MAX_SUBMISSIONS = 4;
