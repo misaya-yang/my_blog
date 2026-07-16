@@ -104,7 +104,7 @@ async function main() {
         browser,
         { name: "a11y-post-320", width: 320, height: 844 },
         "/post/goal-harness-agent-phase-protocol",
-        ".article-prose"
+        "[data-article-markdown-ready] + *"
       ),
       await inspectAccessibilityRoute(
         browser,
@@ -237,7 +237,7 @@ async function inspectPost(browser: BrowserLike, viewport: Viewport) {
   await gotoAndWait(
     page,
     `${baseUrl}/post/goal-harness-agent-phase-protocol`,
-    ".article-prose"
+    "[data-article-markdown-ready] + *"
   );
 
   const measurements = await page.evaluate(() => {
@@ -674,7 +674,7 @@ async function inspectAgentAnswerFixture(
   await gotoAndWait(
     page,
     `${baseUrl}/post/goal-harness-agent-phase-protocol`,
-    ".article-prose"
+    "[data-article-markdown-ready] + *"
   );
   await page.waitForSelector(triggerSelector);
   await page.click(triggerSelector);

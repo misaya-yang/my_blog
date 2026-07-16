@@ -1640,6 +1640,35 @@
     text-rendering: optimizeLegibility;
   }
 
+  .article-prose-loading {
+    display: grid;
+    gap: 0.72rem;
+    padding: 0.4rem 0 1.2rem;
+  }
+
+  .article-prose-loading span {
+    width: 100%;
+    height: 0.72rem;
+    border-radius: 2px;
+    background: var(--public-inline-bg);
+  }
+
+  .article-prose-loading span:nth-child(2) {
+    width: 92%;
+  }
+
+  .article-prose-loading span:nth-child(3) {
+    width: 78%;
+  }
+
+  .article-prose-loading span:nth-child(4) {
+    width: 96%;
+  }
+
+  .article-prose-loading span:nth-child(5) {
+    width: 66%;
+  }
+
   .article-prose :where(p) {
     margin: 1.2rem 0;
     color: oklch(0.82 0.008 96);

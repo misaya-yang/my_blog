@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-16T17:38:26.924Z",
+  "generatedAt": "2026-07-16T17:52:38.553Z",
   "baseUrl": "http://localhost:3000",
   "passed": true,
   "results": [
@@ -64,7 +64,7 @@
       },
       "measurements": {
         "headerHeight": 72,
-        "proseY": 467.453125,
+        "proseY": 474.328125,
         "entryHeight": 35.625,
         "preBodyAuthorUtilityCount": 0,
         "feedbackHeight": 355.59375,
@@ -116,7 +116,7 @@
       },
       "measurements": {
         "headerHeight": 72,
-        "proseY": 461.09375,
+        "proseY": 472.765625,
         "entryHeight": 41.546875,
         "preBodyAuthorUtilityCount": 0,
         "feedbackHeight": 319.59375,

@@ -157,6 +157,7 @@ describe("MarkdownRenderer", () => {
     expect(html).toContain('aria-label="可横向滚动的文章表格"');
     expect(html).toContain(">代码</span>");
     expect(html).toContain('aria-label="复制代码"');
+    expect(html).toContain("data-article-markdown-ready");
   });
 
   it("resolves heading anchors when markdown creates nested inline nodes", () => {

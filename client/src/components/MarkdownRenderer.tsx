@@ -64,10 +64,12 @@ export default function MarkdownRenderer({
   const effectiveTableLabel = tableLabel ?? label("post.scrollableTable");
 
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm, remarkMath]}
-      rehypePlugins={[rehypeKatex, rehypeHighlight]}
-      components={{
+    <>
+      <span data-article-markdown-ready hidden />
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm, remarkMath]}
+        rehypePlugins={[rehypeKatex, rehypeHighlight]}
+        components={{
         h1: createHeadingComponent(
           "h1",
           headingIdResolver,
@@ -235,10 +237,11 @@ export default function MarkdownRenderer({
             </aside>
           );
         },
-      }}
-    >
-      {content}
-    </ReactMarkdown>
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    </>
   );
 }
 

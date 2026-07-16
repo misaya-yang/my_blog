@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-16T17:37:40.556Z",
+  "generatedAt": "2026-07-16T17:51:52.905Z",
   "status": "passed",
   "files": [
     {
@@ -291,7 +291,7 @@
     {
       "path": "client/src/styles/public-components.css",
       "owner": "public-components",
-      "lineCount": 1952,
+      "lineCount": 1981,
       "metrics": {
         "important": {
           "count": 0,
@@ -836,7 +836,7 @@
   "missingFiles": [],
   "totals": {
     "fileCount": 6,
-    "lineCount": 18376,
+    "lineCount": 18405,
     "important": 1405,
     "viewportFontSize": 69,
     "hardCodedColor": 1175,

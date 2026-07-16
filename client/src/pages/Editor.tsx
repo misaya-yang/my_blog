@@ -105,7 +105,8 @@ import {
   insertMarkdownLink,
 } from "./editorTextTransforms";
 
-const MarkdownRenderer = lazy(() => import("@/components/MarkdownRenderer"));
+const loadMarkdownRenderer = () => import("@/components/MarkdownRenderer");
+const MarkdownRenderer = lazy(loadMarkdownRenderer);
 
 // 工具栏按钮组件
 function ToolbarButton({
@@ -173,6 +174,10 @@ export default function Editor() {
       noindex: true,
     })
   );
+
+  useEffect(() => {
+    if (isAdmin) void loadMarkdownRenderer();
+  }, [isAdmin]);
 
   // 编辑器状态
   const [title, setTitle] = useState("");

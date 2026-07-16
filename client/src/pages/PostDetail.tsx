@@ -56,7 +56,8 @@ import {
 
 import { toast } from "sonner";
 
-const MarkdownRenderer = lazy(() => import("@/components/MarkdownRenderer"));
+const loadMarkdownRenderer = () => import("@/components/MarkdownRenderer");
+const MarkdownRenderer = lazy(loadMarkdownRenderer);
 
 type Translate = (
   key: string,
@@ -642,6 +643,10 @@ export default function PostDetail() {
   const [activeHeading, setActiveHeading] = useState<string>("");
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
+  useEffect(() => {
+    void loadMarkdownRenderer();
+  }, []);
+
   const {
     data: post,
     isLoading,
@@ -1105,7 +1110,17 @@ export default function PostDetail() {
             {/* Post Content */}
             <div className="article-prose">
               <Suspense
-                fallback={<div className="h-24 rounded-lg bg-slate-800/40" />}
+                fallback={
+                  <div
+                    className="article-prose-loading"
+                    role="status"
+                    aria-label={t("common.loadingNotes")}
+                  >
+                    {[0, 1, 2, 3, 4].map(line => (
+                      <span key={line} aria-hidden="true" />
+                    ))}
+                  </div>
+                }
               >
                 <MarkdownRenderer
                   content={readableContent}
