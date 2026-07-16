@@ -15,6 +15,7 @@ import { engagementRouter } from "./engagement.router.js";
 import { getPublicSeedArticleBySlug } from "./publicSeedPosts.js";
 import { recordSearchMiss } from "./searchMisses.js";
 import { verifyAdminSession } from "./auth.js";
+import { getContentHealthSummary } from "../shared/content-ops.js";
 
 const postVisibilityInput = z.enum(["hidden", "admin", "public"]);
 const pinnedTrackInput = z
@@ -191,7 +192,7 @@ export const appRouter = router({
           if (seedArticle) return seedArticle;
         }
 
-        const post = await db.getPostBySlug(input).catch(() => null);
+        const post = await db.getPostBySlug(input);
         if (!post) {
           const seedArticle = await getPublicSeedArticleBySlug(input);
           if (seedArticle) return seedArticle;
@@ -219,6 +220,39 @@ export const appRouter = router({
           tags,
         };
       }),
+
+    getBySlugForAdmin: blogAdminProcedure
+      .input(z.string())
+      .query(async ({ input }) => {
+        if (!ENV.isProduction) {
+          const seedArticle = await getPublicSeedArticleBySlug(input);
+          if (seedArticle) return seedArticle;
+        }
+
+        const post = await db.getPostBySlug(input);
+        if (!post) {
+          const seedArticle = await getPublicSeedArticleBySlug(input);
+          if (seedArticle) return seedArticle;
+          throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
+        }
+
+        const [category, tags] = await Promise.all([
+          post.categoryId
+            ? db.getCategoryById(post.categoryId)
+            : Promise.resolve(null),
+          db.getPostTags(post.id),
+        ]);
+        return {
+          ...post,
+          category,
+          tags,
+        };
+      }),
+
+    adminHealthSummary: blogAdminProcedure.query(async () => {
+      const posts = await db.getPosts({ orderBy: "createdAt" });
+      return getContentHealthSummary(posts);
+    }),
 
     create: blogAdminProcedure
       .input(

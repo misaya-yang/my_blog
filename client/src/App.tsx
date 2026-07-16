@@ -175,7 +175,9 @@ function App() {
           </Suspense>
           <AnalyticsRouteTracker />
           <RouteEffectController />
-          <Router />
+          <div className="route-surface" data-route-surface>
+            <Router />
+          </div>
           <BlogAgentRoot />
         </ErrorBoundary>
       </LanguageProvider>

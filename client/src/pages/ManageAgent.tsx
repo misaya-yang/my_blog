@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation, useSearch } from "wouter";
 import {
   AlertTriangle,
-  ArrowLeft,
   Bot,
   Database,
   FileSearch,
@@ -27,6 +26,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -74,8 +80,30 @@ type EvalSummaryData = {
 type EvalStatus = "passed" | "failed" | "manual_review_required";
 
 type IdeaStatus = "new" | "reviewed" | "planned" | "dismissed";
+export type AgentConsoleTab =
+  | "overview"
+  | "index"
+  | "debug"
+  | "evals"
+  | "traces"
+  | "ideas";
 
 const IDEA_STATUS_STORAGE_KEY = "ai-tech-blog:agent-radar-idea-statuses";
+const AGENT_CONSOLE_TABS: AgentConsoleTab[] = [
+  "overview",
+  "index",
+  "debug",
+  "evals",
+  "traces",
+  "ideas",
+];
+
+export function parseAgentConsoleTab(search: string): AgentConsoleTab {
+  const value = new URLSearchParams(search).get("tab");
+  return AGENT_CONSOLE_TABS.includes(value as AgentConsoleTab)
+    ? (value as AgentConsoleTab)
+    : "overview";
+}
 
 const defaultEvalQuestions = [
   "What problem does IsoHC solve?",
@@ -95,7 +123,10 @@ const defaultEvalQuestions = [
 export default function ManageAgent() {
   const { isAdmin, loading: authLoading } = useAuth();
   const { t } = useLanguage();
+  const search = useSearch();
+  const [, navigate] = useLocation();
   const siteUrl = getClientSiteUrl();
+  const activeTab = parseAgentConsoleTab(search);
   const [debugQuery, setDebugQuery] = useState(
     "harness engine context boundary"
   );
@@ -120,12 +151,12 @@ export default function ManageAgent() {
   );
 
   const indexStatus = trpc.agent.adminKnowledgeStatus.useQuery(undefined, {
-    enabled: isAdmin,
+    enabled: isAdmin && activeTab === "index",
     retry: false,
   });
   const qualitySummary = trpc.agent.adminQualitySummary.useQuery(
     { limit: 50 },
-    { enabled: isAdmin, retry: false }
+    { enabled: isAdmin && activeTab === "overview", retry: false }
   );
   const debug = trpc.agent.adminDebugRetrieval.useQuery(
     { query: debugQuery, routeContext },
@@ -134,15 +165,19 @@ export default function ManageAgent() {
   const evals = trpc.agent.adminRunEvals.useMutation();
   const runs = trpc.agent.adminListRuns.useQuery(
     { limit: 12 },
-    { enabled: isAdmin, retry: false }
+    { enabled: isAdmin && activeTab === "traces", retry: false }
   );
   const questionRadar = trpc.agent.adminQuestionRadar.useQuery(
     { limit: 50 },
-    { enabled: isAdmin, retry: false }
+    { enabled: isAdmin && activeTab === "ideas", retry: false }
   );
   const contentRadar = trpc.engagement.contentRadar.summary.useQuery(
     undefined,
-    { enabled: isAdmin, retry: false }
+    {
+      enabled:
+        isAdmin && (activeTab === "overview" || activeTab === "ideas"),
+      retry: false,
+    }
   );
   const ideas = trpc.agent.adminExtractArticleIdeas.useQuery(
     {
@@ -163,13 +198,41 @@ export default function ManageAgent() {
   const updateIdeaStatus = (ideaId: string, status: IdeaStatus) => {
     setIdeaStatuses(current => {
       const next = { ...current, [ideaId]: status };
-      window.localStorage.setItem(
-        IDEA_STATUS_STORAGE_KEY,
-        JSON.stringify(next)
-      );
+      try {
+        window.localStorage.setItem(
+          IDEA_STATUS_STORAGE_KEY,
+          JSON.stringify(next)
+        );
+      } catch {
+        // Status controls remain usable when browser storage is unavailable.
+      }
       return next;
     });
   };
+
+  const tabLabels: Record<AgentConsoleTab, string> = {
+    overview: t("agentOps.overview.tab"),
+    index: t("agentOps.index.title"),
+    debug: t("agentOps.debug.title"),
+    evals: t("agentOps.evals.title"),
+    traces: t("agentOps.traces.title"),
+    ideas: t("agentOps.ideas.title"),
+  };
+
+  function handleTabChange(value: string) {
+    if (!AGENT_CONSOLE_TABS.includes(value as AgentConsoleTab)) return;
+    const nextTab = value as AgentConsoleTab;
+    const params = new URLSearchParams(search);
+    if (nextTab === "overview") {
+      params.delete("tab");
+    } else {
+      params.set("tab", nextTab);
+    }
+    const nextSearch = params.toString();
+    navigate(`/manage/agent${nextSearch ? `?${nextSearch}` : ""}`, {
+      replace: true,
+    });
+  }
 
   if (authLoading) {
     return (
@@ -210,7 +273,7 @@ export default function ManageAgent() {
       />
 
       <main className="agent-console-page container relative z-10 px-4 py-8 sm:px-6">
-        <div className="agent-console-hero mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="agent-console-hero mb-7">
           <div className="max-w-3xl">
             <div className="signal-chip mb-5">
               <Bot className="h-4 w-4" />
@@ -223,20 +286,31 @@ export default function ManageAgent() {
               {t("agentOps.subtitle")}
             </p>
           </div>
-          <Button
-            asChild
-            variant="outline"
-            className="border-sky-200/20 bg-slate-950/50 text-sky-100"
-          >
-            <Link href="/manage">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              {t("agentOps.back")}
-            </Link>
-          </Button>
         </div>
 
-        <Tabs defaultValue="overview" className="agent-console-tabs">
-          <TabsList className="agent-console-tab-list glass-dock w-full">
+        <Tabs
+          value={activeTab}
+          onValueChange={handleTabChange}
+          className="agent-console-tabs"
+        >
+          <div className="agent-console-mobile-nav">
+            <Select value={activeTab} onValueChange={handleTabChange}>
+              <SelectTrigger aria-label={t("agentOps.navigation")}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {AGENT_CONSOLE_TABS.map(tab => (
+                  <SelectItem key={tab} value={tab}>
+                    {tabLabels[tab]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <TabsList
+            className="agent-console-tab-list glass-dock w-full"
+            aria-label={t("agentOps.navigation")}
+          >
             <TabsTrigger value="overview">
               <ShieldCheck className="mr-2 h-4 w-4" />
               {t("agentOps.overview.tab")}
@@ -270,6 +344,8 @@ export default function ManageAgent() {
               qualitySummary={qualitySummary.data}
               searchMissLoading={contentRadar.isLoading}
               searchMisses={contentRadar.data?.searchMisses}
+              searchMissError={contentRadar.isError}
+              onNavigate={handleTabChange}
             />
           </TabsContent>
 
@@ -278,6 +354,7 @@ export default function ManageAgent() {
               loading={indexStatus.isLoading}
               error={indexStatus.isError}
               status={indexStatus.data}
+              onRetry={() => void indexStatus.refetch()}
             />
           </TabsContent>
 
@@ -305,12 +382,38 @@ export default function ManageAgent() {
                 {t("agentOps.debug.run")}
               </Button>
             </div>
-            <SourceList
-              sources={debug.data?.sources ?? []}
-              empty={t("agentOps.debug.empty")}
-            />
-            {debug.data?.diagnostics && (
-              <DiagnosticsPanel diagnostics={debug.data.diagnostics} />
+            {debug.isFetching ? (
+              <LoadingState
+                title={t("agentOps.debug.loading")}
+                description={t("common.loadingHint")}
+                className="mt-5"
+              />
+            ) : debug.isError ? (
+              <EmptyState
+                icon={<AlertTriangle className="h-4 w-4" />}
+                title={t("agentOps.debug.error")}
+                description={debug.error.message}
+                className="mt-5"
+                action={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => void debug.refetch()}
+                  >
+                    {t("common.retry")}
+                  </Button>
+                }
+              />
+            ) : (
+              <>
+                <SourceList
+                  sources={debug.data?.sources ?? []}
+                  empty={t("agentOps.debug.empty")}
+                />
+                {debug.data?.diagnostics && (
+                  <DiagnosticsPanel diagnostics={debug.data.diagnostics} />
+                )}
+              </>
             )}
           </TabsContent>
 
@@ -333,7 +436,9 @@ export default function ManageAgent() {
                   questions: splitQuestions(evalQuestions),
                 })
               }
-              disabled={evals.isPending}
+              disabled={
+                evals.isPending || splitQuestions(evalQuestions).length === 0
+              }
             >
               {evals.isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -342,6 +447,28 @@ export default function ManageAgent() {
               )}
               {t("agentOps.evals.run")}
             </Button>
+            {evals.isError && (
+              <EmptyState
+                icon={<AlertTriangle className="h-4 w-4" />}
+                title={t("agentOps.evals.error")}
+                description={evals.error.message}
+                className="mt-4"
+                action={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      evals.mutate({
+                        routeContext,
+                        questions: splitQuestions(evalQuestions),
+                      })
+                    }
+                  >
+                    {t("common.retry")}
+                  </Button>
+                }
+              />
+            )}
             {evals.data?.summary && (
               <EvalSummary summary={evals.data.summary} />
             )}
@@ -403,57 +530,84 @@ export default function ManageAgent() {
                   variant="outline"
                   size="sm"
                   className="glass-button"
-                  onClick={() => runs.refetch()}
+                  disabled={runs.isFetching}
+                  onClick={() => void runs.refetch()}
                 >
-                  <RefreshCw className="mr-2 h-4 w-4" />
+                  <RefreshCw
+                    className={`mr-2 h-4 w-4 ${runs.isFetching ? "animate-spin" : ""}`}
+                  />
                   {t("agentOps.traces.refresh")}
                 </Button>
               }
             />
-            <div className="mt-5 grid gap-2">
-              {(runs.data ?? []).length === 0 && (
-                <EmptyState
-                  icon={<Route className="h-4 w-4" />}
-                  title={t("agentOps.traces.empty")}
-                />
-              )}
-              {(runs.data ?? []).map(run => (
-                <div
-                  key={run.id}
-                  className="grid gap-2 rounded-lg border border-sky-200/15 bg-slate-950/45 p-3 text-sm md:grid-cols-[1.4fr_.6fr_.6fr_.6fr]"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate font-mono text-xs text-sky-100">
-                      {run.id}
-                    </p>
-                    <p className="mt-1 text-xs text-slate-500">
-                      {formatScope(run.scopeType, run.scopeValue)}
-                    </p>
-                    <p className="mt-1 text-xs text-slate-500">
-                      {run.retrievalStrategy || "supabase_keyword"}
-                    </p>
-                    {(run.retrievedChunkIds?.length ?? 0) > 0 && (
-                      <p className="mt-1 line-clamp-1 text-xs text-slate-500">
-                        {t("agentOps.traces.sources")}:{" "}
-                        {run.retrievedChunkIds?.join(", ")}
+            {runs.isLoading ? (
+              <LoadingState
+                title={t("agentOps.traces.loading")}
+                description={t("common.loadingHint")}
+                className="mt-5"
+              />
+            ) : runs.isError ? (
+              <EmptyState
+                icon={<AlertTriangle className="h-4 w-4" />}
+                title={t("agentOps.traces.error")}
+                description={runs.error.message}
+                className="mt-5"
+                action={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => void runs.refetch()}
+                  >
+                    {t("common.retry")}
+                  </Button>
+                }
+              />
+            ) : (
+              <div className="mt-5 grid gap-2">
+                {(runs.data ?? []).length === 0 && (
+                  <EmptyState
+                    icon={<Route className="h-4 w-4" />}
+                    title={t("agentOps.traces.empty")}
+                  />
+                )}
+                {(runs.data ?? []).map(run => (
+                  <div
+                    key={run.id}
+                    className="grid gap-2 rounded-lg border border-sky-200/15 bg-slate-950/45 p-3 text-sm md:grid-cols-[1.4fr_.6fr_.6fr_.6fr]"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-mono text-xs text-sky-100">
+                        {run.id}
                       </p>
-                    )}
+                      <p className="mt-1 text-xs text-slate-500">
+                        {formatScope(run.scopeType, run.scopeValue)}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {run.retrievalStrategy || "supabase_keyword"}
+                      </p>
+                      {(run.retrievedChunkIds?.length ?? 0) > 0 && (
+                        <p className="mt-1 line-clamp-1 text-xs text-slate-500">
+                          {t("agentOps.traces.sources")}:{" "}
+                          {run.retrievedChunkIds?.join(", ")}
+                        </p>
+                      )}
+                    </div>
+                    <Metric
+                      label={t("agentOps.status")}
+                      value={run.status ?? "-"}
+                    />
+                    <Metric
+                      label={t("agentOps.latency")}
+                      value={formatLatency(run.latencyMs)}
+                    />
+                    <Metric
+                      label={t("agentOps.tokens")}
+                      value={`${run.inputTokens ?? 0}/${run.outputTokens ?? 0}`}
+                    />
                   </div>
-                  <Metric
-                    label={t("agentOps.status")}
-                    value={run.status ?? "-"}
-                  />
-                  <Metric
-                    label={t("agentOps.latency")}
-                    value={formatLatency(run.latencyMs)}
-                  />
-                  <Metric
-                    label={t("agentOps.tokens")}
-                    value={`${run.inputTokens ?? 0}/${run.outputTokens ?? 0}`}
-                  />
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="ideas" className="research-surface agent-console-panel">
@@ -463,19 +617,21 @@ export default function ManageAgent() {
               radar={questionRadar.data}
               searchMisses={contentRadar.data?.searchMisses}
               searchMissLoading={contentRadar.isLoading}
+              searchMissError={contentRadar.isError}
               ideaStatuses={ideaStatuses}
               onIdeaStatus={updateIdeaStatus}
-              onRefresh={() => questionRadar.refetch()}
+              onRefresh={() => void questionRadar.refetch()}
             />
             <div className="mt-6 flex flex-col gap-3 border-t border-sky-200/10 pt-5 lg:flex-row">
               <Input
                 value={conversationId}
                 onChange={event => setConversationId(event.target.value)}
                 placeholder={t("agentOps.ideas.conversation")}
+                aria-label={t("agentOps.ideas.conversation")}
                 className="border-sky-200/15 bg-slate-950/50 font-mono text-white"
               />
               <Button
-                onClick={() => ideas.refetch()}
+                onClick={() => void ideas.refetch()}
                 disabled={!conversationId.trim() || ideas.isFetching}
               >
                 {ideas.isFetching ? (
@@ -486,40 +642,58 @@ export default function ManageAgent() {
                 {t("agentOps.ideas.run")}
               </Button>
             </div>
-            <div className="mt-5 grid gap-3">
-              {(ideas.data?.ideas ?? []).length === 0 && (
-                <p className="text-sm text-slate-500">
-                  {t("agentOps.ideas.empty")}
-                </p>
-              )}
-              {(ideas.data?.ideas ?? []).map(idea => (
-                <div
-                  key={idea.proposedTitle}
-                  className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4"
-                >
-                  <div className="mb-2 flex items-center gap-2 text-sky-200">
-                    <ScrollText className="h-4 w-4" />
-                    <h3 className="font-semibold text-white">
-                      {idea.proposedTitle}
-                    </h3>
-                  </div>
-                  <p className="text-sm leading-6 text-slate-400">
-                    {idea.rationale}
+            {ideas.isError ? (
+              <EmptyState
+                icon={<AlertTriangle className="h-4 w-4" />}
+                title={t("agentOps.ideas.error")}
+                description={ideas.error.message}
+                className="mt-5"
+                action={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => void ideas.refetch()}
+                  >
+                    {t("common.retry")}
+                  </Button>
+                }
+              />
+            ) : (
+              <div className="mt-5 grid gap-3">
+                {(ideas.data?.ideas ?? []).length === 0 && (
+                  <p className="text-sm text-slate-500">
+                    {t("agentOps.ideas.empty")}
                   </p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {idea.seedQuestions.map(question => (
-                      <Badge
-                        key={question}
-                        variant="outline"
-                        className="border-sky-200/20 text-slate-300"
-                      >
-                        {question}
-                      </Badge>
-                    ))}
+                )}
+                {(ideas.data?.ideas ?? []).map(idea => (
+                  <div
+                    key={idea.proposedTitle}
+                    className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4"
+                  >
+                    <div className="mb-2 flex items-center gap-2 text-sky-200">
+                      <ScrollText className="h-4 w-4" />
+                      <h3 className="font-semibold text-white">
+                        {idea.proposedTitle}
+                      </h3>
+                    </div>
+                    <p className="text-sm leading-6 text-slate-400">
+                      {idea.rationale}
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {idea.seedQuestions.map(question => (
+                        <Badge
+                          key={question}
+                          variant="outline"
+                          className="border-sky-200/20 text-slate-300"
+                        >
+                          {question}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </main>
@@ -533,6 +707,7 @@ function QuestionRadarPanel({
   radar,
   searchMisses,
   searchMissLoading,
+  searchMissError,
   ideaStatuses,
   onIdeaStatus,
   onRefresh,
@@ -552,6 +727,7 @@ function QuestionRadarPanel({
     }>;
   };
   searchMissLoading?: boolean;
+  searchMissError?: boolean;
   ideaStatuses: Record<string, IdeaStatus>;
   onIdeaStatus: (ideaId: string, status: IdeaStatus) => void;
   onRefresh: () => void;
@@ -577,6 +753,11 @@ function QuestionRadarPanel({
       <EmptyState
         icon={<AlertTriangle className="h-4 w-4" />}
         title={t("agentOps.radar.error")}
+        action={
+          <Button type="button" variant="outline" onClick={onRefresh}>
+            {t("common.retry")}
+          </Button>
+        }
       />
     );
   }
@@ -737,6 +918,10 @@ function QuestionRadarPanel({
             {searchMissLoading ? (
               <p className="text-sm text-slate-500">
                 {t("agentOps.radar.loading")}
+              </p>
+            ) : searchMissError ? (
+              <p className="text-sm text-amber-200">
+                {t("agentOps.radar.searchMissError")}
               </p>
             ) : searchMissOpportunities.length === 0 ? (
               <p className="text-sm text-slate-500">
@@ -900,28 +1085,45 @@ function SourceList({
 
   return (
     <div className="mt-5 grid gap-3 md:grid-cols-2">
-      {sources.map(source => (
-        <a
-          key={source.sourceId}
-          href={getSourceHref(source.postSlug)}
-          className="rounded-lg border border-sky-200/15 bg-slate-950/45 p-4 transition hover:border-sky-300/40 hover:bg-sky-400/10"
-        >
-          <div className="mb-2 flex items-center justify-between gap-3">
-            <h3 className="line-clamp-1 font-semibold text-white">
-              {source.postTitle}
-            </h3>
-            <Badge variant="outline" className="border-sky-200/20 text-sky-200">
-              {t("agentOps.sources")}
-            </Badge>
+      {sources.map(source => {
+        const content = (
+          <>
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <h3 className="line-clamp-1 font-semibold text-white">
+                {source.postTitle}
+              </h3>
+              <Badge
+                variant="outline"
+                className="border-sky-200/20 text-sky-200"
+              >
+                {t("agentOps.sources")}
+              </Badge>
+            </div>
+            <p className="line-clamp-2 text-sm leading-6 text-slate-400">
+              {source.excerpt}
+            </p>
+            <p className="mt-2 text-xs text-slate-500">
+              {source.relevanceReason}
+            </p>
+          </>
+        );
+        const className =
+          "rounded-lg border border-sky-200/15 bg-slate-950/45 p-4 transition hover:border-sky-300/40 hover:bg-sky-400/10";
+
+        return source.postSlug ? (
+          <Link
+            key={source.sourceId}
+            href={`/post/${source.postSlug}`}
+            className={className}
+          >
+            {content}
+          </Link>
+        ) : (
+          <div key={source.sourceId} className={className}>
+            {content}
           </div>
-          <p className="line-clamp-2 text-sm leading-6 text-slate-400">
-            {source.excerpt}
-          </p>
-          <p className="mt-2 text-xs text-slate-500">
-            {source.relevanceReason}
-          </p>
-        </a>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -1010,8 +1212,4 @@ function formatDateTime(value?: Date | string | null) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
-}
-
-function getSourceHref(postSlug: string) {
-  return postSlug ? `/post/${postSlug}` : "#";
 }

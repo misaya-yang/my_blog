@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   BLOG_AGENT_OPEN_EVENT,
   buildRouteContext,
+  getAgentRouteScopeKey,
   getCompanionPromptKeys,
   getCompanionWelcomeKeys,
   inferClientScope,
@@ -92,6 +93,23 @@ describe("BlogAgent route context", () => {
       routeType: "post",
       postSlug: "agent-loop-observable",
     });
+  });
+
+  it("binds Agent conversations to semantic routes, not locale or query state", () => {
+    expect(
+      getAgentRouteScopeKey(buildRouteContext("/post/agent-loop#trace", "en"))
+    ).toBe("post:agent-loop");
+    expect(
+      getAgentRouteScopeKey(
+        buildRouteContext("/post/agent-loop?view=full", "zh")
+      )
+    ).toBe("post:agent-loop");
+    expect(
+      getAgentRouteScopeKey(buildRouteContext("/post/another-loop", "en"))
+    ).toBe("post:another-loop");
+    expect(
+      getAgentRouteScopeKey(buildRouteContext("/search?q=agents", "en"))
+    ).toBe("search:");
   });
 
   it("does not classify owner, editor, auth, or unknown routes as public Agent context", () => {
@@ -227,17 +245,17 @@ describe("BlogAgent route context", () => {
         { width: 800, height: 700 }
       )
     ).toMatchObject({
-      width: 768,
+      width: 400,
       height: 668,
       x: 16,
       y: 16,
     });
 
     expect(getDefaultAgentFrameState({ width: 1440, height: 900 })).toEqual({
-      width: 520,
-      height: 680,
-      x: 896,
-      y: 124,
+      width: 400,
+      height: 640,
+      x: 1016,
+      y: 96,
       preset: "comfortable",
     });
   });

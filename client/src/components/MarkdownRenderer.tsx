@@ -223,13 +223,13 @@ export default function MarkdownRenderer({
 
           return (
             <aside
-              className="article-callout my-6 rounded-lg border border-sky-200/80 bg-sky-50/80 p-4 dark:border-sky-500/20 dark:bg-sky-500/10"
+              className="article-callout my-6 p-4"
               data-callout-type={callout.type}
             >
-              <div className="article-callout-label mb-2 text-sm font-semibold text-sky-900 dark:text-sky-200">
+              <div className="article-callout-label mb-2 text-sm font-semibold">
                 {label(CALLOUT_LABEL_KEYS[callout.type])}
               </div>
-              <div className="article-callout-body text-sm leading-7 text-slate-700 dark:text-slate-200">
+              <div className="article-callout-body text-sm leading-7">
                 {callout.children}
               </div>
             </aside>
@@ -249,7 +249,7 @@ function createHeadingComponent(
   className: string
 ) {
   return ({ node: _node, children, ...props }: any) => {
-    const text = String(children).replace(/\*\*/g, "");
+    const text = extractText(children).replace(/\*\*/g, "");
     const id = resolveHeadingId(text);
     return (
       <Tag

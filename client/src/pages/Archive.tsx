@@ -37,6 +37,12 @@ function formatMonth(year: number, month: number, locale: string) {
   });
 }
 
+function formatDateTime(value: string | Date | null) {
+  if (!value) return undefined;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
+}
+
 export type ArchivePostLike = {
   publishedAt?: string | Date | null;
   updatedAt?: string | Date | null;
@@ -71,7 +77,13 @@ export default function Archive() {
   const { language, t } = useLanguage();
   const siteUrl = getClientSiteUrl();
   const locale = language === "zh" ? "zh-CN" : "en-US";
-  const { data: groups, isLoading } = trpc.discovery.archive.useQuery();
+  const {
+    data: groups,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = trpc.discovery.archive.useQuery();
   const archiveSummary = getArchiveSummary(groups);
   const total = archiveSummary.total;
   useSeo(
@@ -102,7 +114,7 @@ export default function Archive() {
           </p>
         </section>
 
-        {!isLoading && groups?.length ? (
+        {!isLoading && !isError && groups?.length ? (
           <div className="archive-summary-strip mt-8">
             <div className="archive-summary-item">
               <BookOpen className="h-4 w-4" />
@@ -139,6 +151,22 @@ export default function Archive() {
               title={t("common.loadingNotes")}
               description={t("common.loadingHint")}
             />
+          ) : isError ? (
+            <EmptyState
+              icon={<CalendarDays className="h-4 w-4" />}
+              title={t("discovery.archiveFailed")}
+              description={error?.message || t("discovery.archiveFailedHint")}
+              action={
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="glass-button"
+                  onClick={() => void refetch()}
+                >
+                  {t("common.retry")}
+                </Button>
+              }
+            />
           ) : groups?.length ? (
             <div className="archive-timeline-groups grid gap-8">
               {groups.map((group: any) => (
@@ -164,7 +192,10 @@ export default function Archive() {
                         key={post.id}
                         className="archive-post-row grid gap-3 py-4 md:grid-cols-[5.5rem_minmax(0,1fr)_auto]"
                       >
-                        <time className="archive-post-date text-sm font-medium">
+                        <time
+                          className="archive-post-date text-sm font-medium"
+                          dateTime={formatDateTime(post.publishedAt)}
+                        >
                           {formatDay(post.publishedAt, locale)}
                         </time>
                         <div className="min-w-0">
@@ -184,7 +215,7 @@ export default function Archive() {
                                 {post.category.name}
                               </Link>
                             )}
-                            {post.tags?.slice(0, 4).map((tag: any) => (
+                            {post.tags?.slice(0, 2).map((tag: any) => (
                               <Link
                                 key={tag.slug}
                                 href={`/tags/${tag.slug}`}
@@ -194,6 +225,11 @@ export default function Archive() {
                                 {tag.name}
                               </Link>
                             ))}
+                            {post.tags?.length > 2 ? (
+                              <span className="article-tag archive-tag-more">
+                                +{post.tags.length - 2}
+                              </span>
+                            ) : null}
                           </div>
                         </div>
                         <div className="archive-post-meta flex flex-wrap items-center gap-3 text-xs md:justify-end">

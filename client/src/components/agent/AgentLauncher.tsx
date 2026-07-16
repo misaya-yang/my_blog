@@ -24,6 +24,7 @@ export function AgentLauncher({
       type="button"
       aria-expanded={open}
       aria-controls={controls}
+      data-state={open ? "open" : "closed"}
       aria-label={label}
       title={tooltip}
       onClick={onClick}

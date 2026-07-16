@@ -1,13 +1,14 @@
 export const AGENT_FRAME_STORAGE_KEY = "misaya:blog-agent-frame:v1";
 
 const AGENT_FRAME_EDGE_GAP = 16;
-const AGENT_FRAME_DEFAULT_SIZE = { width: 520, height: 680 };
-const AGENT_FRAME_MIN_SIZE = { width: 360, height: 420 };
+const AGENT_FRAME_MAX_WIDTH = 400;
+const AGENT_FRAME_DEFAULT_SIZE = { width: 400, height: 640 };
+const AGENT_FRAME_MIN_SIZE = { width: 340, height: 420 };
 
 export const AGENT_FRAME_PRESETS = {
-  compact: { width: 420, height: 560 },
+  compact: { width: 360, height: 540 },
   comfortable: AGENT_FRAME_DEFAULT_SIZE,
-  wide: { width: 640, height: 720 },
+  wide: { width: AGENT_FRAME_MAX_WIDTH, height: 720 },
 } as const;
 
 export type AgentFramePreset = keyof typeof AGENT_FRAME_PRESETS;
@@ -55,7 +56,10 @@ export function getDefaultAgentFrameState(
       width,
       height,
       x: viewport.width - width - 24,
-      y: viewport.height - height - 96,
+      y: Math.min(
+        96,
+        Math.max(AGENT_FRAME_EDGE_GAP, viewport.height - height - 16)
+      ),
       preset: "comfortable",
     },
     viewport
@@ -66,9 +70,12 @@ export function clampAgentFrameState(
   input: AgentFrameState,
   viewport: ViewportSize = getViewportSize()
 ): AgentFrameState {
-  const maxWidth = Math.max(
-    AGENT_FRAME_MIN_SIZE.width,
-    viewport.width - AGENT_FRAME_EDGE_GAP * 2
+  const maxWidth = Math.min(
+    AGENT_FRAME_MAX_WIDTH,
+    Math.max(
+      AGENT_FRAME_MIN_SIZE.width,
+      viewport.width - AGENT_FRAME_EDGE_GAP * 2
+    )
   );
   const maxHeight = Math.max(
     AGENT_FRAME_MIN_SIZE.height,

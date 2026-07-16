@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-06-28T03:13:38.143Z",
+  "generatedAt": "2026-07-16T17:23:51.242Z",
   "git": {
-    "branch": "main",
-    "commit": "717d4c1",
+    "branch": "dev_0716",
+    "commit": "157d6e8",
     "dirty": true
   },
   "commands": [],
@@ -14,31 +14,8 @@
       "expectedContent": "home page shell and research index",
       "requiresSeededDatabase": false,
       "statusResult": {
-        "state": "checked",
-        "status": 200,
-        "ok": true,
-        "contentType": "text/html; charset=utf-8",
-        "metadata": {
-          "title": "Misaya Notes",
-          "description": "Misaya Yang's working notes on model mechanisms, long-context behavior, retrieval, agent systems, and reliable applied AI engineering.",
-          "canonical": "http://localhost:3000/",
-          "htmlLang": "en",
-          "openGraph": {
-            "title": "Misaya Notes",
-            "description": "Misaya Yang's working notes on model mechanisms, long-context behavior, retrieval, agent systems, and reliable applied AI engineering.",
-            "image": "http://localhost:3000/og-default.svg",
-            "type": "website",
-            "url": "http://localhost:3000/"
-          },
-          "twitter": {
-            "card": "summary_large_image",
-            "title": "Misaya Notes",
-            "description": "Misaya Yang's working notes on model mechanisms, long-context behavior, retrieval, agent systems, and reliable applied AI engineering.",
-            "image": "http://localhost:3000/og-default.svg"
-          },
-          "jsonLdTypes": []
-        },
-        "error": null
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
       }
     },
     {
@@ -48,31 +25,8 @@
       "expectedContent": "AI algorithm track page",
       "requiresSeededDatabase": false,
       "statusResult": {
-        "state": "checked",
-        "status": 200,
-        "ok": true,
-        "contentType": "text/html; charset=utf-8",
-        "metadata": {
-          "title": "AI Algorithms · Misaya Notes",
-          "description": "Research notes on model mechanisms, generative modeling, positional encoding, long-context behavior, and residual stability.",
-          "canonical": "http://localhost:3000/algorithms",
-          "htmlLang": "en",
-          "openGraph": {
-            "title": "AI Algorithms",
-            "description": "Research notes on model mechanisms, generative modeling, positional encoding, long-context behavior, and residual stability.",
-            "image": "http://localhost:3000/og-default.svg",
-            "type": "website",
-            "url": "http://localhost:3000/algorithms"
-          },
-          "twitter": {
-            "card": "summary_large_image",
-            "title": "AI Algorithms",
-            "description": "Research notes on model mechanisms, generative modeling, positional encoding, long-context behavior, and residual stability.",
-            "image": "http://localhost:3000/og-default.svg"
-          },
-          "jsonLdTypes": []
-        },
-        "error": null
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
       }
     },
     {
@@ -82,31 +36,8 @@
       "expectedContent": "AI application engineering track page",
       "requiresSeededDatabase": false,
       "statusResult": {
-        "state": "checked",
-        "status": 200,
-        "ok": true,
-        "contentType": "text/html; charset=utf-8",
-        "metadata": {
-          "title": "AI Applications · Misaya Notes",
-          "description": "Technical essays on agents, harness engines, RAG, context engineering, tool use, and evaluation loops.",
-          "canonical": "http://localhost:3000/applications",
-          "htmlLang": "en",
-          "openGraph": {
-            "title": "AI Applications",
-            "description": "Technical essays on agents, harness engines, RAG, context engineering, tool use, and evaluation loops.",
-            "image": "http://localhost:3000/og-default.svg",
-            "type": "website",
-            "url": "http://localhost:3000/applications"
-          },
-          "twitter": {
-            "card": "summary_large_image",
-            "title": "AI Applications",
-            "description": "Technical essays on agents, harness engines, RAG, context engineering, tool use, and evaluation loops.",
-            "image": "http://localhost:3000/og-default.svg"
-          },
-          "jsonLdTypes": []
-        },
-        "error": null
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
       }
     },
     {
@@ -116,31 +47,8 @@
       "expectedContent": "visitor and admin login surface",
       "requiresSeededDatabase": false,
       "statusResult": {
-        "state": "checked",
-        "status": 200,
-        "ok": true,
-        "contentType": "text/html; charset=utf-8",
-        "metadata": {
-          "title": "Login · Misaya Notes",
-          "description": "Sign in to read or manage Misaya Notes.",
-          "canonical": "http://localhost:3000/login",
-          "htmlLang": "en",
-          "openGraph": {
-            "title": "Login",
-            "description": "Sign in to read or manage Misaya Notes.",
-            "image": "http://localhost:3000/og-default.svg",
-            "type": "website",
-            "url": "http://localhost:3000/login"
-          },
-          "twitter": {
-            "card": "summary_large_image",
-            "title": "Login",
-            "description": "Sign in to read or manage Misaya Notes.",
-            "image": "http://localhost:3000/og-default.svg"
-          },
-          "jsonLdTypes": []
-        },
-        "error": null
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
       }
     },
     {
@@ -150,31 +58,8 @@
       "expectedContent": "public archive route",
       "requiresSeededDatabase": true,
       "statusResult": {
-        "state": "checked",
-        "status": 200,
-        "ok": true,
-        "contentType": "text/html; charset=utf-8",
-        "metadata": {
-          "title": "Archive · Misaya Notes",
-          "description": "Browse Misaya Notes by month, category, and research signal.",
-          "canonical": "http://localhost:3000/archive",
-          "htmlLang": "en",
-          "openGraph": {
-            "title": "Archive",
-            "description": "Browse Misaya Notes by month, category, and research signal.",
-            "image": "http://localhost:3000/og-default.svg",
-            "type": "website",
-            "url": "http://localhost:3000/archive"
-          },
-          "twitter": {
-            "card": "summary_large_image",
-            "title": "Archive",
-            "description": "Browse Misaya Notes by month, category, and research signal.",
-            "image": "http://localhost:3000/og-default.svg"
-          },
-          "jsonLdTypes": []
-        },
-        "error": null
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
       }
     },
     {
@@ -184,31 +69,8 @@
       "expectedContent": "public AI Applications category route",
       "requiresSeededDatabase": true,
       "statusResult": {
-        "state": "checked",
-        "status": 200,
-        "ok": true,
-        "contentType": "text/html; charset=utf-8",
-        "metadata": {
-          "title": "Ai Applications · Misaya Notes",
-          "description": "Public category index for Misaya Notes.",
-          "canonical": "http://localhost:3000/categories/ai-applications",
-          "htmlLang": "en",
-          "openGraph": {
-            "title": "Ai Applications",
-            "description": "Public category index for Misaya Notes.",
-            "image": "http://localhost:3000/og-default.svg",
-            "type": "website",
-            "url": "http://localhost:3000/categories/ai-applications"
-          },
-          "twitter": {
-            "card": "summary_large_image",
-            "title": "Ai Applications",
-            "description": "Public category index for Misaya Notes.",
-            "image": "http://localhost:3000/og-default.svg"
-          },
-          "jsonLdTypes": []
-        },
-        "error": null
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
       }
     },
     {
@@ -218,31 +80,8 @@
       "expectedContent": "public Agent Systems tag route",
       "requiresSeededDatabase": true,
       "statusResult": {
-        "state": "checked",
-        "status": 200,
-        "ok": true,
-        "contentType": "text/html; charset=utf-8",
-        "metadata": {
-          "title": "Agent Systems · Misaya Notes",
-          "description": "Public tag index for Misaya Notes.",
-          "canonical": "http://localhost:3000/tags/agent-systems",
-          "htmlLang": "en",
-          "openGraph": {
-            "title": "Agent Systems",
-            "description": "Public tag index for Misaya Notes.",
-            "image": "http://localhost:3000/og-default.svg",
-            "type": "website",
-            "url": "http://localhost:3000/tags/agent-systems"
-          },
-          "twitter": {
-            "card": "summary_large_image",
-            "title": "Agent Systems",
-            "description": "Public tag index for Misaya Notes.",
-            "image": "http://localhost:3000/og-default.svg"
-          },
-          "jsonLdTypes": []
-        },
-        "error": null
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
       }
     },
     {
@@ -252,31 +91,8 @@
       "expectedContent": "client-rendered not found page",
       "requiresSeededDatabase": false,
       "statusResult": {
-        "state": "checked",
-        "status": 200,
-        "ok": true,
-        "contentType": "text/html; charset=utf-8",
-        "metadata": {
-          "title": "404 · Misaya Notes",
-          "description": "The requested page could not be found.",
-          "canonical": "http://localhost:3000/404",
-          "htmlLang": "en",
-          "openGraph": {
-            "title": "404",
-            "description": "The requested page could not be found.",
-            "image": "http://localhost:3000/og-default.svg",
-            "type": "website",
-            "url": "http://localhost:3000/404"
-          },
-          "twitter": {
-            "card": "summary_large_image",
-            "title": "404",
-            "description": "The requested page could not be found.",
-            "image": "http://localhost:3000/og-default.svg"
-          },
-          "jsonLdTypes": []
-        },
-        "error": null
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
       }
     },
     {
@@ -286,31 +102,8 @@
       "expectedContent": "server-level not found status",
       "requiresSeededDatabase": false,
       "statusResult": {
-        "state": "checked",
-        "status": 404,
-        "ok": true,
-        "contentType": "text/html; charset=utf-8",
-        "metadata": {
-          "title": "404 · Misaya Notes",
-          "description": "The requested page could not be found.",
-          "canonical": "http://localhost:3000/not-a-real-route",
-          "htmlLang": "en",
-          "openGraph": {
-            "title": "404",
-            "description": "The requested page could not be found.",
-            "image": "http://localhost:3000/og-default.svg",
-            "type": "website",
-            "url": "http://localhost:3000/not-a-real-route"
-          },
-          "twitter": {
-            "card": "summary_large_image",
-            "title": "404",
-            "description": "The requested page could not be found.",
-            "image": "http://localhost:3000/og-default.svg"
-          },
-          "jsonLdTypes": []
-        },
-        "error": null
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
       }
     },
     {
@@ -320,33 +113,8 @@
       "expectedContent": "public seeded algorithm article",
       "requiresSeededDatabase": true,
       "statusResult": {
-        "state": "checked",
-        "status": 200,
-        "ok": true,
-        "contentType": "text/html; charset=utf-8",
-        "metadata": {
-          "title": "IsoHC: Fixed-Vector Isometric Residual Mixing · Misaya Notes",
-          "description": "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
-          "canonical": "http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing",
-          "htmlLang": "en",
-          "openGraph": {
-            "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
-            "description": "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
-            "image": "http://localhost:3000/og-default.svg",
-            "type": "article",
-            "url": "http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing"
-          },
-          "twitter": {
-            "card": "summary_large_image",
-            "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
-            "description": "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
-            "image": "http://localhost:3000/og-default.svg"
-          },
-          "jsonLdTypes": [
-            "BlogPosting"
-          ]
-        },
-        "error": null
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
       }
     },
     {
@@ -356,33 +124,8 @@
       "expectedContent": "public seeded application article",
       "requiresSeededDatabase": true,
       "statusResult": {
-        "state": "checked",
-        "status": 200,
-        "ok": true,
-        "contentType": "text/html; charset=utf-8",
-        "metadata": {
-          "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context · Misaya Notes",
-          "description": "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 与 evaluator。",
-          "canonical": "http://localhost:3000/post/agent-harness-engine-evaluating-tool-using-agents",
-          "htmlLang": "en",
-          "openGraph": {
-            "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
-            "description": "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 与 evaluator。",
-            "image": "http://localhost:3000/og-default.svg",
-            "type": "article",
-            "url": "http://localhost:3000/post/agent-harness-engine-evaluating-tool-using-agents"
-          },
-          "twitter": {
-            "card": "summary_large_image",
-            "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
-            "description": "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 与 evaluator。",
-            "image": "http://localhost:3000/og-default.svg"
-          },
-          "jsonLdTypes": [
-            "BlogPosting"
-          ]
-        },
-        "error": null
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
       }
     },
     {
@@ -392,12 +135,8 @@
       "expectedContent": "robots directives and sitemap pointer",
       "requiresSeededDatabase": false,
       "statusResult": {
-        "state": "checked",
-        "status": 200,
-        "ok": true,
-        "contentType": "text/plain; charset=utf-8",
-        "metadata": null,
-        "error": null
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
       }
     },
     {
@@ -407,12 +146,8 @@
       "expectedContent": "public route and article sitemap",
       "requiresSeededDatabase": true,
       "statusResult": {
-        "state": "checked",
-        "status": 200,
-        "ok": true,
-        "contentType": "application/xml; charset=utf-8",
-        "metadata": null,
-        "error": null
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
       }
     },
     {
@@ -422,12 +157,8 @@
       "expectedContent": "public article feed",
       "requiresSeededDatabase": true,
       "statusResult": {
-        "state": "checked",
-        "status": 200,
-        "ok": true,
-        "contentType": "application/rss+xml; charset=utf-8",
-        "metadata": null,
-        "error": null
+        "state": "skipped",
+        "reason": "Set AUDIT_BASE_URL=http://localhost:3000 to check route HTTP status."
       }
     }
   ],
@@ -435,58 +166,58 @@
     "html": {
       "file": "index.html",
       "rawBytes": 1974,
-      "gzipBytes": 674
+      "gzipBytes": 670
     },
     "javascript": [
       {
-        "file": "assets/index-B-2DH7Xv.js",
+        "file": "assets/index-B2zATTlh.js",
         "rawBytes": 437491,
         "gzipBytes": 130157
       },
       {
-        "file": "assets/app-vendor-BdG3WRU2.js",
+        "file": "assets/app-vendor-Fysqwd4K.js",
         "rawBytes": 297880,
         "gzipBytes": 90823
       },
       {
-        "file": "assets/index-4vfvIAEN.js",
-        "rawBytes": 230086,
-        "gzipBytes": 72172
+        "file": "assets/index-6QDYWrlK.js",
+        "rawBytes": 261255,
+        "gzipBytes": 81449
       },
       {
-        "file": "assets/MarkdownRenderer-rJpIhI4s.js",
-        "rawBytes": 176165,
-        "gzipBytes": 53980
+        "file": "assets/MarkdownRenderer-BTXDWzKH.js",
+        "rawBytes": 179786,
+        "gzipBytes": 55183
       },
       {
-        "file": "assets/knowledgeRefresh-DjBqAL6y.js",
-        "rawBytes": 50704,
-        "gzipBytes": 18036
+        "file": "assets/select-C75WQBOk.js",
+        "rawBytes": 51836,
+        "gzipBytes": 18617
       },
       {
-        "file": "assets/Manage-DUxwGnln.js",
-        "rawBytes": 60654,
-        "gzipBytes": 15031
+        "file": "assets/Manage-DlEYTDKl.js",
+        "rawBytes": 71498,
+        "gzipBytes": 17543
       },
       {
-        "file": "assets/Editor-Duu8r6Rh.js",
-        "rawBytes": 40733,
-        "gzipBytes": 11418
+        "file": "assets/Editor-xBWY7vto.js",
+        "rawBytes": 46515,
+        "gzipBytes": 12985
       },
       {
-        "file": "assets/index-CczHSCOW.js",
+        "file": "assets/PostDetail-CTnrt1Qe.js",
+        "rawBytes": 36405,
+        "gzipBytes": 10465
+      },
+      {
+        "file": "assets/index-DNi63Yt8.js",
         "rawBytes": 33427,
-        "gzipBytes": 9549
+        "gzipBytes": 9548
       },
       {
-        "file": "assets/PostDetail-Bdp1Lxh1.js",
-        "rawBytes": 32300,
-        "gzipBytes": 9201
-      },
-      {
-        "file": "assets/ManageAgent-Br8_zJau.js",
-        "rawBytes": 27023,
-        "gzipBytes": 7410
+        "file": "assets/ManageAgent-Cj8OvJKH.js",
+        "rawBytes": 36457,
+        "gzipBytes": 9321
       },
       {
         "file": "__manus__/debug-collector.js",
@@ -494,14 +225,24 @@
         "gzipBytes": 5705
       },
       {
-        "file": "assets/Search-Dy7wAA6s.js",
-        "rawBytes": 9614,
-        "gzipBytes": 3684
+        "file": "assets/Search-CJ3sWCZo.js",
+        "rawBytes": 14855,
+        "gzipBytes": 5061
       },
       {
-        "file": "assets/Home-B53lkbD0.js",
-        "rawBytes": 9998,
-        "gzipBytes": 3412
+        "file": "assets/Home-DdIiiu07.js",
+        "rawBytes": 11089,
+        "gzipBytes": 3704
+      },
+      {
+        "file": "assets/TaxonomyPage-OdYDPTzj.js",
+        "rawBytes": 9393,
+        "gzipBytes": 3259
+      },
+      {
+        "file": "assets/Track-BTTkn79J.js",
+        "rawBytes": 6009,
+        "gzipBytes": 2133
       },
       {
         "file": "assets/tracks-CnqXGhEu.js",
@@ -509,64 +250,54 @@
         "gzipBytes": 2055
       },
       {
-        "file": "assets/index-DwMxMO_U.js",
-        "rawBytes": 4386,
-        "gzipBytes": 1976
+        "file": "assets/index-rzeIsqNl.js",
+        "rawBytes": 4392,
+        "gzipBytes": 1984
       },
       {
-        "file": "assets/Track-ymx9YIW0.js",
-        "rawBytes": 5052,
-        "gzipBytes": 1890
-      },
-      {
-        "file": "assets/metadata-THd-82jJ.js",
+        "file": "assets/metadata-C0svGp3x.js",
         "rawBytes": 4936,
-        "gzipBytes": 1867
+        "gzipBytes": 1866
       },
       {
-        "file": "assets/Archive-7ltwCw4S.js",
-        "rawBytes": 4100,
-        "gzipBytes": 1690
+        "file": "assets/Archive-DZSnYEjG.js",
+        "rawBytes": 5227,
+        "gzipBytes": 1861
       },
       {
-        "file": "assets/ArticleCard-B34e4YMI.js",
-        "rawBytes": 4134,
-        "gzipBytes": 1674
+        "file": "assets/ArticleCard-D41jk-6X.js",
+        "rawBytes": 4303,
+        "gzipBytes": 1713
       },
       {
-        "file": "assets/TaxonomyPage-CBl2IQM5.js",
-        "rawBytes": 3766,
-        "gzipBytes": 1483
+        "file": "assets/Login-BfrEJTOq.js",
+        "rawBytes": 3978,
+        "gzipBytes": 1576
       },
       {
-        "file": "assets/Login-BXaf8qIj.js",
-        "rawBytes": 3659,
-        "gzipBytes": 1465
+        "file": "assets/NotFound-NxL46Alb.js",
+        "rawBytes": 2398,
+        "gzipBytes": 1044
       },
       {
-        "file": "assets/index-C7Rjw5tS.js",
-        "rawBytes": 2689,
-        "gzipBytes": 1231
-      },
-      {
-        "file": "assets/NotFound-D9p-EA8p.js",
-        "rawBytes": 2245,
-        "gzipBytes": 998
-      },
-      {
-        "file": "assets/input-5YJ3RYev.js",
+        "file": "assets/input-DM8CzRQG.js",
         "rawBytes": 2115,
-        "gzipBytes": 900
+        "gzipBytes": 899
       },
       {
-        "file": "assets/sonner-Bx36vPOY.js",
+        "file": "assets/sonner-BGVW-mB1.js",
         "rawBytes": 1291,
         "gzipBytes": 809
       },
       {
-        "file": "assets/About-CtqYW21N.js",
+        "file": "assets/About-BdVomikU.js",
         "rawBytes": 1897,
-        "gzipBytes": 774
+        "gzipBytes": 768
+      },
+      {
+        "file": "assets/knowledgeRefresh-Dfj5I-uI.js",
+        "rawBytes": 1251,
+        "gzipBytes": 599
       },
       {
         "file": "assets/reading-time-ChpY5_2v.js",
@@ -579,66 +310,86 @@
         "gzipBytes": 565
       },
       {
-        "file": "assets/mail-BUBCMKuy.js",
+        "file": "assets/mail-icIQBH1O.js",
         "rawBytes": 835,
-        "gzipBytes": 438
+        "gzipBytes": 441
       },
       {
-        "file": "assets/AgentMarkdown-Du5qF4_C.js",
+        "file": "assets/AgentMarkdown-PwWdbhsh.js",
         "rawBytes": 714,
-        "gzipBytes": 430
+        "gzipBytes": 428
       },
       {
-        "file": "assets/tags-BaM2bfvU.js",
+        "file": "assets/tags-FlQ_t96p.js",
         "rawBytes": 561,
-        "gzipBytes": 385
+        "gzipBytes": 388
       },
       {
-        "file": "assets/calendar-Dwd_YHf0.js",
-        "rawBytes": 710,
-        "gzipBytes": 357
+        "file": "assets/calendar-days-BUY7EneX.js",
+        "rawBytes": 662,
+        "gzipBytes": 367
       },
       {
-        "file": "assets/network-CZwhBmAe.js",
+        "file": "assets/network-CvXvyawO.js",
         "rawBytes": 553,
-        "gzipBytes": 336
+        "gzipBytes": 338
       },
       {
-        "file": "assets/git-branch-1wFkyuqf.js",
+        "file": "assets/feedbackReasons-CIrfcs7p.js",
+        "rawBytes": 490,
+        "gzipBytes": 326
+      },
+      {
+        "file": "assets/git-branch-WkxCurl9.js",
         "rawBytes": 443,
-        "gzipBytes": 319
+        "gzipBytes": 320
       },
       {
-        "file": "assets/copy-UXqI7HT2.js",
+        "file": "assets/triangle-alert-XenXsKPJ.js",
+        "rawBytes": 433,
+        "gzipBytes": 314
+      },
+      {
+        "file": "assets/copy-BkCpGs93.js",
         "rawBytes": 400,
-        "gzipBytes": 308
+        "gzipBytes": 309
       },
       {
-        "file": "assets/eye-D0w01AHc.js",
+        "file": "assets/calendar-B1DzmOoY.js",
+        "rawBytes": 426,
+        "gzipBytes": 305
+      },
+      {
+        "file": "assets/eye-Ca47skO5.js",
         "rawBytes": 420,
-        "gzipBytes": 301
+        "gzipBytes": 302
       },
       {
-        "file": "assets/route-BGr8VfgX.js",
+        "file": "assets/route-BVA6e62a.js",
         "rawBytes": 418,
-        "gzipBytes": 301
+        "gzipBytes": 302
       },
       {
-        "file": "assets/hash-C_HB08f7.js",
+        "file": "assets/hash-BlTqJ1r2.js",
         "rawBytes": 465,
-        "gzipBytes": 296
+        "gzipBytes": 299
       },
       {
-        "file": "assets/folder-CvhfTPpI.js",
+        "file": "assets/folder-BBAkUW5C.js",
         "rawBytes": 397,
-        "gzipBytes": 291
+        "gzipBytes": 292
+      },
+      {
+        "file": "assets/chevron-down-CKqdjxJh.js",
+        "rawBytes": 296,
+        "gzipBytes": 245
       }
     ],
     "css": [
       {
-        "file": "assets/index-C3T6HjNQ.css",
-        "rawBytes": 435866,
-        "gzipBytes": 69618
+        "file": "assets/index-B8QdzW2t.css",
+        "rawBytes": 507729,
+        "gzipBytes": 81401
       },
       {
         "file": "assets/katex-DvXFAOB1.css",
@@ -654,7 +405,7 @@
   },
   "accessibility": {
     "hasReducedMotionRule": true,
-    "iconOnlyButtonPatternCount": 1
+    "iconOnlyButtonPatternCount": 0
   },
   "browserSmoke": {
     "state": "manual-required",
@@ -671,5 +422,24 @@
     ],
     "note": "Use the Codex Browser plugin for rendered desktop/mobile checks; package script records the required viewport and route set."
   },
-  "knownGaps": []
+  "knownGaps": [
+    {
+      "id": "missing-robots",
+      "severity": "warning",
+      "summary": "No robots.txt is present.",
+      "evidence": "client/public/robots.txt not found"
+    },
+    {
+      "id": "missing-sitemap",
+      "severity": "warning",
+      "summary": "No sitemap.xml is present.",
+      "evidence": "client/public/sitemap.xml not found"
+    },
+    {
+      "id": "missing-rss",
+      "severity": "warning",
+      "summary": "No RSS feed is present.",
+      "evidence": "client/public/rss.xml not found"
+    }
+  ]
 }

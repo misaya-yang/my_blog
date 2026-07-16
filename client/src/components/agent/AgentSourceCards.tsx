@@ -207,6 +207,13 @@ export function getSourceLinkAction(href: string, currentPath: string) {
     : "navigate";
 }
 
+export function getAgentSourceScrollBehavior(
+  prefersReducedMotion = typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+): ScrollBehavior {
+  return prefersReducedMotion ? "auto" : "smooth";
+}
+
 function scrollToSource(source: SourceCard, href: string) {
   const target =
     findSourceHeadingElement(source) ??
@@ -223,7 +230,10 @@ function scrollToSource(source: SourceCard, href: string) {
     "",
     `${window.location.pathname}${targetHash}`
   );
-  target.scrollIntoView({ behavior: "smooth", block: "start" });
+  target.scrollIntoView({
+    behavior: getAgentSourceScrollBehavior(),
+    block: "start",
+  });
   target.focus?.({ preventScroll: true });
 }
 

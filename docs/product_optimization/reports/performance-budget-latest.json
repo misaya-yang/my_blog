@@ -1,63 +1,63 @@
 {
-  "generatedAt": "2026-07-09T00:26:23.444Z",
+  "generatedAt": "2026-07-16T17:35:22.208Z",
   "status": "passed",
   "distDir": "dist/public",
   "totals": {
-    "javascriptRawBytes": 1541107,
-    "javascriptGzipBytes": 469926,
-    "cssRawBytes": 507893,
-    "cssGzipBytes": 84696,
+    "javascriptRawBytes": 1567051,
+    "javascriptGzipBytes": 477232,
+    "cssRawBytes": 538238,
+    "cssGzipBytes": 90049,
     "javascriptAssetCount": 43,
     "cssAssetCount": 3
   },
   "largestAssets": {
     "javascript": [
       {
-        "file": "assets/index-B-2DH7Xv.js",
+        "file": "assets/index-B2zATTlh.js",
         "rawBytes": 437491,
         "gzipBytes": 130157
       },
       {
-        "file": "assets/app-vendor-BdG3WRU2.js",
+        "file": "assets/app-vendor-Fysqwd4K.js",
         "rawBytes": 297880,
         "gzipBytes": 90823
       },
       {
-        "file": "assets/index-GBMiZEWI.js",
-        "rawBytes": 249455,
-        "gzipBytes": 78105
+        "file": "assets/index-Q7CPoyFM.js",
+        "rawBytes": 261255,
+        "gzipBytes": 81451
       },
       {
-        "file": "assets/MarkdownRenderer-N62qgimv.js",
-        "rawBytes": 179947,
-        "gzipBytes": 55224
+        "file": "assets/MarkdownRenderer-CgnZjqGY.js",
+        "rawBytes": 179786,
+        "gzipBytes": 55185
       },
       {
-        "file": "assets/knowledgeRefresh-Coj_ugIm.js",
-        "rawBytes": 50512,
-        "gzipBytes": 18032
+        "file": "assets/select-DSHsPRh9.js",
+        "rawBytes": 51836,
+        "gzipBytes": 18615
       },
       {
-        "file": "assets/Manage-B50vjxLC.js",
-        "rawBytes": 63407,
-        "gzipBytes": 15576
+        "file": "assets/Manage-C8KJ-WKx.js",
+        "rawBytes": 71498,
+        "gzipBytes": 17542
       },
       {
-        "file": "assets/Editor-D8AyNZOs.js",
-        "rawBytes": 43935,
-        "gzipBytes": 12253
+        "file": "assets/Editor-GS7GlOtu.js",
+        "rawBytes": 46515,
+        "gzipBytes": 12981
       },
       {
-        "file": "assets/PostDetail-B6YrJBft.js",
-        "rawBytes": 37490,
-        "gzipBytes": 10541
+        "file": "assets/PostDetail-Bk_ND1jg.js",
+        "rawBytes": 36405,
+        "gzipBytes": 10467
       }
     ],
     "css": [
       {
-        "file": "assets/index-C1J0ojFz.css",
-        "rawBytes": 477384,
-        "gzipBytes": 76048
+        "file": "assets/index-B8QdzW2t.css",
+        "rawBytes": 507729,
+        "gzipBytes": 81401
       },
       {
         "file": "assets/katex-DvXFAOB1.css",
@@ -105,14 +105,14 @@
       "label": "Largest JS gzip baseline",
       "state": "passed",
       "blocking": false,
-      "evidence": "assets/index-B-2DH7Xv.js: 127.1 kB gzip; warning threshold 200.0 kB."
+      "evidence": "assets/index-B2zATTlh.js: 127.1 kB gzip; warning threshold 200.0 kB."
     },
     {
       "id": "total-css-gzip-baseline",
       "label": "Total CSS gzip baseline",
       "state": "passed",
       "blocking": false,
-      "evidence": "82.7 kB total CSS gzip; warning threshold 96.0 kB."
+      "evidence": "87.9 kB total CSS gzip; warning threshold 96.0 kB."
     }
   ],
   "failures": [],

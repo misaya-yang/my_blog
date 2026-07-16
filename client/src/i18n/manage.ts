@@ -32,6 +32,28 @@ const manage: TranslationDict = {
   "manage.health.noCategory": { en: "No category", zh: "缺分类" },
   "manage.health.noTags": { en: "No tags", zh: "缺标签" },
   "manage.health.recent": { en: "Recent", zh: "近期更新" },
+  "manage.health.more": {
+    en: "More content checks",
+    zh: "更多内容检查",
+  },
+  "manage.health.moreHint": {
+    en: "Excerpt, taxonomy, and freshness",
+    zh: "摘要、分类与新鲜度",
+  },
+  "manage.health.unavailable": {
+    en: "Health summary unavailable",
+    zh: "内容健康摘要暂不可用",
+  },
+  "manage.paginationLabel": {
+    en: "Article list pagination",
+    zh: "文章列表分页",
+  },
+  "manage.paginationStatus": {
+    en: "Showing {start}-{end} of {total} articles",
+    zh: "显示第 {start}-{end} 篇，共 {total} 篇",
+  },
+  "manage.paginationPrevious": { en: "Previous", zh: "上一页" },
+  "manage.paginationNext": { en: "Next", zh: "下一页" },
 
   // Taxonomy management
   "manage.taxonomy.categoriesTitle": { en: "Categories", zh: "分类管理" },

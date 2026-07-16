@@ -74,6 +74,7 @@ import {
   getOwnerCockpitSummary,
   type OwnerCockpitNextAction,
 } from "./manageOwnerCockpit";
+import { getManagePagination } from "./managePagination";
 import {
   Plus,
   Search,
@@ -98,7 +99,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 
@@ -150,12 +151,19 @@ const visibilityOptions: Array<{
   { value: "public", labelKey: "manage.visibility.public", icon: Globe2 },
 ];
 
+const MANAGE_PAGE_SIZE = 20;
+
 export default function Manage() {
   const { isAdmin, loading: authLoading } = useAuth();
   const { language, t } = useLanguage();
   const siteUrl = getClientSiteUrl();
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [categorySlug, setCategorySlug] = useState("all");
+  const [page, setPage] = useState(1);
+  const [pendingPostIds, setPendingPostIds] = useState<Set<number>>(
+    () => new Set()
+  );
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [newCategory, setNewCategory] = useState({
     name: "",
@@ -182,18 +190,27 @@ export default function Manage() {
     })
   );
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setDebouncedSearch(search.trim());
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [search]);
+
   // 获取文章列表
   const {
     data: postsData,
     isLoading,
+    isFetching,
     isError: postsError,
     error: postsLoadError,
     refetch,
   } = trpc.posts.list.useQuery(
     {
-      search: search || undefined,
+      search: debouncedSearch || undefined,
       categorySlug: categorySlug === "all" ? undefined : categorySlug,
-      limit: 50,
+      limit: MANAGE_PAGE_SIZE,
+      offset: (page - 1) * MANAGE_PAGE_SIZE,
       includeUnpublished: true,
     },
     { enabled: isAdmin }
@@ -218,6 +235,7 @@ export default function Manage() {
     onSuccess: result => {
       notifyPostMutation(result, t("manage.toast.deleted"));
       refetch();
+      void utils.posts.adminHealthSummary.invalidate();
       setDeleteId(null);
     },
     onError: error => {
@@ -226,9 +244,17 @@ export default function Manage() {
   });
 
   // 获取分类列表
-  const { data: categoriesData } = trpc.categories.list.useQuery();
+  const { data: categoriesData } = trpc.categories.list.useQuery(undefined, {
+    enabled: isAdmin,
+  });
   const categoriesMap = new Map(categoriesData?.map(c => [c.id, c.name]) || []);
-  const { data: tagsData } = trpc.tags.list.useQuery();
+  const { data: tagsData } = trpc.tags.list.useQuery(undefined, {
+    enabled: isAdmin,
+  });
+  const healthSummary = trpc.posts.adminHealthSummary.useQuery(undefined, {
+    enabled: isAdmin,
+    retry: false,
+  });
   const { data: feedbackData, isLoading: feedbackLoading } =
     trpc.engagement.feedback.list.useQuery({ limit: 20 }, { enabled: isAdmin });
   const { data: subscribersData, isLoading: subscribersLoading } =
@@ -251,12 +277,27 @@ export default function Manage() {
 
   // 切换发布状态
   const updateMutation = trpc.posts.update.useMutation({
+    onMutate: variables => {
+      setPendingPostIds(current => {
+        const next = new Set(current);
+        next.add(variables.id);
+        return next;
+      });
+    },
     onSuccess: result => {
       notifyPostMutation(result, t("manage.toast.statusUpdated"));
       refetch();
+      void utils.posts.adminHealthSummary.invalidate();
     },
     onError: error => {
       toast.error(error.message || t("manage.toast.updateFailed"));
+    },
+    onSettled: (_data, _error, variables) => {
+      setPendingPostIds(current => {
+        const next = new Set(current);
+        next.delete(variables.id);
+        return next;
+      });
     },
   });
 
@@ -287,61 +328,75 @@ export default function Manage() {
       },
     });
 
-  const contentHealth = useMemo(
-    () => getContentHealthSummary((postsData?.posts ?? []) as any[]),
-    [postsData?.posts]
-  );
+  const contentHealth =
+    healthSummary.data ?? getContentHealthSummary([] as any[]);
+  const displayHealthValue = (value: number) =>
+    healthSummary.isLoading ? "…" : healthSummary.isError ? "—" : value;
   const healthMetrics: Array<{
     labelKey: string;
-    value: number;
+    value: number | string;
     icon: LucideIcon;
     tone?: "neutral" | "warning";
   }> = [
     {
       labelKey: "manage.health.drafts",
-      value: contentHealth.drafts,
+      value: displayHealthValue(contentHealth.drafts),
       icon: FileText,
     },
     {
       labelKey: "manage.health.public",
-      value: contentHealth.publishedPublic,
+      value: displayHealthValue(contentHealth.publishedPublic),
       icon: Globe2,
     },
     {
       labelKey: "manage.health.ownerOnly",
-      value: contentHealth.ownerOnlyPreviews,
+      value: displayHealthValue(contentHealth.ownerOnlyPreviews),
       icon: ShieldCheck,
     },
     {
       labelKey: "manage.health.hidden",
-      value: contentHealth.hidden,
+      value: displayHealthValue(contentHealth.hidden),
       icon: EyeOff,
       tone: "warning",
     },
     {
       labelKey: "manage.health.noExcerpt",
-      value: contentHealth.missingExcerpt,
+      value: displayHealthValue(contentHealth.missingExcerpt),
       icon: MessageSquareText,
       tone: "warning",
     },
     {
       labelKey: "manage.health.noCategory",
-      value: contentHealth.missingCategory,
+      value: displayHealthValue(contentHealth.missingCategory),
       icon: Folder,
       tone: "warning",
     },
     {
       labelKey: "manage.health.noTags",
-      value: contentHealth.missingTags,
+      value: displayHealthValue(contentHealth.missingTags),
       icon: Tags,
       tone: "warning",
     },
     {
       labelKey: "manage.health.recent",
-      value: contentHealth.updatedRecently,
+      value: displayHealthValue(contentHealth.updatedRecently),
       icon: CheckCircle2,
     },
   ];
+  const pagination = getManagePagination(
+    postsData?.total ?? 0,
+    page,
+    MANAGE_PAGE_SIZE
+  );
+  const totalArticles = pagination.total;
+  const totalPages = pagination.totalPages;
+  const visibleRangeStart = pagination.start;
+  const visibleRangeEnd = pagination.end;
+
+  useEffect(() => {
+    if (!postsData || page <= totalPages) return;
+    setPage(totalPages);
+  }, [page, postsData, totalPages]);
 
   const createCategory = trpc.categories.create.useMutation({
     onSuccess: () => {
@@ -402,6 +457,7 @@ export default function Manage() {
   };
 
   const togglePublish = (post: any) => {
+    if (pendingPostIds.has(post.id)) return;
     updateMutation.mutate({
       id: post.id,
       status: post.status === "published" ? "draft" : "published",
@@ -409,7 +465,11 @@ export default function Manage() {
   };
 
   const setVisibility = (post: any, visibility: PostVisibility) => {
-    if (post.visibility === visibility) return;
+    if (
+      post.visibility === visibility ||
+      pendingPostIds.has(post.id)
+    )
+      return;
     updateMutation.mutate({
       id: post.id,
       visibility,
@@ -441,8 +501,10 @@ export default function Manage() {
     const link = document.createElement("a");
     link.href = url;
     link.download = "subscribers.csv";
+    document.body.appendChild(link);
     link.click();
-    URL.revokeObjectURL(url);
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
   };
 
   const beginCategoryEdit = (category: any) => {
@@ -470,7 +532,8 @@ export default function Manage() {
             type="button"
             aria-pressed={active}
             title={t(option.labelKey)}
-            disabled={updateMutation.isPending}
+            disabled={pendingPostIds.has(post.id)}
+            aria-busy={pendingPostIds.has(post.id)}
             onClick={() => setVisibility(post, option.value)}
             className={`owner-segmented-item flex min-w-0 items-center justify-center gap-1.5 px-2 text-xs font-medium ${
               active ? "owner-segmented-item-active" : ""
@@ -529,9 +592,9 @@ export default function Manage() {
               <FileText className="h-4 w-4" />
               {t("manage.cmsLabel")}
             </div>
-            <h2 className="display-title text-4xl leading-tight text-white">
+            <h1 className="display-title text-4xl leading-tight text-white">
               {t("manage.pageTitle")}
-            </h2>
+            </h1>
             <p className="mt-3 text-sm leading-6 text-slate-400">
               {t("manage.pageSubtitle")}
             </p>
@@ -563,11 +626,21 @@ export default function Manage() {
             <Input
               placeholder={t("manage.searchPlaceholder")}
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              aria-label={t("manage.searchPlaceholder")}
+              onChange={e => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
               className="border-primary/15 bg-slate-950/40 pl-10 text-white placeholder:text-slate-500"
             />
           </div>
-          <Select value={categorySlug} onValueChange={setCategorySlug}>
+          <Select
+            value={categorySlug}
+            onValueChange={value => {
+              setCategorySlug(value);
+              setPage(1);
+            }}
+          >
             <SelectTrigger className="w-full border-primary/15 bg-slate-950/40 text-white lg:w-[220px]">
               <SelectValue placeholder={t("manage.categoryFilter")} />
             </SelectTrigger>
@@ -586,16 +659,42 @@ export default function Manage() {
         </Surface>
 
         <section className="owner-dashboard-kpis owner-ops-kpi-strip mb-6">
-          {healthMetrics.map(({ labelKey, value, icon: Icon, tone }) => (
-            <MetricTile
-              key={labelKey}
-              icon={<Icon className="h-4 w-4" />}
-              value={value}
-              label={t(labelKey)}
-              tone={tone}
-            />
-          ))}
+          {healthMetrics
+            .slice(0, 4)
+            .map(({ labelKey, value, icon: Icon, tone }) => (
+              <MetricTile
+                key={labelKey}
+                icon={<Icon className="h-4 w-4" />}
+                value={value}
+                label={t(labelKey)}
+                tone={tone}
+              />
+            ))}
         </section>
+
+        <details className="owner-health-details mb-6">
+          <summary>
+            <span>{t("manage.health.more")}</span>
+            <span className="text-xs text-slate-500">
+              {healthSummary.isError
+                ? t("manage.health.unavailable")
+                : t("manage.health.moreHint")}
+            </span>
+          </summary>
+          <section className="owner-dashboard-kpis owner-health-secondary mt-3">
+            {healthMetrics
+              .slice(4)
+              .map(({ labelKey, value, icon: Icon, tone }) => (
+                <MetricTile
+                  key={labelKey}
+                  icon={<Icon className="h-4 w-4" />}
+                  value={value}
+                  label={t(labelKey)}
+                  tone={tone}
+                />
+              ))}
+          </section>
+        </details>
 
         {/* 文章列表 */}
         {isLoading ? (
@@ -701,6 +800,8 @@ export default function Manage() {
                         variant="outline"
                         size="sm"
                         className="owner-button"
+                        disabled={pendingPostIds.has(post.id)}
+                        aria-busy={pendingPostIds.has(post.id)}
                         onClick={() => togglePublish(post)}
                       >
                         {post.status === "published"
@@ -711,6 +812,7 @@ export default function Manage() {
                         variant="outline"
                         size="sm"
                         className="border-red-400/25 bg-red-950/15 text-red-100 hover:bg-red-500/15"
+                        disabled={deleteMutation.isPending}
                         onClick={() => setDeleteId(post.id)}
                       >
                         {t("manage.action.delete")}
@@ -816,6 +918,7 @@ export default function Manage() {
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem
+                              disabled={pendingPostIds.has(post.id)}
                               onClick={() => togglePublish(post)}
                             >
                               {post.status === "published" ? (
@@ -833,6 +936,7 @@ export default function Manage() {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               className="text-destructive"
+                              disabled={deleteMutation.isPending}
                               onClick={() => setDeleteId(post.id)}
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
@@ -847,6 +951,46 @@ export default function Manage() {
               </Table>
             </div>
           </section>
+        )}
+
+        {postsData && totalArticles > MANAGE_PAGE_SIZE && (
+          <nav
+            className="owner-pagination mt-5"
+            aria-label={t("manage.paginationLabel")}
+          >
+            <p className="text-sm text-slate-400">
+              {t("manage.paginationStatus", {
+                start: visibleRangeStart,
+                end: visibleRangeEnd,
+                total: totalArticles,
+              })}
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="owner-button"
+                disabled={!pagination.hasPrevious || isFetching}
+                onClick={() => setPage(pagination.page - 1)}
+              >
+                {t("manage.paginationPrevious")}
+              </Button>
+              <span className="min-w-16 text-center text-xs text-slate-500">
+                {pagination.page} / {totalPages}
+              </span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="owner-button"
+                disabled={!pagination.hasNext || isFetching}
+                onClick={() => setPage(pagination.page + 1)}
+              >
+                {t("manage.paginationNext")}
+              </Button>
+            </div>
+          </nav>
         )}
 
         <section className="owner-ops-taxonomy mt-8 grid gap-6 xl:grid-cols-2">

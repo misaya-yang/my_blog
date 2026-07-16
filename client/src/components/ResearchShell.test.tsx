@@ -1,8 +1,9 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { SiteHeader } from "./ResearchShell";
+import { setBlogAgentOpenState } from "./agent/agentController";
 
 const authState = vi.hoisted(() => ({
   current: {
@@ -70,6 +71,10 @@ vi.mock("wouter", async () => {
 });
 
 describe("SiteHeader public access model", () => {
+  afterEach(() => {
+    setBlogAgentOpenState(false);
+  });
+
   it("does not advertise login to anonymous public readers", () => {
     authState.current = {
       isAdmin: false,
@@ -86,8 +91,18 @@ describe("SiteHeader public access model", () => {
     expect(html).toContain('title="Switch language to Chinese"');
     expect(html).toContain("data-mobile-agent-trigger");
     expect(html).toContain('aria-label="Ask the blog"');
+    expect(html).toContain('aria-expanded="false"');
     expect(html).not.toContain('href="/login"');
     expect(html).not.toContain(">Login<");
+  });
+
+  it("reflects the shared Agent open state on the mobile trigger", () => {
+    setBlogAgentOpenState(true);
+
+    const html = renderToStaticMarkup(<SiteHeader active="home" />);
+
+    expect(html).toContain('aria-expanded="true"');
+    expect(html).toContain('data-state="open"');
   });
 
   it("keeps owner controls available after admin authentication", () => {

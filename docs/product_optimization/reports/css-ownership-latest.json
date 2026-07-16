@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-08T23:39:48.319Z",
+  "generatedAt": "2026-07-16T17:35:22.624Z",
   "status": "passed",
   "files": [
     {
@@ -99,47 +99,47 @@
     {
       "path": "client/src/styles/visual-refresh.css",
       "owner": "public-visual",
-      "lineCount": 7557,
+      "lineCount": 9724,
       "metrics": {
         "important": {
-          "count": 199,
+          "count": 146,
           "samples": [
             {
-              "line": 703,
+              "line": 702,
               "text": "animation: none !important;"
             },
             {
-              "line": 704,
+              "line": 703,
               "text": "opacity: 1 !important;"
             },
             {
-              "line": 705,
+              "line": 704,
               "text": "transform: none !important;"
             },
             {
-              "line": 1458,
+              "line": 1453,
               "text": "margin-top: 0.75rem !important;"
             },
             {
-              "line": 1470,
+              "line": 1465,
               "text": "margin-top: 0.75rem !important;"
             },
             {
-              "line": 1574,
+              "line": 1569,
               "text": "padding: 1rem !important;"
             },
             {
-              "line": 1730,
-              "text": "padding-top: clamp(1.35rem, 3vh, 2.1rem) !important;"
+              "line": 2535,
+              "text": "padding-top: clamp(2.15rem, 4.2vw, 3.25rem) !important;"
             },
             {
-              "line": 1731,
-              "text": "padding-bottom: clamp(1.2rem, 2.8vh, 1.9rem) !important;"
+              "line": 2536,
+              "text": "padding-bottom: 2rem !important;"
             }
           ]
         },
         "viewportFontSize": {
-          "count": 52,
+          "count": 51,
           "samples": [
             {
               "line": 244,
@@ -162,15 +162,15 @@
               "text": "font-size: clamp(2.2rem, 4.5vw, 4.85rem);"
             },
             {
-              "line": 716,
+              "line": 715,
               "text": "font-size: clamp(2.7rem, 15vw, 4.1rem);"
             },
             {
-              "line": 1118,
+              "line": 1117,
               "text": "font-size: clamp(2.2rem, 4vw, 4rem);"
             },
             {
-              "line": 1444,
+              "line": 1439,
               "text": "font-size: clamp(2rem, 10vw, 2.75rem);"
             }
           ]
@@ -216,35 +216,35 @@
           "count": 14,
           "samples": [
             {
-              "line": 4725,
+              "line": 5377,
               "text": "body:has(.track-index-page) .agent-liquid-launcher"
             },
             {
-              "line": 4725,
+              "line": 5377,
               "text": "body:has(.login-panel) .agent-liquid-launcher"
             },
             {
-              "line": 4725,
+              "line": 5377,
               "text": "body:has(.auth-required-page) .agent-liquid-launcher"
             },
             {
-              "line": 4725,
+              "line": 5377,
               "text": "body:has(.owner-editor-shell) .agent-liquid-launcher"
             },
             {
-              "line": 4725,
+              "line": 5377,
               "text": "body:has(.owner-ops-page) .agent-liquid-launcher"
             },
             {
-              "line": 4725,
+              "line": 5377,
               "text": "body:has(.agent-console-tabs) .agent-liquid-launcher"
             },
             {
-              "line": 4734,
+              "line": 5386,
               "text": "body:has(.home-index-spread) .agent-liquid-launcher"
             },
             {
-              "line": 4745,
+              "line": 5397,
               "text": "body:has(.home-index-spread) .agent-liquid-launcher > span:not(.agent-launcher-orb)"
             }
           ]
@@ -253,35 +253,35 @@
           "count": 22,
           "samples": [
             {
-              "line": 2898,
+              "line": 3606,
               "text": ".agent-liquid-launcher {"
             },
             {
-              "line": 2904,
+              "line": 3612,
               "text": ".agent-liquid-panel {"
             },
             {
-              "line": 3540,
+              "line": 4251,
               "text": ".agent-liquid-launcher {"
             },
             {
-              "line": 3549,
+              "line": 4260,
               "text": ".agent-liquid-launcher .agent-launcher-orb {"
             },
             {
-              "line": 3554,
+              "line": 4265,
               "text": ".agent-liquid-launcher > span:not(.agent-launcher-orb) {"
             },
             {
-              "line": 3746,
+              "line": 4457,
               "text": ".agent-liquid-launcher {"
             },
             {
-              "line": 3753,
+              "line": 4464,
               "text": ".agent-liquid-launcher .agent-launcher-orb {"
             },
             {
-              "line": 4725,
+              "line": 5377,
               "text": "body:has(.track-index-page) .agent-liquid-launcher,"
             }
           ]
@@ -291,7 +291,7 @@
     {
       "path": "client/src/styles/public-components.css",
       "owner": "public-components",
-      "lineCount": 1970,
+      "lineCount": 1952,
       "metrics": {
         "important": {
           "count": 0,
@@ -309,7 +309,7 @@
               "text": "font-size: clamp(1.08rem, 1.42vw, 1.36rem);"
             },
             {
-              "line": 1469,
+              "line": 1451,
               "text": "font-size: clamp(2.65rem, 17vw, 4.2rem);"
             }
           ]
@@ -359,15 +359,15 @@
           "count": 3,
           "samples": [
             {
-              "line": 1054,
+              "line": 1036,
               "text": ".agent-liquid-launcher {"
             },
             {
-              "line": 1064,
+              "line": 1046,
               "text": ".agent-launcher-orb {"
             },
             {
-              "line": 1070,
+              "line": 1052,
               "text": ".agent-liquid-panel {"
             }
           ]
@@ -377,42 +377,42 @@
     {
       "path": "client/src/styles/owner-tools.css",
       "owner": "owner-tools",
-      "lineCount": 2572,
+      "lineCount": 2685,
       "metrics": {
         "important": {
-          "count": 404,
+          "count": 363,
           "samples": [
             {
-              "line": 331,
-              "text": "oklch(0.095 0.014 252) !important;"
+              "line": 189,
+              "text": "display: grid !important;"
             },
             {
-              "line": 332,
-              "text": "border-color: var(--public-border-strong) !important;"
+              "line": 190,
+              "text": "grid-template-columns: minmax(12.5rem, 0.24fr) minmax(0, 1fr) !important;"
             },
             {
-              "line": 335,
-              "text": "0 22px 46px oklch(0.03 0.012 252 / 26%) !important;"
+              "line": 191,
+              "text": "gap: 1rem !important;"
             },
             {
-              "line": 355,
-              "text": "border-color: var(--public-border) !important;"
+              "line": 192,
+              "text": "align-items: start !important;"
             },
             {
-              "line": 356,
-              "text": "border-radius: 0.68rem !important;"
+              "line": 198,
+              "text": "display: flex !important;"
             },
             {
-              "line": 357,
-              "text": "background: oklch(0.055 0.014 252 / 86%) !important;"
+              "line": 199,
+              "text": "width: 100% !important;"
             },
             {
-              "line": 399,
-              "text": "order: 0 !important;"
+              "line": 200,
+              "text": "height: auto !important;"
             },
             {
-              "line": 443,
-              "text": ") !important;"
+              "line": 201,
+              "text": "flex-direction: column !important;"
             }
           ]
         },
@@ -420,35 +420,35 @@
           "count": 14,
           "samples": [
             {
-              "line": 1384,
-              "text": "font-size: clamp(2.72rem, 3.7vw, 3.72rem) !important;"
+              "line": 1520,
+              "text": "font-size: clamp(2.72rem, 3.7vw, 3.72rem);"
             },
             {
-              "line": 1522,
-              "text": "font-size: clamp(1.92rem, 2.7vw, 2.76rem) !important;"
+              "line": 1658,
+              "text": "font-size: clamp(1.92rem, 2.7vw, 2.76rem);"
             },
             {
-              "line": 1561,
+              "line": 1697,
               "text": "font-size: clamp(1.06rem, 0.98rem + 0.18vw, 1.15rem) !important;"
             },
             {
-              "line": 1751,
+              "line": 1887,
               "text": "font-size: clamp(3rem, 4vw, 4.05rem) !important;"
             },
             {
-              "line": 1757,
+              "line": 1893,
               "text": "font-size: clamp(1rem, 1vw, 1.08rem) !important;"
             },
             {
-              "line": 1788,
+              "line": 1924,
               "text": "font-size: clamp(1.22rem, 1.45vw, 1.58rem) !important;"
             },
             {
-              "line": 1806,
+              "line": 1942,
               "text": "font-size: clamp(1.65rem, 1.8vw, 2rem) !important;"
             },
             {
-              "line": 1893,
+              "line": 2029,
               "text": "font-size: clamp(2.05rem, 3.4vw, 3.1rem) !important;"
             }
           ]
@@ -494,35 +494,35 @@
           "count": 39,
           "samples": [
             {
-              "line": 655,
+              "line": 796,
               "text": ":root"
             },
             {
-              "line": 738,
+              "line": 879,
               "text": "html:not(.dark) .space-page .space-backdrop::before"
             },
             {
-              "line": 738,
+              "line": 879,
               "text": "html:not(.dark) .space-page .space-backdrop::after"
             },
             {
-              "line": 738,
+              "line": 879,
               "text": "html:not(.dark) .space-page .space-stars"
             },
             {
-              "line": 738,
+              "line": 879,
               "text": "html:not(.dark) .space-page .planet-horizon"
             },
             {
-              "line": 738,
+              "line": 879,
               "text": "html:not(.dark) .home-index-spread::before"
             },
             {
-              "line": 747,
+              "line": 888,
               "text": "html:not(.dark) .space-page .home-index-spread"
             },
             {
-              "line": 1076,
+              "line": 1213,
               "text": "html:not(.dark) .space-page.owner-dark-scope .space-backdrop::before"
             }
           ]
@@ -531,15 +531,15 @@
           "count": 3,
           "samples": [
             {
-              "line": 1014,
+              "line": 1151,
               "text": ".agent-liquid-launcher {"
             },
             {
-              "line": 1481,
+              "line": 1617,
               "text": ".agent-liquid-launcher {"
             },
             {
-              "line": 1488,
+              "line": 1624,
               "text": ".agent-launcher-orb {"
             }
           ]
@@ -549,10 +549,10 @@
     {
       "path": "client/src/styles/agent-surfaces.css",
       "owner": "agent-surfaces",
-      "lineCount": 747,
+      "lineCount": 893,
       "metrics": {
         "important": {
-          "count": 45,
+          "count": 61,
           "samples": [
             {
               "line": 269,
@@ -630,7 +630,7 @@
           ]
         },
         "broadSelector": {
-          "count": 38,
+          "count": 39,
           "samples": [
             {
               "line": 4,
@@ -675,10 +675,10 @@
     {
       "path": "client/src/styles/liquid-materials.css",
       "owner": "legacy-materials",
-      "lineCount": 2750,
+      "lineCount": 2706,
       "metrics": {
         "important": {
-          "count": 907,
+          "count": 831,
           "samples": [
             {
               "line": 137,
@@ -718,8 +718,8 @@
           "count": 1,
           "samples": [
             {
-              "line": 1450,
-              "text": "font-size: clamp(3rem, 4.6vw, 4.75rem) !important;"
+              "line": 1433,
+              "text": "font-size: clamp(3rem, 4.6vw, 4.75rem);"
             }
           ]
         },
@@ -761,7 +761,7 @@
           ]
         },
         "broadSelector": {
-          "count": 11,
+          "count": 7,
           "samples": [
             {
               "line": 4,
@@ -784,21 +784,17 @@
               "text": "html[data-solid-surfaces=\"true\"] :is( .glass-popover"
             },
             {
-              "line": 1305,
-              "text": "html[data-route-motion=\"enter\"] :where(.space-page > main"
-            },
-            {
-              "line": 1796,
+              "line": 1772,
               "text": "body:has(.track-index-page) .agent-liquid-launcher"
             },
             {
-              "line": 2102,
+              "line": 2078,
               "text": "html:not(.dark) .space-page:not(.owner-dark-scope)"
             }
           ]
         },
         "agentRuntimeOutsideAgentCss": {
-          "count": 16,
+          "count": 14,
           "samples": [
             {
               "line": 341,
@@ -840,12 +836,12 @@
   "missingFiles": [],
   "totals": {
     "fileCount": 6,
-    "lineCount": 16012,
-    "important": 1559,
-    "viewportFontSize": 70,
+    "lineCount": 18376,
+    "important": 1405,
+    "viewportFontSize": 69,
     "hardCodedColor": 1175,
-    "broadSelector": 106,
-    "agentRuntimeOutsideAgentCss": 44
+    "broadSelector": 103,
+    "agentRuntimeOutsideAgentCss": 42
   },
   "checks": [
     {
@@ -860,14 +856,14 @@
       "label": "`!important` baseline",
       "state": "warning",
       "blocking": false,
-      "evidence": "1559 found. `!important` declarations exist. New UI slices should avoid increasing this count without a waiver."
+      "evidence": "1405 found. `!important` declarations exist. New UI slices should avoid increasing this count without a waiver."
     },
     {
       "id": "viewport-font-baseline",
       "label": "Viewport font-size baseline",
       "state": "warning",
       "blocking": false,
-      "evidence": "70 found. Readable text should not add viewport-unit font-size rules."
+      "evidence": "69 found. Readable text should not add viewport-unit font-size rules."
     },
     {
       "id": "hard-coded-color-baseline",
@@ -881,23 +877,23 @@
       "label": "Broad selector baseline",
       "state": "warning",
       "blocking": false,
-      "evidence": "106 found. Broad/global selectors should not grow for local component fixes."
+      "evidence": "103 found. Broad/global selectors should not grow for local component fixes."
     },
     {
       "id": "agent-runtime-ownership-baseline",
       "label": "Agent runtime selector ownership baseline",
       "state": "warning",
       "blocking": false,
-      "evidence": "44 found. Agent frame/panel runtime selectors outside agent-surfaces.css are legacy ownership debt."
+      "evidence": "42 found. Agent frame/panel runtime selectors outside agent-surfaces.css are legacy ownership debt."
     }
   ],
   "failures": [],
   "warnings": [
-    "`!important` baseline: 1559 found. `!important` declarations exist. New UI slices should avoid increasing this count without a waiver.",
-    "Viewport font-size baseline: 70 found. Readable text should not add viewport-unit font-size rules.",
+    "`!important` baseline: 1405 found. `!important` declarations exist. New UI slices should avoid increasing this count without a waiver.",
+    "Viewport font-size baseline: 69 found. Readable text should not add viewport-unit font-size rules.",
     "Hard-coded color baseline: 1175 found. Prefer semantic tokens over one-off color literals when touching CSS.",
-    "Broad selector baseline: 106 found. Broad/global selectors should not grow for local component fixes.",
-    "Agent runtime selector ownership baseline: 44 found. Agent frame/panel runtime selectors outside agent-surfaces.css are legacy ownership debt."
+    "Broad selector baseline: 103 found. Broad/global selectors should not grow for local component fixes.",
+    "Agent runtime selector ownership baseline: 42 found. Agent frame/panel runtime selectors outside agent-surfaces.css are legacy ownership debt."
   ],
   "outputPath": "docs/product_optimization/reports/css-ownership-latest.json"
 }

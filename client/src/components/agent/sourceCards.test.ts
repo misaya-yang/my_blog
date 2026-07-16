@@ -14,6 +14,7 @@ import {
 } from "./agentSourceSummary";
 import {
   AgentSourceCards,
+  getAgentSourceScrollBehavior,
   getSourceLinkAction,
   getSourceSectionLabel,
   isCurrentPathSource,
@@ -67,6 +68,11 @@ const source: SourceCard = {
 };
 
 describe("Agent source cards", () => {
+  it("respects reduced-motion preference for in-article source jumps", () => {
+    expect(getAgentSourceScrollBehavior(true)).toBe("auto");
+    expect(getAgentSourceScrollBehavior(false)).toBe("smooth");
+  });
+
   it("links blog sources to the article section anchor", () => {
     expect(getSourceAnchorId(source)).toBe("3-exact-invariants");
     expect(getSourceHref(source)).toBe(

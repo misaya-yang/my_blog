@@ -63,7 +63,13 @@ function TrackPage({ kind }: { kind: TrackKind }) {
   const config = trackConfigs[kind];
   const siteUrl = getClientSiteUrl();
 
-  const { data: posts, isLoading } = trpc.posts.list.useQuery({
+  const {
+    data: posts,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = trpc.posts.list.useQuery({
     status: "published",
     categorySlug: config.categorySlug,
     limit: 20,
@@ -203,19 +209,19 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                       </div>
                       <p>{t(series.promiseKey)}</p>
                       <div className="series-card-concepts mt-4">
-                        {series.conceptKeys.map(key => (
+                        {series.conceptKeys.slice(0, 3).map(key => (
                           <span key={key}>{t(key)}</span>
                         ))}
                       </div>
                       {series.expectedNextKeys.length > 0 && (
-                        <div className="series-card-next mt-4">
-                          <span>{t("track.nextPlanned")}</span>
+                        <details className="series-card-next mt-4">
+                          <summary>{t("track.nextPlanned")}</summary>
                           <div>
                             {series.expectedNextKeys.slice(0, 2).map(key => (
                               <em key={key}>{t(key)}</em>
                             ))}
                           </div>
-                        </div>
+                        </details>
                       )}
                       <div className="series-card-steps mt-5">
                         {series.postSlugs.map((slug, index) => (
@@ -266,6 +272,22 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                   <div key={item} className="article-skeleton" />
                 ))}
               </div>
+            ) : isError ? (
+              <EmptyState
+                icon={<FileText className="h-4 w-4" />}
+                title={t("track.loadFailed")}
+                description={error?.message || t("track.loadFailedHint")}
+                action={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="glass-button"
+                    onClick={() => void refetch()}
+                  >
+                    {t("common.retry")}
+                  </Button>
+                }
+              />
             ) : trackPosts.length > 0 ? (
               <div className="grid gap-4">
                 {trackPosts.map((post, index) => (

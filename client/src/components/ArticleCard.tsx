@@ -180,6 +180,11 @@ export function ArticleCard({
           <img
             src={post.coverImage}
             alt=""
+            width={640}
+            height={360}
+            loading={featured ? "eager" : "lazy"}
+            decoding="async"
+            sizes="(max-width: 760px) calc(100vw - 2rem), 20rem"
             className="article-visual article-visual-image object-cover"
           />
         ) : (
@@ -190,6 +195,7 @@ export function ArticleCard({
             height={360}
             loading={featured ? "eager" : "lazy"}
             decoding="async"
+            sizes="(max-width: 760px) calc(100vw - 2rem), 20rem"
             className={`article-visual article-visual-thumb article-visual-${theme}`}
           />
         )}

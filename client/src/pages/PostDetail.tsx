@@ -5,7 +5,6 @@ import {
   type SeriesProgressLink,
 } from "@/components/SeriesProgress";
 import {
-  EmptyState,
   SiteHeader,
   SpaceBackdrop,
 } from "@/components/ResearchShell";
@@ -51,23 +50,13 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
   type CSSProperties,
 } from "react";
 
 import { toast } from "sonner";
 
 const MarkdownRenderer = lazy(() => import("@/components/MarkdownRenderer"));
-
-function postVisualVariant(slug?: string) {
-  if (
-    slug?.includes("agent") ||
-    slug?.includes("harness") ||
-    slug?.includes("rag")
-  ) {
-    return "matrix";
-  }
-  return slug?.includes("isohc") ? "orbit" : "wave";
-}
 
 type Translate = (
   key: string,
@@ -138,6 +127,21 @@ export type ArticleCompletionLink = {
   title: string;
   primary: boolean;
 };
+
+export type ArticleRequestState = "loading" | "ready" | "not-found" | "error";
+
+export function getArticleRequestState(input: {
+  isLoading: boolean;
+  isError: boolean;
+  errorCode?: string;
+  hasPost: boolean;
+}): ArticleRequestState {
+  if (input.isLoading) return "loading";
+  if (input.isError) {
+    return input.errorCode === "NOT_FOUND" ? "not-found" : "error";
+  }
+  return input.hasPost ? "ready" : "not-found";
+}
 
 const articleAgentPromptKeys = [
   "agent.prompts.postAbstraction",
@@ -513,7 +517,7 @@ function MobileToc({
   if (headings.length === 0) return null;
 
   return (
-    <details className="mobile-toc-shell glass-dock liquid-panel mb-7 rounded-lg p-4">
+    <details className="mobile-toc-shell">
       <summary className="cursor-pointer text-sm font-semibold text-white">
         {t("post.toc")}
       </summary>
@@ -584,6 +588,52 @@ function ArticleLoadingState({ t }: { t: Translate }) {
   );
 }
 
+function ArticleUnavailableState({
+  kind,
+  t,
+  onRetry,
+}: {
+  kind: "not-found" | "error";
+  t: Translate;
+  onRetry?: () => void;
+}) {
+  const isError = kind === "error";
+
+  return (
+    <div className="space-page text-foreground">
+      <SpaceBackdrop subtle />
+      <SiteHeader backHref="/" backLabel={t("nav.back")} compact />
+      <main className="container relative z-10 max-w-7xl px-4 py-8 sm:px-6 md:py-12">
+        <section
+          className="article-unavailable-surface solid-reading reading-surface"
+          aria-labelledby="article-unavailable-title"
+        >
+          <p className="technical-label">{t("post.loadingKicker")}</p>
+          <h1 id="article-unavailable-title">
+            {t(isError ? "post.loadErrorTitle" : "post.notFound")}
+          </h1>
+          <p>
+            {t(isError ? "post.loadErrorBody" : "post.notFoundBody")}
+          </p>
+          <div className="article-loading-actions">
+            {isError && onRetry ? (
+              <Button type="button" onClick={onRetry}>
+                {t("common.retry")}
+              </Button>
+            ) : null}
+            <Button asChild variant="outline" className="glass-button">
+              <Link href="/">{t("post.backHome")}</Link>
+            </Button>
+            <Button asChild variant="outline" className="glass-button">
+              <Link href="/search">{t("nav.search")}</Link>
+            </Button>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
+
 export default function PostDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { isAdmin } = useAuth();
@@ -592,7 +642,13 @@ export default function PostDetail() {
   const [activeHeading, setActiveHeading] = useState<string>("");
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
-  const { data: post, isLoading } = trpc.posts.getBySlug.useQuery(slug || "", {
+  const {
+    data: post,
+    isLoading,
+    isError,
+    error: postError,
+    refetch: refetchPost,
+  } = trpc.posts.getBySlug.useQuery(slug || "", {
     enabled: Boolean(slug),
     retry: false,
   });
@@ -617,6 +673,7 @@ export default function PostDetail() {
   const [headings, setHeadings] = useState<
     { id: string; text: string; level: number }[]
   >([]);
+  const copyResetTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (post?.content) {
@@ -664,6 +721,15 @@ export default function PostDetail() {
     return () => observer.disconnect();
   }, [headings]);
 
+  useEffect(
+    () => () => {
+      if (copyResetTimerRef.current !== null) {
+        window.clearTimeout(copyResetTimerRef.current);
+      }
+    },
+    []
+  );
+
   const copyToClipboard = useCallback(
     async (value: string, successMessage: string) => {
       try {
@@ -692,10 +758,18 @@ export default function PostDetail() {
       await copyToClipboard(url, t("post.linkCopied"));
     } else if (platform === "wechat") {
       // Open QR code in new window for WeChat sharing
-      window.open(shareUrls.wechat, "_blank", "width=400,height=400");
+      window.open(
+        shareUrls.wechat,
+        "_blank",
+        "noopener,noreferrer,width=400,height=400"
+      );
       toast.info(t("post.wechatQRHint"));
     } else if (shareUrls[platform]) {
-      window.open(shareUrls[platform], "_blank", "width=600,height=400");
+      window.open(
+        shareUrls[platform],
+        "_blank",
+        "noopener,noreferrer,width=600,height=400"
+      );
     }
   };
 
@@ -707,34 +781,41 @@ export default function PostDetail() {
     async (code: string, id: string) => {
       const copied = await copyToClipboard(code, t("post.codeCopied"));
       if (!copied) return;
+      if (copyResetTimerRef.current !== null) {
+        window.clearTimeout(copyResetTimerRef.current);
+      }
       setCopiedCode(id);
-      setTimeout(() => setCopiedCode(null), 2000);
+      copyResetTimerRef.current = window.setTimeout(() => {
+        setCopiedCode(null);
+        copyResetTimerRef.current = null;
+      }, 2000);
     },
     [copyToClipboard, t]
   );
 
-  if (isLoading) {
+  const requestState = getArticleRequestState({
+    isLoading,
+    isError,
+    errorCode: postError?.data?.code,
+    hasPost: Boolean(post),
+  });
+
+  if (requestState === "loading") {
     return <ArticleLoadingState t={t} />;
   }
 
-  if (!post) {
+  if (requestState === "error") {
     return (
-      <div className="space-page grid min-h-screen place-items-center px-4">
-        <SpaceBackdrop subtle />
-        <EmptyState
-          icon={<BookOpen className="h-4 w-4" />}
-          title={t("post.notFound")}
-          action={
-            <Link href="/">
-              <Button variant="outline" className="glass-button">
-                {t("post.backHome")}
-              </Button>
-            </Link>
-          }
-          className="relative z-10 w-full max-w-md"
-        />
-      </div>
+      <ArticleUnavailableState
+        kind="error"
+        t={t}
+        onRetry={() => void refetchPost()}
+      />
     );
+  }
+
+  if (requestState === "not-found" || !post) {
+    return <ArticleUnavailableState kind="not-found" t={t} />;
   }
 
   const articlePost = post as ArticlePostModel;
@@ -745,7 +826,7 @@ export default function PostDetail() {
   const articlePostForReading = { ...articlePost, content: readableContent };
   const readingTime = estimateArticleReadingMinutes(articlePost);
   const postTags = Array.isArray(articlePost.tags) ? articlePost.tags : [];
-  const visibleHeaderTags = postTags.slice(0, 2);
+  const visibleHeaderTags = postTags.slice(0, 1);
   const remainingHeaderTagCount = Math.max(
     0,
     postTags.length - visibleHeaderTags.length
@@ -816,15 +897,6 @@ export default function PostDetail() {
             },
       ]
     : [];
-  const articleCompletionLinks = buildArticleCompletionLinks({
-    seriesNext: seriesContext?.next,
-    postNext: articlePostContext?.next,
-    related: articlePostContext?.related,
-    continueTrackHref,
-    continueTrackLabel,
-    t,
-  });
-
   return (
     <div className="space-page text-foreground">
       <SpaceBackdrop subtle />
@@ -892,7 +964,7 @@ export default function PostDetail() {
           <article className="reading-surface solid-reading liquid-readable paper-reader-main p-5 sm:p-8 lg:p-10">
             {/* Post Header */}
             <div className="article-reading-header">
-              <h1 className="article-page-title mb-5">{post.title}</h1>
+              <h1 className="article-page-title">{post.title}</h1>
 
               <div className="article-reading-meta">
                 <time
@@ -956,7 +1028,7 @@ export default function PostDetail() {
 
               {(primaryEntryItem || seriesContext) && (
                 <section
-                  className="article-entry-layer glass-dock liquid-panel"
+                  className="article-entry-layer"
                   aria-label={t("post.entry.title")}
                 >
                   <div className="article-entry-brief">
@@ -1017,6 +1089,9 @@ export default function PostDetail() {
                 <img
                   src={post.coverImage}
                   alt={post.title}
+                  width={1200}
+                  height={675}
+                  loading="eager"
                   decoding="async"
                   fetchPriority="high"
                   sizes="(min-width: 1024px) 896px, calc(100vw - 48px)"
@@ -1045,65 +1120,6 @@ export default function PostDetail() {
             </div>
 
             <section
-              className="article-reading-handoff"
-              aria-labelledby="article-reading-handoff-title"
-            >
-              <div className="article-reading-handoff-copy">
-                <p className="technical-label">{t("post.handoff.kicker")}</p>
-                <h2 id="article-reading-handoff-title">
-                  {t("post.handoff.title")}
-                </h2>
-                <p>{t("post.handoff.body")}</p>
-              </div>
-
-              <div
-                className="article-reading-handoff-actions"
-                aria-label={t("post.handoff.actions")}
-              >
-                {articleCompletionLinks.map(link => (
-                  <Link
-                    key={`${link.kind}-${link.href}`}
-                    href={link.href}
-                    className={
-                      link.primary
-                        ? "article-handoff-link article-handoff-link-primary"
-                        : "article-handoff-link"
-                    }
-                  >
-                    <span>{link.label}</span>
-                    <strong>{link.title}</strong>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                ))}
-
-                <div
-                  className="article-handoff-agent"
-                  aria-label={t("post.agentCompanion.title")}
-                >
-                  <span className="article-handoff-agent-label">
-                    <BookOpen className="h-4 w-4" />
-                    {t("post.agentCompanion.title")}
-                  </span>
-                  <div className="article-handoff-agent-prompts">
-                    {articleAgentPromptKeys.map(key => {
-                      const prompt = t(key);
-                      return (
-                        <button
-                          key={key}
-                          type="button"
-                          className="article-handoff-agent-prompt"
-                          onClick={() => openBlogAgentWithPrompt(prompt)}
-                        >
-                          {prompt}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section
               className="article-continuation-shell"
               aria-labelledby="article-continuation-title"
             >
@@ -1114,17 +1130,29 @@ export default function PostDetail() {
                     {t("post.discoveryTitle")}
                   </h2>
                 </div>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="glass-button"
-                >
-                  <Link href={continueTrackHref}>
-                    {t("post.continueTrack", { track: continueTrackLabel })}
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
+                <div className="article-continuation-head-actions">
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="glass-button"
+                  >
+                    <Link href={continueTrackHref}>
+                      {t("post.continueTrack", { track: continueTrackLabel })}
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <button
+                    type="button"
+                    className="article-continuation-agent"
+                    onClick={() =>
+                      openBlogAgentWithPrompt(t(articleAgentPromptKeys[0]))
+                    }
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    {t("post.agentCompanion.title")}
+                  </button>
+                </div>
               </div>
 
               <div className="article-continuation-path">

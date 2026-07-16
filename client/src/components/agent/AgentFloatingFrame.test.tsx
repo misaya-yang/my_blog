@@ -29,7 +29,7 @@ describe("AgentFloatingFrame", () => {
       </AgentFloatingFrame>
     );
 
-    expect(html).toContain("bottom-20");
+    expect(html).toContain("agent-modal-frame");
     expect(html).toContain("mobile:false");
     expect(html).toContain("no-resize");
   });

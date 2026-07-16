@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-07-09T00:33:12.683Z",
+  "generatedAt": "2026-07-16T17:35:19.102Z",
   "git": {
-    "branch": "dev",
-    "commit": "d93df81",
+    "branch": "dev_0716",
+    "commit": "157d6e8",
     "dirty": true
   },
   "baseUrl": "http://localhost:3000/",
@@ -23,7 +23,7 @@
         "verifier"
       ],
       "publishedAt": "2026-06-17T00:00:00.000Z",
-      "updatedAt": "2026-07-09T00:00:22.741Z",
+      "updatedAt": "2026-07-10T13:15:37.072Z",
       "seriesSlug": "llm-post-training-rl",
       "seriesOrder": 1
     },
@@ -78,7 +78,7 @@
         "tool-use"
       ],
       "publishedAt": "2026-05-31T00:40:00.000Z",
-      "updatedAt": "2026-07-09T00:00:51.727Z",
+      "updatedAt": "2026-07-14T06:26:52.843Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 4
     },

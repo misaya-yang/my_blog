@@ -52,6 +52,23 @@ const editor: TranslationDict = {
   "editor.togglePreviewShow": { en: "Show preview", zh: "显示预览" },
   "editor.exitFullscreen": { en: "Exit fullscreen", zh: "退出全屏" },
   "editor.enterFullscreen": { en: "Fullscreen", zh: "全屏模式" },
+  "editor.backToContent": { en: "Back to content", zh: "返回内容管理" },
+  "editor.load.notFoundTitle": {
+    en: "Article draft not found",
+    zh: "未找到文章草稿",
+  },
+  "editor.load.notFoundDescription": {
+    en: 'No editable article matches "{slug}". It may have been renamed or removed.',
+    zh: "没有与“{slug}”匹配的可编辑文章，可能已重命名或删除。",
+  },
+  "editor.load.errorTitle": {
+    en: "Could not load this article",
+    zh: "无法加载这篇文章",
+  },
+  "editor.load.errorDescription": {
+    en: "The editor could not retrieve the latest article state. Retry before making changes.",
+    zh: "编辑器无法获取文章的最新状态，请重试后再进行修改。",
+  },
 
   // Title input
   "editor.titlePlaceholder": {
@@ -256,6 +273,7 @@ const editor: TranslationDict = {
 
   // Buttons
   "editor.saveDraft": { en: "Save Draft", zh: "保存草稿" },
+  "editor.saveChanges": { en: "Save Changes", zh: "保存修改" },
   "editor.publish": { en: "Publish", zh: "发布" },
 
   // Toast

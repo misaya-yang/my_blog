@@ -132,6 +132,147 @@
 }
 
 @layer components {
+  .owner-health-details {
+    border-top: 1px solid var(--owner-border);
+    border-bottom: 1px solid var(--owner-border);
+  }
+
+  .owner-health-details > summary {
+    position: relative;
+    display: flex;
+    min-height: 2.75rem;
+    cursor: pointer;
+    list-style: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--owner-text);
+    font-size: 0.82rem;
+    font-weight: 650;
+  }
+
+  .owner-health-details > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .owner-health-details > summary::after {
+    content: "+";
+    color: var(--owner-accent);
+    font-size: 1rem;
+  }
+
+  .owner-health-details[open] > summary::after {
+    content: "−";
+  }
+
+  .owner-health-secondary {
+    padding-bottom: 0.85rem;
+  }
+
+  .owner-pagination {
+    display: flex;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-top: 1px solid var(--owner-border);
+    border-bottom: 1px solid var(--owner-border);
+    padding-block: 0.55rem;
+  }
+
+  .agent-console-mobile-nav {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .agent-console-tabs[data-slot="tabs"] {
+      display: grid !important;
+      grid-template-columns: minmax(12.5rem, 0.24fr) minmax(0, 1fr) !important;
+      gap: 1rem !important;
+      align-items: start !important;
+    }
+
+    .agent-console-tabs [data-slot="tabs-list"] {
+      position: sticky;
+      top: 5.75rem;
+      display: flex !important;
+      width: 100% !important;
+      height: auto !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      justify-content: flex-start !important;
+    }
+
+    .agent-console-tabs [data-slot="tabs-trigger"] {
+      width: 100% !important;
+      min-height: 2.45rem;
+      justify-content: flex-start !important;
+    }
+
+    .agent-console-tabs [data-slot="tabs-content"] {
+      grid-column: 2;
+      min-width: 0;
+      margin-top: 0 !important;
+    }
+  }
+
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .agent-console-tab-list {
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      width: 100% !important;
+      overflow: visible;
+    }
+
+    .agent-console-tabs [data-slot="tabs-trigger"] {
+      width: 100%;
+      min-width: 0;
+      justify-content: flex-start;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .owner-health-details > summary {
+      align-items: flex-start;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.2rem;
+      padding-block: 0.55rem;
+    }
+
+    .owner-health-details > summary::after {
+      position: absolute;
+      right: 0;
+    }
+
+    .owner-pagination {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .owner-pagination > div {
+      justify-content: space-between;
+    }
+
+    .agent-console-mobile-nav {
+      display: block;
+    }
+
+    .agent-console-mobile-nav [data-slot="select-trigger"] {
+      width: 100%;
+      min-height: 2.75rem;
+      border-color: var(--owner-border);
+      background: var(--owner-control-bg);
+      color: var(--owner-text);
+    }
+
+    .agent-console-mobile-nav + .agent-console-tab-list {
+      display: none !important;
+    }
+  }
+}
+
+@layer components {
   /* Misaya design-system lock: deep navy notebook, one cobalt signal, compact owner access. */
   .space-page {
     --public-bg: oklch(0.105 0.013 252);
@@ -872,10 +1013,7 @@
   .home-featured-note,
   .home-more-notes,
   .home-track-panel,
-  .paper-reader-main .article-entry-layer,
   .paper-reader-main .article-agent-prompts,
-  .paper-reader-main .article-reading-header,
-  .mobile-toc-shell,
   .state-surface,
   .route-loading-shell {
     border-color: var(--public-border) !important;
@@ -887,7 +1025,6 @@
   .home-track-post-list a,
   .home-start-path,
   .home-start-path-actions a,
-  .article-entry-item,
   .article-agent-prompt,
   .article-tag,
   .track-context-strip,
@@ -1380,8 +1517,8 @@
   }
 
   .home-intro-rail .home-title {
-    font-size: clamp(2.72rem, 3.7vw, 3.72rem) !important;
-    line-height: 1.04 !important;
+    font-size: clamp(2.72rem, 3.7vw, 3.72rem);
+    line-height: 1.04;
   }
 
   .home-start-path {
@@ -1401,15 +1538,15 @@
   }
 
   .home-track-panel-main {
-    grid-template-columns: minmax(0, 1fr) !important;
-    gap: 0.85rem !important;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.85rem;
   }
 
   .home-track-panel-detail {
-    border-left: 0 !important;
+    border-left: 0;
     border-top: 1px solid var(--public-divider);
-    padding-top: 0.85rem !important;
-    padding-left: 0 !important;
+    padding-top: 0.85rem;
+    padding-left: 0;
   }
 
   .home-track-path p {
@@ -1417,7 +1554,7 @@
   }
 
   .home-track-post-list {
-    gap: 0 !important;
+    gap: 0;
   }
 
   .home-track-post-list a {
@@ -1517,24 +1654,24 @@
   }
 
   .paper-reader-main .article-page-title {
-    max-width: 28ch !important;
-    font-size: clamp(1.92rem, 2.7vw, 2.76rem) !important;
-    line-height: 1.12 !important;
+    max-width: 28ch;
+    font-size: clamp(1.92rem, 2.7vw, 2.76rem);
+    line-height: 1.12;
   }
 
   .paper-reader-main .article-reading-header {
-    margin-bottom: 1.15rem !important;
+    margin-bottom: 1.15rem;
     border-bottom: 1px solid var(--public-divider);
-    padding-bottom: 1rem !important;
+    padding-bottom: 1rem;
   }
 
   .paper-reader-main .article-entry-layer {
-    margin: 0.55rem 0 1.15rem !important;
-    border: 0 !important;
-    border-left: 2px solid var(--public-border-strong) !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    padding: 0.15rem 0 0.15rem 0.8rem !important;
+    margin: 0.55rem 0 1.15rem;
+    border: 0;
+    border-left: 2px solid var(--public-border-strong);
+    border-radius: 0;
+    background: transparent;
+    padding: 0.15rem 0 0.15rem 0.8rem;
   }
 
   .paper-reader-main .article-entry-item {
@@ -1548,10 +1685,10 @@
   }
 
   .paper-reader-main .article-entry-item dd {
-    -webkit-line-clamp: 3 !important;
+    -webkit-line-clamp: 3;
     font-family: var(--font-reading);
-    font-size: 0.94rem !important;
-    line-height: 1.58 !important;
+    font-size: 0.94rem;
+    line-height: 1.58;
   }
 
   .paper-reader-main .article-prose {
@@ -1793,12 +1930,12 @@
   }
 
   .home-track-panel {
-    min-height: 0 !important;
-    padding: clamp(0.95rem, 1.35vw, 1.15rem) !important;
+    min-height: 0;
+    padding: clamp(0.95rem, 1.35vw, 1.15rem);
   }
 
   .home-track-panel-main {
-    grid-template-columns: minmax(0, 0.92fr) minmax(15rem, 1.08fr) !important;
+    grid-template-columns: minmax(0, 0.92fr) minmax(15rem, 1.08fr);
   }
 
   .home-track-title-link h2 {
@@ -1925,46 +2062,46 @@
   }
 
   .paper-reader-main .article-page-title {
-    max-width: min(100%, 32ch) !important;
-    font-size: clamp(2rem, 3vw, 3.05rem) !important;
-    line-height: 1.08 !important;
+    max-width: min(100%, 32ch);
+    font-size: clamp(2rem, 3vw, 3.05rem);
+    line-height: 1.08;
   }
 
   .paper-reader-main .article-reading-header > div:first-of-type {
-    margin-bottom: 0.75rem !important;
-    padding-bottom: 0.75rem !important;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
   }
 
   .paper-reader-main .article-reading-header > div:nth-of-type(2),
   .paper-reader-main .article-reading-header > div:nth-of-type(3) {
-    margin-bottom: 0.7rem !important;
+    margin-bottom: 0.7rem;
   }
 
   .paper-reader-main .article-entry-layer {
-    grid-template-columns: minmax(0, 1fr) !important;
-    gap: 0 !important;
-    margin: 0.2rem 0 0.45rem !important;
-    padding: 0.52rem 0.62rem !important;
-    background: var(--public-inline-bg) !important;
-    box-shadow: none !important;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    margin: 0.2rem 0 0.45rem;
+    padding: 0.52rem 0.62rem;
+    background: var(--public-inline-bg);
+    box-shadow: none;
   }
 
   .paper-reader-main .article-entry-details,
   .paper-reader-main .article-agent-prompts,
   .paper-reader-main .article-entry-layer .series-progress-compact {
-    display: none !important;
+    display: none;
   }
 
   .paper-reader-main .article-entry-grid-compact .article-entry-item {
-    min-height: 0 !important;
-    border-top: 0 !important;
-    padding: 0 !important;
+    min-height: 0;
+    border-top: 0;
+    padding: 0;
   }
 
   .paper-reader-main .article-entry-item dd {
-    -webkit-line-clamp: 2 !important;
-    font-size: 0.88rem !important;
-    line-height: 1.46 !important;
+    -webkit-line-clamp: 2;
+    font-size: 0.88rem;
+    line-height: 1.46;
   }
 
   .paper-reader-main .article-prose {
@@ -2035,14 +2172,14 @@
     }
 
     .home-track-panel-main {
-      grid-template-columns: minmax(0, 1fr) !important;
+      grid-template-columns: minmax(0, 1fr);
     }
 
     .home-track-panel-detail {
-      border-left: 0 !important;
+      border-left: 0;
       border-top: 1px solid var(--ui-border);
       padding-top: 0.85rem;
-      padding-left: 0 !important;
+      padding-left: 0;
     }
   }
 
@@ -2068,12 +2205,12 @@
     }
 
     .paper-reader-main .article-page-title {
-      max-width: 100% !important;
-      font-size: clamp(1.86rem, 9.2vw, 2.35rem) !important;
+      max-width: 100%;
+      font-size: clamp(1.86rem, 9.2vw, 2.35rem);
     }
 
     .paper-reader-main .article-entry-layer {
-      display: grid !important;
+      display: grid;
     }
   }
 }
@@ -2543,23 +2680,5 @@
       font-size: 0.88rem !important;
       line-height: 1.65 !important;
     }
-  }
-}
-
-@layer components {
-  /* PVC-04 compact reader entry: keep aids secondary to the article body. */
-  .space-page:not(.owner-dark-scope) .paper-reader-main .article-entry-layer {
-    grid-template-columns: minmax(0, 1fr) !important;
-    gap: 0 !important;
-    margin: 0.2rem 0 0.45rem !important;
-    padding: 0.52rem 0.62rem !important;
-    background: var(--public-inline-bg) !important;
-    box-shadow: none !important;
-  }
-
-  .space-page:not(.owner-dark-scope)
-    .paper-reader-main
-    .article-agent-prompts {
-    display: none !important;
   }
 }

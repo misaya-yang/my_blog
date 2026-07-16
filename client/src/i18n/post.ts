@@ -3,6 +3,18 @@ import type { TranslationDict } from "./types";
 const post: TranslationDict = {
   "post.notFound": { en: "Post not found", zh: "文章未找到" },
   "post.backHome": { en: "Back to Home", zh: "返回首页" },
+  "post.loadErrorTitle": {
+    en: "The article could not be opened",
+    zh: "暂时无法打开文章",
+  },
+  "post.loadErrorBody": {
+    en: "The public note service did not respond correctly. Retry without losing this route, or return to the research index.",
+    zh: "公开文章服务暂时没有正确响应。你可以保留当前地址重试，或先返回研究索引。",
+  },
+  "post.notFoundBody": {
+    en: "This route does not point to an available public note.",
+    zh: "当前地址没有对应的可公开阅读文章。",
+  },
   "post.loadingKicker": { en: "Article", zh: "文章" },
   "post.loadingTitle": { en: "Opening the article", zh: "正在打开文章" },
   "post.loadingBody": {

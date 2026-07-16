@@ -8,6 +8,7 @@ const notFound: TranslationDict = {
     zh: "抱歉，你访问的页面不存在。\n该页面可能已被移动或删除。",
   },
   "notFound.goHome": { en: "Go Home", zh: "返回首页" },
+  "notFound.requestedPath": { en: "Requested path", zh: "请求路径" },
 };
 
 export default notFound;

@@ -78,6 +78,18 @@ const home: TranslationDict = {
     en: "Still loading public notes. The article index will appear here.",
     zh: "公开笔记仍在加载中，文章索引会出现在这里。",
   },
+  "home.loadErrorTitle": {
+    en: "The public note index is temporarily unavailable.",
+    zh: "公开笔记索引暂时不可用。",
+  },
+  "home.loadErrorBody": {
+    en: "The reading paths still work. Retry to restore the latest-note index.",
+    zh: "阅读路径仍可使用；重试即可恢复最新文章索引。",
+  },
+  "home.dataUnavailable": {
+    en: "Index unavailable",
+    zh: "索引暂不可用",
+  },
   "home.readMore": { en: "Read more", zh: "阅读全文" },
   "home.minRead": { en: "min read", zh: "分钟阅读" },
   "home.reads": { en: "reads", zh: "次阅读" },
@@ -143,6 +155,38 @@ const home: TranslationDict = {
   "home.notesPending": { en: "Notes loading", zh: "文章整理中" },
   "home.pathCount": { en: "{count} paths", zh: "{count} 条路径" },
   "home.publicNotes": { en: "{count} public notes", zh: "{count} 篇公开笔记" },
+  "discovery.searchStillWorkingTitle": {
+    en: "Still searching the public note index",
+    zh: "仍在检索公开笔记索引",
+  },
+  "discovery.searchStillWorkingBody": {
+    en: "The query “{query}” is still running. No zero-result decision has been made yet.",
+    zh: "查询“{query}”仍在进行中，当前尚未判定为零结果。",
+  },
+  "discovery.archiveFailed": {
+    en: "The archive could not be loaded.",
+    zh: "归档暂时无法加载。",
+  },
+  "discovery.archiveFailedHint": {
+    en: "Retry the chronological index without losing your current route.",
+    zh: "可以在不离开当前页面的情况下重试时间索引。",
+  },
+  "track.loadFailed": {
+    en: "This track's public-note index could not be loaded.",
+    zh: "该方向的公开笔记索引暂时无法加载。",
+  },
+  "track.loadFailedHint": {
+    en: "The reading-path structure is still available. Retry the article ledger.",
+    zh: "阅读路径结构仍可使用；请重试文章账本。",
+  },
+  "discovery.taxonomyFailed": {
+    en: "This taxonomy index could not be loaded.",
+    zh: "该分类索引暂时无法加载。",
+  },
+  "discovery.taxonomyFailedHint": {
+    en: "Retry the request before treating this taxonomy as missing.",
+    zh: "请先重试请求，不要将网络错误误判为分类不存在。",
+  },
   // Focus tags (static research topics)
   "home.focusTag1": { en: "Transformer Architecture", zh: "Transformer 架构" },
   "home.focusTag2": {

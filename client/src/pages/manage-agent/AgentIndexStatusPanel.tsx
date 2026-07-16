@@ -22,10 +22,12 @@ export function AgentIndexStatusPanel({
   loading,
   error,
   status,
+  onRetry,
 }: {
   loading: boolean;
   error: boolean;
   status?: IndexStatus;
+  onRetry?: () => void;
 }) {
   const { t } = useLanguage();
 
@@ -43,6 +45,17 @@ export function AgentIndexStatusPanel({
       <EmptyState
         icon={<AlertTriangle className="h-4 w-4" />}
         title={t("agentOps.index.error")}
+        action={
+          onRetry ? (
+            <button
+              type="button"
+              className="owner-button min-h-10 rounded-md border px-4 text-sm font-medium"
+              onClick={onRetry}
+            >
+              {t("common.retry")}
+            </button>
+          ) : undefined
+        }
       />
     );
   }

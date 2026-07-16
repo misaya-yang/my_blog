@@ -138,6 +138,20 @@ function formatTaxonomyDate(
   });
 }
 
+function useTaxonomySupportPanel() {
+  const [open, setOpen] = React.useState(true);
+
+  React.useEffect(() => {
+    const query = window.matchMedia("(max-width: 760px)");
+    const syncToViewport = () => setOpen(!query.matches);
+    syncToViewport();
+    query.addEventListener("change", syncToViewport);
+    return () => query.removeEventListener("change", syncToViewport);
+  }, []);
+
+  return { open, setOpen };
+}
+
 function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
   const { slug = "" } = useParams<{ slug: string }>();
   const search = useSearch();
@@ -154,6 +168,7 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
     { enabled: kind === "category" && Boolean(slug), retry: false }
   );
   const query = kind === "tag" ? tagQuery : categoryQuery;
+  const supportPanel = useTaxonomySupportPanel();
   const data: any = query.data;
   const taxonomy = kind === "tag" ? data?.tag : data?.category;
   const pageInfo = getTaxonomyPageInfo(data?.total ?? 0, page);
@@ -181,7 +196,7 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
           : t("discovery.categoryKicker")),
       path: buildTaxonomyPageHref(kind, slug, page),
       locale: language === "zh" ? "zh-CN" : "en-US",
-      noindex: !taxonomy && !query.isLoading,
+      noindex: query.isError || (!taxonomy && !query.isLoading),
     })
   );
 
@@ -203,6 +218,24 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
           <LoadingState
             title={t("common.loadingNotes")}
             description={t("common.loadingHint")}
+          />
+        ) : query.isError ? (
+          <EmptyState
+            icon={<Folder className="h-4 w-4" />}
+            title={t("discovery.taxonomyFailed")}
+            description={
+              query.error?.message || t("discovery.taxonomyFailedHint")
+            }
+            action={
+              <Button
+                type="button"
+                variant="outline"
+                className="glass-button"
+                onClick={() => void query.refetch()}
+              >
+                {t("common.retry")}
+              </Button>
+            }
           />
         ) : taxonomy ? (
           <div className="taxonomy-layout">
@@ -240,14 +273,13 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
               <SectionHeader
                 title={t("track.articles")}
                 action={
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="glass-button"
+                  <Link
+                    href="/archive"
+                    className="taxonomy-archive-link"
                   >
-                    <Link href="/archive">{t("nav.archive")}</Link>
-                  </Button>
+                    {t("nav.archive")}
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
                 }
               />
 
@@ -293,62 +325,62 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
               )}
             </Surface>
 
-            <Surface
-              as="aside"
+            <details
               className="taxonomy-side-panel"
-              variant="floating"
+              open={supportPanel.open}
+              onToggle={event =>
+                supportPanel.setOpen(event.currentTarget.open)
+              }
             >
-              <SectionHeader
-                icon={<Tags className="h-4 w-4" />}
-                title={t("discovery.siblingTags")}
-              />
-              <div className="mt-4 flex flex-wrap gap-2">
-                {visibleSiblingTags.length ? (
-                  <>
-                    {visibleSiblingTags.map(tag => (
-                      <Link
-                        key={tag.slug}
-                        href={`/tags/${tag.slug}`}
-                        className="article-tag px-3 py-1.5"
-                      >
-                        {tag.name}
-                      </Link>
-                    ))}
-                    {hiddenSiblingTagCount > 0 && (
-                      <span className="article-tag article-tag-muted px-3 py-1.5">
-                        {t("discovery.moreTags", {
-                          count: hiddenSiblingTagCount,
-                        })}
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <span className="text-sm text-slate-400">
-                    {t("discovery.noSiblingTags")}
-                  </span>
-                )}
-              </div>
-
-              {matchingTrack && (
-                <div className="mt-7">
-                  <SectionHeader
-                    icon={<Network className="h-4 w-4" />}
-                    title={t(matchingTrack.topicTitleKey)}
-                  />
-                  <div className="mt-4 grid gap-2">
-                    {matchingTrack.topics.map(topic => (
-                      <div
-                        key={topic.labelKey}
-                        className="research-index-row min-h-[3.5rem] px-4 py-3 text-sm"
-                      >
-                        <span>{t(topic.labelKey)}</span>
-                        <span className="text-sky-300">{t(topic.metaKey)}</span>
-                      </div>
-                    ))}
-                  </div>
+              <summary className="taxonomy-side-summary">
+                <Tags className="h-4 w-4" />
+                <span>{t("discovery.siblingTags")}</span>
+                <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              </summary>
+              <Surface
+                as="aside"
+                className="taxonomy-side-panel-surface"
+                variant="floating"
+              >
+                <div className="flex flex-wrap gap-2">
+                  {visibleSiblingTags.length ? (
+                    <>
+                      {visibleSiblingTags.map(tag => (
+                        <Link
+                          key={tag.slug}
+                          href={`/tags/${tag.slug}`}
+                          className="article-tag px-3 py-1.5"
+                        >
+                          {tag.name}
+                        </Link>
+                      ))}
+                      {hiddenSiblingTagCount > 0 && (
+                        <span className="article-tag article-tag-muted px-3 py-1.5">
+                          {t("discovery.moreTags", {
+                            count: hiddenSiblingTagCount,
+                          })}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <span className="text-sm text-slate-400">
+                      {t("discovery.noSiblingTags")}
+                    </span>
+                  )}
                 </div>
-              )}
-            </Surface>
+
+                {matchingTrack && (
+                  <Link href={matchingTrack.href} className="taxonomy-track-link">
+                    <Network className="h-4 w-4" />
+                    <span>
+                      <small>{t(matchingTrack.topicTitleKey)}</small>
+                      <strong>{t("track.corePaths")}</strong>
+                    </span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                )}
+              </Surface>
+            </details>
           </div>
         ) : (
           <EmptyState

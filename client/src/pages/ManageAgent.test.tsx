@@ -2,6 +2,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
+import { parseAgentConsoleTab } from "./ManageAgent";
 import { AgentIndexStatusPanel } from "./manage-agent/AgentIndexStatusPanel";
 
 vi.mock("@/contexts/LanguageContext", () => ({
@@ -36,6 +37,13 @@ vi.mock("@/contexts/LanguageContext", () => ({
 }));
 
 describe("ManageAgent index status panel", () => {
+  it("normalizes URL-backed Agent console tabs", () => {
+    expect(parseAgentConsoleTab("tab=traces")).toBe("traces");
+    expect(parseAgentConsoleTab("?tab=ideas")).toBe("ideas");
+    expect(parseAgentConsoleTab("tab=unknown")).toBe("overview");
+    expect(parseAgentConsoleTab("")).toBe("overview");
+  });
+
   it("marks stale Agent knowledge as a release blocker with the verify sequence", () => {
     const html = renderToStaticMarkup(
       <AgentIndexStatusPanel

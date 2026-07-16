@@ -12,7 +12,6 @@ import {
   Loader2,
   Move,
   Paperclip,
-  RotateCcw,
   Send,
   X,
 } from "lucide-react";
@@ -38,10 +37,6 @@ import {
 import { AgentReasoningTrace } from "./AgentReasoningTrace";
 import { AgentRelatedQuestions } from "./AgentRelatedQuestions";
 import { AgentSourceCards } from "./AgentSourceCards";
-import {
-  getAgentFramePresetShortcut,
-  type AgentFramePreset,
-} from "./agentFrameState";
 import type { AgentScope } from "./routeContext";
 import type { ChatMessage, ConversationItem, QuotaInfo } from "./types";
 
@@ -146,6 +141,7 @@ export function AgentPanel({
   );
   const inputDisabled =
     bootstrapping || bootstrapError || conversationSwitching;
+  const interactionLocked = sending || conversationSwitching;
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -191,37 +187,6 @@ export function AgentPanel({
           )}
         </div>
         <div className="agent-panel-actions flex shrink-0 items-center gap-1">
-          {frameControls.isFloating && (
-            <div className="agent-frame-controls hidden items-center gap-1 sm:flex">
-              {(["compact", "comfortable", "wide"] as AgentFramePreset[]).map(
-                preset => (
-                  <button
-                    key={preset}
-                    type="button"
-                    aria-label={t(`agent.frame.${preset}`)}
-                    title={t(`agent.frame.${preset}`)}
-                    onClick={() => frameControls.onApplyPreset(preset)}
-                    className={cn(
-                      "agent-frame-control",
-                      frameControls.activePreset === preset &&
-                        "agent-frame-control-active"
-                    )}
-                  >
-                    {getAgentFramePresetShortcut(preset)}
-                  </button>
-                )
-              )}
-              <button
-                type="button"
-                aria-label={t("agent.frame.reset")}
-                title={t("agent.frame.reset")}
-                onClick={frameControls.onReset}
-                className="agent-frame-control"
-              >
-                <RotateCcw className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          )}
           <button
             type="button"
             aria-label={t("agent.header.close")}
@@ -249,6 +214,7 @@ export function AgentPanel({
           <button
             type="button"
             onClick={onToggleHistory}
+            disabled={interactionLocked}
             aria-expanded={historyOpen}
             className={cn(
               "agent-history-button inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-medium transition sm:min-h-0 sm:px-2.5 sm:py-1.5",
@@ -294,7 +260,7 @@ export function AgentPanel({
         )}
 
         {!bootstrapping && !bootstrapError && messages.length === 0 && (
-          <div className="flex min-h-full flex-col justify-start gap-4 py-2">
+          <div className="agent-welcome flex min-h-full flex-col justify-start gap-4 py-2">
             <div>
               <div className="mb-3 grid h-11 w-11 place-items-center rounded-md border border-slate-700 bg-slate-950/55 text-slate-300">
                 <BookOpen className="h-5 w-5" />
@@ -306,14 +272,14 @@ export function AgentPanel({
                 {welcomeBody}
               </p>
             </div>
-            <div className="grid gap-2">
+            <div className="agent-suggested-prompts grid">
               {suggestedPrompts.map(prompt => (
                 <button
                   key={prompt}
                   type="button"
                   disabled={sending || inputDisabled}
                   onClick={() => onPrompt(prompt)}
-                  className="min-h-11 rounded-md border border-slate-700 bg-slate-950/45 px-3 py-2 text-left text-sm font-medium leading-6 text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 disabled:opacity-60"
+                  className="agent-suggested-prompt min-h-11 rounded-md border border-slate-700 bg-slate-950/45 px-3 py-2 text-left text-sm font-medium leading-6 text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 disabled:opacity-60"
                 >
                   {prompt}
                 </button>
@@ -422,7 +388,7 @@ export function AgentPanel({
         value={contextDraft}
         count={attachedContextCount}
         attaching={attachingContext}
-        disabled={inputDisabled}
+        disabled={inputDisabled || interactionLocked}
         onChange={onContextDraftChange}
         onToggle={onToggleContext}
         onAttach={onAttachPastedContext}
@@ -435,7 +401,7 @@ export function AgentPanel({
             type="button"
             size="icon"
             onClick={onToggleContext}
-            disabled={inputDisabled}
+            disabled={inputDisabled || interactionLocked}
             aria-label={t("agent.context.toggle")}
             className={cn(
               "h-11 w-11 shrink-0 rounded-md border border-slate-700 bg-white/[0.025] text-slate-400 hover:bg-slate-900 hover:text-slate-100 sm:h-10 sm:w-10",

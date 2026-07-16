@@ -79,6 +79,11 @@ async function main() {
         width: 390,
         height: 844,
       }),
+      await inspectAgentDialog(browser, {
+        name: "tablet",
+        width: 1024,
+        height: 768,
+      }),
       await inspectAgentAnswerFixture(browser, {
         name: "mobile",
         width: 390,
@@ -160,14 +165,27 @@ function loadPlaywright() {
 
 async function inspectHome(browser: BrowserLike, viewport: Viewport) {
   const page = await newMeasuredPage(browser, viewport);
-  await gotoAndWait(page, `${baseUrl}/`, ".article-card");
+  await gotoAndWait(
+    page,
+    `${baseUrl}/`,
+    ".home-featured-note-body, .home-note-error"
+  );
+  await page.waitForSelector(
+    "#research-index .article-card, .home-index-error"
+  );
 
   const measurements = await page.evaluate(() => {
-    const firstArticle = document.querySelector(".article-card");
+    const featuredNote = document.querySelector(".home-featured-note-body");
+    const firstArticle = document.querySelector(
+      "#research-index .article-card"
+    );
+    const researchIndex = document.querySelector("#research-index");
     const header = document.querySelector(".site-header");
     const searchDock = document.querySelector(".home-search-dock");
     return {
+      featuredNoteY: rectTop(featuredNote),
       firstArticleY: rectTop(firstArticle),
+      researchIndexY: rectTop(researchIndex),
       headerHeight: rectHeight(header),
       searchDockY: rectTop(searchDock),
       bodyScrollWidth: document.body.scrollWidth,
@@ -195,10 +213,16 @@ async function inspectHome(browser: BrowserLike, viewport: Viewport) {
         measurements.bodyScrollWidth <= measurements.viewportWidth &&
         measurements.documentScrollWidth <= measurements.viewportWidth,
       headerHeightWithinLimit: Number(measurements.headerHeight ?? 0) <= 72,
+      featuredNoteVisibleSoon:
+        Number(measurements.featuredNoteY ?? Infinity) <=
+        (viewport.width < 768 ? 420 : 460),
       firstArticleVisibleSoon:
         viewport.width < 768
-          ? Number(measurements.firstArticleY ?? Infinity) <= 1450
+          ? Number(measurements.firstArticleY ?? Infinity) <= 2600
           : true,
+      researchIndexFollowsPrimaryMap:
+        Number(measurements.researchIndexY ?? Infinity) <=
+        (viewport.width < 768 ? 2100 : 980),
       searchDockEarly:
         viewport.width < 768
           ? Number(measurements.searchDockY ?? Infinity) <=
@@ -532,9 +556,7 @@ async function inspectAgentDialog(browser: BrowserLike, viewport: Viewport) {
       : ".agent-liquid-launcher";
   await gotoAndWait(page, `${baseUrl}/`, ".home-index-spread");
   await page.waitForSelector(triggerSelector);
-  await page
-    .getByRole("button", { name: /Blog Agent|阅读助手|Reader/i })
-    .click();
+  await page.click(triggerSelector);
   await page.waitForSelector(".agent-liquid-panel");
   await page.waitForTimeout(120);
 
@@ -546,8 +568,12 @@ async function inspectAgentDialog(browser: BrowserLike, viewport: Viewport) {
     );
     const launcher = document.querySelector(".agent-liquid-launcher");
     const panel = document.querySelector(".agent-liquid-panel");
+    const routeSurface = document.querySelector<HTMLElement>(
+      "[data-route-surface]"
+    );
     return {
       triggerControls: trigger?.getAttribute("aria-controls") ?? null,
+      triggerExpanded: trigger?.getAttribute("aria-expanded") ?? null,
       floatingLauncherHidden:
         launcher instanceof HTMLElement
           ? window.getComputedStyle(launcher).display === "none"
@@ -557,36 +583,81 @@ async function inspectAgentDialog(browser: BrowserLike, viewport: Viewport) {
       panelLabelledBy: panel?.getAttribute("aria-labelledby") ?? null,
       activeElementInsidePanel:
         panel?.contains(document.activeElement) ?? false,
+      bodyPosition: document.body.style.position,
+      routeSurfaceInert: routeSurface?.inert ?? false,
+      routeSurfaceAriaHidden:
+        routeSurface?.getAttribute("aria-hidden") ?? null,
     };
   });
 
+  await page.keyboard.press("Shift+Tab");
+  const reverseTabTrapped = await page.evaluate(
+    () =>
+      document
+        .querySelector(".agent-liquid-panel")
+        ?.contains(document.activeElement) ?? false
+  );
+  const scrollBefore = await page.evaluate(() => window.scrollY);
+  await page.evaluate(() => {
+    window.scrollTo(0, 600);
+  });
+  await page.waitForTimeout(60);
+  const scrollAfter = await page.evaluate(() => window.scrollY);
+
   await page.keyboard.press("Escape");
   await page.waitForTimeout(120);
-  const afterEscape = await page.evaluate(() => ({
-    panelExists: Boolean(document.querySelector(".agent-liquid-panel")),
-    activeIsTrigger:
-      document.activeElement?.matches(
-        window.innerWidth < 768
-          ? "[data-mobile-agent-trigger]"
-          : ".agent-liquid-launcher"
-      ) ?? false,
-  }));
+  const afterEscape = await page.evaluate(() => {
+    const trigger = document.querySelector(
+      window.innerWidth < 768
+        ? "[data-mobile-agent-trigger]"
+        : ".agent-liquid-launcher"
+    );
+    const routeSurface = document.querySelector<HTMLElement>(
+      "[data-route-surface]"
+    );
+    return {
+      panelExists: Boolean(document.querySelector(".agent-liquid-panel")),
+      activeIsTrigger: document.activeElement === trigger,
+      triggerExpanded: trigger?.getAttribute("aria-expanded") ?? null,
+      bodyPosition: document.body.style.position,
+      routeSurfaceInert: routeSurface?.inert ?? false,
+      routeSurfaceAriaHidden:
+        routeSurface?.getAttribute("aria-hidden") ?? null,
+    };
+  });
   await page.close();
 
   return {
     route: "/",
     viewport,
-    measurements: { ...measurements, ...afterEscape },
+    measurements: {
+      ...measurements,
+      reverseTabTrapped,
+      scrollBefore,
+      scrollAfter,
+      ...afterEscape,
+    },
     checks: {
       triggerControlsPanel: Boolean(measurements.triggerControls),
+      triggerReflectsOpenState: measurements.triggerExpanded === "true",
       mobileFloatingLauncherHidden:
         viewport.width >= 768 || Boolean(measurements.floatingLauncherHidden),
       panelIsDialog: measurements.panelRole === "dialog",
       panelIsModal: measurements.panelModal === "true",
       panelHasName: Boolean(measurements.panelLabelledBy),
       focusEnteredPanel: Boolean(measurements.activeElementInsidePanel),
+      reverseTabStaysInPanel: reverseTabTrapped,
+      modalLocksBackgroundScroll: scrollBefore === scrollAfter,
+      modalMakesRouteInert: Boolean(measurements.routeSurfaceInert),
+      modalHidesRouteFromAccessibilityTree:
+        measurements.routeSurfaceAriaHidden === "true",
       escapeClosesPanel: !afterEscape.panelExists,
       focusReturnsToTrigger: afterEscape.activeIsTrigger,
+      closeRestoresTriggerState: afterEscape.triggerExpanded === "false",
+      closeRestoresBody: afterEscape.bodyPosition === "",
+      closeRestoresRoute:
+        !afterEscape.routeSurfaceInert &&
+        afterEscape.routeSurfaceAriaHidden === null,
     },
   };
 }
@@ -606,9 +677,7 @@ async function inspectAgentAnswerFixture(
     ".article-prose"
   );
   await page.waitForSelector(triggerSelector);
-  await page
-    .getByRole("button", { name: /Blog Agent|阅读助手|Reader/i })
-    .click();
+  await page.click(triggerSelector);
   await page.waitForSelector(".agent-liquid-panel");
   await page.waitForSelector(".agent-message-scroll");
   await page.waitForTimeout(120);
@@ -1001,6 +1070,7 @@ type PageLike = {
   evaluate: <T>(callback: () => T) => Promise<T>;
   waitForSelector: (selector: string) => Promise<unknown>;
   waitForTimeout: (timeoutMs: number) => Promise<void>;
+  click: (selector: string) => Promise<void>;
   getByRole: (
     role: string,
     options?: { name?: RegExp }

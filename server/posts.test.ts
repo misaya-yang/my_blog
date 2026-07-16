@@ -299,6 +299,18 @@ describe("posts router", () => {
     });
   });
 
+  it("keeps public database failures distinct from missing articles", async () => {
+    const { ctx } = createAnonymousContext();
+    const caller = appRouter.createCaller(ctx);
+    vi.mocked(db.getPostBySlug).mockRejectedValueOnce(
+      new Error("database unavailable")
+    );
+
+    await expect(
+      caller.posts.getBySlug("unavailable-article")
+    ).rejects.toThrow("database unavailable");
+  });
+
   it("hides admin-visible posts from anonymous readers", async () => {
     const { ctx } = createAnonymousContext();
     const caller = appRouter.createCaller(ctx);
@@ -488,6 +500,42 @@ describe("owner-only operations", () => {
       undefined
     );
     expect(reindexPublicKnowledgeChunks).toHaveBeenCalledTimes(1);
+  });
+
+  it("loads editor data without incrementing the public view count", async () => {
+    const adminCaller = await createAdminCaller();
+
+    await expect(
+      adminCaller.posts.getBySlugForAdmin(seededPost.slug)
+    ).resolves.toMatchObject({
+      id: seededPost.id,
+      slug: seededPost.slug,
+      category: { id: seededPost.categoryId },
+      tags: [{ id: 1 }],
+    });
+    expect(db.incrementViewCount).not.toHaveBeenCalled();
+  });
+
+  it("keeps editor database failures distinct from missing drafts", async () => {
+    const adminCaller = await createAdminCaller();
+    vi.mocked(db.getPostBySlug).mockRejectedValueOnce(
+      new Error("database unavailable")
+    );
+
+    await expect(
+      adminCaller.posts.getBySlugForAdmin("unavailable-draft")
+    ).rejects.toThrow("database unavailable");
+  });
+
+  it("returns an owner-wide content health summary", async () => {
+    const adminCaller = await createAdminCaller();
+
+    await expect(adminCaller.posts.adminHealthSummary()).resolves.toMatchObject({
+      total: 1,
+      publishedPublic: 1,
+      drafts: 0,
+    });
+    expect(db.getPosts).toHaveBeenCalledWith({ orderBy: "createdAt" });
   });
 
   it("unpublishing from management returns a post to owner-only draft state", async () => {

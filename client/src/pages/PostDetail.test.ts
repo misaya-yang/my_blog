@@ -8,6 +8,7 @@ import {
 } from "../lib/articleLayout";
 import {
   buildArticleCompletionLinks,
+  getArticleRequestState,
   getArticleHeadingScrollBehavior,
   resolveArticleHashTarget,
 } from "./PostDetail";
@@ -97,6 +98,44 @@ describe("article completion links", () => {
         t,
       }).map(link => link.href)
     ).toEqual(["/post/archive-ledger", "/algorithms", "/post/retrieval-map"]);
+  });
+});
+
+describe("article request states", () => {
+  it("keeps a service failure distinct from a missing article", () => {
+    expect(
+      getArticleRequestState({
+        isLoading: false,
+        isError: true,
+        errorCode: "INTERNAL_SERVER_ERROR",
+        hasPost: false,
+      })
+    ).toBe("error");
+    expect(
+      getArticleRequestState({
+        isLoading: false,
+        isError: true,
+        errorCode: "NOT_FOUND",
+        hasPost: false,
+      })
+    ).toBe("not-found");
+  });
+
+  it("keeps loading and ready states explicit", () => {
+    expect(
+      getArticleRequestState({
+        isLoading: true,
+        isError: false,
+        hasPost: false,
+      })
+    ).toBe("loading");
+    expect(
+      getArticleRequestState({
+        isLoading: false,
+        isError: false,
+        hasPost: true,
+      })
+    ).toBe("ready");
   });
 });
 

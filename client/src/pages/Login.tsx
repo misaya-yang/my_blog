@@ -99,6 +99,7 @@ export default function Login() {
             <form
               onSubmit={handleAdminSubmit}
               className="login-access-form-stack"
+              aria-busy={adminLogin.isPending}
             >
               <label className="sr-only" htmlFor="admin-password">
                 {t("login.adminPasswordPlaceholder")}
@@ -108,12 +109,28 @@ export default function Login() {
                 type="password"
                 placeholder={t("login.adminPasswordPlaceholder")}
                 value={password}
-                onChange={event => setPassword(event.target.value)}
+                onChange={event => {
+                  setPassword(event.target.value);
+                  if (adminLogin.isError) adminLogin.reset();
+                }}
                 required
                 aria-label={t("login.adminPasswordPlaceholder")}
+                aria-invalid={adminLogin.isError}
+                aria-describedby={
+                  adminLogin.isError ? "admin-password-error" : undefined
+                }
                 autoComplete="current-password"
                 className="login-access-input"
               />
+              {adminLogin.isError ? (
+                <p
+                  id="admin-password-error"
+                  className="login-access-error"
+                  role="alert"
+                >
+                  {adminLogin.error?.message || t("login.toast.adminFailed")}
+                </p>
+              ) : null}
               <Button
                 type="submit"
                 className="owner-primary-action w-full"

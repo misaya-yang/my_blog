@@ -20,6 +20,7 @@ describe("AgentLauncher", () => {
     );
 
     expect(html).toContain('aria-expanded="false"');
+    expect(html).toContain('data-state="closed"');
     expect(html).toContain('aria-controls="blog-agent-panel"');
     expect(html).toContain('aria-label="Blog assistant"');
     expect(html).toContain('title="Open assistant"');
@@ -42,6 +43,7 @@ describe("AgentLauncher", () => {
     );
 
     expect(html).toContain('aria-expanded="true"');
+    expect(html).toContain('data-state="open"');
     expect(html).toContain("lucide-x");
     expect(html).toContain("rounded-full bg-slate-400");
     expect(html).toContain('aria-hidden="true"');

@@ -79,9 +79,8 @@ function renderHeroTitle(language: "en" | "zh") {
     <>
       <span className="home-title-line">AI Algorithms</span>
       <span className="home-title-line">
-        and <span className="home-title-accent">AI</span>
+        <span className="home-title-accent">AI</span> Applications
       </span>
-      <span className="home-title-line">Applications</span>
     </>
   );
 }
@@ -186,19 +185,23 @@ function getPostSeriesLabel(
 function FeaturedNote({
   post,
   isLoading,
+  isError,
   showSlowLoading,
   t,
   isAdmin,
+  onRetry,
 }: {
   post?: ArticleCardPost;
   isLoading: boolean;
+  isError: boolean;
   showSlowLoading: boolean;
   t: (key: string, vars?: Record<string, string | number>) => string;
   isAdmin: boolean;
+  onRetry: () => void;
 }) {
   return (
     <section
-      className="home-featured-note article-card open-group"
+      className="home-featured-note open-group"
       aria-label={t("home.latestNote")}
     >
       <div className="home-featured-note-head">
@@ -221,7 +224,15 @@ function FeaturedNote({
         )}
       </div>
 
-      {isLoading ? (
+      {isError ? (
+        <div className="home-note-error" role="alert">
+          <strong>{t("home.loadErrorTitle")}</strong>
+          <p>{t("home.loadErrorBody")}</p>
+          <button type="button" onClick={onRetry}>
+            {t("common.retry")}
+          </button>
+        </div>
+      ) : isLoading ? (
         <div className="home-note-skeleton" aria-busy="true">
           <p>
             {showSlowLoading
@@ -326,7 +337,12 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSlowLoading, setShowSlowLoading] = useState(false);
 
-  const { data: posts, isLoading } = trpc.posts.list.useQuery({
+  const {
+    data: posts,
+    isLoading,
+    isError,
+    refetch: refetchPosts,
+  } = trpc.posts.list.useQuery({
     status: "published",
     limit: 20,
     orderBy: "publishedAt",
@@ -386,8 +402,8 @@ export default function Home() {
           title: t(config.titleKey),
           subtitle: t(config.subtitleKey),
           topicKeys: getTrackTopicKeys(track),
-          meta: isLoading
-            ? t("home.pathsPending")
+          meta: isLoading || isError
+            ? t(isError ? "home.dataUnavailable" : "home.pathsPending")
             : `${t("home.pathCount", { count: pathCount })} · ${t(
                 "home.publicNotes",
                 { count: publicCount }
@@ -405,7 +421,7 @@ export default function Home() {
           posts: getRepresentativePosts(publishedPosts, track),
         };
       }),
-    [isLoading, publishedPosts, publicSeriesByTrack, t]
+    [isError, isLoading, publishedPosts, publicSeriesByTrack, t]
   );
 
   const mapSummary = useMemo(
@@ -446,9 +462,11 @@ export default function Home() {
                 <FeaturedNote
                   post={featuredPost}
                   isLoading={isLoading}
+                  isError={isError}
                   showSlowLoading={showSlowLoading}
                   t={t}
                   isAdmin={isAdmin}
+                  onRetry={() => void refetchPosts()}
                 />
               </div>
 
@@ -548,7 +566,17 @@ export default function Home() {
             </Link>
           </div>
 
-          {isLoading ? (
+          {isError ? (
+            <div className="home-index-error" role="alert">
+              <div>
+                <h3>{t("home.loadErrorTitle")}</h3>
+                <p>{t("home.loadErrorBody")}</p>
+              </div>
+              <button type="button" onClick={() => void refetchPosts()}>
+                {t("common.retry")}
+              </button>
+            </div>
+          ) : isLoading ? (
             <div className="home-more-note-skeletons" aria-busy="true">
               {[1, 2, 3, 4].map(item => (
                 <div key={item} className="article-skeleton">

@@ -175,6 +175,14 @@ export default function Search() {
     }
   }, [data?.total, isError, isLoading, query]);
 
+  const searchState = isLoading
+    ? "loading"
+    : isError
+      ? "error"
+      : data?.results?.length
+        ? "results"
+        : "empty";
+
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     const next = input.trim();
@@ -248,6 +256,9 @@ export default function Search() {
         <Surface
           className={query ? "mt-4 hairline-list" : "mt-8 hairline-list"}
           density={query ? "compact" : "normal"}
+          data-search-state={searchState}
+          aria-live="polite"
+          aria-busy={isLoading}
         >
           <SectionHeader
             title={
@@ -270,19 +281,19 @@ export default function Search() {
           {!query && !isError && <SearchStartPanel topics={suggestedTopics} />}
 
           {isLoading ? (
-            query && showSlowSearchRecovery ? (
-              <SearchRecoveryPanel
-                query={query}
-                topics={suggestedTopics}
-                onAskAgent={askAgent}
-              />
-            ) : (
-              <LoadingState
-                title={t("common.loadingNotes")}
-                description={t("common.loadingHint")}
-                className="mt-5"
-              />
-            )
+            <LoadingState
+              title={
+                query && showSlowSearchRecovery
+                  ? t("discovery.searchStillWorkingTitle")
+                  : t("common.loadingNotes")
+              }
+              description={
+                query && showSlowSearchRecovery
+                  ? t("discovery.searchStillWorkingBody", { query })
+                  : t("common.loadingHint")
+              }
+              className="search-still-working mt-5"
+            />
           ) : isError ? (
             query ? (
               <div>

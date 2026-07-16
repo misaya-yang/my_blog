@@ -2,7 +2,9 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   AuthRequiredState,
+  EmptyState,
   LoadingState,
+  SiteHeader,
   SpaceBackdrop,
 } from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
@@ -98,6 +100,10 @@ import {
   buildEditorPublishPreflight,
   type EditorPreflightIssue,
 } from "./editorPublishPreflight";
+import {
+  insertMarkdownBlock,
+  insertMarkdownLink,
+} from "./editorTextTransforms";
 
 const MarkdownRenderer = lazy(() => import("@/components/MarkdownRenderer"));
 
@@ -123,6 +129,7 @@ function ToolbarButton({
         <button
           type="button"
           aria-label={tooltip}
+          aria-pressed={active === undefined ? undefined : active}
           onClick={onClick}
           disabled={disabled}
           className={`rounded-md p-2 transition-all duration-150 ${
@@ -197,16 +204,29 @@ export default function Editor() {
   const [imageUrl, setImageUrl] = useState("");
   const [imageAlt, setImageAlt] = useState("");
   const seededFromBacklogRef = useRef(false);
+  const operationLockRef = useRef<"save" | "publish" | null>(null);
 
   // 编辑器引用
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
   // 数据查询
-  const { data: categories } = trpc.categories.list.useQuery();
-  const { data: tags } = trpc.tags.list.useQuery();
-  const { data: existingPost, isLoading: postLoading } =
-    trpc.posts.getBySlug.useQuery(params.slug!, { enabled: isEditing });
+  const { data: categories } = trpc.categories.list.useQuery(undefined, {
+    enabled: isAdmin,
+  });
+  const { data: tags } = trpc.tags.list.useQuery(undefined, {
+    enabled: isAdmin,
+  });
+  const {
+    data: existingPost,
+    isLoading: postLoading,
+    isError: postLoadFailed,
+    error: postLoadError,
+    refetch: refetchPost,
+  } = trpc.posts.getBySlugForAdmin.useQuery(params.slug!, {
+    enabled: isAdmin && isEditing,
+    retry: false,
+  });
   const utils = trpc.useUtils();
   const { data: versions } = trpc.posts.getVersions.useQuery(postId ?? 0, {
     enabled: Boolean(postId),
@@ -380,7 +400,20 @@ export default function Editor() {
     }, 30000);
 
     return () => clearInterval(timer);
-  }, [postId, content, title]);
+  }, [
+    postId,
+    content,
+    title,
+    excerpt,
+    categoryId,
+    selectedTags,
+    coverImage,
+    seriesSlug,
+    seriesTitle,
+    seriesOrder,
+    featuredRank,
+    pinnedTrack,
+  ]);
 
   // 键盘快捷键
   useEffect(() => {
@@ -424,7 +457,23 @@ export default function Editor() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [showPreview, isFullscreen, content, title]);
+  }, [
+    showPreview,
+    isFullscreen,
+    content,
+    title,
+    excerpt,
+    categoryId,
+    selectedTags,
+    coverImage,
+    postId,
+    seriesSlug,
+    seriesTitle,
+    seriesOrder,
+    featuredRank,
+    pinnedTrack,
+    publishPreflight,
+  ]);
 
   // 插入格式
   const insertFormat = useCallback(
@@ -471,26 +520,22 @@ export default function Editor() {
       const textarea = textareaRef.current;
       if (!textarea) return;
 
-      const start = textarea.selectionStart;
-      const lineStart = content.lastIndexOf("\n", start - 1) + 1;
-      const selectedText = content.substring(
-        textarea.selectionStart,
-        textarea.selectionEnd
-      );
-      const textToInsert = selectedText || placeholder;
+      const transform = insertMarkdownBlock({
+        content,
+        selectionStart: textarea.selectionStart,
+        selectionEnd: textarea.selectionEnd,
+        prefix,
+        placeholder,
+      });
 
-      const newContent =
-        content.substring(0, lineStart) +
-        prefix +
-        textToInsert +
-        content.substring(textarea.selectionEnd);
-
-      setContent(newContent);
+      setContent(transform.content);
 
       setTimeout(() => {
         textarea.focus();
-        const newStart = lineStart + prefix.length;
-        textarea.setSelectionRange(newStart, newStart + textToInsert.length);
+        textarea.setSelectionRange(
+          transform.selectionStart,
+          transform.selectionEnd
+        );
       }, 0);
     },
     [content]
@@ -587,12 +632,27 @@ export default function Editor() {
   // 插入链接
   const insertLink = useCallback(() => {
     if (!linkUrl) return;
-    const text = linkText || linkUrl;
-    insertFormat(`[${text}](`, ")", linkUrl);
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    const transform = insertMarkdownLink({
+      content,
+      selectionStart: textarea.selectionStart,
+      selectionEnd: textarea.selectionEnd,
+      url: linkUrl,
+      text: linkText,
+    });
+    setContent(transform.content);
     setLinkUrl("");
     setLinkText("");
     setShowLinkDialog(false);
-  }, [linkUrl, linkText, insertFormat]);
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(
+        transform.selectionStart,
+        transform.selectionEnd
+      );
+    }, 0);
+  }, [content, linkUrl, linkText]);
 
   // 插入图片
   const insertImage = useCallback(() => {
@@ -620,7 +680,9 @@ export default function Editor() {
         if (!silent) toast.error(t("editor.toast.titleRequired"));
         return;
       }
+      if (operationLockRef.current) return;
 
+      operationLockRef.current = "save";
       setIsSaving(true);
       try {
         let saveResult: unknown;
@@ -663,6 +725,9 @@ export default function Editor() {
           });
           if (result) {
             setPostId(result.id);
+            if (result.slug) {
+              navigate(`/write/${result.slug}`, { replace: true });
+            }
           }
           saveResult = result;
         }
@@ -673,6 +738,9 @@ export default function Editor() {
       } catch (error) {
         if (!silent) toast.error(t("editor.toast.saveFailed"));
       } finally {
+        if (operationLockRef.current === "save") {
+          operationLockRef.current = null;
+        }
         setIsSaving(false);
       }
     },
@@ -689,12 +757,14 @@ export default function Editor() {
       saveVersion,
       buildCurationPayload,
       notifyKnowledgeRefresh,
+      navigate,
       t,
     ]
   );
 
   // 发布文章
   const handlePublish = useCallback(async () => {
+    if (operationLockRef.current) return;
     if (!publishPreflight.canPublish) {
       const firstBlocker = publishPreflight.blockers[0];
       toast.error(
@@ -705,6 +775,7 @@ export default function Editor() {
       return;
     }
 
+    operationLockRef.current = "publish";
     setIsPublishing(true);
     try {
       const slug = title
@@ -747,6 +818,9 @@ export default function Editor() {
     } catch (error) {
       toast.error(t("editor.toast.publishFailed"));
     } finally {
+      if (operationLockRef.current === "publish") {
+        operationLockRef.current = null;
+      }
       setIsPublishing(false);
     }
   }, [
@@ -796,14 +870,18 @@ export default function Editor() {
 
     const editor = textareaRef.current;
     const preview = previewRef.current;
-    const scrollPercentage =
-      editor.scrollTop / (editor.scrollHeight - editor.clientHeight);
+    const editorScrollRange = editor.scrollHeight - editor.clientHeight;
+    if (editorScrollRange <= 0) {
+      preview.scrollTop = 0;
+      return;
+    }
+    const scrollPercentage = editor.scrollTop / editorScrollRange;
     preview.scrollTop =
       scrollPercentage * (preview.scrollHeight - preview.clientHeight);
   }, [showPreview]);
 
   // 认证检查
-  if (authLoading || postLoading) {
+  if (authLoading || (isAdmin && isEditing && postLoading)) {
     return (
       <div className="space-page owner-dark-scope grid min-h-screen place-items-center px-4">
         <SpaceBackdrop subtle />
@@ -826,6 +904,58 @@ export default function Editor() {
         homeLabel={t("nav.home")}
         backLabel={t("nav.back")}
       />
+    );
+  }
+
+  if (isEditing && postLoadFailed) {
+    const isNotFound = postLoadError?.data?.code === "NOT_FOUND";
+    const title = isNotFound
+      ? t("editor.load.notFoundTitle")
+      : t("editor.load.errorTitle");
+    const description = isNotFound
+      ? t("editor.load.notFoundDescription", {
+          slug: params.slug ?? "",
+        })
+      : t("editor.load.errorDescription");
+
+    return (
+      <div className="space-page owner-dark-scope min-h-screen">
+        <SpaceBackdrop subtle />
+        <SiteHeader
+          active="write"
+          backHref="/manage"
+          backLabel={t("editor.backToContent")}
+          compact
+          showAgent={false}
+        />
+        <main className="container relative z-10 grid min-h-[calc(100dvh-72px)] place-items-center px-4 py-10 sm:px-6">
+          <h1 className="sr-only">{title}</h1>
+          <EmptyState
+            icon={<AlertTriangle className="h-4 w-4" />}
+            title={title}
+            description={description}
+            className="w-full max-w-xl"
+            action={
+              <div className="flex flex-wrap justify-center gap-2">
+                {!isNotFound && (
+                  <Button
+                    type="button"
+                    className="owner-primary-action"
+                    onClick={() => void refetchPost()}
+                  >
+                    {t("common.retry")}
+                  </Button>
+                )}
+                <Button asChild variant="outline" className="owner-button">
+                  <RouterLink href="/manage">
+                    {t("editor.backToContent")}
+                  </RouterLink>
+                </Button>
+              </div>
+            }
+          />
+        </main>
+      </div>
     );
   }
 
@@ -997,6 +1127,8 @@ export default function Editor() {
                       <img
                         src={coverImage}
                         alt={t("editor.coverPreview")}
+                        width={960}
+                        height={320}
                         loading="lazy"
                         decoding="async"
                         sizes="(min-width: 640px) 480px, calc(100vw - 48px)"
@@ -1034,21 +1166,27 @@ export default function Editor() {
                       {tags?.map(tag => (
                         <Badge
                           key={tag.id}
+                          asChild
                           variant={
                             selectedTags.includes(tag.id)
                               ? "default"
                               : "outline"
                           }
-                          className="cursor-pointer transition-colors"
-                          onClick={() => {
-                            setSelectedTags(prev =>
-                              prev.includes(tag.id)
-                                ? prev.filter(id => id !== tag.id)
-                                : [...prev, tag.id]
-                            );
-                          }}
                         >
-                          {tag.name}
+                          <button
+                            type="button"
+                            aria-pressed={selectedTags.includes(tag.id)}
+                            className="min-h-9 cursor-pointer transition-colors"
+                            onClick={() => {
+                              setSelectedTags(prev =>
+                                prev.includes(tag.id)
+                                  ? prev.filter(id => id !== tag.id)
+                                  : [...prev, tag.id]
+                              );
+                            }}
+                          >
+                            {tag.name}
+                          </button>
                         </Badge>
                       ))}
                     </div>
@@ -1209,7 +1347,7 @@ export default function Editor() {
               variant="outline"
               size="sm"
               onClick={() => handleSaveDraft()}
-              disabled={isSaving}
+              disabled={isSaving || isPublishing}
               className="owner-button gap-2"
             >
               {isSaving ? (
@@ -1217,13 +1355,15 @@ export default function Editor() {
               ) : (
                 <Save className="h-4 w-4" />
               )}
-              <span className="hidden sm:inline">{t("editor.saveDraft")}</span>
+              <span className="hidden sm:inline">
+                {t(postId ? "editor.saveChanges" : "editor.saveDraft")}
+              </span>
             </Button>
 
             <Button
               size="sm"
               onClick={handlePublish}
-              disabled={isPublishing}
+              disabled={isPublishing || isSaving}
               className="gap-2 owner-primary-action"
             >
               {isPublishing ? (
@@ -1360,7 +1500,10 @@ export default function Editor() {
         </div>
 
         {/* 主编辑区域 */}
-        <div className="owner-writer-workbench relative z-10 flex flex-1 overflow-hidden">
+        <div
+          className="owner-writer-workbench relative z-10 flex flex-1 overflow-hidden"
+          data-editor-mode={showPreview ? "preview" : "editor"}
+        >
           <aside className="owner-editor-pane owner-editor-snippet-rail hidden w-64 shrink-0 p-4 xl:block">
             <div className="mb-4">
               <p className="text-sm font-semibold text-white">

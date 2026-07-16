@@ -1,5 +1,6 @@
 import React, {
   useEffect,
+  useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
@@ -42,6 +43,7 @@ export function AgentFloatingFrame({
     getDefaultAgentFrameState()
   );
   const [frameReady, setFrameReady] = useState(false);
+  const interactionCleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     if (isMobile) {
@@ -55,8 +57,23 @@ export function AgentFloatingFrame({
 
   useEffect(() => {
     if (isMobile || !frameReady) return;
-    window.localStorage.setItem(AGENT_FRAME_STORAGE_KEY, JSON.stringify(frame));
+    try {
+      window.localStorage.setItem(
+        AGENT_FRAME_STORAGE_KEY,
+        JSON.stringify(frame)
+      );
+    } catch {
+      // Frame persistence is optional; interaction must continue when storage
+      // is unavailable or full.
+    }
   }, [frame, frameReady, isMobile]);
+
+  useEffect(
+    () => () => {
+      interactionCleanupRef.current?.();
+    },
+    []
+  );
 
   useEffect(() => {
     if (isMobile) return;
@@ -69,7 +86,7 @@ export function AgentFloatingFrame({
 
   if (isMobile) {
     return (
-      <div className="fixed inset-x-3 bottom-20 z-[59] h-[min(720px,calc(100dvh-6rem))]">
+      <div className="agent-modal-frame">
         {children({
           isFloating: false,
           onApplyPreset: () => {},
@@ -81,6 +98,7 @@ export function AgentFloatingFrame({
 
   function startDrag(event: ReactPointerEvent<HTMLElement>) {
     event.preventDefault();
+    interactionCleanupRef.current?.();
     const startFrame = frame;
     const startX = event.clientX;
     const startY = event.clientY;
@@ -105,8 +123,12 @@ export function AgentFloatingFrame({
       window.removeEventListener("pointermove", handleMove);
       window.removeEventListener("pointerup", cleanup);
       window.removeEventListener("pointercancel", cleanup);
+      if (interactionCleanupRef.current === cleanup) {
+        interactionCleanupRef.current = null;
+      }
     }
 
+    interactionCleanupRef.current = cleanup;
     window.addEventListener("pointermove", handleMove);
     window.addEventListener("pointerup", cleanup, { once: true });
     window.addEventListener("pointercancel", cleanup, { once: true });
@@ -115,6 +137,7 @@ export function AgentFloatingFrame({
   function startResize(event: ReactPointerEvent<HTMLButtonElement>) {
     event.preventDefault();
     event.stopPropagation();
+    interactionCleanupRef.current?.();
     const startFrame = frame;
     const startX = event.clientX;
     const startY = event.clientY;
@@ -140,8 +163,12 @@ export function AgentFloatingFrame({
       window.removeEventListener("pointermove", handleMove);
       window.removeEventListener("pointerup", cleanup);
       window.removeEventListener("pointercancel", cleanup);
+      if (interactionCleanupRef.current === cleanup) {
+        interactionCleanupRef.current = null;
+      }
     }
 
+    interactionCleanupRef.current = cleanup;
     window.addEventListener("pointermove", handleMove);
     window.addEventListener("pointerup", cleanup, { once: true });
     window.addEventListener("pointercancel", cleanup, { once: true });

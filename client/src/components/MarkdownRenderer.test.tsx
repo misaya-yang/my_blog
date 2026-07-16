@@ -158,4 +158,25 @@ describe("MarkdownRenderer", () => {
     expect(html).toContain(">代码</span>");
     expect(html).toContain('aria-label="复制代码"');
   });
+
+  it("resolves heading anchors when markdown creates nested inline nodes", () => {
+    const html = renderToStaticMarkup(
+      <MarkdownRenderer
+        content="## Method *with emphasis*"
+        headings={[
+          {
+            id: "method-with-emphasis",
+            text: "Method with emphasis",
+            level: 2,
+          },
+        ]}
+      />
+    );
+
+    expect(html).toContain('id="method-with-emphasis"');
+    expect(html).toContain('href="#method-with-emphasis"');
+    expect(html).toContain(
+      'aria-label="Link to section: Method with emphasis"'
+    );
+  });
 });

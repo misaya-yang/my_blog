@@ -11,6 +11,7 @@ import {
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { openBlogAgentWithPrompt } from "@/components/agent/routeContext";
+import { useBlogAgentOpenState } from "@/components/agent/agentController";
 import {
   buildAdminLoginHref,
   getCurrentAdminReturnPath,
@@ -131,6 +132,7 @@ export function SiteHeader({
   const { isAdmin, isAuthenticated, displayName, logout } = useAuth();
   const { language, toggleLanguage, t } = useLanguage();
   const { theme, toggleTheme, switchable } = useTheme();
+  const agentOpen = useBlogAgentOpenState();
   const ownerThemeLocked = active === "manage" || active === "agent";
   const canShowAgent =
     showAgent &&
@@ -262,6 +264,8 @@ export function SiteHeader({
               type="button"
               className="nav-icon-button h-11 w-11 md:hidden"
               data-mobile-agent-trigger
+              data-state={agentOpen ? "open" : "closed"}
+              aria-expanded={agentOpen}
               aria-controls="blog-agent-panel"
               aria-haspopup="dialog"
               aria-label={t("agent.launcher.label")}
@@ -441,15 +445,17 @@ export function Surface({
   density = "normal",
   variant = "open",
   children,
+  ...props
 }: {
   as?: "section" | "article" | "aside" | "div";
   className?: string;
   density?: "normal" | "compact";
   variant?: "open" | "floating" | "popover" | "data" | "reading";
   children: React.ReactNode;
-}) {
+} & Omit<React.HTMLAttributes<HTMLElement>, "children">) {
   return (
     <Component
+      {...props}
       className={cn(
         "research-surface",
         variant === "open" && "surface-open open-group",
@@ -529,7 +535,13 @@ export function LoadingState({
   className?: string;
 }) {
   return (
-    <Surface as="div" className={cn("state-surface", className)}>
+    <Surface
+      as="div"
+      className={cn("state-surface", className)}
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    >
       <div className="state-icon" aria-hidden="true">
         <FileText className="h-4 w-4" />
       </div>

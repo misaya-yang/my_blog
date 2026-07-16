@@ -39,6 +39,10 @@ export default function NotFound() {
           <p className="page-copy mt-5 max-w-xl">
             {t("notFound.description").replace("\n", " ")}
           </p>
+          <p className="not-found-path">
+            <span>{t("notFound.requestedPath")}</span>
+            <code>{location || "/404"}</code>
+          </p>
           <div
             id="not-found-button-group"
             className="mt-8 flex flex-wrap gap-3"

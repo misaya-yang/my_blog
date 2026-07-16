@@ -89,6 +89,14 @@ const agentOps: TranslationDict = {
     en: "{count} zero-result public searches may need article links, aliases, or new sections.",
     zh: "{count} 个公开零结果搜索可能需要补文章链接、别名或新小节。",
   },
+  "agentOps.overview.actionSearchMissErrorTitle": {
+    en: "Search-miss signals unavailable",
+    zh: "搜索缺口信号不可用",
+  },
+  "agentOps.overview.actionSearchMissErrorDescription": {
+    en: "The public search backlog could not be loaded, so this overview is incomplete.",
+    zh: "公开搜索 backlog 加载失败，因此当前总览并不完整。",
+  },
   "agentOps.overview.unavailable": { en: "Unavailable", zh: "不可用" },
   "agentOps.overview.fresh": { en: "Fresh", zh: "新鲜" },
   "agentOps.overview.needsWork": { en: "Needs work", zh: "需处理" },
@@ -97,6 +105,10 @@ const agentOps: TranslationDict = {
     zh: "需要管理员登录后查看 Agent 运维。",
   },
   "agentOps.back": { en: "Back to content", zh: "返回内容管理" },
+  "agentOps.navigation": {
+    en: "Agent operations sections",
+    zh: "Agent 运维分区",
+  },
   "agentOps.index.title": { en: "Index Status", zh: "索引状态" },
   "agentOps.index.loading": {
     en: "Loading index status...",
@@ -149,6 +161,14 @@ const agentOps: TranslationDict = {
     zh: "问题或检索查询",
   },
   "agentOps.debug.run": { en: "Inspect retrieval", zh: "调试检索" },
+  "agentOps.debug.loading": {
+    en: "Inspecting retrieval...",
+    zh: "正在检查检索结果...",
+  },
+  "agentOps.debug.error": {
+    en: "Retrieval inspection failed",
+    zh: "检索检查失败",
+  },
   "agentOps.debug.empty": {
     en: "No retrieval result yet.",
     zh: "还没有检索结果。",
@@ -168,6 +188,10 @@ const agentOps: TranslationDict = {
     zh: "每行一个问题",
   },
   "agentOps.evals.run": { en: "Run evals", zh: "运行 Eval" },
+  "agentOps.evals.error": {
+    en: "The eval run did not complete",
+    zh: "Eval 运行未完成",
+  },
   "agentOps.evals.passed": { en: "Passed", zh: "通过" },
   "agentOps.evals.failed": { en: "Needs review", zh: "需检查" },
   "agentOps.evals.manualReview": {
@@ -184,6 +208,14 @@ const agentOps: TranslationDict = {
   "agentOps.evals.missingSources": { en: "Missing sources", zh: "缺失来源" },
   "agentOps.traces.title": { en: "Recent Traces", zh: "近期 Trace" },
   "agentOps.traces.refresh": { en: "Refresh traces", zh: "刷新 Trace" },
+  "agentOps.traces.loading": {
+    en: "Loading recent traces...",
+    zh: "正在加载近期 Trace...",
+  },
+  "agentOps.traces.error": {
+    en: "Recent traces are unavailable",
+    zh: "近期 Trace 暂不可用",
+  },
   "agentOps.traces.empty": {
     en: "No agent runs yet.",
     zh: "暂无 Agent 运行记录。",
@@ -192,6 +224,10 @@ const agentOps: TranslationDict = {
   "agentOps.ideas.title": { en: "Content Radar", zh: "内容雷达" },
   "agentOps.ideas.conversation": { en: "Conversation ID", zh: "会话 ID" },
   "agentOps.ideas.run": { en: "Extract ideas", zh: "提炼选题" },
+  "agentOps.ideas.error": {
+    en: "Article idea extraction failed",
+    zh: "文章选题提炼失败",
+  },
   "agentOps.ideas.empty": {
     en: "Paste a conversation ID to extract ideas.",
     zh: "输入会话 ID 后提炼选题。",
@@ -238,6 +274,10 @@ const agentOps: TranslationDict = {
   "agentOps.radar.searchMissEmpty": {
     en: "No zero-result searches yet.",
     zh: "暂无零结果搜索。",
+  },
+  "agentOps.radar.searchMissError": {
+    en: "Search-miss backlog is unavailable.",
+    zh: "搜索缺口 backlog 暂不可用。",
   },
   "agentOps.radar.searchMissCount": {
     en: "{count} misses",

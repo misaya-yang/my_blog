@@ -13,6 +13,7 @@ import { trpc } from "@/lib/trpc";
 import {
   buildRouteContext,
   BLOG_AGENT_OPEN_EVENT,
+  getAgentRouteScopeKey,
   inferClientScope,
   type BlogAgentOpenDetail,
 } from "./routeContext";
@@ -38,6 +39,10 @@ import {
   getNextAgentStreamFollowState,
   shouldScrollAgentMessagesToEnd,
 } from "./agentScrollPolicy";
+import {
+  setBlogAgentOpenState,
+  useBlogAgentOpenState,
+} from "./agentController";
 import {
   buildCompanionPrompts,
   getAgentSessionKey,
@@ -95,17 +100,33 @@ export {
   isBlogAgentHiddenRoute,
 } from "./agentCompanionRuntime";
 
+function useIsAgentModalViewport() {
+  const [isModalViewport, setIsModalViewport] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 1359px)");
+    const update = () => setIsModalViewport(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  return isModalViewport;
+}
+
 export function BlogAgentRoot() {
   const [location] = useLocation();
   const { session } = useAuth();
   const { language, t } = useLanguage();
   const isMobile = useIsMobile();
+  const isModalViewport = useIsAgentModalViewport();
   const routeContext = useMemo(
     () => buildRouteContext(location, language),
     [location, language]
   );
+  const routeScopeKey = getAgentRouteScopeKey(routeContext);
   const hiddenOnRoute = isBlogAgentHiddenRoute(location);
-  const [open, setOpen] = useState(false);
+  const open = useBlogAgentOpenState();
   const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [conversationId, setConversationId] = useState<string | undefined>();
@@ -129,6 +150,9 @@ export function BlogAgentRoot() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const streamAbortRef = useRef<AbortController | null>(null);
   const previousIdentityKeyRef = useRef<string | null>(null);
+  const previousRouteScopeKeyRef = useRef<string | null>(null);
+  const activeRouteScopeKeyRef = useRef(routeScopeKey);
+  activeRouteScopeKeyRef.current = routeScopeKey;
   const utils = trpc.useUtils();
   const panelId = "blog-agent-panel";
   const panelTitleId = "blog-agent-title";
@@ -165,6 +189,41 @@ export function BlogAgentRoot() {
   }, [bootstrap.data?.quota]);
 
   useEffect(() => {
+    if (previousRouteScopeKeyRef.current === null) {
+      previousRouteScopeKeyRef.current = routeScopeKey;
+      return;
+    }
+    if (previousRouteScopeKeyRef.current === routeScopeKey) return;
+
+    previousRouteScopeKeyRef.current = routeScopeKey;
+    streamAbortRef.current?.abort();
+    streamAbortRef.current = null;
+    pendingVisitorRetryPromptRef.current = null;
+    pendingAssistantFocusRef.current = null;
+    shouldFollowStreamRef.current = true;
+    void utils.agent.bootstrap.cancel();
+    void utils.agent.listConversations.cancel();
+    void utils.agent.getConversation.cancel();
+
+    setMessages([]);
+    setConversationId(undefined);
+    setSelectedConversationId(undefined);
+    setNotice(null);
+    setContextDraft("");
+    setContextOpen(false);
+    setAttachedContextCount(0);
+    setHistoryOpen(false);
+    setStreaming(false);
+    setQuota(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, [
+    routeScopeKey,
+    utils.agent.bootstrap,
+    utils.agent.getConversation,
+    utils.agent.listConversations,
+  ]);
+
+  useEffect(() => {
     if (previousIdentityKeyRef.current === null) {
       previousIdentityKeyRef.current = identityKey;
       return;
@@ -194,14 +253,19 @@ export function BlogAgentRoot() {
   }, [identityKey, t, utils.agent.listConversations]);
 
   useEffect(() => {
-    if (!conversationDetail.data) return;
+    if (
+      !conversationDetail.data ||
+      !selectedConversationId ||
+      conversationDetail.data.conversation.id !== selectedConversationId
+    )
+      return;
     setConversationId(conversationDetail.data.conversation.id);
     setMessages(conversationDetail.data.messages.map(toChatMessage));
     setAttachedContextCount(
       conversationDetail.data.contextSources?.length ?? 0
     );
     setNotice(null);
-  }, [conversationDetail.data]);
+  }, [conversationDetail.data, selectedConversationId]);
 
   useEffect(() => {
     if (conversationDetail.isError) setNotice(t("agent.error.history"));
@@ -232,12 +296,83 @@ export function BlogAgentRoot() {
       panelRef.current?.focus({ preventScroll: true });
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [composerFocusToken, open, isMobile]);
+  }, [composerFocusToken, open, isModalViewport]);
+
+  useEffect(() => {
+    if (!open || !isModalViewport) return;
+
+    const body = document.body;
+    const scrollY = window.scrollY;
+    const previousBodyStyle = {
+      overflow: body.style.overflow,
+      position: body.style.position,
+      top: body.style.top,
+      width: body.style.width,
+    };
+    const routeSurface = document.querySelector<HTMLElement>(
+      "[data-route-surface]"
+    );
+    const previousRouteSurface = routeSurface
+      ? {
+          inert: routeSurface.inert,
+          ariaHidden: routeSurface.getAttribute("aria-hidden"),
+        }
+      : null;
+
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.width = "100%";
+    document.documentElement.dataset.blogAgentModal = "open";
+
+    if (routeSurface) {
+      routeSurface.inert = true;
+      routeSurface.setAttribute("aria-hidden", "true");
+    }
+
+    return () => {
+      body.style.overflow = previousBodyStyle.overflow;
+      body.style.position = previousBodyStyle.position;
+      body.style.top = previousBodyStyle.top;
+      body.style.width = previousBodyStyle.width;
+      delete document.documentElement.dataset.blogAgentModal;
+
+      if (routeSurface && previousRouteSurface) {
+        routeSurface.inert = previousRouteSurface.inert;
+        if (previousRouteSurface.ariaHidden === null) {
+          routeSurface.removeAttribute("aria-hidden");
+        } else {
+          routeSurface.setAttribute(
+            "aria-hidden",
+            previousRouteSurface.ariaHidden
+          );
+        }
+      }
+
+      window.scrollTo({ top: scrollY, behavior: "auto" });
+    };
+  }, [isModalViewport, open]);
+
+  useEffect(() => {
+    if (!hiddenOnRoute) return;
+    streamAbortRef.current?.abort();
+    void utils.agent.bootstrap.cancel();
+    void utils.agent.listConversations.cancel();
+    setBlogAgentOpenState(false);
+    setStreaming(false);
+  }, [hiddenOnRoute, utils.agent.bootstrap, utils.agent.listConversations]);
+
+  useEffect(
+    () => () => {
+      streamAbortRef.current?.abort();
+    },
+    []
+  );
 
   useEffect(() => {
     function handleExternalOpen(event: Event) {
       const detail = (event as CustomEvent<BlogAgentOpenDetail>).detail;
-      setOpen(true);
+      setBlogAgentOpenState(true);
       setNotice(null);
       if (detail?.prompt) {
         setDraft(detail.prompt);
@@ -249,6 +384,40 @@ export function BlogAgentRoot() {
     return () =>
       window.removeEventListener(BLOG_AGENT_OPEN_EVENT, handleExternalOpen);
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function handleGlobalKeyDown(event: KeyboardEvent) {
+      if (
+        event.defaultPrevented ||
+        event.key !== "Escape" ||
+        event.isComposing
+      )
+        return;
+
+      event.preventDefault();
+      void utils.agent.bootstrap.cancel();
+      void utils.agent.listConversations.cancel();
+      setBlogAgentOpenState(false);
+      window.requestAnimationFrame(() => {
+        const target = isMobile
+          ? document.querySelector<HTMLButtonElement>(
+              "[data-mobile-agent-trigger]"
+            )
+          : launcherRef.current;
+        target?.focus({ preventScroll: true });
+      });
+    }
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [
+    isMobile,
+    open,
+    utils.agent.bootstrap,
+    utils.agent.listConversations,
+  ]);
 
   if (hiddenOnRoute) return null;
 
@@ -276,6 +445,7 @@ export function BlogAgentRoot() {
     )
       return;
 
+    const submitRouteScopeKey = routeScopeKey;
     const timestamp = Date.now();
     const userMessage: ChatMessage = {
       id: `user-${timestamp}`,
@@ -310,6 +480,7 @@ export function BlogAgentRoot() {
         answerMode: inferAnswerMode(trimmed, routeContext),
         signal: controller.signal,
         onStatus: event => {
+          if (activeRouteScopeKeyRef.current !== submitRouteScopeKey) return;
           shouldFollowStreamRef.current = getNextAgentStreamFollowState({
             event: "stream_status",
             scroller: messageScrollerRef.current,
@@ -332,6 +503,7 @@ export function BlogAgentRoot() {
           );
         },
         onAnswerDelta: delta => {
+          if (activeRouteScopeKeyRef.current !== submitRouteScopeKey) return;
           shouldFollowStreamRef.current = getNextAgentStreamFollowState({
             event: "answer_delta",
             scroller: messageScrollerRef.current,
@@ -345,6 +517,7 @@ export function BlogAgentRoot() {
           );
         },
         onFinal: event => {
+          if (activeRouteScopeKeyRef.current !== submitRouteScopeKey) return;
           const response = event.output;
           setQuota(response.quota);
           shouldFollowStreamRef.current = getNextAgentStreamFollowState({
@@ -402,6 +575,7 @@ export function BlogAgentRoot() {
         },
       });
     } catch (error) {
+      if (activeRouteScopeKeyRef.current !== submitRouteScopeKey) return;
       shouldFollowStreamRef.current = getNextAgentStreamFollowState({
         event: "failed",
         scroller: messageScrollerRef.current,
@@ -419,7 +593,9 @@ export function BlogAgentRoot() {
       if (streamAbortRef.current === controller) {
         streamAbortRef.current = null;
       }
-      setStreaming(false);
+      if (activeRouteScopeKeyRef.current === submitRouteScopeKey) {
+        setStreaming(false);
+      }
     }
   }
 
@@ -460,14 +636,14 @@ export function BlogAgentRoot() {
 
   function closeAgent() {
     cancelAgentBootstrapQueries();
-    setOpen(false);
+    setBlogAgentOpenState(false);
     window.requestAnimationFrame(() => {
       focusAgentTrigger();
     });
   }
 
   function toggleAgent() {
-    setOpen(value => {
+    setBlogAgentOpenState(value => {
       const next = !value;
       if (!next) {
         cancelAgentBootstrapQueries();
@@ -489,7 +665,7 @@ export function BlogAgentRoot() {
       return;
     }
 
-    if (!isMobile || event.key !== "Tab" || !panelRef.current) return;
+    if (!isModalViewport || event.key !== "Tab" || !panelRef.current) return;
 
     const focusable = getFocusableElements(panelRef.current);
     if (focusable.length === 0) {
@@ -502,7 +678,10 @@ export function BlogAgentRoot() {
     const last = focusable[focusable.length - 1];
     const active = document.activeElement;
 
-    if (event.shiftKey && active === first) {
+    if (active === panelRef.current || !panelRef.current.contains(active)) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus();
+    } else if (event.shiftKey && active === first) {
       event.preventDefault();
       last.focus();
     } else if (!event.shiftKey && active === last) {
@@ -519,6 +698,7 @@ export function BlogAgentRoot() {
   }) {
     const trimmed = input.content.trim();
     if (!trimmed || addContext.isPending) return;
+    const contextRouteScopeKey = routeScopeKey;
 
     try {
       const response = await addContext.mutateAsync({
@@ -529,6 +709,7 @@ export function BlogAgentRoot() {
         mimeType: input.mimeType,
         content: trimmed,
       });
+      if (activeRouteScopeKeyRef.current !== contextRouteScopeKey) return;
 
       if (response.status === "blocked") {
         setNotice(t("agent.context.blocked"));
@@ -590,11 +771,11 @@ export function BlogAgentRoot() {
       />
 
       {open && (
-        <AgentFloatingFrame isMobile={isMobile}>
+        <AgentFloatingFrame isMobile={isModalViewport}>
           {frameControls => (
             <>
               <AgentPanel
-                isMobile={isMobile}
+                isMobile={isModalViewport}
                 panelId={panelId}
                 titleId={panelTitleId}
                 panelRef={panelRef}

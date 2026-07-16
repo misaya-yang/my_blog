@@ -68,6 +68,16 @@ export function inferClientScope(routeContext: AgentRouteContext): AgentScope {
   return { type: "site" };
 }
 
+export function getAgentRouteScopeKey(routeContext: AgentRouteContext) {
+  const scopedValue =
+    routeContext.postSlug ??
+    routeContext.categorySlug ??
+    routeContext.tagSlug ??
+    routeContext.trackSlug ??
+    "";
+  return `${routeContext.routeType}:${scopedValue}`;
+}
+
 export function getCompanionPromptKeys(routeContext: AgentRouteContext) {
   if (routeContext.routeType === "post") {
     return [

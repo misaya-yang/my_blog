@@ -9,6 +9,7 @@ import {
 
 import { EmptyState, MetricTile, SectionHeader } from "@/components/ResearchShell";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { IndexStatus } from "./AgentIndexStatusPanel";
 
@@ -70,6 +71,7 @@ type OverviewAction = {
   title: string;
   description: string;
   target: string;
+  targetTab: "index" | "traces" | "ideas";
   detail?: string;
 };
 
@@ -79,12 +81,16 @@ export function AgentQualityOverview({
   qualitySummary,
   searchMisses,
   searchMissLoading,
+  searchMissError,
+  onNavigate,
 }: {
   qualityLoading: boolean;
   qualityError: boolean;
   qualitySummary?: AgentQualitySummary;
   searchMisses?: SearchMisses;
   searchMissLoading?: boolean;
+  searchMissError?: boolean;
+  onNavigate?: (tab: "index" | "traces" | "ideas") => void;
 }) {
   const { t } = useLanguage();
   const indexStatus = qualitySummary?.knowledgeStatus;
@@ -94,6 +100,7 @@ export function AgentQualityOverview({
     qualityError,
     actionItems: qualitySummary?.actionItems,
     searchMisses,
+    searchMissError,
     t,
   });
   const noSourceCount = radar?.summary.noSourceRuns ?? 0;
@@ -129,7 +136,13 @@ export function AgentQualityOverview({
         />
         <MetricTile
           label={t("agentOps.overview.searchMisses")}
-          value={searchMissLoading ? "..." : String(searchMissCount)}
+          value={
+            searchMissLoading
+              ? "..."
+              : searchMissError
+                ? t("agentOps.overview.unavailable")
+                : String(searchMissCount)
+          }
         />
       </div>
 
@@ -188,12 +201,24 @@ export function AgentQualityOverview({
                       </p>
                     )}
                   </div>
-                  <Badge
-                    variant="outline"
-                    className="w-fit shrink-0 border-sky-200/20 text-sky-200"
-                  >
-                    {action.target}
-                  </Badge>
+                  {onNavigate ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-fit shrink-0"
+                      onClick={() => onNavigate(action.targetTab)}
+                    >
+                      {action.target}
+                    </Button>
+                  ) : (
+                    <Badge
+                      variant="outline"
+                      className="w-fit shrink-0 border-sky-200/20 text-sky-200"
+                    >
+                      {action.target}
+                    </Badge>
+                  )}
                 </div>
               </article>
             ))}
@@ -208,11 +233,13 @@ function buildOverviewActions({
   qualityError,
   actionItems,
   searchMisses,
+  searchMissError,
   t,
 }: {
   qualityError: boolean;
   actionItems?: QualityActionItem[];
   searchMisses?: SearchMisses;
+  searchMissError?: boolean;
   t: (key: string, values?: Record<string, string | number>) => string;
 }) {
   const actions: OverviewAction[] = [];
@@ -224,10 +251,22 @@ function buildOverviewActions({
       title: t("agentOps.overview.actionSummaryErrorTitle"),
       description: t("agentOps.overview.actionSummaryErrorDescription"),
       target: t("agentOps.ideas.title"),
+      targetTab: "ideas",
     });
   }
 
   actions.push(...(actionItems ?? []).map(item => toOverviewAction(item, t)));
+
+  if (searchMissError) {
+    actions.push({
+      id: "search-miss-error",
+      tone: "warning",
+      title: t("agentOps.overview.actionSearchMissErrorTitle"),
+      description: t("agentOps.overview.actionSearchMissErrorDescription"),
+      target: t("agentOps.ideas.title"),
+      targetTab: "ideas",
+    });
+  }
 
   if ((searchMisses?.uniqueQueries ?? 0) > 0) {
     actions.push({
@@ -242,6 +281,7 @@ function buildOverviewActions({
         .map(item => item.query)
         .join(", "),
       target: t("agentOps.ideas.title"),
+      targetTab: "ideas",
     });
   }
 
@@ -261,6 +301,7 @@ function toOverviewAction(
       description: t("agentOps.overview.actionIndexDescription"),
       detail: item.details.slice(0, 3).join(", ") || undefined,
       target: t("agentOps.index.title"),
+      targetTab: "index",
     };
   }
 
@@ -274,6 +315,7 @@ function toOverviewAction(
       }),
       detail: item.details.slice(0, 3).join(", ") || undefined,
       target: t("agentOps.ideas.title"),
+      targetTab: "ideas",
     };
   }
 
@@ -286,6 +328,7 @@ function toOverviewAction(
     }),
     detail: item.details.slice(0, 3).join(", ") || undefined,
     target: t("agentOps.traces.title"),
+    targetTab: "traces",
   };
 }
 
