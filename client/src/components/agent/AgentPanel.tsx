@@ -1,20 +1,14 @@
 import React, {
   Suspense,
   lazy,
+  useEffect,
+  useRef,
   type FormEvent,
   type KeyboardEvent as ReactKeyboardEvent,
   type MutableRefObject,
   type RefObject,
 } from "react";
-import {
-  BookOpen,
-  History,
-  Loader2,
-  Move,
-  Paperclip,
-  Send,
-  X,
-} from "lucide-react";
+import { BookOpen, History, Loader2, Paperclip, Send, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -142,6 +136,29 @@ export function AgentPanel({
   const inputDisabled =
     bootstrapping || bootstrapError || conversationSwitching;
   const interactionLocked = sending || conversationSwitching;
+  const historyPanelId = `${panelId}-history`;
+  const contextPanelId = `${panelId}-context`;
+  const historyButtonRef = useRef<HTMLButtonElement | null>(null);
+  const contextButtonRef = useRef<HTMLButtonElement | null>(null);
+  const previousHistoryOpenRef = useRef(historyOpen);
+  const previousContextOpenRef = useRef(contextOpen);
+
+  useEffect(() => {
+    const historyClosed = previousHistoryOpenRef.current && !historyOpen;
+    const contextClosed = previousContextOpenRef.current && !contextOpen;
+
+    if (!historyOpen && !contextOpen && (historyClosed || contextClosed)) {
+      const target = historyClosed
+        ? historyButtonRef.current
+        : contextButtonRef.current;
+      window.requestAnimationFrame(() =>
+        target?.focus({ preventScroll: true })
+      );
+    }
+
+    previousHistoryOpenRef.current = historyOpen;
+    previousContextOpenRef.current = contextOpen;
+  }, [contextOpen, historyOpen]);
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -158,17 +175,17 @@ export function AgentPanel({
       aria-labelledby={titleId}
       tabIndex={-1}
       onKeyDown={onPanelKeyDown}
-      className="agent-liquid-panel flex h-full min-h-[420px] flex-col overflow-hidden rounded-md border text-slate-100"
+      className="agent-liquid-panel flex h-full min-h-0 flex-col overflow-hidden border"
     >
-      <header className="agent-panel-header flex items-start justify-between gap-3 border-b border-slate-700/50 px-4 py-3.5">
+      <header className="agent-panel-header flex items-center justify-between gap-3 px-3.5 py-3">
         <div
           className={cn(
-            "agent-drag-handle flex min-w-0 flex-1 items-start gap-3",
+            "agent-drag-handle flex min-w-0 flex-1 items-center gap-2.5",
             frameControls.isFloating && "cursor-move select-none"
           )}
           {...frameControls.dragHandleProps}
         >
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-slate-600/45 bg-slate-900/70 text-slate-200">
+          <span className="agent-header-mark grid h-8 w-8 shrink-0 place-items-center rounded-md text-slate-200">
             <BookOpen className="h-4 w-4" />
           </span>
           <div className="min-w-0">
@@ -179,48 +196,40 @@ export function AgentPanel({
               {t("agent.header.subtitle")}
             </p>
           </div>
-          {frameControls.isFloating && (
-            <span className="agent-drag-indicator ml-auto hidden shrink-0 items-center gap-1 text-[0.68rem] text-slate-500 sm:inline-flex">
-              <Move className="h-3.5 w-3.5" />
-              {t("agent.frame.drag")}
-            </span>
-          )}
         </div>
         <div className="agent-panel-actions flex shrink-0 items-center gap-1">
           <button
             type="button"
             aria-label={t("agent.header.close")}
             onClick={onClose}
-            className="agent-close-button grid h-11 w-11 shrink-0 place-items-center rounded-md text-slate-400 transition hover:bg-white/5 hover:text-white sm:h-8 sm:w-8"
+            className="agent-close-button grid h-9 w-9 shrink-0 place-items-center rounded-md text-slate-400"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
       </header>
 
-      <div className="agent-topbar border-b border-slate-800 px-4 py-2 text-xs text-slate-300">
+      <div className="agent-topbar relative px-3.5 pb-2.5 text-xs text-slate-300">
         <div className="agent-topbar-primary flex items-center justify-between gap-2">
-          <div className="agent-topbar-meta flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
-            <span className="agent-scope-pill inline-flex items-center gap-1.5 rounded-md border border-slate-600/45 bg-slate-900/55 px-2.5 py-1 text-slate-300">
-              <BookOpen className="h-3.5 w-3.5 text-slate-400" />
-              {scopeLabel(currentScope, t)}
-            </span>
-            {quota && <AgentQuotaBadge quota={quota} />}
+          <div className="agent-topbar-meta flex min-w-0 flex-1 items-center gap-1.5">
             <AgentTrustBoundary
               scopeLabel={scopeLabel(currentScope, t)}
               attachedContextCount={attachedContextCount}
             />
+            {quota && <AgentQuotaBadge quota={quota} />}
           </div>
           <button
+            ref={historyButtonRef}
             type="button"
             onClick={onToggleHistory}
-            disabled={interactionLocked}
+            disabled={interactionLocked && !historyOpen}
             aria-expanded={historyOpen}
+            aria-controls={historyPanelId}
             className={cn(
-              "agent-history-button inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-medium transition sm:min-h-0 sm:px-2.5 sm:py-1.5",
+              "agent-history-button inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-md px-2.5 py-2 text-xs font-medium sm:min-h-0 sm:py-1.5",
               historyOpen
-                ? "border-slate-500 bg-slate-900 text-slate-100"
-                : "border-slate-700 bg-white/[0.025] text-slate-300 hover:border-slate-500 hover:bg-slate-900 hover:text-slate-100"
+                ? "agent-history-button-active text-slate-100"
+                : "text-slate-300"
             )}
           >
             <History className="h-3.5 w-3.5" />
@@ -230,16 +239,16 @@ export function AgentPanel({
         {quota && shouldShowQuotaCallout(quota) && (
           <AgentQuotaCallout quota={quota} />
         )}
+        {historyOpen && (
+          <AgentHistoryPanel
+            id={historyPanelId}
+            conversations={conversations}
+            loading={historyLoading}
+            activeConversationId={activeConversationId}
+            onLoadConversation={onLoadConversation}
+          />
+        )}
       </div>
-
-      {historyOpen && (
-        <AgentHistoryPanel
-          conversations={conversations}
-          loading={historyLoading}
-          activeConversationId={activeConversationId}
-          onLoadConversation={onLoadConversation}
-        />
-      )}
 
       <div
         ref={messageScrollerRef}
@@ -260,11 +269,8 @@ export function AgentPanel({
         )}
 
         {!bootstrapping && !bootstrapError && messages.length === 0 && (
-          <div className="agent-welcome flex min-h-full flex-col justify-start gap-4 py-2">
+          <div className="agent-welcome flex min-h-full flex-col justify-start gap-4 py-1">
             <div>
-              <div className="mb-3 grid h-11 w-11 place-items-center rounded-md border border-slate-700 bg-slate-950/55 text-slate-300">
-                <BookOpen className="h-5 w-5" />
-              </div>
               <h3 className="text-lg font-semibold text-white">
                 {welcomeTitle}
               </h3>
@@ -272,14 +278,14 @@ export function AgentPanel({
                 {welcomeBody}
               </p>
             </div>
-            <div className="agent-suggested-prompts grid">
+            <div className="agent-suggested-prompts grid gap-1">
               {suggestedPrompts.map(prompt => (
                 <button
                   key={prompt}
                   type="button"
                   disabled={sending || inputDisabled}
                   onClick={() => onPrompt(prompt)}
-                  className="agent-suggested-prompt min-h-11 rounded-md border border-slate-700 bg-slate-950/45 px-3 py-2 text-left text-sm font-medium leading-6 text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 disabled:opacity-60"
+                  className="agent-suggested-prompt min-h-11 rounded-md px-3 py-2 text-left text-sm font-medium leading-6 text-slate-300 disabled:opacity-60"
                 >
                   {prompt}
                 </button>
@@ -307,7 +313,7 @@ export function AgentPanel({
                 )}
               >
                 {message.role === "assistant" && (
-                  <span className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-md border border-slate-700 bg-slate-950/55 text-slate-300">
+                  <span className="agent-assistant-mark mt-1 grid h-7 w-7 shrink-0 place-items-center rounded-md text-slate-300">
                     <BookOpen className="h-4 w-4" />
                   </span>
                 )}
@@ -315,8 +321,8 @@ export function AgentPanel({
                   className={cn(
                     "agent-message-bubble rounded-md px-3.5 py-2.5 text-sm leading-6",
                     message.role === "user"
-                      ? "agent-message-bubble-user max-w-[82%] border border-slate-600/50 bg-slate-100/10 text-slate-100"
-                      : "agent-message-bubble-assistant w-full max-w-[calc(100%-2.75rem)] border border-slate-700/70 bg-slate-950/35 text-slate-200"
+                      ? "agent-message-bubble-user max-w-[82%] text-slate-100"
+                      : "agent-message-bubble-assistant w-full max-w-[calc(100%-2.5rem)] text-slate-200"
                   )}
                 >
                   {message.role === "assistant" ? (
@@ -367,7 +373,7 @@ export function AgentPanel({
             ))}
             {sending && !hasStreamingAssistant && (
               <div className="flex items-center gap-3 text-sm text-slate-400">
-                <span className="grid h-8 w-8 place-items-center rounded-md border border-slate-700 bg-slate-950/55 text-slate-300">
+                <span className="agent-assistant-mark grid h-7 w-7 place-items-center rounded-md text-slate-300">
                   <Loader2 className="h-4 w-4 animate-spin" />
                 </span>
                 {t("agent.header.subtitle")}
@@ -383,71 +389,80 @@ export function AgentPanel({
         </div>
       )}
 
-      <AgentContextDock
-        open={contextOpen}
-        value={contextDraft}
-        count={attachedContextCount}
-        attaching={attachingContext}
-        disabled={inputDisabled || interactionLocked}
-        onChange={onContextDraftChange}
-        onToggle={onToggleContext}
-        onAttach={onAttachPastedContext}
-        onPickFile={onPickContextFile}
-      />
+      <div className="agent-input-zone relative">
+        <AgentContextDock
+          panelId={contextPanelId}
+          open={contextOpen}
+          value={contextDraft}
+          count={attachedContextCount}
+          attaching={attachingContext}
+          disabled={inputDisabled || interactionLocked}
+          onChange={onContextDraftChange}
+          onToggle={onToggleContext}
+          onAttach={onAttachPastedContext}
+          onPickFile={onPickContextFile}
+        />
 
-      <form onSubmit={submit} className="border-t border-slate-800 p-3">
-        <div className="flex items-end gap-2 rounded-md border border-slate-700 bg-slate-950/45 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
-          <Button
-            type="button"
-            size="icon"
-            onClick={onToggleContext}
-            disabled={inputDisabled || interactionLocked}
-            aria-label={t("agent.context.toggle")}
-            className={cn(
-              "h-11 w-11 shrink-0 rounded-md border border-slate-700 bg-white/[0.025] text-slate-400 hover:bg-slate-900 hover:text-slate-100 sm:h-10 sm:w-10",
-              contextOpen && "border-slate-500 bg-slate-900 text-slate-100"
-            )}
-          >
-            <Paperclip className="h-4 w-4" />
-          </Button>
-          <Textarea
-            ref={draftInputRef}
-            value={draft}
-            disabled={inputDisabled}
-            onChange={event => onDraftChange(event.target.value)}
-            onKeyDown={event => {
-              if (
-                event.key === "Enter" &&
-                !event.shiftKey &&
-                !event.nativeEvent.isComposing
-              ) {
-                event.preventDefault();
-                onSubmit(draft);
+        <form onSubmit={submit} className="agent-composer px-3 pb-3 pt-2">
+          <div className="agent-composer-shell flex items-end gap-1.5 rounded-md border p-1.5">
+            <Button
+              ref={contextButtonRef}
+              type="button"
+              size="icon"
+              onClick={onToggleContext}
+              disabled={(inputDisabled || interactionLocked) && !contextOpen}
+              aria-label={t("agent.context.toggle")}
+              aria-expanded={contextOpen}
+              aria-controls={contextPanelId}
+              className={cn(
+                "agent-attachment-button h-11 w-11 shrink-0 rounded-md border-0 bg-transparent text-slate-400 shadow-none sm:h-10 sm:w-10",
+                contextOpen && "agent-attachment-button-active text-slate-100"
+              )}
+            >
+              <Paperclip className="h-4 w-4" />
+            </Button>
+            <Textarea
+              ref={draftInputRef}
+              value={draft}
+              disabled={inputDisabled}
+              onChange={event => onDraftChange(event.target.value)}
+              onKeyDown={event => {
+                if (
+                  event.key === "Enter" &&
+                  !event.shiftKey &&
+                  !event.nativeEvent.isComposing
+                ) {
+                  event.preventDefault();
+                  onSubmit(draft);
+                }
+              }}
+              placeholder={t("agent.input.placeholder")}
+              aria-label={t("agent.input.label")}
+              rows={1}
+              className="max-h-28 min-h-11 resize-none border-0 bg-transparent text-sm text-slate-100 shadow-none placeholder:text-slate-500 focus-visible:ring-0 sm:min-h-10"
+            />
+            <Button
+              type={sending ? "button" : "submit"}
+              size="icon"
+              onClick={sending ? onCancel : undefined}
+              disabled={(!draft.trim() && !sending) || inputDisabled}
+              aria-label={
+                sending ? t("agent.input.cancel") : t("agent.input.send")
               }
-            }}
-            placeholder={t("agent.input.placeholder")}
-            rows={1}
-            className="max-h-28 min-h-11 resize-none border-0 bg-transparent text-sm text-slate-100 shadow-none placeholder:text-slate-500 focus-visible:ring-0 sm:min-h-10"
-          />
-          <Button
-            type={sending ? "button" : "submit"}
-            size="icon"
-            onClick={sending ? onCancel : undefined}
-            disabled={(!draft.trim() && !sending) || inputDisabled}
-            aria-label={
-              sending ? t("agent.input.cancel") : t("agent.input.send")
-            }
-            className={cn(
-              "h-11 w-11 shrink-0 rounded-md text-white sm:h-10 sm:w-10",
-              sending
-                ? "bg-slate-700 hover:bg-slate-600"
-                : "bg-slate-100 text-slate-950 hover:bg-white"
-            )}
-          >
-            {sending ? <X className="h-4 w-4" /> : <Send className="h-4 w-4" />}
-          </Button>
-        </div>
-      </form>
+              className={cn(
+                "agent-send-button h-11 w-11 shrink-0 rounded-md border-0 text-white shadow-none sm:h-10 sm:w-10",
+                sending && "agent-send-button-cancel"
+              )}
+            >
+              {sending ? (
+                <X className="h-4 w-4" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        </form>
+      </div>
       {frameControls.resizeHandle}
     </section>
   );

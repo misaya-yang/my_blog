@@ -1797,12 +1797,12 @@
     max-width: 100%;
     margin: 1.75rem 0;
     padding-bottom: 0.15rem;
-    color: oklch(0.84 0.008 96);
+    color: var(--text-primary);
   }
 
   .article-prose :where(.katex) {
     font-size: 1em;
-    color: oklch(0.84 0.008 96);
+    color: var(--text-primary);
   }
 
   .article-prose :where(pre) {

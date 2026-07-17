@@ -26,7 +26,7 @@ export function AgentReasoningTrace({ message }: { message: ChatMessage }) {
   return (
     <details
       open={message.streaming}
-      className="not-prose mb-3 rounded-md border border-slate-700 bg-slate-950/45"
+      className="agent-reasoning-trace not-prose mb-3 rounded-md"
     >
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-xs font-medium text-slate-300">
         <span>
@@ -43,7 +43,7 @@ export function AgentReasoningTrace({ message }: { message: ChatMessage }) {
           <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-slate-400" />
         )}
       </summary>
-      <div className="border-t border-slate-800 px-3 py-2">
+      <div className="agent-reasoning-body px-3 pb-2">
         {traceEntries.length > 0 && (
           <ol className="grid gap-1.5 text-xs leading-5 text-slate-400">
             {stageDurations.map(entry => (

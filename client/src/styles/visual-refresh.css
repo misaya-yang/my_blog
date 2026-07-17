@@ -5735,7 +5735,7 @@
 
   .paper-reader-main .article-prose :where(.katex),
   .paper-reader-main .article-prose :where(.katex-display) {
-    color: var(--reader-ink);
+    color: var(--text-primary);
   }
 
   @media (max-width: 760px) {

@@ -222,22 +222,10 @@ export function SiteHeader({
               <span className="hidden sm:inline">{t("nav.write")}</span>
             </Link>
           )}
-          <Link
-            href="/search"
-            className={cn(
-              "nav-icon-button hidden md:inline-flex",
-              active === "search" && "nav-icon-button-active"
-            )}
-            aria-current={active === "search" ? "page" : undefined}
-            aria-label={t("nav.search")}
-            title={t("nav.search")}
-          >
-            <Search className="h-4 w-4" />
-          </Link>
           {canToggleTheme ? (
             <button
               type="button"
-              className="nav-icon-button nav-theme-toggle hidden md:inline-flex"
+              className="nav-icon-button nav-theme-toggle hidden items-center justify-center p-0 md:inline-flex"
               onClick={toggleTheme}
               aria-label={themeToggleLabel}
               aria-pressed={theme === "dark"}

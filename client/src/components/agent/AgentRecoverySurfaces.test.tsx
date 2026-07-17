@@ -26,9 +26,11 @@ describe("AgentRecoverySurfaces", () => {
     );
 
     expect(warning).toContain("Check context");
-    expect(warning).toContain("border-slate-700");
+    expect(warning).toContain('role="status"');
+    expect(warning).toContain("agent-notice-warning");
     expect(error).toContain("Failed");
-    expect(error).toContain("border-red-300/25");
+    expect(error).toContain('role="alert"');
+    expect(error).toContain("agent-notice-error");
   });
 
   it("renders bootstrap retry state", () => {

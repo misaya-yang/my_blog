@@ -70,19 +70,17 @@ export function clampAgentFrameState(
   input: AgentFrameState,
   viewport: ViewportSize = getViewportSize()
 ): AgentFrameState {
-  const maxWidth = Math.min(
-    AGENT_FRAME_MAX_WIDTH,
-    Math.max(
-      AGENT_FRAME_MIN_SIZE.width,
-      viewport.width - AGENT_FRAME_EDGE_GAP * 2
-    )
-  );
-  const maxHeight = Math.max(
-    AGENT_FRAME_MIN_SIZE.height,
+  const availableWidth = Math.max(1, viewport.width - AGENT_FRAME_EDGE_GAP * 2);
+  const availableHeight = Math.max(
+    1,
     viewport.height - AGENT_FRAME_EDGE_GAP * 2
   );
-  const width = clamp(input.width, AGENT_FRAME_MIN_SIZE.width, maxWidth);
-  const height = clamp(input.height, AGENT_FRAME_MIN_SIZE.height, maxHeight);
+  const minWidth = Math.min(AGENT_FRAME_MIN_SIZE.width, availableWidth);
+  const minHeight = Math.min(AGENT_FRAME_MIN_SIZE.height, availableHeight);
+  const maxWidth = Math.min(AGENT_FRAME_MAX_WIDTH, availableWidth);
+  const maxHeight = availableHeight;
+  const width = clamp(input.width, minWidth, maxWidth);
+  const height = clamp(input.height, minHeight, maxHeight);
   const maxX = Math.max(
     AGENT_FRAME_EDGE_GAP,
     viewport.width - width - AGENT_FRAME_EDGE_GAP

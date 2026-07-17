@@ -17,6 +17,7 @@ describe("AgentContextSurfaces", () => {
   it("renders collapsed context state with attached count", () => {
     const html = renderToStaticMarkup(
       <AgentContextDock
+        panelId="agent-context"
         open={false}
         value=""
         count={2}
@@ -31,13 +32,14 @@ describe("AgentContextSurfaces", () => {
 
     expect(html).toContain("Conversation context");
     expect(html).toContain("2 attached");
-    expect(html).toContain("Active");
     expect(html).not.toContain("Paste notes");
+    expect(html).toContain('aria-label="2 attached"');
   });
 
   it("renders open context controls and limit hint", () => {
     const html = renderToStaticMarkup(
       <AgentContextDock
+        panelId="agent-context"
         open
         value=""
         count={0}
@@ -54,11 +56,14 @@ describe("AgentContextSurfaces", () => {
     expect(html).toContain("Attach file");
     expect(html).toContain("Attach");
     expect(html).toContain("20k characters");
+    expect(html).toContain('id="agent-context"');
+    expect(html).toContain('aria-labelledby="agent-context-title"');
   });
 
   it("renders attached context loading and lifecycle hint", () => {
     const html = renderToStaticMarkup(
       <AgentContextDock
+        panelId="agent-context"
         open
         value="private note"
         count={1}
@@ -106,10 +111,13 @@ function translate(key: string, values?: Record<string, string | number>) {
     (
       {
         "agent.context.title": "Conversation context",
+        "agent.context.close": "Close context",
+        "agent.context.inputLabel": "Context text",
         "agent.context.active": "Active",
         "agent.context.supported": "Paste notes",
         "agent.context.placeholder": "Context placeholder",
         "agent.context.file": "Attach file",
+        "agent.context.fileLabel": "Attach a text file",
         "agent.context.attach": "Attach",
         "agent.context.limit": "Text is limited to 20k characters.",
         "agent.context.lifecycle": "Attached context stays with this conversation.",

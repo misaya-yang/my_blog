@@ -25,6 +25,8 @@ describe("AgentPanel", () => {
     expect(html).toContain("Welcome body");
     expect(html).toContain("Prompt one");
     expect(html).toContain("Prompt two");
+    expect(html).toContain('aria-controls="agent-panel-history"');
+    expect(html).toContain('aria-controls="agent-panel-context"');
   });
 
   it("renders mobile dialog semantics", () => {
@@ -60,6 +62,7 @@ describe("AgentPanel", () => {
     expect(html).toContain("Prior question");
     expect(html).toContain("Visitor");
     expect(html).toContain("No time");
+    expect(html).toContain('id="agent-panel-history"');
   });
 });
 
@@ -149,7 +152,11 @@ function translate(key: string, values?: Record<string, string | number>) {
         "agent.history.owner.anonymous": "Anonymous",
         "agent.context.title": "Conversation context",
         "agent.context.toggle": "Attach context",
+        "agent.context.close": "Close context",
         "agent.context.placeholder": "Ask about notes",
+        "agent.context.inputLabel": "Context text",
+        "agent.context.fileLabel": "Attach a text file",
+        "agent.input.label": "Message the blog assistant",
         "agent.input.placeholder": "Ask the blog",
         "agent.input.send": "Send",
         "agent.input.cancel": "Cancel",

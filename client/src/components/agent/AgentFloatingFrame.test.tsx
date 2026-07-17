@@ -54,5 +54,8 @@ describe("AgentFloatingFrame", () => {
     expect(html).toContain("drag:Drag panel");
     expect(html).toContain("Resize panel");
     expect(html).toContain("agent-frame-resize-handle");
+    expect(html).toContain(
+      'aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight"'
+    );
   });
 });

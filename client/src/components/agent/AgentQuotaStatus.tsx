@@ -14,7 +14,7 @@ export function AgentQuotaBadge({ quota }: { quota: QuotaStatus }) {
 
   return (
     <span
-      className="agent-quota-badge inline-flex items-center gap-1.5 rounded-md border border-slate-500/25 bg-white/[0.03] px-2.5 py-1 text-slate-300"
+      className="agent-quota-badge inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-slate-300"
       title={quota.tier ? `${quota.tier} quota` : undefined}
     >
       <LogIn className="h-3.5 w-3.5 text-slate-400" />
@@ -35,7 +35,7 @@ export function AgentQuotaCallout({
       : t("agent.quota.lowDetail");
 
   return (
-    <div className="mt-2 rounded-md border border-slate-700 bg-slate-950/45 px-3 py-2 text-xs leading-5 text-slate-300">
+    <div className="agent-quota-callout mt-1.5 rounded-md px-2.5 py-1.5 text-xs leading-5 text-slate-300">
       {message}
     </div>
   );

@@ -96,6 +96,15 @@ describe("SiteHeader public access model", () => {
     expect(html).not.toContain(">Login<");
   });
 
+  it("removes the redundant desktop search icon and centers the theme control", () => {
+    const html = renderToStaticMarkup(<SiteHeader active="home" />);
+
+    expect(html).not.toMatch(/<a[^>]*href="\/search"[^>]*aria-label="Search"/);
+    expect(html).toContain(
+      'class="nav-icon-button nav-theme-toggle hidden items-center justify-center p-0 md:inline-flex"'
+    );
+  });
+
   it("reflects the shared Agent open state on the mobile trigger", () => {
     setBlogAgentOpenState(true);
 

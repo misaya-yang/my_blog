@@ -397,6 +397,14 @@ export function BlogAgentRoot() {
         return;
 
       event.preventDefault();
+      if (contextOpen) {
+        setContextOpen(false);
+        return;
+      }
+      if (historyOpen) {
+        setHistoryOpen(false);
+        return;
+      }
       void utils.agent.bootstrap.cancel();
       void utils.agent.listConversations.cancel();
       setBlogAgentOpenState(false);
@@ -413,6 +421,8 @@ export function BlogAgentRoot() {
     window.addEventListener("keydown", handleGlobalKeyDown);
     return () => window.removeEventListener("keydown", handleGlobalKeyDown);
   }, [
+    contextOpen,
+    historyOpen,
     isMobile,
     open,
     utils.agent.bootstrap,
@@ -661,6 +671,14 @@ export function BlogAgentRoot() {
     };
     if (event.key === "Escape" && !nativeEvent.isComposing) {
       event.preventDefault();
+      if (contextOpen) {
+        setContextOpen(false);
+        return;
+      }
+      if (historyOpen) {
+        setHistoryOpen(false);
+        return;
+      }
       closeAgent();
       return;
     }
@@ -688,6 +706,18 @@ export function BlogAgentRoot() {
       event.preventDefault();
       first.focus();
     }
+  }
+
+  function toggleContextSurface() {
+    const nextOpen = !contextOpen;
+    setContextOpen(nextOpen);
+    if (nextOpen) setHistoryOpen(false);
+  }
+
+  function toggleHistorySurface() {
+    const nextOpen = !historyOpen;
+    setHistoryOpen(nextOpen);
+    if (nextOpen) setContextOpen(false);
   }
 
   async function handleAttachContext(input: {
@@ -810,7 +840,7 @@ export function BlogAgentRoot() {
                 onPanelKeyDown={handlePanelKeyDown}
                 onDraftChange={setDraft}
                 onContextDraftChange={setContextDraft}
-                onToggleContext={() => setContextOpen(value => !value)}
+                onToggleContext={toggleContextSurface}
                 onAttachPastedContext={() =>
                   handleAttachContext({
                     kind: "pasted_text",
@@ -818,7 +848,7 @@ export function BlogAgentRoot() {
                   })
                 }
                 onPickContextFile={() => fileInputRef.current?.click()}
-                onToggleHistory={() => setHistoryOpen(value => !value)}
+                onToggleHistory={toggleHistorySurface}
                 onLoadConversation={handleLoadConversation}
                 onPrompt={handleSubmit}
                 onSubmit={handleSubmit}

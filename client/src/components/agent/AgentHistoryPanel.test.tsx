@@ -19,6 +19,7 @@ describe("AgentHistoryPanel", () => {
   it("renders the empty history state", () => {
     const html = renderToStaticMarkup(
       <AgentHistoryPanel
+        id="agent-history"
         conversations={[]}
         loading={false}
         onLoadConversation={() => undefined}
@@ -27,6 +28,7 @@ describe("AgentHistoryPanel", () => {
 
     expect(html).toContain("History");
     expect(html).toContain("No history yet");
+    expect(html).toContain('aria-labelledby="agent-history-title"');
   });
 
   it("renders active conversations with owner and fallback title labels", () => {
@@ -51,6 +53,7 @@ describe("AgentHistoryPanel", () => {
 
     const html = renderToStaticMarkup(
       <AgentHistoryPanel
+        id="agent-history"
         conversations={conversations}
         loading
         activeConversationId="conv-1"
@@ -64,7 +67,8 @@ describe("AgentHistoryPanel", () => {
     expect(html).toContain("Existing conversation");
     expect(html).toContain("Owner");
     expect(html).toContain("No time");
-    expect(html).toContain("border-slate-500 bg-slate-900");
+    expect(html).toContain('aria-current="true"');
+    expect(html).toContain("agent-history-row-active");
     expect(html).toContain("animate-spin");
   });
 

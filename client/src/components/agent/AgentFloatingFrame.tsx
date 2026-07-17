@@ -134,7 +134,7 @@ export function AgentFloatingFrame({
     window.addEventListener("pointercancel", cleanup, { once: true });
   }
 
-  function startResize(event: ReactPointerEvent<HTMLButtonElement>) {
+  function startResize(event: ReactPointerEvent<HTMLElement>) {
     event.preventDefault();
     event.stopPropagation();
     interactionCleanupRef.current?.();
@@ -174,6 +174,27 @@ export function AgentFloatingFrame({
     window.addEventListener("pointercancel", cleanup, { once: true });
   }
 
+  function resizeWithKeyboard(event: React.KeyboardEvent<HTMLButtonElement>) {
+    const step = event.shiftKey ? 32 : 16;
+    const delta = {
+      ArrowLeft: { width: -step, height: 0 },
+      ArrowRight: { width: step, height: 0 },
+      ArrowUp: { width: 0, height: -step },
+      ArrowDown: { width: 0, height: step },
+    }[event.key];
+    if (!delta) return;
+
+    event.preventDefault();
+    setFrame(current =>
+      clampAgentFrameState({
+        ...current,
+        width: current.width + delta.width,
+        height: current.height + delta.height,
+        preset: undefined,
+      })
+    );
+  }
+
   function applyPreset(preset: AgentFramePreset) {
     const size = AGENT_FRAME_PRESETS[preset];
     setFrame(current =>
@@ -211,8 +232,10 @@ export function AgentFloatingFrame({
           <button
             type="button"
             aria-label={t("agent.frame.resize")}
+            aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight"
             title={t("agent.frame.resize")}
             onPointerDown={startResize}
+            onKeyDown={resizeWithKeyboard}
             className="agent-frame-resize-handle"
           >
             <Grip className="h-3.5 w-3.5" />

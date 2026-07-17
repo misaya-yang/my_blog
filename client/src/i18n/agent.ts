@@ -142,8 +142,12 @@ const agent: TranslationDict = {
     zh: "基于公开搜索、归档、标签与分类缩小主题，找到下一篇该读的文章。",
   },
   "agent.input.placeholder": {
-    en: "Ask about a note, section, or reading path...",
-    zh: "询问笔记、小节或阅读路径...",
+    en: "Ask about notes or reading paths…",
+    zh: "询问笔记或阅读路径…",
+  },
+  "agent.input.label": {
+    en: "Message the blog assistant",
+    zh: "向博客助手提问",
   },
   "agent.input.send": {
     en: "Send",
@@ -173,9 +177,17 @@ const agent: TranslationDict = {
     en: "Attach conversation context",
     zh: "添加会话上下文",
   },
+  "agent.context.close": {
+    en: "Close conversation context",
+    zh: "关闭会话上下文",
+  },
   "agent.context.placeholder": {
     en: "Paste short notes, article fragments, or question context...",
     zh: "粘贴短笔记、文章片段或问题上下文...",
+  },
+  "agent.context.inputLabel": {
+    en: "Conversation context text",
+    zh: "会话上下文文本",
   },
   "agent.context.attach": {
     en: "Attach",
@@ -184,6 +196,10 @@ const agent: TranslationDict = {
   "agent.context.file": {
     en: ".txt / .md",
     zh: ".txt / .md",
+  },
+  "agent.context.fileLabel": {
+    en: "Attach a .txt or .md file",
+    zh: "添加 .txt 或 .md 文件",
   },
   "agent.context.active": {
     en: "Attached",

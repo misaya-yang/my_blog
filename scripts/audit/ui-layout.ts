@@ -49,6 +49,11 @@ async function main() {
         width: 1440,
         height: 1000,
       }),
+      await inspectMathPost(browser, {
+        name: "desktop",
+        width: 1440,
+        height: 1000,
+      }),
       await inspectSearchZero(browser, {
         name: "mobile",
         width: 390,
@@ -83,6 +88,11 @@ async function main() {
         name: "tablet",
         width: 1024,
         height: 768,
+      }),
+      await inspectAgentCompactDesktop(browser, {
+        name: "short-desktop",
+        width: 1366,
+        height: 420,
       }),
       await inspectAgentAnswerFixture(browser, {
         name: "mobile",
@@ -182,12 +192,21 @@ async function inspectHome(browser: BrowserLike, viewport: Viewport) {
     const researchIndex = document.querySelector("#research-index");
     const header = document.querySelector(".site-header");
     const searchDock = document.querySelector(".home-search-dock");
+    const themeToggle = document.querySelector(
+      ".site-header .nav-theme-toggle"
+    );
+    const themeIcon = themeToggle?.querySelector("svg") ?? null;
     return {
       featuredNoteY: rectTop(featuredNote),
       firstArticleY: rectTop(firstArticle),
       researchIndexY: rectTop(researchIndex),
       headerHeight: rectHeight(header),
       searchDockY: rectTop(searchDock),
+      desktopHeaderSearchIconCount: document.querySelectorAll(
+        '.site-header a.nav-icon-button[href="/search"]'
+      ).length,
+      themeIconCenterOffsetX: centerOffset(themeToggle, themeIcon, "x"),
+      themeIconCenterOffsetY: centerOffset(themeToggle, themeIcon, "y"),
       bodyScrollWidth: document.body.scrollWidth,
       documentScrollWidth: document.documentElement.scrollWidth,
       viewportWidth: window.innerWidth,
@@ -199,6 +218,22 @@ async function inspectHome(browser: BrowserLike, viewport: Viewport) {
 
     function rectHeight(element: Element | null) {
       return element?.getBoundingClientRect().height ?? null;
+    }
+
+    function centerOffset(
+      outer: Element | null,
+      inner: Element | null,
+      axis: "x" | "y"
+    ) {
+      if (!outer || !inner) return null;
+      const outerRect = outer.getBoundingClientRect();
+      const innerRect = inner.getBoundingClientRect();
+      const outerSize = axis === "x" ? outerRect.width : outerRect.height;
+      const innerSize = axis === "x" ? innerRect.width : innerRect.height;
+      if (outerSize === 0 || innerSize === 0) return null;
+      const outerStart = axis === "x" ? outerRect.x : outerRect.y;
+      const innerStart = axis === "x" ? innerRect.x : innerRect.y;
+      return innerStart + innerSize / 2 - (outerStart + outerSize / 2);
     }
   });
 
@@ -213,6 +248,14 @@ async function inspectHome(browser: BrowserLike, viewport: Viewport) {
         measurements.bodyScrollWidth <= measurements.viewportWidth &&
         measurements.documentScrollWidth <= measurements.viewportWidth,
       headerHeightWithinLimit: Number(measurements.headerHeight ?? 0) <= 72,
+      desktopHeaderSearchIconRemoved:
+        Number(measurements.desktopHeaderSearchIconCount) === 0,
+      themeToggleIconCentered:
+        viewport.width < 768 ||
+        (Math.abs(Number(measurements.themeIconCenterOffsetX ?? Infinity)) <=
+          0.5 &&
+          Math.abs(Number(measurements.themeIconCenterOffsetY ?? Infinity)) <=
+            0.5),
       featuredNoteVisibleSoon:
         Number(measurements.featuredNoteY ?? Infinity) <=
         (viewport.width < 768 ? 420 : 460),
@@ -228,6 +271,88 @@ async function inspectHome(browser: BrowserLike, viewport: Viewport) {
           ? Number(measurements.searchDockY ?? Infinity) <=
             viewport.height + 120
           : true,
+    },
+  };
+}
+
+async function inspectMathPost(browser: BrowserLike, viewport: Viewport) {
+  const page = await newMeasuredPage(browser, viewport);
+  await gotoAndWait(
+    page,
+    `${baseUrl}/post/llm-rl-post-training-verifiable-rewards`,
+    ".paper-reader-main .article-prose .katex-display"
+  );
+
+  const measurements = await page.evaluate(() => {
+    const root = document.documentElement;
+    const hadDarkTheme = root.classList.contains("dark");
+
+    root.classList.remove("dark");
+    const light = readMathColors();
+    root.classList.add("dark");
+    const dark = readMathColors();
+    root.classList.toggle("dark", hadDarkTheme);
+
+    return {
+      formulaCount: light.formulaCount,
+      lightFormulaColor: light.formulaColor,
+      lightPrimaryInkColor: light.primaryInkColor,
+      lightFormulaUsesPrimaryInk: light.formulaUsesPrimaryInk,
+      darkFormulaColor: dark.formulaColor,
+      darkPrimaryInkColor: dark.primaryInkColor,
+      darkFormulaUsesPrimaryInk: dark.formulaUsesPrimaryInk,
+      bodyScrollWidth: document.body.scrollWidth,
+      documentScrollWidth: document.documentElement.scrollWidth,
+      viewportWidth: window.innerWidth,
+    };
+
+    function readMathColors() {
+      const formulas = Array.from(
+        document.querySelectorAll<HTMLElement>(
+          ".paper-reader-main .article-prose .katex"
+        )
+      );
+      const colorProbe = document.createElement("span");
+      colorProbe.style.color = "var(--text-primary)";
+      colorProbe.hidden = true;
+      document.body.append(colorProbe);
+      const primaryInkColor = getComputedStyle(colorProbe).color;
+      colorProbe.remove();
+      const formulaColor = formulas[0]
+        ? getComputedStyle(formulas[0]).color
+        : null;
+      return {
+        formulaCount: formulas.length,
+        formulaColor,
+        primaryInkColor,
+        formulaUsesPrimaryInk:
+          Boolean(primaryInkColor && formulaColor) &&
+          formulas.every(
+            formula => getComputedStyle(formula).color === primaryInkColor
+          ),
+      };
+    }
+  });
+
+  await page.close();
+
+  return {
+    route: "/post/llm-rl-post-training-verifiable-rewards#math-contrast",
+    viewport,
+    measurements,
+    checks: {
+      formulasRendered: Number(measurements.formulaCount) > 0,
+      lightFormulaUsesPrimaryInk: Boolean(
+        measurements.lightFormulaUsesPrimaryInk
+      ),
+      darkFormulaUsesPrimaryInk: Boolean(
+        measurements.darkFormulaUsesPrimaryInk
+      ),
+      noHorizontalOverflow:
+        Number(measurements.bodyScrollWidth) <=
+          Number(measurements.viewportWidth) &&
+        Number(measurements.documentScrollWidth) <=
+          Number(measurements.viewportWidth),
     },
   };
 }
@@ -253,8 +378,9 @@ async function inspectPost(browser: BrowserLike, viewport: Viewport) {
     const subscription = document.querySelector<HTMLElement>(
       ".article-subscription-panel"
     );
-    const subscriptionSubmit =
-      subscription?.querySelector<HTMLButtonElement>('button[type="submit"]');
+    const subscriptionSubmit = subscription?.querySelector<HTMLButtonElement>(
+      'button[type="submit"]'
+    );
     return {
       headerHeight: rectHeight(header),
       proseY: rectTop(prose),
@@ -265,9 +391,10 @@ async function inspectPost(browser: BrowserLike, viewport: Viewport) {
       feedbackHeight: rectHeight(feedback),
       feedbackClientWidth: feedback?.clientWidth ?? null,
       feedbackScrollWidth: feedback?.scrollWidth ?? null,
-      feedbackSentimentButtons: feedback?.querySelectorAll(
-        'button[aria-pressed="false"], button[aria-pressed="true"]'
-      ).length ?? 0,
+      feedbackSentimentButtons:
+        feedback?.querySelectorAll(
+          'button[aria-pressed="false"], button[aria-pressed="true"]'
+        ).length ?? 0,
       feedbackDetailToggle: Boolean(
         feedback?.querySelector(".article-feedback-detail-toggle")
       ),
@@ -275,8 +402,7 @@ async function inspectPost(browser: BrowserLike, viewport: Viewport) {
         feedback
           ?.querySelector(".article-feedback-detail-toggle")
           ?.getAttribute("aria-expanded") ?? null,
-      feedbackTextareaCount:
-        feedback?.querySelectorAll("textarea").length ?? 0,
+      feedbackTextareaCount: feedback?.querySelectorAll("textarea").length ?? 0,
       feedbackInputCount: feedback?.querySelectorAll("input").length ?? 0,
       feedbackSubmitExists: Boolean(feedbackSubmit),
       feedbackSubmitDisabled: feedbackSubmit?.disabled ?? null,
@@ -558,6 +684,7 @@ async function inspectAgentDialog(browser: BrowserLike, viewport: Viewport) {
   await page.waitForSelector(triggerSelector);
   await page.click(triggerSelector);
   await page.waitForSelector(".agent-liquid-panel");
+  await page.waitForSelector(".agent-attachment-button:not([disabled])");
   await page.waitForTimeout(120);
 
   const measurements = await page.evaluate(() => {
@@ -585,10 +712,131 @@ async function inspectAgentDialog(browser: BrowserLike, viewport: Viewport) {
         panel?.contains(document.activeElement) ?? false,
       bodyPosition: document.body.style.position,
       routeSurfaceInert: routeSurface?.inert ?? false,
-      routeSurfaceAriaHidden:
-        routeSurface?.getAttribute("aria-hidden") ?? null,
+      routeSurfaceAriaHidden: routeSurface?.getAttribute("aria-hidden") ?? null,
+      panelBorderedDescendants: panel ? countBorderedDescendants(panel) : null,
+      topbarHeight: rectHeight(panel?.querySelector(".agent-topbar") ?? null),
+      scrollerHeight: rectHeight(
+        panel?.querySelector(".agent-message-scroll") ?? null
+      ),
+      panelInsideViewport: panel
+        ? isInsideViewport(panel.getBoundingClientRect())
+        : false,
+    };
+
+    function rectHeight(element: Element | null) {
+      return element?.getBoundingClientRect().height ?? null;
+    }
+
+    function countBorderedDescendants(element: Element) {
+      return Array.from(element.querySelectorAll("*")).filter(node => {
+        const style = window.getComputedStyle(node);
+        return [
+          style.borderTopWidth,
+          style.borderRightWidth,
+          style.borderBottomWidth,
+          style.borderLeftWidth,
+        ].some(value => Number.parseFloat(value) > 0);
+      }).length;
+    }
+
+    function isInsideViewport(rect: DOMRect) {
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.right <= window.innerWidth &&
+        rect.bottom <= window.innerHeight
+      );
+    }
+  });
+
+  const baseScrollerHeight = Number(measurements.scrollerHeight ?? 0);
+  await page.click(".agent-history-button");
+  await page.waitForSelector(".agent-history-panel");
+  await page.waitForTimeout(40);
+  const historyLayer = await page.evaluate(() => {
+    const panel = document.querySelector<HTMLElement>(".agent-liquid-panel");
+    const button = document.querySelector<HTMLElement>(".agent-history-button");
+    const surface = document.querySelector<HTMLElement>(".agent-history-panel");
+    const scroller = document.querySelector<HTMLElement>(
+      ".agent-message-scroll"
+    );
+    const panelRect = panel?.getBoundingClientRect();
+    const surfaceRect = surface?.getBoundingClientRect();
+    return {
+      scrollerHeight: scroller?.getBoundingClientRect().height ?? null,
+      controlsMatch:
+        Boolean(surface?.id) &&
+        button?.getAttribute("aria-controls") === surface?.id,
+      expanded: button?.getAttribute("aria-expanded") ?? null,
+      surfaceInsidePanel:
+        Boolean(panelRect && surfaceRect) &&
+        surfaceRect!.left >= panelRect!.left &&
+        surfaceRect!.right <= panelRect!.right &&
+        surfaceRect!.top >= panelRect!.top &&
+        surfaceRect!.bottom <= panelRect!.bottom,
+      focusEnteredSurface: surface?.contains(document.activeElement) ?? false,
     };
   });
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(40);
+  const historyEscape = await page.evaluate(() => ({
+    surfaceClosed: !document.querySelector(".agent-history-panel"),
+    focusReturned:
+      document.activeElement ===
+      document.querySelector(".agent-history-button"),
+  }));
+
+  await page.click(".agent-attachment-button");
+  await page.waitForSelector(".agent-context-editor");
+  await page.waitForTimeout(40);
+  const contextLayer = await page.evaluate(() => {
+    const panel = document.querySelector<HTMLElement>(".agent-liquid-panel");
+    const button = document.querySelector<HTMLElement>(
+      ".agent-attachment-button"
+    );
+    const surface = document.querySelector<HTMLElement>(
+      ".agent-context-editor"
+    );
+    const scroller = document.querySelector<HTMLElement>(
+      ".agent-message-scroll"
+    );
+    const panelRect = panel?.getBoundingClientRect();
+    const surfaceRect = surface?.getBoundingClientRect();
+    const textarea = surface?.querySelector("textarea");
+    return {
+      scrollerHeight: scroller?.getBoundingClientRect().height ?? null,
+      controlsMatch:
+        Boolean(surface?.id) &&
+        button?.getAttribute("aria-controls") === surface?.id,
+      expanded: button?.getAttribute("aria-expanded") ?? null,
+      surfaceInsidePanel:
+        Boolean(panelRect && surfaceRect) &&
+        surfaceRect!.left >= panelRect!.left &&
+        surfaceRect!.right <= panelRect!.right &&
+        surfaceRect!.top >= panelRect!.top &&
+        surfaceRect!.bottom <= panelRect!.bottom,
+      focusEnteredTextarea: document.activeElement === textarea,
+      borderedDescendants: panel
+        ? Array.from(panel.querySelectorAll("*")).filter(node => {
+            const style = window.getComputedStyle(node);
+            return [
+              style.borderTopWidth,
+              style.borderRightWidth,
+              style.borderBottomWidth,
+              style.borderLeftWidth,
+            ].some(value => Number.parseFloat(value) > 0);
+          }).length
+        : null,
+    };
+  });
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(40);
+  const contextEscape = await page.evaluate(() => ({
+    surfaceClosed: !document.querySelector(".agent-context-editor"),
+    focusReturned:
+      document.activeElement ===
+      document.querySelector(".agent-attachment-button"),
+  }));
 
   await page.keyboard.press("Shift+Tab");
   const reverseTabTrapped = await page.evaluate(
@@ -621,8 +869,7 @@ async function inspectAgentDialog(browser: BrowserLike, viewport: Viewport) {
       triggerExpanded: trigger?.getAttribute("aria-expanded") ?? null,
       bodyPosition: document.body.style.position,
       routeSurfaceInert: routeSurface?.inert ?? false,
-      routeSurfaceAriaHidden:
-        routeSurface?.getAttribute("aria-hidden") ?? null,
+      routeSurfaceAriaHidden: routeSurface?.getAttribute("aria-hidden") ?? null,
     };
   });
   await page.close();
@@ -632,6 +879,21 @@ async function inspectAgentDialog(browser: BrowserLike, viewport: Viewport) {
     viewport,
     measurements: {
       ...measurements,
+      historyScrollerHeight: historyLayer.scrollerHeight,
+      historyControlsMatch: historyLayer.controlsMatch,
+      historyExpanded: historyLayer.expanded,
+      historySurfaceInsidePanel: historyLayer.surfaceInsidePanel,
+      historyFocusEnteredSurface: historyLayer.focusEnteredSurface,
+      historyEscapeSurfaceClosed: historyEscape.surfaceClosed,
+      historyEscapeFocusReturned: historyEscape.focusReturned,
+      contextScrollerHeight: contextLayer.scrollerHeight,
+      contextControlsMatch: contextLayer.controlsMatch,
+      contextExpanded: contextLayer.expanded,
+      contextSurfaceInsidePanel: contextLayer.surfaceInsidePanel,
+      contextFocusEnteredTextarea: contextLayer.focusEnteredTextarea,
+      contextBorderedDescendants: contextLayer.borderedDescendants,
+      contextEscapeSurfaceClosed: contextEscape.surfaceClosed,
+      contextEscapeFocusReturned: contextEscape.focusReturned,
       reverseTabTrapped,
       scrollBefore,
       scrollAfter,
@@ -646,6 +908,30 @@ async function inspectAgentDialog(browser: BrowserLike, viewport: Viewport) {
       panelIsModal: measurements.panelModal === "true",
       panelHasName: Boolean(measurements.panelLabelledBy),
       focusEnteredPanel: Boolean(measurements.activeElementInsidePanel),
+      panelInsideViewport: Boolean(measurements.panelInsideViewport),
+      quietSurfaceBorderBudget:
+        Number(measurements.panelBorderedDescendants ?? Infinity) <= 1,
+      compactTopbar: Number(measurements.topbarHeight ?? Infinity) <= 76,
+      historyControlsMatch: historyLayer.controlsMatch,
+      historyDoesNotCompressMessages:
+        Math.abs(
+          Number(historyLayer.scrollerHeight ?? 0) - baseScrollerHeight
+        ) <= 1,
+      historyStaysInsidePanel: historyLayer.surfaceInsidePanel,
+      historyReceivesFocus: historyLayer.focusEnteredSurface,
+      historyEscapeClosesAndReturnsFocus:
+        historyEscape.surfaceClosed && historyEscape.focusReturned,
+      contextControlsMatch: contextLayer.controlsMatch,
+      contextDoesNotCompressMessages:
+        Math.abs(
+          Number(contextLayer.scrollerHeight ?? 0) - baseScrollerHeight
+        ) <= 1,
+      contextStaysInsidePanel: contextLayer.surfaceInsidePanel,
+      contextReceivesFocus: contextLayer.focusEnteredTextarea,
+      contextBorderBudget:
+        Number(contextLayer.borderedDescendants ?? Infinity) <= 3,
+      contextEscapeClosesAndReturnsFocus:
+        contextEscape.surfaceClosed && contextEscape.focusReturned,
       reverseTabStaysInPanel: reverseTabTrapped,
       modalLocksBackgroundScroll: scrollBefore === scrollAfter,
       modalMakesRouteInert: Boolean(measurements.routeSurfaceInert),
@@ -658,6 +944,129 @@ async function inspectAgentDialog(browser: BrowserLike, viewport: Viewport) {
       closeRestoresRoute:
         !afterEscape.routeSurfaceInert &&
         afterEscape.routeSurfaceAriaHidden === null,
+    },
+  };
+}
+
+async function inspectAgentCompactDesktop(
+  browser: BrowserLike,
+  viewport: Viewport
+) {
+  const page = await newMeasuredPage(browser, viewport);
+  await gotoAndWait(page, `${baseUrl}/`, ".home-index-spread");
+  await page.waitForSelector(".agent-liquid-launcher");
+  await page.click(".agent-liquid-launcher");
+  await page.waitForSelector(".agent-liquid-panel");
+  await page.waitForTimeout(120);
+
+  const measurements = await page.evaluate(() => {
+    const panel = document.querySelector<HTMLElement>(".agent-liquid-panel");
+    const scroller = document.querySelector<HTMLElement>(
+      ".agent-message-scroll"
+    );
+    const composer = document.querySelector<HTMLElement>(
+      ".agent-composer-shell"
+    );
+    const panelRect = panel?.getBoundingClientRect();
+    const composerRect = composer?.getBoundingClientRect();
+    return {
+      panelTop: panelRect?.top ?? null,
+      panelRight: panelRect?.right ?? null,
+      panelBottom: panelRect?.bottom ?? null,
+      panelLeft: panelRect?.left ?? null,
+      panelHeight: panelRect?.height ?? null,
+      scrollerHeight: scroller?.getBoundingClientRect().height ?? null,
+      composerBottom: composerRect?.bottom ?? null,
+      panelClientWidth: panel?.clientWidth ?? null,
+      panelScrollWidth: panel?.scrollWidth ?? null,
+      viewportWidth: window.innerWidth,
+      viewportHeight: window.innerHeight,
+    };
+  });
+
+  await page.click(".agent-history-button");
+  await page.waitForSelector(".agent-history-panel");
+  await page.evaluate(() => {
+    document
+      .querySelector<HTMLElement>(".home-index-spread a, .site-header a")
+      ?.focus();
+  });
+  await page.keyboard.press("Escape");
+  await page.waitForSelector(".agent-history-panel", { state: "detached" });
+  await page.waitForTimeout(32);
+  const historyLayeredEscape = await page.evaluate(() => ({
+    panelExists: Boolean(document.querySelector(".agent-liquid-panel")),
+    surfaceClosed: !document.querySelector(".agent-history-panel"),
+    expanded:
+      document
+        .querySelector<HTMLElement>(".agent-history-button")
+        ?.getAttribute("aria-expanded") ?? null,
+    focusReturned:
+      document.activeElement ===
+      document.querySelector<HTMLElement>(".agent-history-button"),
+  }));
+
+  await page.click(".agent-attachment-button");
+  await page.waitForSelector(".agent-context-editor");
+  await page.evaluate(() => {
+    document
+      .querySelector<HTMLElement>(".home-index-spread a, .site-header a")
+      ?.focus();
+  });
+  await page.keyboard.press("Escape");
+  await page.waitForSelector(".agent-context-editor", { state: "detached" });
+  await page.waitForTimeout(32);
+  const contextLayeredEscape = await page.evaluate(() => ({
+    panelExists: Boolean(document.querySelector(".agent-liquid-panel")),
+    surfaceClosed: !document.querySelector(".agent-context-editor"),
+    expanded:
+      document
+        .querySelector<HTMLElement>(".agent-attachment-button")
+        ?.getAttribute("aria-expanded") ?? null,
+    focusReturned:
+      document.activeElement ===
+      document.querySelector<HTMLElement>(".agent-attachment-button"),
+  }));
+  await page.close();
+
+  return {
+    route: "/#agent-short-desktop",
+    viewport,
+    measurements: {
+      ...measurements,
+      historyEscapePanelExists: historyLayeredEscape.panelExists,
+      historyEscapeSurfaceClosed: historyLayeredEscape.surfaceClosed,
+      historyEscapeExpanded: historyLayeredEscape.expanded,
+      historyEscapeFocusReturned: historyLayeredEscape.focusReturned,
+      contextEscapePanelExists: contextLayeredEscape.panelExists,
+      contextEscapeSurfaceClosed: contextLayeredEscape.surfaceClosed,
+      contextEscapeExpanded: contextLayeredEscape.expanded,
+      contextEscapeFocusReturned: contextLayeredEscape.focusReturned,
+    },
+    checks: {
+      panelFitsShortViewport:
+        Number(measurements.panelTop ?? -1) >= 0 &&
+        Number(measurements.panelLeft ?? -1) >= 0 &&
+        Number(measurements.panelRight ?? Infinity) <= viewport.width &&
+        Number(measurements.panelBottom ?? Infinity) <= viewport.height,
+      panelHeightUsesAvailableSpace:
+        Number(measurements.panelHeight ?? Infinity) <= viewport.height - 32,
+      messageAreaRemainsUsable: Number(measurements.scrollerHeight ?? 0) >= 72,
+      composerStaysReachable:
+        Number(measurements.composerBottom ?? Infinity) <= viewport.height,
+      noHorizontalOverflow:
+        Number(measurements.panelScrollWidth ?? Infinity) <=
+        Number(measurements.panelClientWidth ?? 0) + 1,
+      historyEscapeIsLayeredOutsidePanel:
+        historyLayeredEscape.panelExists &&
+        historyLayeredEscape.surfaceClosed &&
+        historyLayeredEscape.expanded === "false" &&
+        historyLayeredEscape.focusReturned,
+      contextEscapeIsLayeredOutsidePanel:
+        contextLayeredEscape.panelExists &&
+        contextLayeredEscape.surfaceClosed &&
+        contextLayeredEscape.expanded === "false" &&
+        contextLayeredEscape.focusReturned,
     },
   };
 }
@@ -725,32 +1134,32 @@ async function inspectAgentAnswerFixture(
     scroller.innerHTML = `
       <div class="space-y-4">
         <article class="agent-message-row flex min-w-0 gap-3 justify-start">
-          <span class="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-md border border-slate-700 bg-slate-950/55 text-slate-300" aria-hidden="true"></span>
-          <div class="agent-message-bubble agent-message-bubble-assistant w-full max-w-[calc(100%-2.75rem)] rounded-md border border-slate-700/70 bg-slate-950/35 px-3.5 py-2.5 text-sm leading-6 text-slate-200">
+          <span class="agent-assistant-mark mt-1 grid h-7 w-7 shrink-0 place-items-center rounded-md text-slate-300" aria-hidden="true"></span>
+          <div class="agent-message-bubble agent-message-bubble-assistant w-full max-w-[calc(100%-2.5rem)] rounded-md text-sm leading-6 text-slate-200">
             <div class="prose prose-sm prose-invert max-w-none prose-p:my-2 prose-li:my-1">
               <p class="agent-fixture-answer-start">这是一段足够长的伴读回答，用于验证回答完成后读者仍然先看到答案，而不是被来源区块推到面板底部。它覆盖中文长句、英文术语 RLHF / retrieval / source grounding，以及不会自动产生横向滚动的超长词 longretrievalgroundingcitationidentifierwithoutspaces。</p>
               <p>第二段继续模拟真实回答内容，包含列表、解释和小结。布局要求是正文仍然可读，来源入口保持可追溯但默认收起，输入框在当前视口内可继续使用。</p>
             </div>
-            <div class="agent-sources mt-3 border-t border-slate-800/80 pt-3" data-source-total="5">
+            <div class="agent-sources mt-4" data-source-total="5">
               <div class="agent-source-summary flex min-w-0 flex-wrap items-center justify-between gap-2 text-xs">
                 <div class="flex min-w-0 flex-1 items-center gap-2">
                   <span class="shrink-0 font-semibold text-slate-500">5 个来源</span>
                   <div class="agent-source-chips flex min-w-0 flex-1 items-center gap-1.5">
-                    <span class="agent-source-chip truncate rounded-md border border-slate-700 bg-slate-950/35 px-2 py-0.5 text-[0.68rem] font-medium text-slate-400">大模型强化学习：从 RLHF 到可验证奖励</span>
-                    <span class="agent-source-chip truncate rounded-md border border-slate-700 bg-slate-950/35 px-2 py-0.5 text-[0.68rem] font-medium text-slate-400">Agent Phase Harness 设计协议</span>
-                    <span class="agent-source-chip shrink-0 rounded-md border border-slate-700 bg-slate-950/35 px-2 py-0.5 text-[0.68rem] font-medium text-slate-500">+3</span>
+                    <span class="agent-source-chip truncate rounded-md px-2 py-0.5 text-[0.68rem] font-medium text-slate-400">大模型强化学习：从 RLHF 到可验证奖励</span>
+                    <span class="agent-source-chip truncate rounded-md px-2 py-0.5 text-[0.68rem] font-medium text-slate-400">Agent Phase Harness 设计协议</span>
+                    <span class="agent-source-chip shrink-0 rounded-md px-2 py-0.5 text-[0.68rem] font-medium text-slate-500">+3</span>
                   </div>
                 </div>
-                <button type="button" aria-expanded="false" class="agent-source-toggle inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-slate-700 bg-white/[0.025] px-2.5 py-1.5 text-xs font-medium text-slate-300">查看来源</button>
+                <button type="button" aria-expanded="false" class="agent-source-toggle inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-slate-300">查看来源</button>
               </div>
             </div>
-            <div class="agent-related-tasks mt-3 border-t border-slate-800 pt-3">
+            <div class="agent-related-tasks mt-4">
               <div class="agent-related-title mb-2 flex items-center gap-1.5 text-[0.72rem] font-semibold text-slate-500">继续阅读</div>
               <div class="agent-related-list grid gap-1.5">
-                <button type="button" class="agent-related-button inline-flex min-w-0 items-center justify-between gap-2 rounded-md border border-slate-700 bg-white/[0.025] px-2.5 py-1.5 text-left text-xs leading-5 text-slate-300">
+                <button type="button" class="agent-related-button inline-flex min-w-0 items-center justify-between gap-2 rounded-md px-2.5 py-1.5 text-left text-xs leading-5 text-slate-300">
                   <span class="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">把这篇文章放进一条公开阅读路径。</span>
                 </button>
-                <button type="button" class="agent-related-button inline-flex min-w-0 items-center justify-between gap-2 rounded-md border border-slate-700 bg-white/[0.025] px-2.5 py-1.5 text-left text-xs leading-5 text-slate-300">
+                <button type="button" class="agent-related-button inline-flex min-w-0 items-center justify-between gap-2 rounded-md px-2.5 py-1.5 text-left text-xs leading-5 text-slate-300">
                   <span class="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">继续梳理 longfollowupreadingtaskwithoutspacesandwithoutscrolling。</span>
                 </button>
               </div>
@@ -762,8 +1171,9 @@ async function inspectAgentAnswerFixture(
     scroller.scrollTop = 0;
 
     const panel = document.querySelector<HTMLElement>(".agent-liquid-panel");
-    const messageBubble =
-      document.querySelector<HTMLElement>(".agent-message-bubble");
+    const messageBubble = document.querySelector<HTMLElement>(
+      ".agent-message-bubble"
+    );
     const answerStart = document.querySelector<HTMLElement>(
       ".agent-fixture-answer-start"
     );
@@ -786,13 +1196,13 @@ async function inspectAgentAnswerFixture(
     if (sources) {
       const expandedList = document.createElement("div");
       expandedList.className =
-        "agent-source-list mt-2 grid gap-2 overflow-y-auto overflow-x-hidden pr-1";
+        "agent-source-list mt-2 grid gap-1 overflow-y-auto overflow-x-hidden";
       expandedList.innerHTML = Array.from(
         { length: 8 },
         (_, index) => `
-          <div class="agent-source-card rounded-md border border-slate-700/80 bg-slate-950/30 px-2.5 py-2">
+          <div class="agent-source-card rounded-md px-2.5 py-2">
             <div class="flex min-w-0 items-start gap-2.5">
-              <span class="agent-source-icon mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-md border" aria-hidden="true"></span>
+              <span class="agent-source-icon mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-md" aria-hidden="true"></span>
               <div class="min-w-0 flex-1">
                 <div class="truncate text-sm font-semibold text-slate-100">来源 ${index + 1}：longsourceheadingwithoutspacesandwithoutlayoutoverflow</div>
                 <details class="agent-source-detail mt-1">
@@ -839,8 +1249,7 @@ async function inspectAgentAnswerFixture(
       sourceListCount: collapsedSourceListCount,
       relatedClientWidth: relatedTasks?.clientWidth ?? null,
       relatedScrollWidth: relatedTasks?.scrollWidth ?? null,
-      sourceToggleExpanded:
-        sourceToggle?.getAttribute("aria-expanded") ?? null,
+      sourceToggleExpanded: sourceToggle?.getAttribute("aria-expanded") ?? null,
       panelTop: panelRect.top,
       panelBottom: panelRect.bottom,
       scrollerTop: scrollerRect.top,
@@ -876,9 +1285,7 @@ async function inspectAgentAnswerFixture(
     measurements.messageBubbleScrollWidth ?? Infinity
   );
   const sourceClientWidth = Number(measurements.sourceClientWidth ?? 0);
-  const sourceScrollWidth = Number(
-    measurements.sourceScrollWidth ?? Infinity
-  );
+  const sourceScrollWidth = Number(measurements.sourceScrollWidth ?? Infinity);
   const expandedSourceClientWidth = Number(
     measurements.expandedSourceClientWidth ?? 0
   );
@@ -966,13 +1373,16 @@ async function inspectAccessibilityRoute(
     ).filter(element => element.getAttribute("aria-hidden") !== "true").length;
     const unnamedIconOnlyButtonCount = Array.from(
       document.querySelectorAll<HTMLButtonElement>("button")
-    ).filter(button => isIconOnlyButton(button) && !hasAccessibleName(button))
-      .length;
+    ).filter(
+      button => isIconOnlyButton(button) && !hasAccessibleName(button)
+    ).length;
     const timeWithoutDateTimeCount = Array.from(
       document.querySelectorAll<HTMLTimeElement>("time")
     ).filter(time => !time.dateTime).length;
     const activeNavWithoutCurrentCount = Array.from(
-      document.querySelectorAll<HTMLElement>(".nav-ink-active, .nav-icon-button-active")
+      document.querySelectorAll<HTMLElement>(
+        ".nav-ink-active, .nav-icon-button-active"
+      )
     ).filter(element => element.getAttribute("aria-current") !== "page").length;
 
     return {
@@ -1068,7 +1478,10 @@ type PageLike = {
     options?: { waitUntil?: "load" | "domcontentloaded" | "networkidle" }
   ) => Promise<unknown>;
   evaluate: <T>(callback: () => T) => Promise<T>;
-  waitForSelector: (selector: string) => Promise<unknown>;
+  waitForSelector: (
+    selector: string,
+    options?: { state?: "attached" | "detached" | "visible" | "hidden" }
+  ) => Promise<unknown>;
   waitForTimeout: (timeoutMs: number) => Promise<void>;
   click: (selector: string) => Promise<void>;
   getByRole: (

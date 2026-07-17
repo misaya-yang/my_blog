@@ -28,7 +28,7 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
   const hiddenSourceCount = getHiddenSourceCount(sources);
 
   return (
-    <div className="agent-sources mt-3 border-t border-slate-800/80 pt-3">
+    <div className="agent-sources mt-4">
       <div className="agent-source-summary flex min-w-0 flex-wrap items-center justify-between gap-2 text-xs">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <span className="shrink-0 font-semibold text-slate-500">
@@ -39,7 +39,7 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
               <AgentSourcePreviewChip key={source.sourceId} source={source} />
             ))}
             {hiddenSourceCount > 0 && (
-              <span className="agent-source-chip shrink-0 rounded-md border border-slate-700 bg-slate-950/35 px-2 py-0.5 text-[0.68rem] font-medium text-slate-500">
+              <span className="agent-source-chip shrink-0 rounded-md px-2 py-0.5 text-[0.68rem] font-medium text-slate-500">
                 {t("agent.sources.previewMore", {
                   count: hiddenSourceCount,
                 })}
@@ -52,7 +52,7 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
           aria-expanded={expanded}
           aria-controls={sourceListId}
           onClick={() => setExpanded(value => !value)}
-          className="agent-source-toggle inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-slate-700 bg-white/[0.025] px-2.5 py-1.5 text-xs font-medium text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 hover:text-slate-100"
+          className="agent-source-toggle inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-slate-300"
         >
           {expanded ? t("agent.sources.hide") : t("agent.sources.view")}
         </button>
@@ -60,7 +60,7 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
       {expanded && (
         <div
           id={sourceListId}
-          className="agent-source-list mt-2 grid gap-2 overflow-y-auto overflow-x-hidden pr-1"
+          className="agent-source-list mt-2 grid gap-1 overflow-y-auto overflow-x-hidden"
         >
           {visibleSources.map(source => {
             const title = source.postTitle || t("agent.sources.site");
@@ -78,11 +78,11 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
             return (
               <div
                 key={source.sourceId}
-                className="agent-source-card rounded-md border border-slate-700/80 bg-slate-950/30 px-2.5 py-2"
+                className="agent-source-card rounded-md px-2.5 py-2"
               >
                 <div className="flex min-w-0 items-start gap-2.5">
                   <span
-                    className="agent-source-icon mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-md border"
+                    className="agent-source-icon mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-md"
                     aria-hidden="true"
                   >
                     <FileText className="h-3.5 w-3.5" />
@@ -100,13 +100,13 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
                         )}
                       </div>
                       <div className="inline-flex shrink-0 items-center gap-1">
-                        <span className="rounded border border-slate-700 bg-white/[0.025] px-1.5 py-0.5 text-[0.65rem] font-medium text-slate-400">
+                        <span className="agent-source-type rounded px-1.5 py-0.5 text-[0.65rem] font-medium text-slate-400">
                           {source.sourceType === "user_context"
                             ? t("agent.sources.context")
                             : t("agent.sources.blog")}
                         </span>
                         {currentPageSource && (
-                          <span className="rounded border border-slate-600/50 bg-slate-900 px-1.5 py-0.5 text-[0.65rem] font-medium text-slate-300">
+                          <span className="agent-source-current rounded px-1.5 py-0.5 text-[0.65rem] font-medium text-slate-300">
                             {t("agent.sources.currentPage")}
                           </span>
                         )}
@@ -125,7 +125,7 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
                                 navigate
                               );
                             }}
-                            className="agent-source-open grid h-7 w-7 place-items-center rounded-md border border-slate-700 text-slate-400 transition hover:border-slate-500 hover:text-slate-100"
+                            className="agent-source-open grid h-7 w-7 place-items-center rounded-md text-slate-400"
                           >
                             <ExternalLink className="h-3.5 w-3.5 shrink-0" />
                           </a>
@@ -166,7 +166,7 @@ function AgentSourcePreviewChip({ source }: { source: SourceCard }) {
 
   return (
     <span
-      className="agent-source-chip truncate rounded-md border border-slate-700 bg-slate-950/35 px-2 py-0.5 text-[0.68rem] font-medium text-slate-400"
+      className="agent-source-chip truncate rounded-md px-2 py-0.5 text-[0.68rem] font-medium text-slate-400"
       title={title}
     >
       {title}
