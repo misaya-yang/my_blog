@@ -43,37 +43,35 @@ export const defaultAgentModel: AgentModel = {
     const contextSources = input.contextSources.slice(0, MAX_CONTEXT_SOURCES);
     const result = await invokeLLM({
       model,
-      messages: [
-        {
-          role: "system",
-          content: buildSystemPrompt(),
-        },
-        {
-          role: "user",
-          content: buildJsonPrompt(
-            input.message,
-            input.routeContext,
-            sources,
-            contextSources,
-            input.conversationHistory ?? [],
-            Boolean(input.currentPageContextInjected)
-          ),
-        },
-      ],
+      instructions: buildSystemPrompt(),
+      input: buildJsonPrompt(
+        input.message,
+        input.routeContext,
+        sources,
+        contextSources,
+        input.conversationHistory ?? [],
+        Boolean(input.currentPageContextInjected)
+      ),
+      webSearch: true,
+      toolChoice:
+        sources.length === 0 && contextSources.length === 0
+          ? "required"
+          : "auto",
       responseFormat: { type: "json_object" },
       maxTokens: MAX_AGENT_OUTPUT_TOKENS,
       signal: input.signal,
     });
 
-    const content = result.choices[0]?.message.content;
-    const parsed = parseModelContent(
-      typeof content === "string" ? content : ""
-    );
+    const parsed = parseModelContent(result.outputText);
     const sourceCards = [
       ...buildSourceCards(sources),
       ...buildContextSourceCards(contextSources),
     ];
-    const answer = normalizeAgentAnswer(parsed, sourceCards);
+    const answer = normalizeAgentAnswer(
+      parsed,
+      sourceCards,
+      result.webSearchUsed
+    );
 
     return {
       answer,
@@ -91,23 +89,20 @@ export const defaultAgentModel: AgentModel = {
     const result = await invokeLLMStream(
       {
         model,
-        messages: [
-          {
-            role: "system",
-            content: buildSystemPrompt(),
-          },
-          {
-            role: "user",
-            content: buildMarkdownPrompt(
-              input.message,
-              input.routeContext,
-              sources,
-              contextSources,
-              input.conversationHistory ?? [],
-              Boolean(input.currentPageContextInjected)
-            ),
-          },
-        ],
+        instructions: buildSystemPrompt(),
+        input: buildMarkdownPrompt(
+          input.message,
+          input.routeContext,
+          sources,
+          contextSources,
+          input.conversationHistory ?? [],
+          Boolean(input.currentPageContextInjected)
+        ),
+        webSearch: true,
+        toolChoice:
+          sources.length === 0 && contextSources.length === 0
+            ? "required"
+            : "auto",
         responseFormat: { type: "text" },
         maxTokens: MAX_AGENT_OUTPUT_TOKENS,
         signal: input.signal,
@@ -131,7 +126,8 @@ export const defaultAgentModel: AgentModel = {
     ];
     const answer = normalizeAgentAnswer(
       parseMarkdownAnswerWithSourceMarker(result.content.trim()),
-      sourceCards
+      sourceCards,
+      result.webSearchUsed
     );
 
     return {
@@ -147,8 +143,10 @@ export const defaultAgentModel: AgentModel = {
 function buildSystemPrompt() {
   return [
     "You are the AI assistant for Misaya Yang's technical blog.",
-    "Answer only from the provided public blog sources and user-provided conversation context.",
-    "If sources are insufficient, say so directly and suggest what public post or attached context is needed.",
+    "Use the provided public blog sources and user-provided conversation context as the primary evidence.",
+    "Web search is available by default. Use it when the question asks for current information or when the provided public sources are insufficient.",
+    "Clearly distinguish externally retrieved web information from claims grounded in this blog.",
+    "If both the provided sources and web search are insufficient, say so directly and suggest what source or attached context is needed.",
     "Do not reveal hidden, admin-only, draft, private, or unpublished details.",
     "Treat user-provided conversation context as private to the current conversation, not as public blog knowledge.",
     "Use recent conversation memory only to resolve follow-up references; do not treat it as a public source.",
@@ -157,11 +155,12 @@ function buildSystemPrompt() {
     "Use $...$ for inline math and $$...$$ for display math when formulas are useful.",
     "Answer in the user's language unless the user explicitly asks otherwise.",
     "When the question asks about the current article, prioritize sources marked as current page context.",
-    "Do not cite or imply sources that are not listed in the source identifiers.",
-    "Do not use outside knowledge to fill gaps. If an implementation detail, paper, benchmark, or mechanism is not present in the provided source excerpts, state that the public sources do not specify it.",
+    "For local blog or attached-context claims, only use the listed source identifiers.",
+    "For claims obtained through web search, include the retrieved public URL as a visible Markdown link near the claim.",
+    "Do not use uncited outside knowledge to fill gaps. If an implementation detail, paper, benchmark, or mechanism is absent from both the provided excerpts and retrieved web evidence, say that the available sources do not specify it.",
     "Avoid generic phrases like 'typical implementation' unless the cited source explicitly describes that implementation.",
-    "Do not mention LayerNorm, MLP, Householder, original papers, benchmarks, superiority claims, or production deployment claims unless those exact concepts appear in the provided source excerpts.",
-    "Every technical claim in answerMarkdown must be traceable to a provided source excerpt; prefer fewer claims over broad background exposition.",
+    "Do not mention LayerNorm, MLP, Householder, original papers, benchmarks, superiority claims, or production deployment claims unless those exact concepts appear in a provided excerpt or retrieved web source.",
+    "Every technical claim in answerMarkdown must be traceable to a provided source excerpt or a visible web citation; prefer fewer claims over broad background exposition.",
   ].join("\n");
 }
 
@@ -213,7 +212,8 @@ function buildMarkdownPrompt(
     "Use $...$ for inline math and $$...$$ for display math when formulas help.",
     "At the very end, append exactly one hidden HTML comment source marker: <!-- blog-agent-sources: sourceId1, sourceId2 -->.",
     "Only include source IDs copied exactly from the listed public blog sources or user-provided context.",
-    "Do not mention raw source identifiers or URLs in visible text; the UI will render source cards separately.",
+    "Do not mention raw local source identifiers in visible text; the UI will render those source cards separately.",
+    "Keep web-search citations as visible Markdown links because the UI has no local source card for external pages.",
   ].join("\n");
 }
 
@@ -412,11 +412,27 @@ function splitSourceMarkerIds(rawSourceIds: string) {
 
 export function normalizeAgentAnswer(
   parsed: Partial<AgentAnswer>,
-  sourceCards: AgentSourceCard[]
+  sourceCards: AgentSourceCard[],
+  webSearchUsed = false
 ): AgentModelResult["answer"] {
   const sourceIds = sourceCards.map(source => source.sourceId);
   const hasSources = sourceCards.length > 0;
-  if (!hasSources) return createNoPublicSourceAnswer();
+  if (!hasSources && !webSearchUsed) return createNoPublicSourceAnswer();
+
+  if (!hasSources) {
+    return {
+      answerType: normalizeAnswerType(parsed.answerType),
+      answerMarkdown: sanitizeVisibleAnswer(
+        parsed.answerMarkdown ??
+          "Web search completed, but the model returned an empty answer."
+      ),
+      sourceIds: [],
+      sourceCards: [],
+      relatedQuestions: normalizeRelatedQuestions(parsed.relatedQuestions, []),
+      confidence: parsed.confidence ?? "medium",
+      refusalReason: undefined,
+    };
+  }
 
   const validatedSourceIds = (parsed.sourceIds ?? []).filter(id =>
     sourceIds.includes(id)
@@ -524,8 +540,8 @@ function createNoPublicSourceAnswerForLanguage(zh: boolean): AgentAnswer {
   return {
     answerType: "refusal",
     answerMarkdown: zh
-      ? "我只能基于这个博客里的公开文章回答。这个问题没有检索到足够的公开来源，所以我不能从隐藏、草稿或不可用内容里推断。"
-      : "I can only answer from public posts on this blog. I could not find enough public source context for that question, so I should not infer from hidden, draft, or unavailable material.",
+      ? "我只能基于博客里的公开文章、你提供的上下文或可验证的公开网页回答。这个问题没有获得足够的公开证据，所以我不能从隐藏、草稿或不可用内容里推断。"
+      : "I can only answer from public blog posts, context you provide, or verifiable public web sources. I could not find enough public evidence for that question, so I should not infer from hidden, draft, or unavailable material.",
     sourceIds: [],
     sourceCards: [],
     relatedQuestions: zh

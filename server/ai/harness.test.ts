@@ -883,7 +883,71 @@ describe("AI agent harness", () => {
     });
   });
 
-  it("streams no-source refusals without calling the model", async () => {
+  it("streams web-grounded answers when local retrieval has no sources", async () => {
+    const answerMarkdown =
+      "The current public release is documented on the [official changelog](https://api-docs.deepseek.com/updates/).";
+    const model: AgentModel = {
+      generate: vi.fn(async () => {
+        throw new Error("streaming path should use streamGenerate");
+      }),
+      streamGenerate: vi.fn(
+        async ({ sources, contextSources, onAnswerDelta }) => {
+          expect(sources).toEqual([]);
+          expect(contextSources).toEqual([]);
+          onAnswerDelta(answerMarkdown);
+          return {
+            model: "deepseek-v4-flash",
+            answer: {
+              answerType: "direct",
+              answerMarkdown,
+              sourceIds: [],
+              sourceCards: [],
+              relatedQuestions: ["What changed in that release?"],
+              confidence: "high",
+            },
+          };
+        }
+      ),
+    };
+    const { service } = createHarness({
+      retrieve: vi.fn(async () => []),
+      model,
+    });
+    const events: AgentStreamEvent[] = [];
+
+    const result = await service.streamMessage(
+      anonymousContext("203.0.113.89"),
+      {
+        message: "Search the web for the current DeepSeek API changelog.",
+        routeContext,
+      },
+      event => events.push(event)
+    );
+
+    expect(model.streamGenerate).toHaveBeenCalledTimes(1);
+    expect(result).toMatchObject({
+      status: "completed",
+      answer: {
+        answerMarkdown,
+        sourceCards: [],
+      },
+    });
+    expect(events).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "answer_delta",
+          delta: answerMarkdown,
+        }),
+        expect.objectContaining({
+          type: "final",
+          outcome: "completed",
+          output: expect.objectContaining({ status: "completed" }),
+        }),
+      ])
+    );
+  });
+
+  it("streams unavailable-content refusals without calling the model", async () => {
     const model: AgentModel = {
       generate: vi.fn(async () => {
         throw new Error("model should not run without public sources");

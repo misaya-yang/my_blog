@@ -222,6 +222,29 @@ describe("agent answer quality normalization", () => {
     expect(answer.answerMarkdown).not.toContain("EVQ");
   });
 
+  it("accepts a web-grounded answer without inventing local source cards", () => {
+    const answer = normalizeAgentAnswer(
+      {
+        answerType: "direct",
+        answerMarkdown:
+          "The current API page is [DeepSeek API Docs](https://api-docs.deepseek.com/).",
+        relatedQuestions: ["What changed in the latest API release?"],
+        confidence: "high",
+      },
+      [],
+      true
+    );
+
+    expect(answer).toMatchObject({
+      answerType: "direct",
+      sourceIds: [],
+      sourceCards: [],
+      refusalReason: undefined,
+      confidence: "high",
+    });
+    expect(answer.answerMarkdown).toContain("https://api-docs.deepseek.com/");
+  });
+
   it("localizes public-source refusal for Chinese reader questions", () => {
     const answer = createNoPublicSourceAnswerForInput({
       message: "这个博客都有哪几篇文章？",

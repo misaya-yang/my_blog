@@ -122,11 +122,13 @@ VITE_ANALYTICS_ENDPOINT
 VITE_ANALYTICS_WEBSITE_ID
 ```
 
-The blog agent uses the OpenAI-compatible DeepSeek endpoint when
+The blog agent uses DeepSeek's OpenAI-compatible Responses API when
 `BUILT_IN_FORGE_API_URL=https://api.deepseek.com` and
 `BUILT_IN_FORGE_API_KEY` is set. Keep the default model on
 `deepseek-v4-flash`; avoid `deepseek-v4-pro` for the public assistant unless a
-specific evaluation requires it.
+specific evaluation requires it. The Agent enables the Responses `web_search`
+tool by default and requires a successful web search when no local blog or
+user-provided context is available.
 
 Do not commit real values. `.env`, `.env.local`, and production-local env files are ignored by git.
 

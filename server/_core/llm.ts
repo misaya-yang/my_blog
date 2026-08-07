@@ -1,43 +1,19 @@
+import OpenAI from "openai";
+import type {
+  FunctionTool,
+  Response,
+  ResponseCreateParamsNonStreaming,
+  ResponseCreateParamsStreaming,
+  ResponseFormatTextConfig,
+  ResponseInput,
+  ResponseStreamEvent,
+  Tool as ResponsesTool,
+  ToolChoiceFunction,
+  ToolChoiceOptions,
+} from "openai/resources/responses/responses";
 import { ENV } from "./env.js";
 
 export const DEFAULT_LLM_MODEL = "deepseek-v4-flash";
-
-export type Role = "system" | "user" | "assistant" | "tool" | "function";
-
-export type TextContent = {
-  type: "text";
-  text: string;
-};
-
-export type ImageContent = {
-  type: "image_url";
-  image_url: {
-    url: string;
-    detail?: "auto" | "low" | "high";
-  };
-};
-
-export type FileContent = {
-  type: "file_url";
-  file_url: {
-    url: string;
-    mime_type?:
-      | "audio/mpeg"
-      | "audio/wav"
-      | "application/pdf"
-      | "audio/mp4"
-      | "video/mp4";
-  };
-};
-
-export type MessageContent = string | TextContent | ImageContent | FileContent;
-
-export type Message = {
-  role: Role;
-  content: MessageContent | MessageContent[];
-  name?: string;
-  tool_call_id?: string;
-};
 
 export type Tool = {
   type: "function";
@@ -45,10 +21,11 @@ export type Tool = {
     name: string;
     description?: string;
     parameters?: Record<string, unknown>;
+    strict?: boolean;
   };
 };
 
-export type ToolChoicePrimitive = "none" | "auto" | "required";
+export type ToolChoicePrimitive = ToolChoiceOptions;
 export type ToolChoiceByName = { name: string };
 export type ToolChoiceExplicit = {
   type: "function";
@@ -61,64 +38,6 @@ export type ToolChoice =
   | ToolChoicePrimitive
   | ToolChoiceByName
   | ToolChoiceExplicit;
-
-export type InvokeParams = {
-  model?: string;
-  messages: Message[];
-  tools?: Tool[];
-  toolChoice?: ToolChoice;
-  tool_choice?: ToolChoice;
-  maxTokens?: number;
-  max_tokens?: number;
-  outputSchema?: OutputSchema;
-  output_schema?: OutputSchema;
-  responseFormat?: ResponseFormat;
-  response_format?: ResponseFormat;
-  signal?: AbortSignal;
-};
-
-export type ToolCall = {
-  id: string;
-  type: "function";
-  function: {
-    name: string;
-    arguments: string;
-  };
-};
-
-export type InvokeResult = {
-  id: string;
-  created: number;
-  model: string;
-  choices: Array<{
-    index: number;
-    message: {
-      role: Role;
-      content: string | Array<TextContent | ImageContent | FileContent>;
-      tool_calls?: ToolCall[];
-    };
-    finish_reason: string | null;
-  }>;
-  usage?: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
-};
-
-export type StreamDelta = {
-  content?: string;
-  reasoningContent?: string;
-};
-
-export type InvokeStreamResult = {
-  id: string;
-  created: number;
-  model: string;
-  content: string;
-  reasoningContent: string;
-  usage?: InvokeResult["usage"];
-};
 
 export type JsonSchema = {
   name: string;
@@ -133,103 +52,47 @@ export type ResponseFormat =
   | { type: "json_object" }
   | { type: "json_schema"; json_schema: JsonSchema };
 
-const ensureArray = (
-  value: MessageContent | MessageContent[]
-): MessageContent[] => (Array.isArray(value) ? value : [value]);
-
-const normalizeContentPart = (
-  part: MessageContent
-): TextContent | ImageContent | FileContent => {
-  if (typeof part === "string") {
-    return { type: "text", text: part };
-  }
-
-  if (part.type === "text") {
-    return part;
-  }
-
-  if (part.type === "image_url") {
-    return part;
-  }
-
-  if (part.type === "file_url") {
-    return part;
-  }
-
-  throw new Error("Unsupported message content part");
+export type InvokeParams = {
+  model?: string;
+  instructions?: string;
+  input: string | ResponseInput;
+  tools?: Tool[];
+  toolChoice?: ToolChoice;
+  tool_choice?: ToolChoice;
+  webSearch?: boolean;
+  maxOutputTokens?: number;
+  maxTokens?: number;
+  max_tokens?: number;
+  outputSchema?: OutputSchema;
+  output_schema?: OutputSchema;
+  responseFormat?: ResponseFormat;
+  response_format?: ResponseFormat;
+  signal?: AbortSignal;
 };
 
-const normalizeMessage = (message: Message) => {
-  const { role, name, tool_call_id } = message;
-
-  if (role === "tool" || role === "function") {
-    const content = ensureArray(message.content)
-      .map(part => (typeof part === "string" ? part : JSON.stringify(part)))
-      .join("\n");
-
-    return {
-      role,
-      name,
-      tool_call_id,
-      content,
-    };
-  }
-
-  const contentParts = ensureArray(message.content).map(normalizeContentPart);
-
-  // If there's only text content, collapse to a single string for compatibility
-  if (contentParts.length === 1 && contentParts[0].type === "text") {
-    return {
-      role,
-      name,
-      content: contentParts[0].text,
-    };
-  }
-
-  return {
-    role,
-    name,
-    content: contentParts,
-  };
+export type InvokeUsage = {
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
 };
 
-const normalizeToolChoice = (
-  toolChoice: ToolChoice | undefined,
-  tools: Tool[] | undefined
-): "none" | "auto" | ToolChoiceExplicit | undefined => {
-  if (!toolChoice) return undefined;
+export type InvokeResult = {
+  id: string;
+  created: number;
+  model: string;
+  outputText: string;
+  usage?: InvokeUsage;
+  webSearchUsed: boolean;
+};
 
-  if (toolChoice === "none" || toolChoice === "auto") {
-    return toolChoice;
-  }
+export type StreamDelta = {
+  content?: string;
+  reasoningContent?: string;
+};
 
-  if (toolChoice === "required") {
-    if (!tools || tools.length === 0) {
-      throw new Error(
-        "tool_choice 'required' was provided but no tools were configured"
-      );
-    }
-
-    if (tools.length > 1) {
-      throw new Error(
-        "tool_choice 'required' needs a single tool or specify the tool name explicitly"
-      );
-    }
-
-    return {
-      type: "function",
-      function: { name: tools[0].function.name },
-    };
-  }
-
-  if ("name" in toolChoice) {
-    return {
-      type: "function",
-      function: { name: toolChoice.name },
-    };
-  }
-
-  return toolChoice;
+export type InvokeStreamResult = InvokeResult & {
+  content: string;
+  reasoningContent: string;
 };
 
 function nonBlank(value: string | undefined): string | undefined {
@@ -237,15 +100,15 @@ function nonBlank(value: string | undefined): string | undefined {
   return trimmed ? trimmed : undefined;
 }
 
-const resolveApiUrl = () => {
-  const apiUrl = nonBlank(ENV.forgeApiUrl);
-  return apiUrl
-    ? `${apiUrl.replace(/\/$/, "")}/v1/chat/completions`
-    : "https://forge.manus.im/v1/chat/completions";
-};
+const resolveBaseUrl = () => {
+  const configuredUrl = nonBlank(ENV.forgeApiUrl);
+  if (!configuredUrl) return "https://api.deepseek.com";
 
-const isDeepSeekApi = () =>
-  nonBlank(ENV.forgeApiUrl)?.toLowerCase().includes("deepseek") ?? false;
+  return configuredUrl
+    .replace(/\/v1\/chat\/completions\/?$/i, "")
+    .replace(/\/chat\/completions\/?$/i, "")
+    .replace(/\/$/, "");
+};
 
 const getApiKey = () => {
   const apiKey = nonBlank(ENV.forgeApiKey);
@@ -255,268 +118,244 @@ const getApiKey = () => {
   return apiKey;
 };
 
+const createClient = () =>
+  new OpenAI({
+    apiKey: getApiKey(),
+    baseURL: resolveBaseUrl(),
+  });
+
 export function resolveLLMModel(model?: string): string {
   return nonBlank(model) || nonBlank(ENV.blogAgentModel) || DEFAULT_LLM_MODEL;
 }
 
-const normalizeResponseFormat = ({
+function normalizeResponseFormat({
   responseFormat,
   response_format,
   outputSchema,
   output_schema,
-}: {
-  responseFormat?: ResponseFormat;
-  response_format?: ResponseFormat;
-  outputSchema?: OutputSchema;
-  output_schema?: OutputSchema;
-}):
-  | { type: "json_schema"; json_schema: JsonSchema }
-  | { type: "text" }
-  | { type: "json_object" }
-  | undefined => {
+}: Pick<
+  InvokeParams,
+  "responseFormat" | "response_format" | "outputSchema" | "output_schema"
+>): ResponseFormatTextConfig | undefined {
   const explicitFormat = responseFormat || response_format;
   if (explicitFormat) {
-    if (
-      explicitFormat.type === "json_schema" &&
-      !explicitFormat.json_schema?.schema
-    ) {
+    if (explicitFormat.type !== "json_schema") return explicitFormat;
+    if (!explicitFormat.json_schema?.schema) {
       throw new Error(
         "responseFormat json_schema requires a defined schema object"
       );
     }
-    return explicitFormat;
+    return {
+      type: "json_schema",
+      name: explicitFormat.json_schema.name,
+      schema: explicitFormat.json_schema.schema,
+      ...(typeof explicitFormat.json_schema.strict === "boolean"
+        ? { strict: explicitFormat.json_schema.strict }
+        : {}),
+    };
   }
 
   const schema = outputSchema || output_schema;
   if (!schema) return undefined;
-
   if (!schema.name || !schema.schema) {
     throw new Error("outputSchema requires both name and schema");
   }
 
   return {
     type: "json_schema",
-    json_schema: {
-      name: schema.name,
-      schema: schema.schema,
-      ...(typeof schema.strict === "boolean" ? { strict: schema.strict } : {}),
-    },
+    name: schema.name,
+    schema: schema.schema,
+    ...(typeof schema.strict === "boolean" ? { strict: schema.strict } : {}),
   };
-};
+}
 
-function buildPayload(params: InvokeParams, stream = false) {
-  const {
-    model,
-    messages,
+function normalizeFunctionTool(tool: Tool): FunctionTool {
+  return {
+    type: "function",
+    name: tool.function.name,
+    description: tool.function.description,
+    parameters: tool.function.parameters ?? {},
+    strict: tool.function.strict ?? false,
+  };
+}
+
+function buildTools(params: InvokeParams): ResponsesTool[] {
+  const tools: ResponsesTool[] = (params.tools ?? []).map(normalizeFunctionTool);
+  if (params.webSearch !== false) {
+    tools.unshift({ type: "web_search" });
+  }
+  return tools;
+}
+
+function normalizeToolChoice(
+  toolChoice: ToolChoice | undefined
+): ToolChoiceOptions | ToolChoiceFunction | undefined {
+  if (!toolChoice) return undefined;
+  if (typeof toolChoice === "string") return toolChoice;
+  if ("name" in toolChoice) {
+    return { type: "function", name: toolChoice.name };
+  }
+  return { type: "function", name: toolChoice.function.name };
+}
+
+function buildCommonPayload(params: InvokeParams) {
+  const format = normalizeResponseFormat(params);
+  const tools = buildTools(params);
+  const toolChoice = normalizeToolChoice(params.toolChoice || params.tool_choice);
+
+  return {
+    model: resolveLLMModel(params.model),
+    instructions: params.instructions,
+    input: params.input,
+    max_output_tokens:
+      params.maxOutputTokens ??
+      params.maxTokens ??
+      params.max_tokens ??
+      32768,
+    store: false,
     tools,
-    toolChoice,
-    tool_choice,
-    outputSchema,
-    output_schema,
-    responseFormat,
-    response_format,
-  } = params;
-
-  const resolvedModel = resolveLLMModel(model);
-  const payload: Record<string, unknown> = {
-    model: resolvedModel,
-    messages: messages.map(normalizeMessage),
+    ...(tools.some(tool => tool.type === "web_search")
+      ? { include: ["web_search_call.action.sources" as const] }
+      : {}),
+    ...(toolChoice ? { tool_choice: toolChoice } : {}),
+    ...(format ? { text: { format } } : {}),
   };
+}
 
-  if (tools && tools.length > 0) {
-    payload.tools = tools;
+function normalizeUsage(response: Response): InvokeUsage | undefined {
+  if (!response.usage) return undefined;
+  return {
+    prompt_tokens: response.usage.input_tokens,
+    completion_tokens: response.usage.output_tokens,
+    total_tokens: response.usage.total_tokens,
+  };
+}
+
+function responseErrorMessage(response: Response): string {
+  if (response.error?.message) return response.error.message;
+  if (response.incomplete_details?.reason) {
+    return `response incomplete: ${response.incomplete_details.reason}`;
   }
+  return `response ended with status ${response.status ?? "unknown"}`;
+}
 
-  const normalizedToolChoice = normalizeToolChoice(
-    toolChoice || tool_choice,
-    tools
+function assertCompletedResponse(response: Response) {
+  if (response.status !== "completed" || response.error) {
+    throw new Error(responseErrorMessage(response));
+  }
+}
+
+function hasWebSearchCall(response: Response) {
+  return response.output.some(
+    item => item.type === "web_search_call" && item.status === "completed"
   );
-  if (normalizedToolChoice) {
-    payload.tool_choice = normalizedToolChoice;
+}
+
+function normalizeResponse(response: Response): InvokeResult {
+  assertCompletedResponse(response);
+  return {
+    id: response.id,
+    created: response.created_at,
+    model: response.model,
+    outputText: response.output_text,
+    usage: normalizeUsage(response),
+    webSearchUsed: hasWebSearchCall(response),
+  };
+}
+
+function formatSdkError(
+  prefix: string,
+  error: unknown,
+  signal?: AbortSignal
+): Error {
+  if (signal?.aborted) {
+    if (signal.reason instanceof Error) return signal.reason;
+    return Object.assign(new Error("Responses request was aborted"), {
+      name: "AbortError",
+    });
   }
-
-  payload.max_tokens = params.maxTokens ?? params.max_tokens ?? 32768;
-  if (isDeepSeekApi()) {
-    payload.thinking = { type: "enabled" };
-    payload.reasoning_effort = "high";
-  } else {
-    payload.thinking = {
-      budget_tokens: 128,
-    };
+  if (error instanceof OpenAI.APIUserAbortError) {
+    return Object.assign(new Error(error.message, { cause: error }), {
+      name: "AbortError",
+    });
   }
-
-  const normalizedResponseFormat = normalizeResponseFormat({
-    responseFormat,
-    response_format,
-    outputSchema,
-    output_schema,
-  });
-
-  if (normalizedResponseFormat) {
-    payload.response_format = normalizedResponseFormat;
+  if (error instanceof OpenAI.APIConnectionTimeoutError) {
+    return Object.assign(new Error(error.message, { cause: error }), {
+      name: "TimeoutError",
+    });
   }
-
-  if (stream) payload.stream = true;
-
-  return { payload, resolvedModel };
+  const message = error instanceof Error ? error.message : String(error);
+  return new Error(`${prefix}: ${message}`, { cause: error });
 }
 
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
-  const apiKey = getApiKey();
-  const { payload } = buildPayload(params);
+  const client = createClient();
+  const payload: ResponseCreateParamsNonStreaming = {
+    ...buildCommonPayload(params),
+    stream: false,
+  };
 
-  const response = await fetch(resolveApiUrl(), {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(payload),
-    signal: params.signal,
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `LLM invoke failed: ${response.status} ${response.statusText} – ${errorText}`
-    );
+  try {
+    const response = await client.responses.create(payload, {
+      signal: params.signal,
+    });
+    return normalizeResponse(response);
+  } catch (error) {
+    throw formatSdkError("LLM Responses invoke failed", error, params.signal);
   }
-
-  return (await response.json()) as InvokeResult;
 }
 
 export async function invokeLLMStream(
   params: InvokeParams,
   onDelta: (delta: StreamDelta) => void
 ): Promise<InvokeStreamResult> {
-  const apiKey = getApiKey();
-  const { payload, resolvedModel } = buildPayload(params, true);
+  const client = createClient();
+  const payload: ResponseCreateParamsStreaming = {
+    ...buildCommonPayload(params),
+    stream: true,
+  };
 
-  const response = await fetch(resolveApiUrl(), {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(payload),
-    signal: params.signal,
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `LLM stream failed: ${response.status} ${response.statusText} – ${errorText}`
-    );
-  }
-
-  if (!response.body) {
-    throw new Error("LLM stream failed: response body is not readable");
-  }
-
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let id = "";
-  let created = 0;
-  let model = resolvedModel;
   let content = "";
   let reasoningContent = "";
-  let usage: InvokeResult["usage"] | undefined;
+  let finalResponse: Response | undefined;
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
+  try {
+    const stream = await client.responses.create(payload, {
+      signal: params.signal,
+    });
 
-    buffer += decoder.decode(value, { stream: true });
-    const frames = buffer.split(/\n\n/);
-    buffer = frames.pop() ?? "";
-
-    for (const frame of frames) {
-      const dataLines = frame
-        .split(/\n/)
-        .map(line => line.trim())
-        .filter(line => line.startsWith("data:"))
-        .map(line => line.replace(/^data:\s*/, ""));
-      if (dataLines.length === 0) continue;
-
-      const payloadText = dataLines.join("\n");
-      if (payloadText === "[DONE]") continue;
-
-      const parsed = safeParseStreamChunk(payloadText);
-      if (!parsed) continue;
-
-      id = parsed.id ?? id;
-      created = typeof parsed.created === "number" ? parsed.created : created;
-      model = typeof parsed.model === "string" ? parsed.model : model;
-      usage = normalizeUsage(parsed.usage) ?? usage;
-
-      const delta = parsed.choices?.[0]?.delta;
-      const nextContent =
-        typeof delta?.content === "string" ? delta.content : "";
-      const nextReasoning =
-        typeof delta?.reasoning_content === "string"
-          ? delta.reasoning_content
-          : "";
-
-      if (nextReasoning) {
-        reasoningContent += nextReasoning;
-        onDelta({ reasoningContent: nextReasoning });
-      }
-      if (nextContent) {
-        content += nextContent;
-        onDelta({ content: nextContent });
+    for await (const event of stream) {
+      if (event.type === "response.reasoning_text.delta") {
+        reasoningContent += event.delta;
+        onDelta({ reasoningContent: event.delta });
+      } else if (event.type === "response.output_text.delta") {
+        content += event.delta;
+        onDelta({ content: event.delta });
+      } else if (
+        event.type === "response.completed" ||
+        event.type === "response.failed" ||
+        event.type === "response.incomplete"
+      ) {
+        finalResponse = event.response;
+      } else if (event.type === "error") {
+        throw new Error(event.message || "Responses stream error");
       }
     }
-  }
 
-  return {
-    id,
-    created,
-    model,
-    content,
-    reasoningContent,
-    usage,
-  };
-}
+    if (!finalResponse) {
+      throw new Error("Responses stream ended without a terminal event");
+    }
+    assertCompletedResponse(finalResponse);
 
-type StreamChunk = {
-  id?: string;
-  created?: number;
-  model?: string;
-  usage?: unknown;
-  choices?: Array<{
-    delta?: {
-      content?: string | null;
-      reasoning_content?: string | null;
+    const normalized = normalizeResponse(finalResponse);
+    return {
+      ...normalized,
+      content: normalized.outputText || content,
+      reasoningContent,
     };
-  }>;
-};
-
-function safeParseStreamChunk(payloadText: string): StreamChunk | null {
-  try {
-    return JSON.parse(payloadText) as StreamChunk;
-  } catch {
-    return null;
+  } catch (error) {
+    throw formatSdkError("LLM Responses stream failed", error, params.signal);
   }
 }
 
-function normalizeUsage(usage: unknown): InvokeResult["usage"] | undefined {
-  if (!usage || typeof usage !== "object") return undefined;
-  const value = usage as {
-    prompt_tokens?: unknown;
-    completion_tokens?: unknown;
-    total_tokens?: unknown;
-  };
-  if (
-    typeof value.prompt_tokens !== "number" ||
-    typeof value.completion_tokens !== "number" ||
-    typeof value.total_tokens !== "number"
-  ) {
-    return undefined;
-  }
-  return {
-    prompt_tokens: value.prompt_tokens,
-    completion_tokens: value.completion_tokens,
-    total_tokens: value.total_tokens,
-  };
-}
+export type { ResponseStreamEvent };

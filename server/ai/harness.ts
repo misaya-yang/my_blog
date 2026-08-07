@@ -536,23 +536,6 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           currentUserMessageId: userMessage.id,
         });
         currentPageContextInjected = hasCurrentPageContext(sources);
-        if (sources.length === 0 && contextSources.length === 0) {
-          const answer = createNoPublicSourceAnswerForInput({
-            message: input.message,
-            routeContext: input.routeContext,
-          });
-
-          return completeAssistantAnswer({
-            conversationId: conversation.id,
-            runId: run.id,
-            quota,
-            answer,
-            sourceCards: [],
-            latencyMs: now().getTime() - startedAt.getTime(),
-            retrievedChunkIds: [],
-            model: null,
-          });
-        }
         const inventoryAnswer = createPublicInventoryAnswerForInput({
           message: input.message,
           routeContext: input.routeContext,
@@ -844,38 +827,6 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           currentPageContextInjected,
         });
 
-        if (sources.length === 0 && contextSources.length === 0) {
-          const answer = createNoPublicSourceAnswerForInput({
-            message: input.message,
-            routeContext: input.routeContext,
-          });
-
-          const output = await completeAssistantAnswer({
-            conversationId: conversation.id,
-            runId: run.id,
-            quota,
-            answer,
-            sourceCards: [],
-            latencyMs: elapsedMs(),
-            retrievedChunkIds: [],
-            model: null,
-          });
-          emit({ type: "status", stage: "answer", elapsedMs: elapsedMs() });
-          emit({
-            type: "answer_delta",
-            delta: answer.answerMarkdown,
-            elapsedMs: elapsedMs(),
-          });
-          emit({ type: "status", stage: "saving", elapsedMs: elapsedMs() });
-          emit({
-            type: "final",
-            output,
-            elapsedMs: elapsedMs(),
-            outcome: "no_source",
-            reason: "no_public_source",
-          });
-          return output;
-        }
         const inventoryAnswer = createPublicInventoryAnswerForInput({
           message: input.message,
           routeContext: input.routeContext,
