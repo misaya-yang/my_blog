@@ -26,6 +26,7 @@ export const contentSeriesCatalog = [
       "rag-evidence-packet-context-compiler",
       "agent-loop-observable-tool-using-agents",
       "goal-harness-agent-phase-protocol",
+      "long-horizon-agents-continuous-convergence",
     ],
     expectedNext: [
       "Tool ABI: typed capabilities for agent runtimes",

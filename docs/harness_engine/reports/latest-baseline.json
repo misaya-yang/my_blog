@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-06-28T03:13:38.143Z",
+  "generatedAt": "2026-08-16T13:48:37.579Z",
   "git": {
     "branch": "main",
-    "commit": "717d4c1",
+    "commit": "538bb96",
     "dirty": true
   },
   "commands": [],
@@ -20,21 +20,21 @@
         "contentType": "text/html; charset=utf-8",
         "metadata": {
           "title": "Misaya Notes",
-          "description": "Misaya Yang's working notes on model mechanisms, long-context behavior, retrieval, agent systems, and reliable applied AI engineering.",
-          "canonical": "http://localhost:3000/",
+          "description": "Misaya Yang",
+          "canonical": "https://misaya.online/",
           "htmlLang": "en",
           "openGraph": {
             "title": "Misaya Notes",
-            "description": "Misaya Yang's working notes on model mechanisms, long-context behavior, retrieval, agent systems, and reliable applied AI engineering.",
-            "image": "http://localhost:3000/og-default.svg",
+            "description": "Misaya Yang",
+            "image": "/og-default.svg",
             "type": "website",
-            "url": "http://localhost:3000/"
+            "url": "https://misaya.online/"
           },
           "twitter": {
             "card": "summary_large_image",
             "title": "Misaya Notes",
-            "description": "Misaya Yang's working notes on model mechanisms, long-context behavior, retrieval, agent systems, and reliable applied AI engineering.",
-            "image": "http://localhost:3000/og-default.svg"
+            "description": "Misaya Yang",
+            "image": "/og-default.svg"
           },
           "jsonLdTypes": []
         },
@@ -55,20 +55,20 @@
         "metadata": {
           "title": "AI Algorithms · Misaya Notes",
           "description": "Research notes on model mechanisms, generative modeling, positional encoding, long-context behavior, and residual stability.",
-          "canonical": "http://localhost:3000/algorithms",
+          "canonical": "https://misaya.online/algorithms",
           "htmlLang": "en",
           "openGraph": {
             "title": "AI Algorithms",
             "description": "Research notes on model mechanisms, generative modeling, positional encoding, long-context behavior, and residual stability.",
-            "image": "http://localhost:3000/og-default.svg",
+            "image": "https://misaya.online/og-default.svg",
             "type": "website",
-            "url": "http://localhost:3000/algorithms"
+            "url": "https://misaya.online/algorithms"
           },
           "twitter": {
             "card": "summary_large_image",
             "title": "AI Algorithms",
             "description": "Research notes on model mechanisms, generative modeling, positional encoding, long-context behavior, and residual stability.",
-            "image": "http://localhost:3000/og-default.svg"
+            "image": "https://misaya.online/og-default.svg"
           },
           "jsonLdTypes": []
         },
@@ -89,20 +89,20 @@
         "metadata": {
           "title": "AI Applications · Misaya Notes",
           "description": "Technical essays on agents, harness engines, RAG, context engineering, tool use, and evaluation loops.",
-          "canonical": "http://localhost:3000/applications",
+          "canonical": "https://misaya.online/applications",
           "htmlLang": "en",
           "openGraph": {
             "title": "AI Applications",
             "description": "Technical essays on agents, harness engines, RAG, context engineering, tool use, and evaluation loops.",
-            "image": "http://localhost:3000/og-default.svg",
+            "image": "https://misaya.online/og-default.svg",
             "type": "website",
-            "url": "http://localhost:3000/applications"
+            "url": "https://misaya.online/applications"
           },
           "twitter": {
             "card": "summary_large_image",
             "title": "AI Applications",
             "description": "Technical essays on agents, harness engines, RAG, context engineering, tool use, and evaluation loops.",
-            "image": "http://localhost:3000/og-default.svg"
+            "image": "https://misaya.online/og-default.svg"
           },
           "jsonLdTypes": []
         },
@@ -123,20 +123,20 @@
         "metadata": {
           "title": "Login · Misaya Notes",
           "description": "Sign in to read or manage Misaya Notes.",
-          "canonical": "http://localhost:3000/login",
+          "canonical": "https://misaya.online/login",
           "htmlLang": "en",
           "openGraph": {
             "title": "Login",
             "description": "Sign in to read or manage Misaya Notes.",
-            "image": "http://localhost:3000/og-default.svg",
+            "image": "https://misaya.online/og-default.svg",
             "type": "website",
-            "url": "http://localhost:3000/login"
+            "url": "https://misaya.online/login"
           },
           "twitter": {
             "card": "summary_large_image",
             "title": "Login",
             "description": "Sign in to read or manage Misaya Notes.",
-            "image": "http://localhost:3000/og-default.svg"
+            "image": "https://misaya.online/og-default.svg"
           },
           "jsonLdTypes": []
         },
@@ -157,20 +157,20 @@
         "metadata": {
           "title": "Archive · Misaya Notes",
           "description": "Browse Misaya Notes by month, category, and research signal.",
-          "canonical": "http://localhost:3000/archive",
+          "canonical": "https://misaya.online/archive",
           "htmlLang": "en",
           "openGraph": {
             "title": "Archive",
             "description": "Browse Misaya Notes by month, category, and research signal.",
-            "image": "http://localhost:3000/og-default.svg",
+            "image": "https://misaya.online/og-default.svg",
             "type": "website",
-            "url": "http://localhost:3000/archive"
+            "url": "https://misaya.online/archive"
           },
           "twitter": {
             "card": "summary_large_image",
             "title": "Archive",
             "description": "Browse Misaya Notes by month, category, and research signal.",
-            "image": "http://localhost:3000/og-default.svg"
+            "image": "https://misaya.online/og-default.svg"
           },
           "jsonLdTypes": []
         },
@@ -191,20 +191,20 @@
         "metadata": {
           "title": "Ai Applications · Misaya Notes",
           "description": "Public category index for Misaya Notes.",
-          "canonical": "http://localhost:3000/categories/ai-applications",
+          "canonical": "https://misaya.online/categories/ai-applications",
           "htmlLang": "en",
           "openGraph": {
             "title": "Ai Applications",
             "description": "Public category index for Misaya Notes.",
-            "image": "http://localhost:3000/og-default.svg",
+            "image": "https://misaya.online/og-default.svg",
             "type": "website",
-            "url": "http://localhost:3000/categories/ai-applications"
+            "url": "https://misaya.online/categories/ai-applications"
           },
           "twitter": {
             "card": "summary_large_image",
             "title": "Ai Applications",
             "description": "Public category index for Misaya Notes.",
-            "image": "http://localhost:3000/og-default.svg"
+            "image": "https://misaya.online/og-default.svg"
           },
           "jsonLdTypes": []
         },
@@ -225,20 +225,20 @@
         "metadata": {
           "title": "Agent Systems · Misaya Notes",
           "description": "Public tag index for Misaya Notes.",
-          "canonical": "http://localhost:3000/tags/agent-systems",
+          "canonical": "https://misaya.online/tags/agent-systems",
           "htmlLang": "en",
           "openGraph": {
             "title": "Agent Systems",
             "description": "Public tag index for Misaya Notes.",
-            "image": "http://localhost:3000/og-default.svg",
+            "image": "https://misaya.online/og-default.svg",
             "type": "website",
-            "url": "http://localhost:3000/tags/agent-systems"
+            "url": "https://misaya.online/tags/agent-systems"
           },
           "twitter": {
             "card": "summary_large_image",
             "title": "Agent Systems",
             "description": "Public tag index for Misaya Notes.",
-            "image": "http://localhost:3000/og-default.svg"
+            "image": "https://misaya.online/og-default.svg"
           },
           "jsonLdTypes": []
         },
@@ -259,20 +259,20 @@
         "metadata": {
           "title": "404 · Misaya Notes",
           "description": "The requested page could not be found.",
-          "canonical": "http://localhost:3000/404",
+          "canonical": "https://misaya.online/404",
           "htmlLang": "en",
           "openGraph": {
             "title": "404",
             "description": "The requested page could not be found.",
-            "image": "http://localhost:3000/og-default.svg",
+            "image": "https://misaya.online/og-default.svg",
             "type": "website",
-            "url": "http://localhost:3000/404"
+            "url": "https://misaya.online/404"
           },
           "twitter": {
             "card": "summary_large_image",
             "title": "404",
             "description": "The requested page could not be found.",
-            "image": "http://localhost:3000/og-default.svg"
+            "image": "https://misaya.online/og-default.svg"
           },
           "jsonLdTypes": []
         },
@@ -293,20 +293,20 @@
         "metadata": {
           "title": "404 · Misaya Notes",
           "description": "The requested page could not be found.",
-          "canonical": "http://localhost:3000/not-a-real-route",
+          "canonical": "https://misaya.online/not-a-real-route",
           "htmlLang": "en",
           "openGraph": {
             "title": "404",
             "description": "The requested page could not be found.",
-            "image": "http://localhost:3000/og-default.svg",
+            "image": "https://misaya.online/og-default.svg",
             "type": "website",
-            "url": "http://localhost:3000/not-a-real-route"
+            "url": "https://misaya.online/not-a-real-route"
           },
           "twitter": {
             "card": "summary_large_image",
             "title": "404",
             "description": "The requested page could not be found.",
-            "image": "http://localhost:3000/og-default.svg"
+            "image": "https://misaya.online/og-default.svg"
           },
           "jsonLdTypes": []
         },
@@ -327,20 +327,20 @@
         "metadata": {
           "title": "IsoHC: Fixed-Vector Isometric Residual Mixing · Misaya Notes",
           "description": "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
-          "canonical": "http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing",
+          "canonical": "https://misaya.online/post/isohc-fixed-vector-isometric-residual-mixing",
           "htmlLang": "en",
           "openGraph": {
             "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
             "description": "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
-            "image": "http://localhost:3000/og-default.svg",
+            "image": "https://misaya.online/og-default.svg",
             "type": "article",
-            "url": "http://localhost:3000/post/isohc-fixed-vector-isometric-residual-mixing"
+            "url": "https://misaya.online/post/isohc-fixed-vector-isometric-residual-mixing"
           },
           "twitter": {
             "card": "summary_large_image",
             "title": "IsoHC: Fixed-Vector Isometric Residual Mixing",
             "description": "从多 stream 残差混合里的一个稳定性疑问出发：如果平均方向不能漂，残差能量也不能漏，混合矩阵应该长什么样？",
-            "image": "http://localhost:3000/og-default.svg"
+            "image": "https://misaya.online/og-default.svg"
           },
           "jsonLdTypes": [
             "BlogPosting"
@@ -363,20 +363,20 @@
         "metadata": {
           "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context · Misaya Notes",
           "description": "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 与 evaluator。",
-          "canonical": "http://localhost:3000/post/agent-harness-engine-evaluating-tool-using-agents",
+          "canonical": "https://misaya.online/post/agent-harness-engine-evaluating-tool-using-agents",
           "htmlLang": "en",
           "openGraph": {
             "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
             "description": "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 与 evaluator。",
-            "image": "http://localhost:3000/og-default.svg",
+            "image": "https://misaya.online/og-default.svg",
             "type": "article",
-            "url": "http://localhost:3000/post/agent-harness-engine-evaluating-tool-using-agents"
+            "url": "https://misaya.online/post/agent-harness-engine-evaluating-tool-using-agents"
           },
           "twitter": {
             "card": "summary_large_image",
             "title": "Agent Harness Engine: Evaluating Tool-Using Agents Under Controlled Context",
             "description": "从一次难以复盘的 Agent trace 开始，拆出 task spec、context builder、tool sandbox、trace store 与 evaluator。",
-            "image": "http://localhost:3000/og-default.svg"
+            "image": "https://misaya.online/og-default.svg"
           },
           "jsonLdTypes": [
             "BlogPosting"
@@ -435,7 +435,7 @@
     "html": {
       "file": "index.html",
       "rawBytes": 1974,
-      "gzipBytes": 674
+      "gzipBytes": 672
     },
     "javascript": [
       {
@@ -449,29 +449,29 @@
         "gzipBytes": 90823
       },
       {
-        "file": "assets/index-4vfvIAEN.js",
+        "file": "assets/index-DeYvaSjb.js",
         "rawBytes": 230086,
-        "gzipBytes": 72172
+        "gzipBytes": 72175
       },
       {
-        "file": "assets/MarkdownRenderer-rJpIhI4s.js",
+        "file": "assets/MarkdownRenderer-uaoqP_XL.js",
         "rawBytes": 176165,
-        "gzipBytes": 53980
+        "gzipBytes": 53979
       },
       {
-        "file": "assets/knowledgeRefresh-DjBqAL6y.js",
+        "file": "assets/knowledgeRefresh-BMMQAQCv.js",
         "rawBytes": 50704,
-        "gzipBytes": 18036
+        "gzipBytes": 18035
       },
       {
-        "file": "assets/Manage-DUxwGnln.js",
+        "file": "assets/Manage-wKRXsZcb.js",
         "rawBytes": 60654,
-        "gzipBytes": 15031
+        "gzipBytes": 15030
       },
       {
-        "file": "assets/Editor-Duu8r6Rh.js",
+        "file": "assets/Editor-G7vWewl9.js",
         "rawBytes": 40733,
-        "gzipBytes": 11418
+        "gzipBytes": 11419
       },
       {
         "file": "assets/index-CczHSCOW.js",
@@ -479,14 +479,14 @@
         "gzipBytes": 9549
       },
       {
-        "file": "assets/PostDetail-Bdp1Lxh1.js",
+        "file": "assets/PostDetail-BUx7Ofyk.js",
         "rawBytes": 32300,
-        "gzipBytes": 9201
+        "gzipBytes": 9202
       },
       {
-        "file": "assets/ManageAgent-Br8_zJau.js",
+        "file": "assets/ManageAgent-oPJPHZbM.js",
         "rawBytes": 27023,
-        "gzipBytes": 7410
+        "gzipBytes": 7408
       },
       {
         "file": "__manus__/debug-collector.js",
@@ -494,27 +494,27 @@
         "gzipBytes": 5705
       },
       {
-        "file": "assets/Search-Dy7wAA6s.js",
+        "file": "assets/Search-Btj9T7dD.js",
         "rawBytes": 9614,
-        "gzipBytes": 3684
+        "gzipBytes": 3683
       },
       {
-        "file": "assets/Home-B53lkbD0.js",
+        "file": "assets/Home-CypmJEGA.js",
         "rawBytes": 9998,
-        "gzipBytes": 3412
+        "gzipBytes": 3411
       },
       {
-        "file": "assets/tracks-CnqXGhEu.js",
-        "rawBytes": 6934,
-        "gzipBytes": 2055
+        "file": "assets/tracks-D-5-HVaN.js",
+        "rawBytes": 6979,
+        "gzipBytes": 2080
       },
       {
-        "file": "assets/index-DwMxMO_U.js",
+        "file": "assets/index-CvaiiLTK.js",
         "rawBytes": 4386,
         "gzipBytes": 1976
       },
       {
-        "file": "assets/Track-ymx9YIW0.js",
+        "file": "assets/Track-oqGUiPKY.js",
         "rawBytes": 5052,
         "gzipBytes": 1890
       },
@@ -524,37 +524,37 @@
         "gzipBytes": 1867
       },
       {
-        "file": "assets/Archive-7ltwCw4S.js",
+        "file": "assets/Archive-Cq9QQeMF.js",
         "rawBytes": 4100,
-        "gzipBytes": 1690
+        "gzipBytes": 1689
       },
       {
-        "file": "assets/ArticleCard-B34e4YMI.js",
+        "file": "assets/ArticleCard-Bn0DA7Y5.js",
         "rawBytes": 4134,
-        "gzipBytes": 1674
+        "gzipBytes": 1672
       },
       {
-        "file": "assets/TaxonomyPage-CBl2IQM5.js",
+        "file": "assets/TaxonomyPage-Cs6rZMI4.js",
         "rawBytes": 3766,
-        "gzipBytes": 1483
+        "gzipBytes": 1481
       },
       {
-        "file": "assets/Login-BXaf8qIj.js",
+        "file": "assets/Login-DyY3gKGc.js",
         "rawBytes": 3659,
-        "gzipBytes": 1465
+        "gzipBytes": 1464
       },
       {
-        "file": "assets/index-C7Rjw5tS.js",
+        "file": "assets/index-OzSLvF4r.js",
         "rawBytes": 2689,
         "gzipBytes": 1231
       },
       {
-        "file": "assets/NotFound-D9p-EA8p.js",
+        "file": "assets/NotFound-DHVcrtF-.js",
         "rawBytes": 2245,
-        "gzipBytes": 998
+        "gzipBytes": 999
       },
       {
-        "file": "assets/input-5YJ3RYev.js",
+        "file": "assets/input-CMFwCxlG.js",
         "rawBytes": 2115,
         "gzipBytes": 900
       },
@@ -564,9 +564,14 @@
         "gzipBytes": 809
       },
       {
-        "file": "assets/About-CtqYW21N.js",
+        "file": "assets/About-D68cNeI8.js",
         "rawBytes": 1897,
-        "gzipBytes": 774
+        "gzipBytes": 773
+      },
+      {
+        "file": "assets/publicArticles-DcVDnZAf.js",
+        "rawBytes": 854,
+        "gzipBytes": 636
       },
       {
         "file": "assets/reading-time-ChpY5_2v.js",
@@ -574,14 +579,9 @@
         "gzipBytes": 568
       },
       {
-        "file": "assets/publicArticles-Cr3iI0Mj.js",
-        "rawBytes": 748,
-        "gzipBytes": 565
-      },
-      {
-        "file": "assets/mail-BUBCMKuy.js",
+        "file": "assets/mail-BxbDdDIM.js",
         "rawBytes": 835,
-        "gzipBytes": 438
+        "gzipBytes": 439
       },
       {
         "file": "assets/AgentMarkdown-Du5qF4_C.js",
@@ -589,47 +589,47 @@
         "gzipBytes": 430
       },
       {
-        "file": "assets/tags-BaM2bfvU.js",
+        "file": "assets/tags-DwURfwNl.js",
         "rawBytes": 561,
-        "gzipBytes": 385
+        "gzipBytes": 387
       },
       {
-        "file": "assets/calendar-Dwd_YHf0.js",
+        "file": "assets/calendar-DlswuA94.js",
         "rawBytes": 710,
-        "gzipBytes": 357
+        "gzipBytes": 359
       },
       {
-        "file": "assets/network-CZwhBmAe.js",
+        "file": "assets/network-DCjn123P.js",
         "rawBytes": 553,
         "gzipBytes": 336
       },
       {
-        "file": "assets/git-branch-1wFkyuqf.js",
+        "file": "assets/git-branch-qQ14GWCZ.js",
         "rawBytes": 443,
-        "gzipBytes": 319
+        "gzipBytes": 320
       },
       {
-        "file": "assets/copy-UXqI7HT2.js",
+        "file": "assets/copy-BMqzK0kh.js",
         "rawBytes": 400,
         "gzipBytes": 308
       },
       {
-        "file": "assets/eye-D0w01AHc.js",
+        "file": "assets/eye-ivBxB7qu.js",
         "rawBytes": 420,
-        "gzipBytes": 301
+        "gzipBytes": 302
       },
       {
-        "file": "assets/route-BGr8VfgX.js",
+        "file": "assets/route-DIqxYMx3.js",
         "rawBytes": 418,
-        "gzipBytes": 301
+        "gzipBytes": 302
       },
       {
-        "file": "assets/hash-C_HB08f7.js",
+        "file": "assets/hash-o4qrq6BG.js",
         "rawBytes": 465,
-        "gzipBytes": 296
+        "gzipBytes": 298
       },
       {
-        "file": "assets/folder-CvhfTPpI.js",
+        "file": "assets/folder-h33UHuDF.js",
         "rawBytes": 397,
         "gzipBytes": 291
       }

@@ -210,6 +210,27 @@ const publicSeedPosts: PublicSeedPost[] = [
       { id: 20, name: "Tool Use", slug: "tool-use" },
     ],
   },
+  {
+    title: "长程 Agent 为什么难：从单步能力到持续收敛",
+    slug: "long-horizon-agents-continuous-convergence",
+    contentPath: "long_horizon_agent_continuous_convergence.md",
+    category: categories.applications,
+    publishedAt: "2026-08-16T12:00:00.000Z",
+    featuredRank: 0,
+    pinnedTrack: "applications",
+    excerpt:
+      "长程 Agent 的关键不是每一步都正确，而是让错误可观察、失败可恢复、纠正进入持久状态，并让执行轨迹持续向目标收敛。",
+    tags: [
+      { id: 13, name: "Agent Systems", slug: "agent-systems" },
+      { id: 47, name: "Long-Horizon Agents", slug: "long-horizon-agents" },
+      { id: 14, name: "Harness Engine", slug: "harness-engine" },
+      { id: 16, name: "Context Engineering", slug: "context-engineering" },
+      { id: 48, name: "Multi-Agent", slug: "multi-agent" },
+      { id: 40, name: "Post-training", slug: "post-training" },
+      { id: 18, name: "Evaluation", slug: "evaluation" },
+      { id: 19, name: "Observability", slug: "observability" },
+    ],
+  },
 ];
 
 const primarySeriesByPostSlug = new Map<

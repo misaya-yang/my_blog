@@ -7,6 +7,8 @@ export const publicArticleTitlesBySlug: Record<string, string> = {
     "Agent Loop: 从 ReAct 模式到可观测运行时",
   "goal-harness-agent-phase-protocol":
     "Goal Harness: 让 Codex / Claude Code 持续完整工作的工程协议",
+  "long-horizon-agents-continuous-convergence":
+    "长程 Agent 为什么难：从单步能力到持续收敛",
   "isohc-fixed-vector-isometric-residual-mixing":
     "IsoHC: Fixed-Vector Isometric Residual Mixing",
   "gated-ffn-multiplicative-channel-control":

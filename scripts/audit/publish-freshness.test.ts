@@ -69,6 +69,12 @@ describe("publish freshness track coverage", () => {
         seriesSlug: "agent-runtime-systems",
         pinnedTrack: "applications",
       }),
+      publicPost({
+        slug: "long-horizon-agents-continuous-convergence",
+        categorySlug: "ai-applications",
+        seriesSlug: "agent-runtime-systems",
+        pinnedTrack: "applications",
+      }),
     ];
     const allPosts = [
       ...publicPosts,
@@ -83,7 +89,7 @@ describe("publish freshness track coverage", () => {
 
     expect(result.ok).toBe(true);
     expect(result.publicTrackSlugs.applications).toContain(
-      "goal-harness-agent-phase-protocol"
+      "long-horizon-agents-continuous-convergence"
     );
     expect(result.configuredNonPublicSlugs).toEqual([]);
   });

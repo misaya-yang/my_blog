@@ -38,6 +38,26 @@ describe("public seed fallback posts", () => {
     expect(article?.tags.map(tag => tag.slug)).toContain("rlhf");
   });
 
+  it("exposes the long-horizon Agent article in the runtime series", async () => {
+    const article = await getPublicSeedArticleBySlug(
+      "long-horizon-agents-continuous-convergence"
+    );
+
+    expect(article).toMatchObject({
+      title: "长程 Agent 为什么难：从单步能力到持续收敛",
+      slug: "long-horizon-agents-continuous-convergence",
+      seriesSlug: "agent-runtime-systems",
+      seriesTitle: "Agent Runtime Systems",
+      seriesOrder: 5,
+      pinnedTrack: "applications",
+      category: {
+        slug: "ai-applications",
+      },
+    });
+    expect(article?.content).toContain("## 10. 长程 Agent 的核心能力，是持续收敛");
+    expect(article?.tags.map(tag => tag.slug)).toContain("long-horizon-agents");
+  });
+
   it("keeps public fallback titles and excerpts in sync with seed-blog.mjs", async () => {
     const seedSource = await readFile("seed-blog.mjs", "utf-8");
     const publicSeedPosts = parseSeedPosts(seedSource).filter(

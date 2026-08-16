@@ -1,12 +1,31 @@
 {
-  "generatedAt": "2026-06-19T17:09:55.599Z",
+  "generatedAt": "2026-08-16T13:46:58.530Z",
   "git": {
     "branch": "main",
-    "commit": "43cbf84",
+    "commit": "538bb96",
     "dirty": true
   },
   "baseUrl": "http://localhost:3000/",
   "publicInventory": [
+    {
+      "slug": "long-horizon-agents-continuous-convergence",
+      "title": "长程 Agent 为什么难：从单步能力到持续收敛",
+      "categorySlug": "ai-applications",
+      "tagSlugs": [
+        "agent-systems",
+        "context-engineering",
+        "evaluation",
+        "harness-engine",
+        "long-horizon-agents",
+        "multi-agent",
+        "observability",
+        "post-training"
+      ],
+      "publishedAt": "2026-08-16T12:00:00.000Z",
+      "updatedAt": "2026-08-16T13:43:38.079Z",
+      "seriesSlug": "agent-runtime-systems",
+      "seriesOrder": 5
+    },
     {
       "slug": "llm-rl-post-training-verifiable-rewards",
       "title": "大模型强化学习：从 RLHF 到可验证奖励的后训练主线",
@@ -23,7 +42,7 @@
         "verifier"
       ],
       "publishedAt": "2026-06-17T00:00:00.000Z",
-      "updatedAt": "2026-06-19T17:08:42.342Z",
+      "updatedAt": "2026-08-07T16:27:57.259Z",
       "seriesSlug": "llm-post-training-rl",
       "seriesOrder": 1
     },
@@ -41,7 +60,7 @@
         "transformer"
       ],
       "publishedAt": "2026-06-16T00:00:00.000Z",
-      "updatedAt": "2026-06-19T17:08:32.875Z",
+      "updatedAt": "2026-08-16T13:42:12.141Z",
       "seriesSlug": "generative-modeling",
       "seriesOrder": 1
     },
@@ -59,7 +78,7 @@
         "transformer"
       ],
       "publishedAt": "2026-06-06T00:00:00.000Z",
-      "updatedAt": "2026-06-19T17:08:24.680Z",
+      "updatedAt": "2026-06-19T17:42:55.925Z",
       "seriesSlug": "feed-forward-mechanisms",
       "seriesOrder": 1
     },
@@ -78,7 +97,7 @@
         "tool-use"
       ],
       "publishedAt": "2026-05-31T00:40:00.000Z",
-      "updatedAt": "2026-06-19T17:09:23.311Z",
+      "updatedAt": "2026-08-16T13:43:24.194Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 4
     },
@@ -137,7 +156,7 @@
         "tool-use"
       ],
       "publishedAt": "2026-05-31T00:10:00.000Z",
-      "updatedAt": "2026-06-19T17:08:52.739Z",
+      "updatedAt": "2026-08-16T13:42:41.612Z",
       "seriesSlug": "agent-runtime-systems",
       "seriesOrder": 1
     },
@@ -154,7 +173,7 @@
         "transformer"
       ],
       "publishedAt": "2026-05-31T00:00:00.000Z",
-      "updatedAt": "2026-06-19T17:08:16.627Z",
+      "updatedAt": "2026-07-16T17:55:39.329Z",
       "seriesSlug": "residual-stability",
       "seriesOrder": 1
     }
@@ -179,6 +198,7 @@
         "goal-harness-agent-phase-protocol",
         "isohc-fixed-vector-isometric-residual-mixing",
         "llm-rl-post-training-verifiable-rewards",
+        "long-horizon-agents-continuous-convergence",
         "rag-evidence-packet-context-compiler"
       ],
       "missingPublicSlugs": [],
@@ -194,6 +214,7 @@
         "goal-harness-agent-phase-protocol",
         "isohc-fixed-vector-isometric-residual-mixing",
         "llm-rl-post-training-verifiable-rewards",
+        "long-horizon-agents-continuous-convergence",
         "rag-evidence-packet-context-compiler"
       ],
       "missingPublicSlugs": [],
@@ -209,6 +230,7 @@
         "goal-harness-agent-phase-protocol",
         "isohc-fixed-vector-isometric-residual-mixing",
         "llm-rl-post-training-verifiable-rewards",
+        "long-horizon-agents-continuous-convergence",
         "rag-evidence-packet-context-compiler"
       ],
       "missingPublicSlugs": []
@@ -227,6 +249,7 @@
         "agent-harness-engine-evaluating-tool-using-agents",
         "agent-loop-observable-tool-using-agents",
         "goal-harness-agent-phase-protocol",
+        "long-horizon-agents-continuous-convergence",
         "rag-evidence-packet-context-compiler"
       ]
     },
@@ -237,9 +260,9 @@
   },
   "agentKnowledge": {
     "ok": true,
-    "chunkCount": 142,
-    "publicPostCount": 8,
-    "indexedPublicPostCount": 8,
+    "chunkCount": 148,
+    "publicPostCount": 9,
+    "indexedPublicPostCount": 9,
     "hiddenOrDraftExcludedCount": 1,
     "stalePublicPostSlugs": [],
     "extraIndexedPostSlugs": [],
@@ -251,10 +274,11 @@
       "goal-harness-agent-phase-protocol",
       "isohc-fixed-vector-isometric-residual-mixing",
       "llm-rl-post-training-verifiable-rewards",
+      "long-horizon-agents-continuous-convergence",
       "rag-evidence-packet-context-compiler"
     ],
     "nonPublicIndexedSlugs": [],
-    "lastReindexAt": "2026-06-19T17:09:35.070Z"
+    "lastReindexAt": "2026-08-16T13:44:18.869Z"
   },
   "dateDrift": {
     "comparedPublicPosts": 8,
