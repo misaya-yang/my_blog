@@ -89,7 +89,7 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
                 {taxonomy.description && (
                   <p className="page-copy mt-5">{taxonomy.description}</p>
                 )}
-                <p className="mt-5 text-sm text-slate-400">
+                <p className="mt-5 text-sm text-muted-foreground">
                   {t("discovery.articlesCount", { count: data.total })}
                 </p>
               </section>
@@ -111,7 +111,7 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
                       </Link>
                     ))
                   ) : (
-                    <span className="text-sm text-slate-400">
+                    <span className="text-sm text-muted-foreground">
                       {t("discovery.noSiblingTags")}
                     </span>
                   )}
@@ -130,7 +130,7 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
                           className="research-index-row min-h-[3.5rem] px-4 py-3 text-sm"
                         >
                           <span>{t(topic.labelKey)}</span>
-                          <span className="text-sky-300">
+                          <span className="text-primary">
                             {t(topic.metaKey)}
                           </span>
                         </div>

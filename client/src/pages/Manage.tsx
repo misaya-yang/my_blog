@@ -473,7 +473,7 @@ export default function Manage() {
   // 加载中
   if (authLoading) {
     return (
-      <div className="space-page owner-dark-scope grid min-h-screen place-items-center px-4">
+      <div className="space-page dark owner-dark-scope grid min-h-screen place-items-center px-4">
         <SpaceBackdrop subtle />
         <LoadingState
           title={t("common.loadingNotes")}
@@ -485,7 +485,7 @@ export default function Manage() {
   }
 
   return (
-    <div className="space-page owner-dark-scope">
+    <div className="space-page dark owner-dark-scope">
       <SpaceBackdrop subtle />
       <SiteHeader
         active="manage"

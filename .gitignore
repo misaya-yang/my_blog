@@ -123,3 +123,6 @@ temp/
 *.sqlite
 *.sqlite3
 i18n-plan.md
+
+# Frontend audit evidence (motion-landing-page-builder)
+.audit/

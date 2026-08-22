@@ -1,0 +1,752 @@
+/* ===========================================================================
+   Notebook layer — 2026-08 frontend upgrade.
+
+   Loaded last, so it settles conflicts the four earlier stylesheets left open.
+   It EXTENDS the existing --v2-* house language rather than replacing it:
+   same accent, same radii, same blur/saturate materials, same durations.
+   What it adds is a typographic system (the previous one resolved to whatever
+   font the OS supplied), a WCAG-2.2-conformant focus and control system, and
+   the handful of composition fixes the rendered baseline demanded.
+   =========================================================================== */
+
+/* Tokens are deliberately UNLAYERED. index.css declares its :root outside
+   any @layer, and unlayered rules win over layered ones regardless of
+   specificity, so a token override parked in `@layer base` here would
+   silently lose to it. */
+:root {
+  /* Ink for accent-filled controls. Measured on the baseline: white on the
+     accent was 1.96:1 in dark and ~3.3:1 in light — both fail 1.4.3. This
+     ink clears 4.5:1 against both accents and reads as a deliberate
+     two-tone control rather than a washed-out tint. */
+  --v2-on-accent: oklch(0.16 0.03 210);
+
+  /* Paper tint for the light theme. The baseline light canvas was a flat
+     blue-grey; a hair of warmth makes the serif read as ink on paper and
+     separates the notebook from every cool-grey SaaS dashboard. */
+  --v2-paper-warm: oklch(0.973 0.005 85);
+
+  /* Rule weights. Hairlines already exist; these are the deliberate,
+     visible ones the editorial layout needs. */
+  --v2-rule: 1px;
+  --v2-rule-strong: 2px;
+
+  /* Error text. `--destructive` is a FILL token -- button.tsx pairs it with
+     `--destructive-foreground` on a solid ground -- so borrowing it as an ink
+     put 3.52:1 red on the dark card. This is the same hue tuned to be read as
+     text, and it is a separate token so the filled variants keep their own. */
+  --danger-ink: oklch(0.5 0.2 25);
+}
+
+/* The default Button variant failed 1.4.3 in BOTH themes: near-white on the
+   bright dark accent measured 2.72:1, and white on the light blue primary
+   measured ~3.96:1. Fixing it at the token level repairs every default button
+   at once rather than patching each page, and it collapses two accents into
+   one -- the light theme's primary was blue while its accent was teal. */
+.dark {
+  --primary-foreground: var(--v2-on-accent);
+  --sidebar-primary-foreground: var(--v2-on-accent);
+  /* Lifted out of the fill range so it clears 4.5:1 on the near-black card. */
+  --danger-ink: oklch(0.72 0.16 25);
+}
+
+/* The light theme had two canvases: `body` painted one colour and
+   `.space-page` painted another, leaving a visible seam down the page. Every
+   token that paints the light ground is re-pointed at one warm paper so the
+   canvas is a single surface. */
+html:not(.dark) {
+  /* Measured against the painted page: the inherited light accent rendered
+     accent-coloured links at 3.64:1 on paper. Deepening it to L 0.46 clears
+     4.5:1 as text, and the filled control then takes light ink rather than
+     dark -- one accent, two inks, both measured. */
+  --v2-accent: oklch(0.46 0.13 205);
+  --v2-on-accent: oklch(0.99 0 0);
+  --ring: oklch(0.46 0.13 205);
+  --v2-bg: var(--v2-paper-warm);
+  --v2-bg-lower: oklch(0.945 0.006 85);
+  --v2-solid-reading: oklch(0.988 0.004 85);
+  --v2-solid-data: oklch(0.956 0.005 85);
+  --bg: var(--v2-bg);
+  --bg-elevated: oklch(0.988 0.004 85);
+  --background: var(--v2-bg);
+  --card: oklch(0.99 0.003 85);
+  --popover: oklch(0.99 0.003 85);
+  --surface-card: oklch(0.99 0.003 85);
+  --muted: oklch(0.946 0.005 85);
+  --secondary: oklch(0.936 0.006 85);
+  --public-bg: var(--v2-bg);
+  --public-bg-lower: var(--v2-bg-lower);
+  --public-header-bg: oklch(0.973 0.005 85 / 88%);
+  --primary: var(--v2-accent);
+  --primary-foreground: var(--v2-on-accent);
+  --primary-hover: oklch(0.4 0.13 205);
+  --sidebar-primary: var(--v2-accent);
+  --sidebar-primary-foreground: var(--v2-on-accent);
+}
+
+/* The `.owner-dark-scope` shells paint a hardcoded near-black gradient
+   (owner-tools.css:2140) whatever the site theme is, but their ink came from
+   the theme -- so in light they rendered near-white text over the light half
+   of that gradient. Those shells now carry `dark` alongside the scope class,
+   which is the app's existing mechanism for "this subtree uses the dark
+   palette" and keeps the tokens in one place instead of duplicating them. */
+
+/* The language switcher writes `lang` onto <html>; every typographic value
+   below that differs by script keys off it. */
+html {
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+@layer components {
+  /* -----------------------------------------------------------------------
+     1. TYPE ROLES
+
+     Fraunces carries display and long-form reading; Instrument Sans carries
+     UI, navigation and metadata; JetBrains Mono carries code and technical
+     labels. Scale contrast between display and body is about 5x, so the
+     reading order is unmistakable without any decoration doing the work.
+     ----------------------------------------------------------------------- */
+
+  .space-page .home-intro-rail .home-title,
+  .home-title {
+    font-family: var(--font-display) !important;
+    font-size: var(--step-display) !important;
+    font-weight: 600 !important;
+    line-height: 1.03 !important;
+    letter-spacing: -0.018em !important;
+    font-variation-settings: var(--wonk-display);
+    font-optical-sizing: auto;
+    max-width: none !important;
+    text-wrap: balance;
+  }
+
+  /* Optical hang: the cap-height of a serif leaves the left margin looking
+     indented next to the kicker rule above it. Pull the display line back by
+     its own side bearing so the two align on the visual edge, not the em box. */
+  .space-page .home-intro-rail .home-title {
+    margin-inline-start: -0.045em;
+  }
+
+  .article-page-title {
+    font-family: var(--font-display) !important;
+    font-size: var(--step-title) !important;
+    font-weight: 600 !important;
+    line-height: 1.14 !important;
+    letter-spacing: 0 !important;
+    font-variation-settings: var(--wonk-title);
+    font-optical-sizing: auto;
+    text-wrap: balance;
+  }
+
+  /* Section and card headings: the serif, but sober — WONK off, tracking at
+     zero. The quirk is reserved for the two sizes that can carry it. */
+  .section-heading-title,
+  .section-title,
+  .home-more-notes-head h2,
+  .home-track-panel-copy h2,
+  .home-featured-note-body h2,
+  .article-title {
+    font-family: var(--font-display) !important;
+    font-weight: 600 !important;
+    /* Zero, not negative. These elements render post titles, and on this blog
+       the content language is independent of the interface language — a
+       Chinese title lands inside an English UI all the time. Negative tracking
+       fuses Han strokes, so no shared content heading may carry it. Only the
+       hero, which is authored per locale in JSX, tracks negative. */
+    letter-spacing: 0 !important;
+    font-variation-settings: var(--wonk-quiet);
+    font-optical-sizing: auto;
+    text-wrap: balance;
+  }
+
+  .section-heading-title,
+  .section-title,
+  .home-more-notes-head h2 {
+    font-size: var(--step-section) !important;
+    line-height: 1.2 !important;
+  }
+
+  .home-track-panel-copy h2,
+  .home-featured-note-body h2 {
+    font-size: clamp(1.45rem, 1.15rem + 1.1vw, 2rem) !important;
+    line-height: 1.16 !important;
+  }
+
+  .article-title {
+    font-size: clamp(1.12rem, 1.02rem + 0.4vw, 1.32rem) !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Post titles rendered as list rows. Below 24px with 40+ characters these
+     count as CJK body, which wants 1.5 leading minimum — Han glyphs are dense
+     and have no ascender relief, so Latin heading leading reads as a slab. */
+  .home-track-post-list a strong,
+  .home-featured-note-body p,
+  .article-excerpt,
+  .series-step strong {
+    line-height: 1.6 !important;
+  }
+
+  /* Lede and supporting copy. Measure is capped so a wide viewport never
+     produces one exhausting line. */
+  .home-subtitle,
+  .section-heading-copy,
+  .home-track-summary {
+    font-family: var(--font-sans);
+    font-size: var(--step-lede) !important;
+    line-height: 1.6 !important;
+    max-width: var(--measure-latin);
+    text-wrap: pretty;
+  }
+
+  /* Kickers, labels, chips and metadata: the sans, tracked open. Small
+     uppercase needs positive tracking exactly where display needs negative. */
+  .home-index-kicker,
+  .technical-label,
+  .article-entry-kicker,
+  .home-track-panel-head span,
+  .home-featured-note-head span,
+  .metric-label,
+  .stat-label {
+    font-family: var(--font-sans) !important;
+    font-size: var(--step-meta) !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.055em !important;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .article-meta,
+  .article-tag,
+  .home-track-panel-head strong {
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Long-form reading. Fraunces at text optical sizes with WONK off: the
+     same voice as the display line, without the idiosyncrasy that would cost
+     legibility over three thousand words. */
+  .article-prose {
+    font-family: var(--font-reading) !important;
+    font-size: clamp(1.06rem, 1rem + 0.28vw, 1.16rem) !important;
+    line-height: 1.7 !important;
+    letter-spacing: 0;
+    font-variation-settings: var(--wonk-quiet);
+    font-optical-sizing: auto;
+    text-wrap: pretty;
+  }
+
+  .article-prose :is(h2, h3, h4) {
+    font-family: var(--font-display) !important;
+    font-variation-settings: var(--wonk-quiet);
+    /* Prose headings are author content and are routinely Chinese, so they
+       follow the same zero-tracking rule as every other content heading. */
+    letter-spacing: 0;
+  }
+
+  /* visual-refresh.css:4945 sets `font-weight: 470` on reader paragraphs,
+     tuned back when the serif came from the OS. Fraunces is variable and
+     renders a true 470, while Songti SC has no such instance and snaps to
+     Regular -- so every Latin word inside a Chinese paragraph came out looking
+     emphasised. 400 is the one weight both families can actually hit. */
+  .paper-reader-main .article-prose :where(p, li, blockquote),
+  .article-prose :is(p, li, blockquote) {
+    font-weight: 400;
+  }
+
+  /* Code, keys, IDs and durations stay in the mono, with tabular figures so
+     columns of numbers line up. */
+  .article-prose :is(code, pre, kbd, samp),
+  .technical-value,
+  .metric-value,
+  .stat-value {
+    font-family: var(--font-mono) !important;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "kern";
+  }
+
+  /* -----------------------------------------------------------------------
+     2. CJK TYPE
+
+     Han glyphs are dense, full-width and have no ascender/descender relief,
+     so every Latin value above is wrong for them: leading goes up, tracking
+     goes from negative to slightly positive, and the measure is capped in em
+     rather than ch. Fraunces is Latin-only, so Chinese display falls to a
+     宋体 (Songti SC / Source Han Serif SC) — genre-matched to the serif,
+     where the previous stack put a 黑体 next to a Latin sans by accident.
+     ----------------------------------------------------------------------- */
+
+  /* Specificity has to match the Latin display rule above
+     (.space-page .home-intro-rail .home-title), or the Latin values win and
+     the Chinese headline renders at 92px with -0.018em tracking. */
+  .space-page .home-intro-rail .home-title:lang(zh),
+  .home-title:lang(zh),
+  .article-page-title:lang(zh) {
+    letter-spacing: 0.01em !important;
+    line-height: 1.24 !important;
+    /* Songti SC ships a real Bold; asking for 600 would synthesize a weight
+       and destroy the stroke structure. */
+    font-weight: 700 !important;
+    font-synthesis-weight: none;
+    text-wrap: initial;
+  }
+
+  /* Han glyphs are full-width, so the same nominal size that fits
+     "AI Algorithms" in the hero column overruns it in Chinese. Measured on
+     the rendered page, not assumed. */
+  .space-page .home-intro-rail .home-title:lang(zh),
+  .home-title:lang(zh) {
+    font-size: clamp(2.2rem, 1.05rem + 4.4vw, 4.75rem) !important;
+    max-width: 14em !important;
+  }
+
+  :is(
+      .section-heading-title,
+      .section-title,
+      .home-track-panel-copy h2,
+      .home-featured-note-body h2,
+      .article-title,
+      .home-more-notes-head h2
+    ):lang(zh) {
+    letter-spacing: 0 !important;
+    line-height: 1.6 !important;
+    font-synthesis-weight: none;
+    text-wrap: initial;
+  }
+
+  :is(.article-prose, .home-subtitle, .home-track-summary):lang(zh) {
+    line-height: 1.85 !important;
+    letter-spacing: 0.01em;
+    line-break: strict;
+    overflow-wrap: break-word;
+  }
+
+  :is(.home-subtitle, .home-track-summary):lang(zh) {
+    max-width: var(--measure-cjk);
+  }
+
+  /* Every listing surface that renders post copy: the excerpt is content, so
+     the measure follows the content's script, not the interface's. */
+  :is(.article-excerpt, .search-result-excerpt, .home-featured-note-body p):lang(
+      zh
+    ) {
+    max-width: var(--measure-cjk) !important;
+    line-height: 1.85 !important;
+    letter-spacing: 0.01em;
+    line-break: strict;
+    overflow-wrap: break-word;
+  }
+
+  :is(.search-result-title, .article-title):lang(zh) {
+    letter-spacing: 0 !important;
+    font-synthesis-weight: none;
+  }
+
+  /* Cap the measure on the text elements, not on the container, so code
+     blocks, figures and tables keep the full column while prose stays
+     readable. The reading column was running to 46em of Han, which is roughly
+     46 characters a line against a 30-40 guideline. */
+  .article-prose :is(p, li, blockquote) {
+    max-width: var(--measure-latin) !important;
+  }
+
+  .article-prose:lang(zh) :is(p, li, blockquote),
+  .article-prose :is(p, li, blockquote):lang(zh) {
+    max-width: var(--measure-cjk) !important;
+  }
+
+  /* Han strokes stop resolving below roughly 14px. The metadata scale was
+     tuned for Latin, so chips, dates and inline actions were landing at
+     11-13px of Chinese. Raise the floor for those roles in the zh build
+     only; the Latin build keeps the tighter scale. */
+  :is(
+      .article-tag,
+      .article-meta,
+      .article-meta span,
+      .article-read-link,
+      .home-inline-action,
+      .home-track-action,
+      .home-start-path-actions a,
+      .home-start-path-copy span,
+      .home-index-kicker,
+      .home-featured-note-head > span,
+      .home-track-panel-head span,
+      .home-track-panel-head strong,
+      .home-track-post-list a > span,
+      .home-track-path > span,
+      .home-track-path p,
+      .technical-label,
+      .metric-label,
+      .stat-label
+    ):lang(zh) {
+    font-size: 0.875rem !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  /* Han and Latin sit on different baselines and the mixed runs that make up
+     technical Chinese ("用 RoPE 编码") read as broken without the spacing the
+     browser can insert itself. Progressive enhancement — the untrimmed result
+     is still acceptable. */
+  @supports (text-spacing-trim: space-first) {
+    :is(.article-prose, .home-title, .article-page-title):lang(zh) {
+      text-spacing-trim: space-first;
+    }
+  }
+
+  @supports (text-autospace: normal) {
+    :is(.article-prose, .home-subtitle):lang(zh) {
+      text-autospace: normal;
+    }
+  }
+
+  /* -----------------------------------------------------------------------
+     3. FOCUS
+
+     WCAG 2.4.13 wants a 2px perimeter at 3:1 against the unfocused state.
+     The baseline suppressed the outline entirely inside the search dock
+     (`outline: 0 !important`, including on :focus-visible), which is the
+     single most common keyboard failure in a styled page.
+     ----------------------------------------------------------------------- */
+
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: var(--focus-ring-width) solid var(--v2-accent);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* Controls that sit on photographic or gradient ground get a second,
+     dark stroke behind the accent one so the ring cannot vanish into a
+     bright pixel. */
+  .space-page
+    :is(.home-index-search, .home-search-dock, .site-header)
+    :is(a, button, input):focus-visible {
+    outline: var(--focus-ring-width) solid var(--v2-accent) !important;
+    outline-offset: var(--focus-ring-offset) !important;
+    box-shadow: 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width))
+      oklch(0.12 0.01 250 / 72%) !important;
+  }
+
+  /* Focus must never be quieter than hover. */
+  .home-track-post-list a:focus-visible,
+  .home-start-path-actions a:focus-visible,
+  .article-card:has(:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--v2-accent);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* Sticky header must not cover what the browser just scrolled focus to. */
+  :is(main, .article-prose) :is(h2, h3, a, button, [tabindex]) {
+    scroll-margin-top: calc(var(--header-h, 72px) + 1.25rem);
+  }
+
+  /* -----------------------------------------------------------------------
+     4. CONTROLS
+
+     One filled control, one quiet control, complete state matrix. Hover lift
+     is gated to fine pointers so touch never inherits a stuck hover.
+     ----------------------------------------------------------------------- */
+
+  .home-search-submit,
+  .home-index-search .home-search-submit,
+  .space-page:not(.owner-dark-scope) .home-search-submit,
+  .owner-primary-action {
+    font-family: var(--font-sans) !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.005em !important;
+    color: var(--v2-on-accent) !important;
+    background: var(--v2-accent) !important;
+    border: 1px solid
+      color-mix(in oklch, var(--v2-on-accent) 22%, transparent) !important;
+    box-shadow: var(--v2-shadow-soft) !important;
+    transition:
+      background var(--v2-motion-fast) var(--ease-standard),
+      box-shadow var(--v2-motion-fast) var(--ease-standard),
+      transform var(--v2-motion-fast) var(--ease-standard);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .home-search-submit:not(:disabled):hover,
+    .space-page:not(.owner-dark-scope) .home-search-submit:not(:disabled):hover,
+    .owner-primary-action:not(:disabled):hover {
+      background: color-mix(
+        in oklch,
+        var(--v2-accent) 88%,
+        var(--v2-on-accent)
+      ) !important;
+      transform: translateY(-1px);
+    }
+  }
+
+  /* Pressed settles toward the canvas rather than lifting away from it. */
+  .home-search-submit:not(:disabled):active,
+  .space-page:not(.owner-dark-scope) .home-search-submit:not(:disabled):active,
+  .owner-primary-action:not(:disabled):active {
+    transform: translateY(0.5px) !important;
+    box-shadow: none !important;
+  }
+
+  .home-search-submit:disabled,
+  .owner-primary-action:disabled {
+    opacity: 0.55;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  /* AA target size (2.5.8) is 24x24; a nav icon is comfortable at 40. */
+  .nav-icon-button,
+  .nav-ink,
+  .article-tag,
+  .home-start-path-actions a {
+    min-height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .nav-icon-button {
+    min-width: 2.5rem;
+    justify-content: center;
+  }
+
+  /* Inline read/more links measured 90x20 on the baseline. The hit area, not
+     the text, has to clear 24px (WCAG 2.5.8). */
+  .article-read-link,
+  .home-inline-action,
+  .home-track-action,
+  .article-card .article-meta a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.75rem;
+  }
+
+  .home-start-path-actions a,
+  .site-mobile-sheet-link {
+    min-height: 2.75rem;
+  }
+
+  /* Touch devices must not inherit the fine-pointer lift. */
+  @media (hover: none), (pointer: coarse) {
+    :is(
+      .home-track-panel,
+      .home-featured-note,
+      .home-track-post-list a,
+      .home-start-path-actions a,
+      .article-card,
+      .archive-post-row,
+      .search-result-row
+    ):hover {
+      transform: none !important;
+    }
+  }
+
+  /* -----------------------------------------------------------------------
+     4b. READING PAGE
+
+     Measured on the rendered article: the entry-brief definitions, both
+     tables of contents, the series footer and the related-post links were all
+     set at Latin leading and Latin hit sizes while routinely rendering Han.
+     ----------------------------------------------------------------------- */
+
+  /* AA hit area. These were 16-20px tall. */
+  .article-reading-header a,
+  .article-reading-header button,
+  .mobile-toc-nav a,
+  .paper-toc-rail nav a,
+  .article-related-link,
+  .series-progress-action,
+  .article-secondary-actions button,
+  .article-secondary-actions a {
+    display: flex;
+    align-items: center;
+    min-height: 1.75rem;
+  }
+
+  /* Han needs 1.5 leading minimum at these sizes; 1.2-1.46 turned every
+     Chinese heading in the contents list into a solid block. Latin reads
+     fine at the same value, so this is unconditional. */
+  .paper-reader-main .article-entry-item dd,
+  .article-entry-item dd,
+  .mobile-toc-nav a,
+  .paper-toc-rail nav a,
+  .series-progress-action,
+  .article-related-link span {
+    line-height: 1.6 !important;
+  }
+
+  /* The contents list ran to 46em of Han at tablet width. */
+  .mobile-toc-nav a,
+  .paper-toc-rail nav a {
+    max-width: min(100%, 45em);
+  }
+
+  /* 59em of Han in the entry brief. 45em is the guideline ceiling and is a
+     better Latin measure at 14px too. */
+  .article-entry-item dd {
+    max-width: min(100%, 45em);
+  }
+
+  /* -----------------------------------------------------------------------
+     5. COMPOSITION
+
+     The baseline put the orbit photograph directly under the right column's
+     body text in dark (unreadable, and the source of every
+     contrast-unverifiable finding) and deleted it outright in light. This
+     section retires it in both themes and re-allocates the space it held.
+     ----------------------------------------------------------------------- */
+
+  /* The orbit photograph is gone. It was the page's only remaining piece of
+     inherited decoration, and there was no position where it both read as
+     atmosphere and stayed off the copy: behind the index it put Han post
+     titles on a wireframe globe and measured 3.67:1, and pushed far enough
+     away to be safe it was invisible. The display type is the focal point,
+     which is what a notebook should lead with. Removing it also retired the
+     scrim that existed only to defend against it. */
+  .home-index-spread::before {
+    display: none !important;
+  }
+
+  .space-page .home-index-spread {
+    min-height: auto !important;
+  }
+
+  /* Negative space, allocated rather than left over: the hero column gets the
+     generous void and the index below tightens against it. The baseline had
+     an even, undifferentiated gap and a dead half-screen under the tracks. */
+  .home-index-spread {
+    min-height: auto !important;
+    padding-bottom: clamp(2.5rem, 6vh, 4.5rem) !important;
+  }
+
+  /* The headline is the thesis, so the column carrying it gets the larger
+     share. The baseline gave the hero 0.82fr against the index's 1.18fr,
+     which is why the display line had to wrap mid-term.
+
+     Scoped to the two-column breakpoint: below 1024px the house stylesheet
+     collapses this grid to a single column, and an unscoped override here
+     pushed the whole page past the viewport where `overflow: hidden` silently
+     clipped it. */
+  @media (min-width: 1024px) {
+    .home-index-grid {
+      align-items: start !important;
+      grid-template-columns:
+        minmax(22rem, 0.95fr) minmax(27rem, 1.05fr) !important;
+    }
+  }
+
+  /* A field-note rule under the kicker — the one detail that could only
+     belong to a notebook, and it costs nothing. */
+  .home-index-kicker {
+    border-left-width: var(--v2-rule-strong) !important;
+    border-left-color: var(--v2-accent) !important;
+  }
+
+  /* Reading-path rows put the series label beside the title, which left a
+     152px measure for a Chinese title and wrapped every one of them to three
+     lines. Stacking the label above the title as a kicker doubles the measure
+     and matches the kicker/heading rhythm the rest of the page already uses.
+
+     Only .home-track-post-list rows, which are label + title. `.series-step`
+     looks similar but carries a third child -- the trailing arrow -- and its
+     own `auto minmax(0, 1fr) auto` grid; collapsing that to one column drops
+     the arrow onto a line of its own below the title. */
+  .space-page:not(.owner-dark-scope) .home-track-post-list a {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    align-items: start !important;
+    gap: 0.25rem !important;
+    width: auto !important;
+    max-width: 100% !important;
+  }
+
+  .space-page:not(.owner-dark-scope) .home-track-post-list a > strong {
+    max-width: 100% !important;
+  }
+
+  .home-track-post-list a > span {
+    font-family: var(--font-sans);
+    font-size: var(--step-micro);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* "Latest note" wrapped to two lines inside its own label cell. */
+  .home-featured-note-head > span {
+    white-space: nowrap;
+  }
+
+  /* The right column spans both rows, so its height was inflating row 1 and
+     stranding the featured band a screenful below the hero. Pinning row 2 to
+     the leftover space and anchoring the band to its top closes the void. */
+  @media (min-width: 1024px) {
+    .home-index-grid {
+      grid-template-rows: auto 1fr !important;
+    }
+
+    .home-featured-band {
+      align-self: start !important;
+    }
+  }
+
+  /* The track summary was clamped to two lines and truncated mid-sentence
+     while the panel below it sat empty. */
+  .home-track-summary {
+    -webkit-line-clamp: 4 !important;
+    line-clamp: 4 !important;
+  }
+
+  .home-more-notes-head {
+    border-top: var(--v2-rule) solid var(--v2-hairline);
+    padding-top: clamp(1.5rem, 3vw, 2.25rem);
+  }
+
+  /* -----------------------------------------------------------------------
+     6. MOTION
+
+     One purpose: settle the first viewport in reading order so the eye is led
+     from kicker to headline to action. Short, damped, no travel worth
+     noticing, and every element is readable and clickable before it finishes.
+     ----------------------------------------------------------------------- */
+
+  @media (prefers-reduced-motion: no-preference) {
+    .home-intro-rail > * {
+      animation: notebook-settle var(--dur-reveal) var(--ease-reveal) backwards;
+    }
+
+    .home-intro-rail > *:nth-child(1) {
+      animation-delay: 0ms;
+    }
+    .home-intro-rail > *:nth-child(2) {
+      animation-delay: 60ms;
+    }
+    .home-intro-rail > *:nth-child(3) {
+      animation-delay: 120ms;
+    }
+    .home-intro-rail > *:nth-child(4) {
+      animation-delay: 180ms;
+    }
+    .home-intro-rail > *:nth-child(5) {
+      animation-delay: 240ms;
+    }
+  }
+
+  @keyframes notebook-settle {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Reduced motion is a designed state, not a duration multiplier: the
+     entrance is removed entirely rather than compressed, so nothing is ever
+     left waiting at opacity 0. */
+  @media (prefers-reduced-motion: reduce) {
+    .home-intro-rail > * {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+}

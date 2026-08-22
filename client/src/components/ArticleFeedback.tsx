@@ -77,11 +77,11 @@ export function ArticleFeedback({
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-base font-semibold text-white">{t("engagement.feedback.title")}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+          <h2 className="text-base font-semibold text-foreground">{t("engagement.feedback.title")}</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             {t("engagement.feedback.description")}
           </p>
-          <p className="mt-2 text-xs text-slate-500">
+          <p className="mt-2 text-xs text-muted-foreground">
             {isVisitor && displayName
               ? t("engagement.feedback.visitorIdentity", { name: displayName })
               : t("engagement.feedback.anonymousIdentity")}
@@ -104,8 +104,8 @@ export function ArticleFeedback({
             className={cn(
               "flex h-11 items-center justify-center gap-2 rounded-md border px-3 text-sm font-medium transition",
               type === "useful"
-                ? "border-sky-300/60 bg-sky-400/15 text-sky-100"
-                : "border-sky-200/15 bg-slate-950/35 text-slate-300 hover:border-sky-300/45 hover:text-white"
+                ? "border-primary/60 bg-primary/15 text-primary"
+                : "border-border bg-background/60 text-muted-foreground hover:border-primary/45 hover:text-foreground"
             )}
           >
             <ThumbsUp className="h-4 w-4" />
@@ -118,8 +118,8 @@ export function ArticleFeedback({
             className={cn(
               "flex h-11 items-center justify-center gap-2 rounded-md border px-3 text-sm font-medium transition",
               type === "not_useful"
-                ? "border-rose-300/55 bg-rose-400/12 text-rose-100"
-                : "border-sky-200/15 bg-slate-950/35 text-slate-300 hover:border-sky-300/45 hover:text-white"
+                ? "border-destructive/55 bg-destructive/15 text-danger-ink"
+                : "border-border bg-background/60 text-muted-foreground hover:border-primary/45 hover:text-foreground"
             )}
           >
             <ThumbsDown className="h-4 w-4" />
@@ -138,7 +138,7 @@ export function ArticleFeedback({
             maxLength={600}
             placeholder={t("engagement.feedback.messagePlaceholder")}
             aria-describedby={statusId}
-            className="min-h-24 border-sky-200/15 bg-slate-950/35 text-white placeholder:text-slate-500"
+            className="min-h-24 border-border bg-background/60 text-foreground placeholder:text-muted-foreground"
           />
         </div>
 
@@ -156,7 +156,7 @@ export function ArticleFeedback({
                 placeholder={t("engagement.feedback.namePlaceholder")}
                 autoComplete="name"
                 aria-describedby={statusId}
-                className="border-sky-200/15 bg-slate-950/35 text-white placeholder:text-slate-500"
+                className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground"
               />
             </div>
           )}
@@ -173,7 +173,7 @@ export function ArticleFeedback({
               onChange={(event) => setReplyEmail(event.target.value)}
               placeholder={t("engagement.feedback.emailPlaceholder")}
               aria-describedby={statusId}
-              className="border-sky-200/15 bg-slate-950/35 text-white placeholder:text-slate-500"
+              className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground"
             />
           </div>
         </div>
@@ -181,17 +181,17 @@ export function ArticleFeedback({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p
             id={statusId}
-            className="min-h-5 text-xs leading-5 text-slate-500"
+            className="min-h-5 text-xs leading-5 text-muted-foreground"
             aria-live="polite"
           >
             {feedback.error ? (
-              <span className="text-red-200">
+              <span className="text-danger-ink">
                 {feedback.error.message.includes("Too many")
                   ? t("engagement.feedback.rateLimited")
                   : t("engagement.feedback.error")}
               </span>
             ) : sent ? (
-              <span className="text-sky-200">{t("engagement.feedback.success")}</span>
+              <span className="text-primary">{t("engagement.feedback.success")}</span>
             ) : (
               t("engagement.feedback.privacy")
             )}

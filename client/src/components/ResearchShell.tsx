@@ -107,7 +107,7 @@ export function BrandMark({
   return (
     <span className="inline-flex min-h-11 items-center gap-3">
       {glyph}
-      <span className="text-base font-[650] tracking-normal text-white sm:text-lg">
+      <span className="text-base font-[650] tracking-normal text-foreground sm:text-lg">
         Misaya Notes
       </span>
     </span>
@@ -173,7 +173,7 @@ export function SiteHeader({
           ) : (
             <Link href="/" className="flex min-h-11 items-center gap-3">
               <BrandMark />
-              <span className="text-base font-semibold tracking-normal text-white sm:text-lg">
+              <span className="text-base font-semibold tracking-normal text-foreground sm:text-lg">
                 {t("nav.brand")}
               </span>
             </Link>
@@ -231,8 +231,14 @@ export function SiteHeader({
             type="button"
             className="nav-ink px-3 glass-control"
             onClick={toggleLanguage}
+            aria-label={t("nav.switchLanguage")}
           >
-            {language === "en" ? t("nav.switchToZh") : t("nav.switchToEn")}
+            {/* The label is written in the language it switches TO, so it
+                carries its own lang or a screen reader reads it in the
+                current voice. */}
+            <span lang={language === "en" ? "zh-CN" : "en"}>
+              {language === "en" ? t("nav.switchToZh") : t("nav.switchToEn")}
+            </span>
           </button>
           {isAuthenticated ? (
             <Button
@@ -299,10 +305,13 @@ export function SiteHeader({
                   type="button"
                   className="nav-ink glass-control h-11 justify-start"
                   onClick={toggleLanguage}
+                  aria-label={t("nav.switchLanguage")}
                 >
-                  {language === "en"
-                    ? t("nav.switchToZh")
-                    : t("nav.switchToEn")}
+                  <span lang={language === "en" ? "zh-CN" : "en"}>
+                    {language === "en"
+                      ? t("nav.switchToZh")
+                      : t("nav.switchToEn")}
+                  </span>
                 </button>
                 {isAuthenticated ? (
                   <SheetClose asChild>
@@ -547,7 +556,7 @@ export function AuthRequiredState({
   backLabel: string;
 }) {
   return (
-    <div className="space-page owner-dark-scope min-h-screen">
+    <div className="space-page dark owner-dark-scope min-h-screen">
       <SpaceBackdrop subtle />
       <SiteHeader active="login" backHref="/" backLabel={backLabel} compact />
       <main className="auth-required-shell container relative z-10 px-4 sm:px-6">

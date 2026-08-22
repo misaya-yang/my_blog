@@ -12,7 +12,10 @@ export function getClientSiteUrl() {
 export function useSeo(metadata: RouteMetadata, jsonLd?: unknown | unknown[] | null) {
   useEffect(() => {
     document.title = metadata.fullTitle;
-    document.documentElement.lang = metadata.locale;
+    // <html lang> is owned by LanguageContext, which is the UI language and
+    // applies on every route. Only 4 of 12 pages passed a locale here, so
+    // routing to one of the others used to reset lang to en-US while the
+    // interface stayed in Chinese.
 
     upsertMeta("name", "description", metadata.description);
     upsertMeta("name", "author", siteConfig.authorName);

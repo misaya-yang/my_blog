@@ -517,17 +517,11 @@
     backdrop-filter: none !important;
   }
 
-  .home-index-search :where(input, button),
-  .home-search-dock :where(input, button) {
-    outline: 0 !important;
-  }
-
-  .home-index-search :where(input, button):focus-visible,
-  .home-search-dock :where(input, button):focus-visible {
-    border-color: transparent !important;
-    box-shadow: none !important;
-    outline: 0 !important;
-  }
+  /* The outline suppression that used to live here also stripped the ring on
+     :focus-visible, leaving the search field and its submit button with no
+     keyboard affordance. Browsers only paint the default ring on
+     :focus-visible anyway, so nothing needs suppressing -- the indicator is
+     defined in notebook.css section 3. */
 
   .home-index-search input,
   .home-search-dock input {
@@ -1420,7 +1414,6 @@
       box-shadow var(--v2-motion-fast) var(--ease-standard),
       color var(--v2-motion-fast) var(--ease-standard),
       transform var(--v2-motion-fast) var(--ease-standard) !important;
-    will-change: transform;
   }
 
   .home-index-spread {

@@ -3,68 +3,90 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ---------------------------------------------------------------------------
+   Typefaces — self-hosted, OFL, latin + latin-ext slices only.
+   Chinese is deliberately not a webfont (a usable Han family is multi-MB);
+   the CJK families are named explicitly per role below instead of leaning on
+   `system-ui`, which resolves to a different face on every platform.
+   See client/public/fonts/README.md.
+--------------------------------------------------------------------------- */
+
+/* Display + reading. Variable: opsz 9-144, wght 300-900, SOFT 0-100, WONK 0-1.
+   An old-style serif with idiosyncratic forms — the notebook's voice. */
 @font-face {
-  font-family: "Misaya Display";
+  font-family: "Fraunces";
   font-style: normal;
-  font-weight: 500 900;
+  font-weight: 300 900;
   font-display: swap;
-  src:
-    local("SF Pro Display"),
-    local("Albert Sans"),
-    local("Avenir Next Demi Bold"),
-    local("Avenir Next Medium"),
-    local("Segoe UI Variable Display"),
-    local("Aptos Display"),
-    local("Helvetica Neue"),
-    local("Arial");
+  src: url("/fonts/fraunces-latin.woff2") format("woff2");
   unicode-range:
-    U+0000-00FF, U+0100-024F, U+1E00-1EFF, U+2000-206F, U+20A0-20CF;
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
 }
-
 @font-face {
-  font-family: "Misaya Display";
+  font-family: "Fraunces";
   font-style: normal;
-  font-weight: 500 900;
+  font-weight: 300 900;
   font-display: swap;
-  src:
-    local("PingFang SC Semibold"),
-    local("PingFang SC Medium"),
-    local("Source Han Sans SC Heavy"),
-    local("Noto Sans CJK SC Black"),
-    local("Microsoft YaHei UI");
+  src: url("/fonts/fraunces-latin-ext.woff2") format("woff2");
   unicode-range:
-    U+2E80-2EFF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
-    U+FF00-FFEF;
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
+/* UI, navigation, metadata. Variable: wdth 75-100, wght 400-700.
+   Flat terminals, large x-height, open apertures — reads as instrumentation
+   and stays quiet next to the serif. */
 @font-face {
-  font-family: "Misaya Reading";
+  font-family: "Instrument Sans";
   font-style: normal;
-  font-weight: 400 800;
+  font-weight: 400 700;
+  font-stretch: 75% 100%;
   font-display: swap;
-  src:
-    local("Iowan Old Style"),
-    local("Charter"),
-    local("Source Serif 4"),
-    local("Source Han Serif SC"),
-    local("Noto Serif CJK SC"),
-    local("Songti SC"),
-    local("STSong");
+  src: url("/fonts/instrument-sans-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Instrument Sans";
+  font-style: normal;
+  font-weight: 400 700;
+  font-stretch: 75% 100%;
+  font-display: swap;
+  src: url("/fonts/instrument-sans-latin-ext.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
+/* Code and technical labels. Variable: wght 400-700. Already the family this
+   repository declared; now it actually loads. */
 @font-face {
-  font-family: "Misaya UI";
+  font-family: "JetBrains Mono";
   font-style: normal;
-  font-weight: 400 800;
+  font-weight: 400 700;
   font-display: swap;
-  src:
-    local("SF Pro Text"),
-    local("Albert Sans"),
-    local("Segoe UI Variable Text"),
-    local("Aptos"),
-    local("PingFang SC"),
-    local("Source Han Sans SC"),
-    local("Noto Sans CJK SC");
+  src: url("/fonts/jetbrains-mono-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono-latin-ext.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @theme inline {
@@ -88,6 +110,8 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  /* Error text. Distinct from --destructive, which is a fill. See notebook.css. */
+  --color-danger-ink: var(--danger-ink);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -104,29 +128,27 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Latin family is named before the CJK family in every stack: the browser
+     takes each glyph from the first entry that covers it, and a Han face
+     asked to set Latin glyphs sets them badly. */
   --font-sans:
-    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
-    "Misaya UI", "Albert Sans", "Segoe UI Variable Text", "Aptos",
-    "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
-    system-ui, sans-serif;
+    "Instrument Sans", "PingFang SC", "Source Han Sans SC", "Noto Sans CJK SC",
+    "Microsoft YaHei", system-ui, sans-serif;
   --font-display:
-    -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
-    "Misaya Display", "Albert Sans", "Avenir Next", "Segoe UI Variable Display",
-    "Aptos Display", "Helvetica Neue", "PingFang SC", "Source Han Sans SC",
-    "Noto Sans CJK SC", sans-serif;
+    "Fraunces", "Songti SC", "Source Han Serif SC", "Noto Serif CJK SC",
+    "STSong", Georgia, serif;
   --font-serif:
-    "Misaya Reading", "Source Serif 4", "Iowan Old Style", Charter, "Songti SC", "STSong",
-    "Source Han Serif SC", "Noto Serif CJK SC", Georgia, serif;
+    "Fraunces", "Songti SC", "Source Han Serif SC", "Noto Serif CJK SC",
+    "STSong", Georgia, serif;
   --font-reading:
-    "Misaya Reading", "Source Serif 4", "Iowan Old Style", Charter, "Songti SC", "STSong",
-    "Source Han Serif SC", "Noto Serif CJK SC", Georgia, serif;
+    "Fraunces", "Songti SC", "Source Han Serif SC", "Noto Serif CJK SC",
+    "STSong", Georgia, serif;
   --font-caption:
-    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Misaya UI",
-    "Albert Sans", "Segoe UI Variable Text", "Aptos", "PingFang SC",
-    "Hiragino Sans GB", system-ui, sans-serif;
+    "Instrument Sans", "PingFang SC", "Source Han Sans SC", "Noto Sans CJK SC",
+    "Microsoft YaHei", system-ui, sans-serif;
   --font-mono:
-    "SF Mono", "SFMono-Regular", "JetBrains Mono", "Cascadia Code",
-    "Fira Code", ui-monospace, monospace;
+    "JetBrains Mono", ui-monospace, "SF Mono", "SFMono-Regular", monospace;
 }
 
 :root {
@@ -145,10 +167,40 @@
   --type-owner-ui: 0.94rem;
   --weight-semibold: 650;
   --weight-bold: 760;
+
+  /* Fluid type scale. Every clamp keeps a rem term so browser zoom still works,
+     and the slope is gentle enough that a 1280px laptop does not land in a
+     trough. Scale contrast between display and body is ~5x, not 1.4x. */
+  --step-display: clamp(2.5rem, 1.1rem + 5.4vw, 5.75rem);
+  --step-title: clamp(1.7rem, 1.24rem + 1.7vw, 2.6rem);
+  --step-section: clamp(1.3rem, 1.12rem + 0.7vw, 1.7rem);
+  --step-lede: clamp(1.04rem, 0.99rem + 0.32vw, 1.2rem);
+  --step-meta: 0.8125rem;
+  --step-micro: 0.75rem;
+
+  /* Signature: Fraunces exposes SOFT and WONK axes, and this site ties them to
+     typographic scale — the serif leans further into its idiosyncratic forms
+     the larger it is set, the way handwriting loosens when written big.
+     Running text stays at WONK 0 so the quirk never costs legibility.
+     Where variation axes are unsupported this degrades to a plain serif. */
+  --wonk-display: "SOFT" 30, "WONK" 1;
+  --wonk-title: "SOFT" 18, "WONK" 1;
+  --wonk-quiet: "SOFT" 0, "WONK" 0;
+
+  /* Reading measure. A CJK character is about one em, so 68ch of Han is a
+     punishing line; the two scripts get different limits. */
+  --measure-latin: 68ch;
+  --measure-cjk: 36em;
+
+  /* Focus ring: 2px perimeter + 2px offset, per WCAG 2.4.13. The two-tone
+     variant is for controls that sit on photographic or gradient ground,
+     where a single stroke can vanish. */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
   --dur-fast: 160ms;
   --dur-base: 220ms;
   --dur-reveal: 420ms;
-  --ease-standard: ease;
+  --ease-standard: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
   --liquid-surface-tint: oklch(0.99 0.004 220 / 66%);
   --liquid-panel-tint: oklch(0.975 0.006 215 / 82%);
@@ -356,11 +408,18 @@
   body {
     @apply bg-background text-foreground;
     font-size: 1rem;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    /* Contextual alternates and proportional lining figures suit the UI sans;
+       the previous `cv02/cv03/cv04/cv11` set was Inter-specific and did
+       nothing once Inter was not the face. */
+    font-feature-settings: "calt", "kern";
+    font-variant-numeric: proportional-nums;
     letter-spacing: 0;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     font-family: var(--font-sans);
+    /* Both display families expose an opsz axis; let the browser pick the
+       drawing rather than compensating with tracking. */
+    font-optical-sizing: auto;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),

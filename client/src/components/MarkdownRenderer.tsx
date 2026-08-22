@@ -49,7 +49,7 @@ export default function MarkdownRenderer({
         h2: createHeadingComponent(
           "h2",
           headingIdResolver,
-          "mb-4 mt-10 border-b border-white/10 pb-2 text-2xl font-semibold"
+          "mb-4 mt-10 border-b border-border pb-2 text-2xl font-semibold"
         ),
         h3: createHeadingComponent(
           "h3",
@@ -78,7 +78,7 @@ export default function MarkdownRenderer({
             loading="lazy"
             decoding="async"
             sizes="(min-width: 1024px) 768px, calc(100vw - 48px)"
-            className="h-auto max-w-full rounded-lg border border-white/10"
+            className="h-auto max-w-full rounded-lg border border-border"
           />
         ),
         pre: ({ node: _node, children, ...props }: any) => {
@@ -94,10 +94,10 @@ export default function MarkdownRenderer({
                 <button
                   aria-label={copyCodeLabel}
                   onClick={() => onCopyCode(code, codeId)}
-                  className="absolute right-3 top-3 rounded-md bg-slate-900/85 p-2 opacity-90 transition-colors hover:bg-slate-800 hover:opacity-100 focus-visible:opacity-100"
+                  className="absolute right-3 top-3 rounded-md bg-card/90 p-2 opacity-90 transition-colors hover:bg-muted hover:opacity-100 focus-visible:opacity-100"
                 >
                   {copiedCode === codeId ? (
-                    <Check className="h-4 w-4 text-sky-300" />
+                    <Check className="h-4 w-4 text-primary" />
                   ) : (
                     <Copy className="h-4 w-4 text-muted-foreground" />
                   )}
@@ -123,7 +123,7 @@ export default function MarkdownRenderer({
           const isInline = !isBlock;
           return isInline ? (
             <code
-              className="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-sm"
+              className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm"
               {...props}
             >
               {children}

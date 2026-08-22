@@ -83,7 +83,7 @@ describe("MarkdownRenderer", () => {
       '<pre class="overflow-x-auto"><code>plain fenced block'
     );
     expect(html).toContain(
-      '<code class="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-sm">token</code>'
+      '<code class="rounded bg-muted px-1.5 py-0.5 font-mono text-sm">token</code>'
     );
     expect(html).toContain('aria-label="Copy code"');
     expect(html).toContain("Footnote text");

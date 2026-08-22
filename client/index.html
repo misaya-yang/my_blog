@@ -4,6 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Misaya Notes</title>
+    <!-- Stamp the theme before first paint. ThemeContext only adds the `dark`
+         class in an effect, so the un-hydrated document matched
+         `html:not(.dark)` and painted the full light canvas for every reader,
+         dark ones included. Mirrors ThemeContext's precedence exactly: stored
+         choice, then OS, then the site's canonical dark. Keep in sync with
+         client/src/contexts/ThemeContext.tsx and the `defaultTheme` that
+         App.tsx passes to ThemeProvider. -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          var theme =
+            stored === "light" || stored === "dark"
+              ? stored
+              : window.matchMedia("(prefers-color-scheme: light)").matches
+                ? "light"
+                : "dark";
+          var root = document.documentElement;
+          root.classList.toggle("dark", theme === "dark");
+          root.dataset.theme = theme;
+          root.style.colorScheme = theme;
+        } catch (error) {
+          /* Private browsing can throw on localStorage; the effect will run. */
+        }
+      })();
+    </script>
     <meta
       name="description"
       content="Misaya Yang's working notes on model mechanisms, long-context behavior, retrieval, agent systems, and reliable applied AI engineering."
@@ -27,6 +53,17 @@
     />
     <meta name="twitter:image" content="/og-default.svg" />
     <link rel="canonical" href="https://misaya.online/" />
+    <!-- The hero headline is the LCP element on every route, and it is set in
+         Fraunces. Only the display face is preloaded: the UI sans and the mono
+         are needed later in the paint and would compete for the same early
+         bandwidth. `crossorigin` is required even same-origin for fonts. -->
+    <link
+      rel="preload"
+      href="/fonts/fraunces-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/site.webmanifest" />
     <link

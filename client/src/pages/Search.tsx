@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { langAttr } from "@/lib/contentLang";
 import { trpc } from "@/lib/trpc";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
 import { trackAnalyticsEvent } from "@/lib/analytics";
@@ -50,7 +51,7 @@ function HighlightedText({ text, query }: { text: string; query: string }) {
   return (
     <>
       {text.slice(0, index)}
-      <mark className="rounded bg-slate-100/12 px-1 text-slate-100">
+      <mark className="rounded bg-muted px-1 text-foreground">
         {text.slice(index, index + normalized.length)}
       </mark>
       {text.slice(index + normalized.length)}
@@ -167,7 +168,7 @@ export default function Search() {
               value={input}
               onChange={event => setInput(event.target.value)}
               placeholder={t("discovery.searchPlaceholder")}
-              className="h-11 border-0 bg-transparent px-0 text-base text-white shadow-none placeholder:text-slate-500 focus-visible:ring-0"
+              className="h-11 border-0 bg-transparent px-0 text-base text-foreground shadow-none placeholder:text-muted-foreground focus-visible:ring-0"
             />
             <Button
               type="submit"
@@ -264,16 +265,22 @@ export default function Search() {
               />
             )
           ) : data?.results?.length ? (
-            <div className="mt-5 divide-y divide-sky-200/10">
+            <div className="mt-5 divide-y divide-border">
               {data.results.map((post: any) => (
                 <article key={post.id} className="search-result-row py-5">
                   <Link
                     href={`/post/${post.slug}`}
-                    className="text-xl font-semibold leading-8 text-white hover:text-slate-200"
+                    className="search-result-title text-xl font-semibold leading-8 text-foreground hover:text-primary"
+                    {...langAttr(post.title)}
                   >
                     {post.title}
                   </Link>
-                  <p className="mt-2 max-w-4xl text-sm leading-7 text-slate-300">
+                  <p
+                    className="search-result-excerpt mt-2 max-w-4xl text-sm leading-7 text-muted-foreground"
+                    {...langAttr(
+                      post.matchExcerpt || post.excerpt || post.content
+                    )}
+                  >
                     <HighlightedText
                       text={
                         post.matchExcerpt ||
@@ -284,7 +291,7 @@ export default function Search() {
                       query={query}
                     />
                   </p>
-                  <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                  <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     <span className="inline-flex items-center gap-1.5">
                       <Calendar className="h-3.5 w-3.5" />
                       {formatDate(post.publishedAt, locale)}
@@ -374,7 +381,7 @@ function SearchRecoveryPanel({
 
       <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div>
-          <h3 className="mb-3 text-sm font-semibold text-white">
+          <h3 className="mb-3 text-sm font-semibold text-foreground">
             {t("discovery.recoveryTopics")}
           </h3>
           <div className="search-topic-grid">
@@ -387,17 +394,17 @@ function SearchRecoveryPanel({
                   query: topic.query,
                 })}
               >
-                <GitBranch className="h-4 w-4 text-slate-400" />
+                <GitBranch className="h-4 w-4 text-muted-foreground" />
                 <span>{t(topic.labelKey)}</span>
-                <ArrowRight className="h-4 w-4 text-slate-400" />
+                <ArrowRight className="h-4 w-4 text-muted-foreground" />
               </Link>
             ))}
           </div>
         </div>
 
         <aside className="search-recovery-paths">
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
-            <Map className="h-4 w-4 text-slate-400" />
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <Map className="h-4 w-4 text-muted-foreground" />
             {t("discovery.recoveryPaths")}
           </h3>
           <div className="mt-3 grid gap-2">
@@ -411,7 +418,7 @@ function SearchRecoveryPanel({
               {t("nav.archive")}
             </Link>
           </div>
-          <p className="mt-4 text-xs leading-5 text-slate-500">
+          <p className="mt-4 text-xs leading-5 text-muted-foreground">
             {t("discovery.recoverySignal")}
           </p>
         </aside>

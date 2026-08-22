@@ -765,7 +765,7 @@ export default function Editor() {
   // 认证检查
   if (authLoading || postLoading) {
     return (
-      <div className="space-page owner-dark-scope grid min-h-screen place-items-center px-4">
+      <div className="space-page dark owner-dark-scope grid min-h-screen place-items-center px-4">
         <SpaceBackdrop subtle />
         <LoadingState
           title={t("common.loadingNotes")}
@@ -792,7 +792,7 @@ export default function Editor() {
   return (
     <TooltipProvider>
       <div
-        className={`owner-editor-shell owner-dark-scope relative flex min-h-screen flex-col overflow-hidden text-slate-100 ${isFullscreen ? "fixed inset-0 z-50" : ""}`}
+        className={`owner-editor-shell dark owner-dark-scope relative flex min-h-screen flex-col overflow-hidden text-slate-100 ${isFullscreen ? "fixed inset-0 z-50" : ""}`}
       >
         <SpaceBackdrop subtle />
         {/* 顶部工具栏 */}

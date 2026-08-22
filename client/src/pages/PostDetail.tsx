@@ -45,6 +45,7 @@ import {
 } from "lucide-react";
 import { Link, useParams } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { langAttr } from "@/lib/contentLang";
 import { lazy, Suspense, useEffect, useState, useCallback } from "react";
 
 import { toast } from "sonner";
@@ -396,7 +397,7 @@ function MobileToc({
 
   return (
     <details className="mobile-toc-shell glass-dock mb-7 rounded-lg p-4 lg:hidden">
-      <summary className="cursor-pointer text-sm font-semibold text-white">
+      <summary className="cursor-pointer text-sm font-semibold text-foreground">
         {t("post.toc")}
       </summary>
       <nav className="mobile-toc-nav mt-3 grid gap-2">
@@ -404,7 +405,7 @@ function MobileToc({
           <a
             key={heading.id}
             href={`#${heading.id}`}
-            className="text-sm text-slate-400 hover:text-sky-100"
+            className="text-sm text-muted-foreground hover:text-primary"
             style={{
               paddingLeft: `${(heading.level - 1) * 0.75}rem`,
             }}
@@ -759,36 +760,38 @@ export default function PostDetail() {
           <article className="reading-surface solid-reading paper-reader-main p-5 sm:p-8 lg:p-10">
             {/* Post Header */}
             <div className="article-reading-header">
-              <h1 className="article-page-title mb-5">{post.title}</h1>
+              <h1 className="article-page-title mb-5" {...langAttr(post.title)}>
+                {post.title}
+              </h1>
 
               {/* Author Info */}
-              <div className="mb-5 flex flex-wrap items-center gap-3 border-b border-white/10 pb-5">
+              <div className="mb-5 flex flex-wrap items-center gap-3 border-b border-border pb-5">
                 <div className="flex items-center gap-2 text-sm">
-                  <User className="h-4 w-4 text-sky-200" />
-                  <span className="font-medium text-white">
+                  <User className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-foreground">
                     {t("post.authorName")}
                   </span>
                 </div>
-                <div className="h-4 w-px bg-white/15" />
+                <div className="h-4 w-px bg-border" />
                 <a
                   href="https://scholar.google.com/citations?user=6X9HlDAAAAAJ"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sky-100"
+                  className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary"
                 >
                   <GraduationCap className="h-3.5 w-3.5" />
                   {t("nav.scholar")}
                 </a>
                 <button
                   onClick={copyEmail}
-                  className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-sky-100"
+                  className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary"
                 >
                   <Mail className="h-3.5 w-3.5" />
                   {t("nav.email")}
                 </button>
               </div>
 
-              <div className="mb-6 flex flex-wrap items-center gap-4 text-sm text-slate-400">
+              <div className="mb-6 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5">
                   <Calendar className="h-4 w-4" />
                   {post.publishedAt
@@ -907,7 +910,7 @@ export default function PostDetail() {
                     aria-label={t("post.agentCompanion.title")}
                   >
                     <div className="article-agent-prompts-heading">
-                      <BookOpen className="h-4 w-4 text-sky-200" />
+                      <BookOpen className="h-4 w-4 text-primary" />
                       <span>{t("post.agentCompanion.title")}</span>
                     </div>
                     <div className="article-agent-prompt-list">
@@ -947,9 +950,12 @@ export default function PostDetail() {
             <MobileToc headings={headings} t={t} />
 
             {/* Post Content */}
-            <div className="article-prose">
+            <div
+              className="article-prose"
+              {...langAttr(post.content || post.title)}
+            >
               <Suspense
-                fallback={<div className="h-24 rounded-lg bg-slate-800/40" />}
+                fallback={<div className="h-24 rounded-lg bg-muted/40" />}
               >
                 <MarkdownRenderer
                   content={readableContent}
@@ -1018,7 +1024,7 @@ export default function PostDetail() {
             </div>
 
             {/* Author Footer */}
-            <div className="mt-16 border-t border-white/10 pt-8">
+            <div className="mt-16 border-t border-border pt-8">
               <div className="mb-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                 <h2 className="section-title">{t("post.discoveryTitle")}</h2>
                 <Button
@@ -1072,11 +1078,11 @@ export default function PostDetail() {
                         href={`/post/${postContext.previous.slug}`}
                         className="article-nav-card glass-control rounded-lg p-4 transition"
                       >
-                        <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
+                        <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                           <ArrowLeft className="h-3.5 w-3.5" />
                           {t("post.previous")}
                         </span>
-                        <h3 className="line-clamp-2 text-sm font-semibold leading-6 text-white">
+                        <h3 className="line-clamp-2 text-sm font-semibold leading-6 text-foreground">
                           {postContext.previous.title}
                         </h3>
                       </Link>
@@ -1086,11 +1092,11 @@ export default function PostDetail() {
                         href={`/post/${postContext.next.slug}`}
                         className="article-nav-card glass-control rounded-lg p-4 text-right transition"
                       >
-                        <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
+                        <span className="mb-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                           {t("post.next")}
                           <ArrowRight className="h-3.5 w-3.5" />
                         </span>
-                        <h3 className="line-clamp-2 text-sm font-semibold leading-6 text-white">
+                        <h3 className="line-clamp-2 text-sm font-semibold leading-6 text-foreground">
                           {postContext.next.title}
                         </h3>
                       </Link>
@@ -1100,7 +1106,7 @@ export default function PostDetail() {
 
               {postContext?.related?.length ? (
                 <div className="mt-8">
-                  <h3 className="mb-3 text-sm font-semibold text-white">
+                  <h3 className="mb-3 text-sm font-semibold text-foreground">
                     {t("post.related")}
                   </h3>
                   <div className="grid gap-3">
@@ -1108,17 +1114,17 @@ export default function PostDetail() {
                       <Link
                         key={related.id}
                         href={`/post/${related.slug}`}
-                        className="article-related-link glass-control flex items-center justify-between gap-4 rounded-lg px-4 py-3 text-sm text-slate-200 transition hover:text-white"
+                        className="article-related-link glass-control flex items-center justify-between gap-4 rounded-lg px-4 py-3 text-sm text-foreground transition hover:text-foreground"
                       >
                         <span className="line-clamp-1">{related.title}</span>
-                        <ArrowRight className="h-4 w-4 shrink-0 text-sky-200" />
+                        <ArrowRight className="h-4 w-4 shrink-0 text-primary" />
                       </Link>
                     ))}
                   </div>
                 </div>
               ) : null}
 
-              <div className="mt-10 grid gap-8 border-t border-white/10 pt-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
+              <div className="mt-10 grid gap-8 border-t border-border pt-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
                 <ArticleFeedback
                   postId={post.id}
                   postTitle={post.title}
@@ -1128,13 +1134,13 @@ export default function PostDetail() {
               </div>
             </div>
 
-            <div className="mt-16 border-t border-white/10 pt-8">
+            <div className="mt-16 border-t border-border pt-8">
               <div className="flex items-start gap-4">
                 <div className="flex-1">
-                  <h3 className="mb-2 text-lg font-semibold text-white">
+                  <h3 className="mb-2 text-lg font-semibold text-foreground">
                     {t("post.authorName")}
                   </h3>
-                  <p className="mb-4 text-sm text-slate-400">
+                  <p className="mb-4 text-sm text-muted-foreground">
                     {t("post.authorBio")}
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -1178,8 +1184,8 @@ export default function PostDetail() {
                     href={`#${heading.id}`}
                     className={`block text-sm transition-colors ${
                       activeHeading === heading.id
-                        ? "text-sky-100 font-medium"
-                        : "text-slate-400 hover:text-white"
+                        ? "text-primary font-medium"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                     style={{ paddingLeft: `${(heading.level - 1) * 0.75}rem` }}
                     onClick={e => {

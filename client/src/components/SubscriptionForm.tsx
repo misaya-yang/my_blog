@@ -85,11 +85,11 @@ export function SubscriptionForm({
     >
       <div className="flex items-start justify-between gap-4">
         <div>
-          <div className="mb-2 flex items-center gap-2 text-white">
-            <MailPlus className="h-4 w-4 text-sky-200" />
+          <div className="mb-2 flex items-center gap-2 text-foreground">
+            <MailPlus className="h-4 w-4 text-primary" />
             <h2 className="text-base font-semibold">{t(titleKey)}</h2>
           </div>
-          <p className="max-w-2xl text-sm leading-6 text-slate-400">
+          <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
             {t("engagement.subscribe.description")}
           </p>
         </div>
@@ -123,7 +123,7 @@ export function SubscriptionForm({
             onChange={event => setEmail(event.target.value)}
             placeholder={t("engagement.subscribe.emailPlaceholder")}
             aria-describedby={statusId}
-            className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-500"
+            className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground"
           />
           <Button
             type="submit"
@@ -150,7 +150,7 @@ export function SubscriptionForm({
             value={interests}
             onChange={event => setInterests(event.target.value)}
             placeholder={t("engagement.subscribe.interestsPlaceholder")}
-            className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-500"
+            className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground"
             maxLength={240}
             aria-describedby={statusId}
           />
@@ -162,7 +162,7 @@ export function SubscriptionForm({
             <span className="subscription-language-label">
               {t("engagement.subscribe.languageLabel")}
             </span>
-            <div className="inline-grid grid-cols-2 rounded-md border border-white/10 bg-slate-950/50 p-1">
+            <div className="inline-grid grid-cols-2 rounded-md border border-border bg-background/70 p-1">
               {(["zh", "en"] as const).map(option => (
                 <button
                   key={option}
@@ -172,8 +172,8 @@ export function SubscriptionForm({
                   className={cn(
                     "h-8 rounded px-3 text-xs font-medium transition",
                     preferredLanguage === option
-                      ? "bg-sky-300/15 text-sky-100"
-                      : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-100"
+                      ? "bg-primary/15 text-primary"
+                      : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
                   )}
                 >
                   {option === "zh" ? t("nav.switchToZh") : t("nav.switchToEn")}
@@ -186,7 +186,7 @@ export function SubscriptionForm({
 
       <div
         id={statusId}
-        className="min-h-5 text-xs leading-5 text-slate-500"
+        className="min-h-5 text-xs leading-5 text-muted-foreground"
         aria-live="polite"
       >
         <span className={statusMessage.className}>{statusMessage.text}</span>
@@ -209,21 +209,21 @@ function getSubscriptionMessage(
       text: errorMessage.includes("Too many")
         ? t("engagement.subscribe.rateLimited")
         : t("engagement.subscribe.error"),
-      className: "text-red-200",
+      className: "text-danger-ink",
     };
   }
 
   if (status === "created") {
     return {
       text: t("engagement.subscribe.successCreated"),
-      className: "text-sky-100",
+      className: "text-primary",
     };
   }
 
   if (status === "existing") {
     return {
       text: t("engagement.subscribe.successExisting"),
-      className: "text-sky-100",
+      className: "text-primary",
     };
   }
 

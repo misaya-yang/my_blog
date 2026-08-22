@@ -86,7 +86,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
 
             <div className="track-context-strip mt-7">
               <div className="track-map-note">
-                <Network className="h-5 w-5 text-sky-200" />
+                <Network className="h-5 w-5 text-primary" />
                 <p>
                   {t(
                     kind === "algorithms"
@@ -143,13 +143,13 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                 <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
                   <div>
                     <h2 className="section-title">{t("track.seriesTitle")}</h2>
-                    <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
                       {t("track.readingOrderHint")}
                     </p>
                   </div>
                   <Link
                     href="#research-index"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white"
+                    className="inline-flex min-h-7 items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
                   >
                     {t("track.articles")}
                     <ArrowRight className="h-3.5 w-3.5" />
@@ -172,7 +172,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                           </span>
                           <h2>{t(series.titleKey)}</h2>
                         </div>
-                        <GitBranch className="mt-1 h-5 w-5 shrink-0 text-sky-200" />
+                        <GitBranch className="mt-1 h-5 w-5 shrink-0 text-primary" />
                       </div>
                       <p>{t(series.promiseKey)}</p>
                       <div className="series-card-concepts mt-4">
@@ -191,7 +191,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                             <strong>
                               {resolvePostTitle(trackPosts, slug)}
                             </strong>
-                            <ArrowRight className="h-4 w-4 text-slate-300" />
+                            <ArrowRight className="h-4 w-4 text-muted-foreground" />
                           </Link>
                         ))}
                       </div>

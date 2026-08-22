@@ -89,7 +89,7 @@ export default function Archive() {
                     className="archive-month-header"
                     title={formatMonth(group.year, group.month, locale)}
                     action={
-                      <span className="text-sm text-slate-400">
+                      <span className="text-sm text-muted-foreground">
                         {t("discovery.articlesCount", {
                           count: group.posts.length,
                         })}
@@ -97,23 +97,23 @@ export default function Archive() {
                     }
                   />
 
-                  <div className="archive-month-posts divide-y divide-sky-200/10">
+                  <div className="archive-month-posts divide-y divide-border">
                     {group.posts.map((post: any) => (
                       <article
                         key={post.id}
                         className="archive-post-row grid gap-3 py-4 md:grid-cols-[5.5rem_minmax(0,1fr)_auto]"
                       >
-                        <time className="text-sm font-medium text-sky-200">
+                        <time className="text-sm font-medium text-primary">
                           {formatDay(post.publishedAt, locale)}
                         </time>
                         <div className="min-w-0">
                           <Link
                             href={`/post/${post.slug}`}
-                            className="line-clamp-2 text-base font-semibold leading-7 text-white hover:text-sky-200"
+                            className="line-clamp-2 text-base font-semibold leading-7 text-foreground hover:text-primary"
                           >
                             {post.title}
                           </Link>
-                          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                             {post.category && (
                               <Link
                                 href={`/categories/${post.category.slug}`}
@@ -135,7 +135,7 @@ export default function Archive() {
                             ))}
                           </div>
                         </div>
-                        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 md:justify-end">
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground md:justify-end">
                           <span className="inline-flex items-center gap-1.5">
                             <BookOpen className="h-3.5 w-3.5" />
                             {post.readingMinutes} {t("home.minRead")}

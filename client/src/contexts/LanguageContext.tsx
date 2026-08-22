@@ -1,4 +1,12 @@
-import { createContext, useContext, useState, useCallback, type ReactNode, useMemo } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  type ReactNode,
+  useMemo,
+} from "react";
 import { translations, interpolate } from "@/i18n";
 import type { Language, InterpolationVars } from "@/i18n";
 
@@ -29,6 +37,14 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLanguageState(lang);
     localStorage.setItem("blog-language", lang);
   }, []);
+
+  // Single source of truth for <html lang>. Screen-reader voice selection,
+  // line breaking, quotation forms and the CJK typographic rules in
+  // notebook.css all key off this, so it has to follow the UI language on
+  // every route rather than only on the pages that pass a locale to useSeo.
+  useEffect(() => {
+    document.documentElement.lang = language === "zh" ? "zh-CN" : "en";
+  }, [language]);
 
   const toggleLanguage = useCallback(() => {
     setLanguage(language === "en" ? "zh" : "en");

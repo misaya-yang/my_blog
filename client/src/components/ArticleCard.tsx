@@ -2,6 +2,7 @@ import { ArrowRight, BookOpen, Calendar, Eye } from "lucide-react";
 import { getContentSeriesBySlug } from "@shared/content-series";
 import { estimateReadingMinutes } from "@shared/reading-time";
 import { Link } from "wouter";
+import { langAttr } from "@/lib/contentLang";
 
 export type ArticleTrack = "algorithms" | "applications";
 
@@ -227,9 +228,13 @@ export function ArticleCard({
             ))}
         </div>
         <Link href={`/post/${post.slug}`}>
-          <h3 className="article-title">{post.title}</h3>
+          <h3 className="article-title" {...langAttr(post.title)}>
+            {post.title}
+          </h3>
         </Link>
-        <p className="article-excerpt">{buildExcerpt(post)}</p>
+        <p className="article-excerpt" {...langAttr(buildExcerpt(post))}>
+          {buildExcerpt(post)}
+        </p>
         <div className="article-meta">
           <span className="inline-flex items-center gap-1.5">
             <Calendar className="h-3.5 w-3.5" />

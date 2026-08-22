@@ -175,7 +175,7 @@ export default function ManageAgent() {
 
   if (authLoading) {
     return (
-      <div className="space-page owner-dark-scope grid min-h-screen place-items-center px-4">
+      <div className="space-page dark owner-dark-scope grid min-h-screen place-items-center px-4">
         <SpaceBackdrop subtle />
         <LoadingState
           title={t("common.loadingNotes")}
@@ -202,7 +202,7 @@ export default function ManageAgent() {
   const evalItems = evals.data?.items ?? [];
 
   return (
-    <div className="space-page owner-dark-scope">
+    <div className="space-page dark owner-dark-scope">
       <SpaceBackdrop subtle />
       <SiteHeader
         active="agent"

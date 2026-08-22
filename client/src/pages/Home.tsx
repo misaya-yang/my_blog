@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { langAttr } from "@/lib/contentLang";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
 const portalTracks: TrackKind[] = ["algorithms", "applications"];
@@ -59,8 +60,11 @@ function renderHeroTitle(language: "en" | "zh") {
   if (language === "zh") {
     return (
       <>
+        {/* Authored per line, like the English title below. Left to wrap on
+            its own the run broke after 应 and stranded 用 alone at 76px. */}
+        <span className="home-title-line">AI 算法与</span>
         <span className="home-title-line">
-          AI 算法与 <span className="home-title-accent">AI</span> 应用
+          <span className="home-title-accent">AI</span> 应用
         </span>
       </>
     );
@@ -204,9 +208,9 @@ function FeaturedNote({
       ) : post ? (
         <div className="home-featured-note-body">
           <Link href={`/post/${post.slug}`}>
-            <h2>{post.title}</h2>
+            <h2 {...langAttr(post.title)}>{post.title}</h2>
           </Link>
-          <p>{post.excerpt}</p>
+          <p {...langAttr(post.excerpt)}>{post.excerpt}</p>
           <Link href={`/post/${post.slug}`} className="home-inline-action">
             {t("home.readMore")}
             <ArrowRight className="h-4 w-4" />
@@ -265,7 +269,7 @@ function TrackPanel({
               model.posts.map(post => (
                 <Link key={post.id} href={`/post/${post.slug}`}>
                   <span>{getPostSeriesLabel(post, model.label, t)}</span>
-                  <strong>{post.title}</strong>
+                  <strong {...langAttr(post.title)}>{post.title}</strong>
                 </Link>
               ))
             ) : (
@@ -293,7 +297,7 @@ function StartHerePath({
       aria-label={t("home.startHere")}
     >
       <div className="home-start-path-copy">
-        <Route className="h-4 w-4 text-sky-200" aria-hidden="true" />
+        <Route className="h-4 w-4 text-primary" aria-hidden="true" />
         <div>
           <strong>{t("home.startHere")}</strong>
           <span>{t("home.startHereHint")}</span>
@@ -422,10 +426,10 @@ export default function Home() {
           <div className="home-index-grid">
             <section className="home-intro-rail open-group">
               <p className="home-index-kicker">{t("home.kicker")}</p>
-              <h1 className="home-title text-white">
+              <h1 className="home-title text-foreground">
                 {renderHeroTitle(language)}
               </h1>
-              <p className="home-subtitle text-slate-300">
+              <p className="home-subtitle text-muted-foreground">
                 {t("home.subtitle")}
               </p>
 
@@ -445,7 +449,7 @@ export default function Home() {
                     placeholder={t("home.searchPlaceholder")}
                     value={searchQuery}
                     onChange={event => setSearchQuery(event.target.value)}
-                    className="h-12 border-0 bg-transparent px-0 text-base font-medium text-white shadow-none placeholder:text-slate-500 focus-visible:ring-0"
+                    className="h-12 border-0 bg-transparent px-0 text-base font-medium text-foreground shadow-none placeholder:text-muted-foreground focus-visible:ring-0"
                   />
                   <Button type="submit" className="home-search-submit">
                     {t("discovery.searchButton")}
@@ -533,8 +537,8 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="relative z-10 border-t border-white/10 bg-slate-950/35">
-        <div className="container flex flex-col gap-3 px-4 py-8 text-sm text-slate-500 sm:px-6 md:flex-row md:items-center md:justify-between">
+      <footer className="relative z-10 border-t border-border bg-background/60">
+        <div className="container flex flex-col gap-3 px-4 py-8 text-sm text-muted-foreground sm:px-6 md:flex-row md:items-center md:justify-between">
           <p>{t("common.copyright")}</p>
           <p>{t("home.footerTagline")}</p>
         </div>
