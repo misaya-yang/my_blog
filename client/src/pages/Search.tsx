@@ -182,7 +182,7 @@ export default function Search() {
         </form>
 
         <Surface
-          className="mt-8 hairline-list"
+          className="search-results-surface hairline-list"
           density={query ? "compact" : "normal"}
         >
           <SectionHeader
@@ -265,9 +265,9 @@ export default function Search() {
               />
             )
           ) : data?.results?.length ? (
-            <div className="mt-5 divide-y divide-border">
+            <div className="search-results-list divide-y divide-border">
               {data.results.map((post: any) => (
-                <article key={post.id} className="search-result-row py-5">
+                <article key={post.id} className="search-result-row">
                   <Link
                     href={`/post/${post.slug}`}
                     className="search-result-title text-xl font-semibold leading-8 text-foreground hover:text-primary"

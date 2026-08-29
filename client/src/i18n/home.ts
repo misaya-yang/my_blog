@@ -128,8 +128,16 @@ const home: TranslationDict = {
   "home.startApplications": { en: "Applications path", zh: "应用路径" },
   "home.pathsPending": { en: "Paths loading", zh: "路径整理中" },
   "home.notesPending": { en: "Notes loading", zh: "文章整理中" },
-  "home.pathCount": { en: "{count} paths", zh: "{count} 条路径" },
-  "home.publicNotes": { en: "{count} public notes", zh: "{count} 篇公开笔记" },
+  "home.pathCountOne": { en: "{count} path", zh: "{count} 条路径" },
+  "home.pathCountOther": { en: "{count} paths", zh: "{count} 条路径" },
+  "home.publicNoteCountOne": {
+    en: "{count} public note",
+    zh: "{count} 篇公开笔记",
+  },
+  "home.publicNoteCountOther": {
+    en: "{count} public notes",
+    zh: "{count} 篇公开笔记",
+  },
   // Focus tags (static research topics)
   "home.focusTag1": { en: "Transformer Architecture", zh: "Transformer 架构" },
   "home.focusTag2": {

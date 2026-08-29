@@ -154,7 +154,7 @@ function getPostSeriesLabel(
   const series = post.seriesSlug
     ? getContentSeriesBySlug(post.seriesSlug)
     : null;
-  return series ? t(series.titleKey) : post.seriesTitle ?? fallback;
+  return series ? t(series.titleKey) : (post.seriesTitle ?? fallback);
 }
 
 function FeaturedNote({
@@ -305,12 +305,19 @@ function StartHerePath({
       </div>
       <div className="home-start-path-actions">
         {featuredPost && (
-          <Link href={`/post/${featuredPost.slug}`}>
+          <Link href={`/post/${featuredPost.slug}`} className="gap-1.5">
             {t("home.startLatest")}
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
         )}
-        <Link href="/applications">{t("home.startApplications")}</Link>
-        <Link href="/algorithms">{t("home.startAlgorithms")}</Link>
+        <Link href="/applications" className="gap-1.5">
+          {t("home.startApplications")}
+          <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+        </Link>
+        <Link href="/algorithms" className="gap-1.5">
+          {t("home.startAlgorithms")}
+          <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+        </Link>
       </div>
     </nav>
   );
@@ -372,6 +379,16 @@ export default function Home() {
         const primarySeries = getPrimarySeries(publicSeries, publishedPosts);
         const publicCount = countTrackPosts(publishedPosts, track);
         const pathCount = publicSeries.length;
+        const pathCountLabel = t(
+          pathCount === 1 ? "home.pathCountOne" : "home.pathCountOther",
+          { count: pathCount }
+        );
+        const publicNoteCountLabel = t(
+          publicCount === 1
+            ? "home.publicNoteCountOne"
+            : "home.publicNoteCountOther",
+          { count: publicCount }
+        );
 
         return {
           track,
@@ -385,10 +402,7 @@ export default function Home() {
           subtitle: t(config.subtitleKey),
           meta: isLoading
             ? t("home.pathsPending")
-            : `${t("home.pathCount", { count: pathCount })} · ${t(
-                "home.publicNotes",
-                { count: publicCount }
-              )}`,
+            : `${pathCountLabel} · ${publicNoteCountLabel}`,
           pathTitle: primarySeries
             ? t(primarySeries.titleKey)
             : t("home.algorithmsPathTitle"),

@@ -658,7 +658,6 @@
   }
 
   .home-featured-note {
-    margin-top: 0.5rem !important;
     padding: 1.35rem 0 !important;
     border-top: 1px solid var(--v2-hairline-soft) !important;
     border-bottom: 1px solid var(--v2-hairline-soft) !important;
@@ -1561,7 +1560,6 @@
 
   .home-featured-band {
     grid-area: featured !important;
-    margin-top: clamp(1rem, 2.5vw, 1.7rem) !important;
   }
 
   .home-featured-note {
@@ -2326,7 +2324,6 @@
   }
 
   .archive-month-header {
-    margin-bottom: 0.4rem !important;
     border: 0 !important;
     padding: 0 !important;
   }
@@ -2340,7 +2337,6 @@
     margin-inline: -0.72rem !important;
     border: 1px solid transparent !important;
     border-radius: var(--v2-radius-row) !important;
-    padding: 0.88rem 0.72rem !important;
     background: transparent !important;
     box-shadow: none !important;
   }

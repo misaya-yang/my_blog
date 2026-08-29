@@ -8,6 +8,10 @@ const nav: TranslationDict = {
   "nav.search": { en: "Search", zh: "搜索" },
   "nav.about": { en: "About", zh: "关于" },
   "nav.menu": { en: "Open navigation", zh: "打开导航" },
+  "nav.menuDescription": {
+    en: "Primary navigation and display preferences",
+    zh: "主导航与显示偏好设置",
+  },
   "nav.write": { en: "Write", zh: "写作" },
   "nav.login": { en: "Login", zh: "登录" },
   "nav.admin": { en: "Admin", zh: "管理员" },

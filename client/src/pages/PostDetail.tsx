@@ -777,14 +777,15 @@ export default function PostDetail() {
                   href="https://scholar.google.com/citations?user=6X9HlDAAAAAJ"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary"
+                  className="flex items-center gap-1.5 text-xs text-muted-foreground underline decoration-primary/60 underline-offset-4 transition-colors hover:text-primary"
                 >
                   <GraduationCap className="h-3.5 w-3.5" />
                   {t("nav.scholar")}
                 </a>
                 <button
+                  type="button"
                   onClick={copyEmail}
-                  className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary"
+                  className="flex items-center gap-1.5 text-xs text-muted-foreground underline decoration-primary/60 underline-offset-4 transition-colors hover:text-primary"
                 >
                   <Mail className="h-3.5 w-3.5" />
                   {t("nav.email")}

@@ -4,6 +4,7 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -272,6 +273,9 @@ export function SiteHeader({
                   <BrandMark />
                   {t("nav.brand")}
                 </SheetTitle>
+                <SheetDescription className="sr-only">
+                  {t("nav.menuDescription")}
+                </SheetDescription>
               </SheetHeader>
               <div className="grid gap-2 px-4 py-5">
                 {primaryLinks.map(link => (

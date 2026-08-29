@@ -81,10 +81,7 @@ export default function Archive() {
           ) : groups?.length ? (
             <div className="archive-timeline-groups grid gap-8">
               {groups.map((group: any) => (
-                <section
-                  key={group.key}
-                  className="archive-month-group grid gap-3"
-                >
+                <section key={group.key} className="archive-month-group">
                   <SectionHeader
                     className="archive-month-header"
                     title={formatMonth(group.year, group.month, locale)}
@@ -101,7 +98,7 @@ export default function Archive() {
                     {group.posts.map((post: any) => (
                       <article
                         key={post.id}
-                        className="archive-post-row grid gap-3 py-4 md:grid-cols-[5.5rem_minmax(0,1fr)_auto]"
+                        className="archive-post-row grid gap-3 md:grid-cols-[5.5rem_minmax(0,1fr)_auto]"
                       >
                         <time className="text-sm font-medium text-primary">
                           {formatDay(post.publishedAt, locale)}

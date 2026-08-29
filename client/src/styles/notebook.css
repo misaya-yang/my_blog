@@ -673,6 +673,55 @@ html {
     white-space: nowrap;
   }
 
+  /* Route-specific rhythm lives here instead of fighting generic spacing
+     utilities across the historical public-surface stylesheets. */
+  .home-featured-band {
+    margin-top: 0.5rem;
+  }
+
+  .home-featured-band .home-featured-note {
+    margin-top: 0;
+  }
+
+  .archive-month-group {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .archive-month-header {
+    margin-bottom: 0.2rem;
+  }
+
+  .archive-month-header + .archive-month-posts {
+    margin-top: 0.5rem;
+  }
+
+  .archive-month-posts .archive-post-row {
+    padding-block: 0.72rem;
+  }
+
+  .archive-month-posts .archive-post-row:first-child {
+    margin-top: 0.25rem;
+  }
+
+  .search-results-surface {
+    margin-top: 1.25rem;
+    padding-top: 0.7rem;
+  }
+
+  .search-results-surface .section-header {
+    padding-bottom: 0.65rem;
+  }
+
+  .search-results-list {
+    margin-top: 0.75rem;
+  }
+
+  .search-results-list .search-result-row {
+    margin-block: 0.4rem;
+    padding-block: 0.85rem;
+  }
+
   /* The right column spans both rows, so its height was inflating row 1 and
      stranding the featured band a screenful below the hero. Pinning row 2 to
      the leftover space and anchoring the band to its top closes the void. */

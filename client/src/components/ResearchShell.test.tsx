@@ -23,7 +23,7 @@ vi.mock("@/contexts/LanguageContext", () => ({
     toggleLanguage: () => undefined,
     t: (key: string) =>
       (
-        {
+        ({
           "nav.home": "Home",
           "nav.algorithms": "AI Algorithms",
           "nav.applications": "AI Applications",
@@ -33,13 +33,14 @@ vi.mock("@/contexts/LanguageContext", () => ({
           "nav.write": "Write",
           "nav.login": "Login",
           "nav.menu": "Open navigation",
+          "nav.menuDescription": "Primary navigation and display preferences",
           "nav.switchToZh": "中文",
           "nav.switchToEn": "EN",
           "nav.switchToLight": "Switch to light mode",
           "nav.switchToDark": "Switch to dark mode",
           "nav.brand": "Misaya Notes",
           "nav.back": "Back",
-        } satisfies Record<string, string>
+        }) satisfies Record<string, string>
       )[key] ?? key,
   }),
 }));
