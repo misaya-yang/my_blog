@@ -14,6 +14,7 @@ import type {
 import { ENV } from "./env.js";
 
 export const DEFAULT_LLM_MODEL = "deepseek-v4-flash";
+const LLM_REQUEST_TIMEOUT_MS = 40_000;
 
 export type Tool = {
   type: "function";
@@ -122,6 +123,8 @@ const createClient = () =>
   new OpenAI({
     apiKey: getApiKey(),
     baseURL: resolveBaseUrl(),
+    timeout: LLM_REQUEST_TIMEOUT_MS,
+    maxRetries: 0,
   });
 
 export function resolveLLMModel(model?: string): string {
@@ -180,7 +183,9 @@ function normalizeFunctionTool(tool: Tool): FunctionTool {
 }
 
 function buildTools(params: InvokeParams): ResponsesTool[] {
-  const tools: ResponsesTool[] = (params.tools ?? []).map(normalizeFunctionTool);
+  const tools: ResponsesTool[] = (params.tools ?? []).map(
+    normalizeFunctionTool
+  );
   if (params.webSearch !== false) {
     tools.unshift({ type: "web_search" });
   }
@@ -201,17 +206,16 @@ function normalizeToolChoice(
 function buildCommonPayload(params: InvokeParams) {
   const format = normalizeResponseFormat(params);
   const tools = buildTools(params);
-  const toolChoice = normalizeToolChoice(params.toolChoice || params.tool_choice);
+  const toolChoice = normalizeToolChoice(
+    params.toolChoice || params.tool_choice
+  );
 
   return {
     model: resolveLLMModel(params.model),
     instructions: params.instructions,
     input: params.input,
     max_output_tokens:
-      params.maxOutputTokens ??
-      params.maxTokens ??
-      params.max_tokens ??
-      32768,
+      params.maxOutputTokens ?? params.maxTokens ?? params.max_tokens ?? 32768,
     store: false,
     tools,
     ...(tools.some(tool => tool.type === "web_search")

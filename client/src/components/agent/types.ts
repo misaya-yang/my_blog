@@ -4,12 +4,12 @@ export type ChatMessage = {
   content: string;
   sourceCards?: SourceCard[];
   relatedQuestions?: string[];
-  traceEntries?: AgentTraceEntry[];
   finalElapsedMs?: number;
   streaming?: boolean;
   state?: ChatMessageState;
   recoveryMessage?: string;
   recoveryPrompt?: string;
+  retryUserMessageId?: string;
   quotaTier?: string;
 };
 

@@ -12,12 +12,25 @@ export type AgentScope =
   | { type: "tag"; value?: string }
   | { type: "track"; value?: string };
 
-export function buildRouteContext(path: string, locale: "en" | "zh") {
+export function buildRouteContext(
+  path: string,
+  locale: "en" | "zh",
+  postTitle?: string
+) {
   const postSlug = matchPath(path, /^\/post\/([^/?#]+)/);
   const tagSlug = matchPath(path, /^\/tags\/([^/?#]+)/);
   const categorySlug = matchPath(path, /^\/categories\/([^/?#]+)/);
 
-  if (postSlug) return { path, routeType: "post" as const, postSlug, locale };
+  if (postSlug) {
+    const normalizedTitle = postTitle?.trim().slice(0, 300);
+    return {
+      path,
+      routeType: "post" as const,
+      postSlug,
+      locale,
+      postTitle: normalizedTitle ? normalizedTitle : undefined,
+    };
+  }
   if (tagSlug) return { path, routeType: "tag" as const, tagSlug, locale };
   if (categorySlug)
     return { path, routeType: "category" as const, categorySlug, locale };
@@ -56,7 +69,7 @@ export function inferClientScope(routeContext: AgentRouteContext): AgentScope {
 export function getCompanionPromptKeys(routeContext: AgentRouteContext) {
   if (routeContext.routeType === "post") {
     return [
-      "agent.prompts.postAbstraction",
+      "agent.prompts.postCoreWithTitle",
       "agent.prompts.postImplementation",
       "agent.prompts.nextReading",
     ];
@@ -112,41 +125,10 @@ export function getCompanionPromptKeys(routeContext: AgentRouteContext) {
   }
 
   return [
-    "agent.prompts.siteThemes",
-    "agent.prompts.compareTracks",
+    "agent.prompts.algorithmsFirst",
+    "agent.prompts.applicationsFirst",
     "agent.prompts.readingPath",
   ];
-}
-
-export function getCompanionWelcomeKeys(routeContext: AgentRouteContext) {
-  if (routeContext.routeType === "post") {
-    return {
-      titleKey: "agent.welcome.postTitle",
-      bodyKey: "agent.welcome.postBody",
-    };
-  }
-
-  if (routeContext.routeType === "track") {
-    return {
-      titleKey: "agent.welcome.trackTitle",
-      bodyKey: "agent.welcome.trackBody",
-    };
-  }
-
-  if (
-    routeContext.routeType === "search" ||
-    routeContext.routeType === "archive"
-  ) {
-    return {
-      titleKey: "agent.welcome.discoveryTitle",
-      bodyKey: "agent.welcome.discoveryBody",
-    };
-  }
-
-  return {
-    titleKey: "agent.welcome.title",
-    bodyKey: "agent.welcome.body",
-  };
 }
 
 export function openBlogAgentWithPrompt(prompt?: string) {

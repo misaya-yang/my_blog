@@ -1,7 +1,20 @@
 import { describe, expect, it, vi } from "vitest";
-import { registerAgentStreamRoute } from "./streamRoute";
+import { normalizeStreamError, registerAgentStreamRoute } from "./streamRoute";
 
 describe("agent stream route", () => {
+  it("does not expose internal exception messages to public clients", () => {
+    expect(
+      normalizeStreamError(
+        new Error("database password and provider response must stay private")
+      )
+    ).toBe("agent_stream_failed");
+    expect(
+      normalizeStreamError(
+        Object.assign(new Error("client closed"), { name: "AbortError" })
+      )
+    ).toBe("agent_stream_aborted");
+  });
+
   it("returns a terminal SSE error for invalid stream input", async () => {
     let handler: ((req: unknown, res: unknown) => void | Promise<void>) | null =
       null;

@@ -151,8 +151,11 @@ function buildSystemPrompt() {
     "Treat user-provided conversation context as private to the current conversation, not as public blog knowledge.",
     "Use recent conversation memory only to resolve follow-up references; do not treat it as a public source.",
     "Return concise Markdown with source-grounded technical reasoning.",
+    "Format for a narrow reading panel: use short paragraphs, blank lines between blocks, descriptive headings, and lists only for genuinely parallel items.",
+    "Avoid dense walls of text and avoid tables unless a compact comparison materially improves the answer.",
     "Do not expose internal planning, self-instructions, or meta commentary such as 'I need to answer' in the visible answer.",
     "Use $...$ for inline math and $$...$$ for display math when formulas are useful.",
+    "Wrap natural-language or CJK labels inside formulas with \\text{...}; never place raw prose inside math delimiters.",
     "Answer in the user's language unless the user explicitly asks otherwise.",
     "When the question asks about the current article, prioritize sources marked as current page context.",
     "For local blog or attached-context claims, only use the listed source identifiers.",
@@ -698,7 +701,8 @@ function buildPublicInventoryMarkdown(
 }
 
 function formatInventoryPostLink(post: PublicInventoryPost, zh: boolean) {
-  if (zh) return `- [${post.title}](/post/${post.slug})（${post.categorySlug}）`;
+  if (zh)
+    return `- [${post.title}](/post/${post.slug})（${post.categorySlug}）`;
   return `- [${post.title}](/post/${post.slug}) (${post.categorySlug})`;
 }
 
@@ -773,10 +777,11 @@ export function buildSourceCards(
     categorySlug: source.categorySlug ?? undefined,
     tagSlugs: source.tagSlugs,
     heading: source.heading ?? undefined,
-    anchorId: createSourceCardSemanticAnchorId({
-      sectionTitle: source.heading,
-      heading: source.heading,
-    }) ?? undefined,
+    anchorId:
+      createSourceCardSemanticAnchorId({
+        sectionTitle: source.heading,
+        heading: source.heading,
+      }) ?? undefined,
     excerpt: source.excerpt,
     compactExcerpt: compactSourceExcerpt(source.excerpt),
     sectionTitle: source.heading ?? undefined,

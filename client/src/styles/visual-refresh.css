@@ -3,13 +3,12 @@
 @layer components {
   /* 2026 visual refresh: dark research notebook, single cobalt accent */
   .space-page {
-    background:
-      linear-gradient(
-        180deg,
-        oklch(0.062 0.018 252),
-        oklch(0.078 0.02 252) 42%,
-        oklch(0.05 0.016 252)
-      );
+    background: linear-gradient(
+      180deg,
+      oklch(0.062 0.018 252),
+      oklch(0.078 0.02 252) 42%,
+      oklch(0.05 0.016 252)
+    );
   }
 
   .space-page::before {
@@ -2036,7 +2035,6 @@
     .home-start-path-actions a {
       justify-content: center;
     }
-
   }
 }
 
@@ -2835,19 +2833,6 @@
     min-height: 14rem;
   }
 
-  .agent-liquid-launcher {
-    border-color: var(--ui-border-strong);
-    background: oklch(0.075 0.012 252 / 86%);
-    box-shadow: 0 8px 18px oklch(0.02 0.012 252 / 22%);
-  }
-
-  .agent-liquid-panel {
-    border-color: var(--ui-border);
-    border-radius: var(--ui-radius);
-    background: oklch(0.06 0.012 252 / 98%);
-    box-shadow: 0 18px 44px oklch(0.02 0.012 252 / 46%);
-  }
-
   .article-skeleton {
     border-color: var(--ui-border);
     border-radius: var(--ui-radius-sm);
@@ -3476,24 +3461,6 @@
       max-width: 100%;
       font-size: clamp(1.75rem, 8vw, 2.4rem);
     }
-
-    .agent-liquid-launcher {
-      right: max(0.75rem, env(safe-area-inset-right));
-      bottom: max(0.75rem, env(safe-area-inset-bottom));
-      width: 2.9rem;
-      height: 2.9rem;
-      padding: 0;
-      border-radius: 999px;
-    }
-
-    .agent-liquid-launcher .agent-launcher-orb {
-      width: 2.22rem;
-      height: 2.22rem;
-    }
-
-    .agent-liquid-launcher > span:not(.agent-launcher-orb) {
-      display: none;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -3683,18 +3650,6 @@
       font-size: 0.92rem;
     }
 
-    .agent-liquid-launcher {
-      right: max(0.7rem, env(safe-area-inset-right));
-      bottom: max(0.7rem, env(safe-area-inset-bottom));
-      width: 2.55rem;
-      height: 2.55rem;
-    }
-
-    .agent-liquid-launcher .agent-launcher-orb {
-      width: 1.96rem;
-      height: 1.96rem;
-    }
-
     .home-title {
       font-size: clamp(2.35rem, 11vw, 3.3rem);
       line-height: 1.08;
@@ -3751,15 +3706,17 @@
         oklch(0.055 0.018 252 / 8%) 48%,
         oklch(0.055 0.018 252 / 64%)
       ),
-      linear-gradient(
-        180deg,
-        transparent 0 56%,
-        oklch(0.055 0.018 252 / 68%)
-      ),
+      linear-gradient(180deg, transparent 0 56%, oklch(0.055 0.018 252 / 68%)),
       url("/images/research-orbit-hero.jpg") center / cover no-repeat;
     box-shadow: var(--shadow-panel);
     opacity: 0.56;
-    mask-image: linear-gradient(90deg, transparent 0, black 14%, black 82%, transparent 100%);
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      black 14%,
+      black 82%,
+      transparent 100%
+    );
   }
 
   .home-index-grid {
@@ -4662,49 +4619,12 @@
 
 @layer components {
   /* Last-mile UI audit overrides. Keep these after legacy refresh blocks. */
-  body:has(.track-index-page) .agent-liquid-launcher,
   body:has(.login-panel) .agent-liquid-launcher,
   body:has(.auth-required-page) .agent-liquid-launcher,
   body:has(.owner-editor-shell) .agent-liquid-launcher,
   body:has(.owner-ops-page) .agent-liquid-launcher,
   body:has(.agent-console-tabs) .agent-liquid-launcher {
     display: none !important;
-  }
-
-  body:has(.home-index-spread) .agent-liquid-launcher {
-    top: calc(69px + 0.9rem) !important;
-    bottom: auto !important;
-    right: max(0.9rem, env(safe-area-inset-right)) !important;
-    height: 2.75rem !important;
-    width: 2.75rem !important;
-    justify-content: center !important;
-    padding: 0 !important;
-    opacity: 0.92;
-  }
-
-  body:has(.home-index-spread) .agent-liquid-launcher > span:not(.agent-launcher-orb) {
-    display: none !important;
-  }
-
-  body:has(.home-index-spread) .agent-liquid-launcher .agent-launcher-orb {
-    height: 2.15rem !important;
-    width: 2.15rem !important;
-  }
-
-  @media (max-width: 760px) {
-    body:has(.home-index-spread) .agent-liquid-launcher {
-      top: calc(69px + 0.85rem) !important;
-      bottom: auto !important;
-      right: 0.55rem !important;
-      height: 2.55rem !important;
-      width: 2.55rem !important;
-      opacity: 0.9;
-    }
-
-    body:has(.home-index-spread) .agent-liquid-launcher .agent-launcher-orb {
-      height: 2rem !important;
-      width: 2rem !important;
-    }
   }
 
   .paper-brief-rail {
@@ -4829,40 +4749,11 @@
       font-size: 0.98rem;
       line-height: 1.6;
     }
-
-    .agent-liquid-launcher {
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem) !important;
-      right: 1rem !important;
-      height: 3rem !important;
-      width: 3rem !important;
-      justify-content: center !important;
-      padding: 0 !important;
-    }
-
-    .agent-liquid-launcher > span:not(.agent-launcher-orb) {
-      display: none !important;
-    }
-
-    .agent-liquid-launcher .agent-launcher-orb {
-      height: 2.35rem !important;
-      width: 2.35rem !important;
-    }
   }
 }
 
 @layer components {
   /* True EOF lock: compact the publication index after all legacy layers. */
-  body:has(.home-index-spread) .agent-liquid-launcher {
-    display: flex !important;
-    top: auto !important;
-    right: max(0.9rem, env(safe-area-inset-right)) !important;
-    bottom: max(0.9rem, env(safe-area-inset-bottom)) !important;
-    height: 2.65rem !important;
-    width: 2.65rem !important;
-    justify-content: center !important;
-    padding: 0 !important;
-  }
-
   .series-card-track,
   .series-step span,
   .article-entry-kicker,
@@ -5379,14 +5270,26 @@
   }
 
   .site-header .nav-ink-active::after {
-    background: linear-gradient(90deg, var(--accent-bright), oklch(0.78 0.07 178));
+    background: linear-gradient(
+      90deg,
+      var(--accent-bright),
+      oklch(0.78 0.07 178)
+    );
     box-shadow: 0 0 18px oklch(0.72 0.08 174 / 34%);
   }
 
   .site-mobile-sheet.liquid-panel {
     background:
-      radial-gradient(circle at 14% 0%, var(--liquid-specular), transparent 34%),
-      linear-gradient(180deg, var(--liquid-panel-tint), var(--liquid-solid-panel));
+      radial-gradient(
+        circle at 14% 0%,
+        var(--liquid-specular),
+        transparent 34%
+      ),
+      linear-gradient(
+        180deg,
+        var(--liquid-panel-tint),
+        var(--liquid-solid-panel)
+      );
   }
 
   .page-hero.liquid-panel,
@@ -5482,7 +5385,11 @@
 
   .home-search-submit {
     border-radius: var(--liquid-radius-control);
-    background: linear-gradient(135deg, var(--accent-bright), oklch(0.7 0.09 190));
+    background: linear-gradient(
+      135deg,
+      var(--accent-bright),
+      oklch(0.7 0.09 190)
+    );
     color: oklch(0.05 0.008 230);
     font-weight: 760;
   }
@@ -5619,7 +5526,11 @@
     border: 1px solid var(--liquid-border) !important;
     background:
       linear-gradient(145deg, var(--liquid-highlight-soft), transparent 42%),
-      linear-gradient(180deg, var(--liquid-panel-tint), var(--liquid-surface-tint)) !important;
+      linear-gradient(
+        180deg,
+        var(--liquid-panel-tint),
+        var(--liquid-surface-tint)
+      ) !important;
     box-shadow: var(--liquid-shadow-panel) !important;
     padding: clamp(1rem, 2vw, 1.35rem) !important;
   }
@@ -5656,7 +5567,11 @@
 
   .search-recovery-agent-button {
     border-radius: var(--liquid-radius-control);
-    background: linear-gradient(135deg, var(--accent-bright), oklch(0.72 0.08 190));
+    background: linear-gradient(
+      135deg,
+      var(--accent-bright),
+      oklch(0.72 0.08 190)
+    );
     color: oklch(0.05 0.008 230);
     font-weight: 760;
   }
@@ -5837,23 +5752,24 @@
   }
 
   @media (prefers-reduced-transparency: reduce) {
-    .space-page:not(.owner-dark-scope) :where(
-      .home-intro-rail,
-      .home-track-panel,
-      .home-featured-note,
-      .home-start-path,
-      .home-more-notes,
-      .track-series-card,
-      .track-article-ledger,
-      .research-surface,
-      .article-card,
-      .search-result-row,
-      .archive-post-row,
-      .about-letter,
-      .about-links-rail,
-      .about-focus-ledger,
-      .login-access-card
-    ) {
+    .space-page:not(.owner-dark-scope)
+      :where(
+        .home-intro-rail,
+        .home-track-panel,
+        .home-featured-note,
+        .home-start-path,
+        .home-more-notes,
+        .track-series-card,
+        .track-article-ledger,
+        .research-surface,
+        .article-card,
+        .search-result-row,
+        .archive-post-row,
+        .about-letter,
+        .about-links-rail,
+        .about-focus-ledger,
+        .login-access-card
+      ) {
       background: var(--liquid-reduced-bg) !important;
       box-shadow: none !important;
       backdrop-filter: none !important;
@@ -5878,17 +5794,33 @@
   body:has(.paper-reader-main) {
     --reader-glass-bg:
       linear-gradient(145deg, var(--liquid-highlight-soft), transparent 42%),
-      linear-gradient(180deg, var(--liquid-panel-tint), var(--liquid-surface-tint));
+      linear-gradient(
+        180deg,
+        var(--liquid-panel-tint),
+        var(--liquid-surface-tint)
+      );
     --reader-solid-bg: oklch(0.078 0.012 246 / 98%);
     --reader-rail-bg:
-      radial-gradient(circle at 18% 0%, var(--liquid-specular), transparent 28%),
-      linear-gradient(180deg, oklch(0.105 0.014 238 / 90%), oklch(0.055 0.01 242 / 90%));
+      radial-gradient(
+        circle at 18% 0%,
+        var(--liquid-specular),
+        transparent 28%
+      ),
+      linear-gradient(
+        180deg,
+        oklch(0.105 0.014 238 / 90%),
+        oklch(0.055 0.01 242 / 90%)
+      );
   }
 
   .paper-reader-main.liquid-readable {
     border-color: color-mix(in oklch, var(--liquid-border) 84%, transparent);
     background:
-      linear-gradient(180deg, oklch(0.115 0.012 246 / 99%), oklch(0.078 0.012 246 / 99%)),
+      linear-gradient(
+        180deg,
+        oklch(0.115 0.012 246 / 99%),
+        oklch(0.078 0.012 246 / 99%)
+      ),
       var(--reader-solid-bg);
     box-shadow:
       inset 0 1px 0 oklch(0.98 0.006 235 / 7%),
@@ -5900,7 +5832,11 @@
   }
 
   .paper-reader-main .article-prose :where(pre, .technical-table-wrap) {
-    border-color: color-mix(in oklch, var(--liquid-border-strong) 72%, transparent);
+    border-color: color-mix(
+      in oklch,
+      var(--liquid-border-strong) 72%,
+      transparent
+    );
     background: oklch(0.052 0.012 246 / 97%);
     box-shadow:
       inset 0 1px 0 oklch(0.96 0.006 235 / 4%),

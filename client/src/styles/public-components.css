@@ -1051,32 +1051,6 @@
     white-space: nowrap;
   }
 
-  .agent-liquid-launcher {
-    border-color: oklch(0.82 0.008 100 / 16%);
-    background: oklch(0.062 0.008 84 / 92%);
-    box-shadow:
-      inset 0 1px 0 oklch(0.95 0.006 100 / 5%),
-      0 6px 8px oklch(0.02 0.006 90 / 18%);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
-  .agent-launcher-orb {
-    border: 1px solid oklch(0.82 0.008 100 / 14%);
-    background: oklch(0.105 0.008 82 / 78%);
-    box-shadow: inset 0 1px 0 oklch(0.95 0.006 100 / 5%);
-  }
-
-  .agent-liquid-panel {
-    border-color: oklch(0.82 0.008 100 / 16%);
-    background: oklch(0.055 0.008 84 / 98%);
-    box-shadow:
-      inset 0 1px 0 oklch(0.95 0.006 100 / 4%),
-      0 8px 12px oklch(0.02 0.006 90 / 28%);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
   .article-skeleton {
     height: 14rem;
     border-radius: var(--radius-md);

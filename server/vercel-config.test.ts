@@ -3,6 +3,15 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 describe("Vercel routing guardrails", () => {
+  it("keeps the function deadline above the client Agent stream timeout", () => {
+    const configPath = join(process.cwd(), "vercel.json");
+    const config = JSON.parse(readFileSync(configPath, "utf8")) as {
+      functions?: Record<string, { maxDuration?: number }>;
+    };
+
+    expect(config.functions?.["api/index.ts"]?.maxDuration).toBeGreaterThan(45);
+  });
+
   it("routes unmatched browser paths through the app shell function", () => {
     const configPath = join(process.cwd(), "vercel.json");
     const config = JSON.parse(readFileSync(configPath, "utf8")) as {

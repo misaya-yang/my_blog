@@ -312,6 +312,7 @@ export type AgentAddContextOutput =
 
 export type AgentSendMessageInput = {
   conversationId?: string;
+  retryUserMessageId?: string;
   message: string;
   routeContext: AgentRouteContext;
   scope?: AgentScope;
@@ -327,6 +328,7 @@ export type AgentSendMessageOutput =
   | {
       status: "completed";
       conversationId: string;
+      userMessageId: string;
       messageId: string;
       answer: AgentAnswer;
       sourceCards: AgentSourceCard[];
@@ -337,6 +339,7 @@ export type AgentSendMessageOutput =
   | {
       status: "failed";
       conversationId: string;
+      userMessageId: string;
       messageId: string;
       quota: AgentQuota;
       runStatus: "failed";
@@ -354,6 +357,8 @@ export type AgentStreamEvent =
         | "answer"
         | "saving";
       elapsedMs: number;
+      conversationId?: string;
+      userMessageId?: string;
       sourceCount?: number;
       currentPageContextInjected?: boolean;
     }

@@ -84,8 +84,13 @@ function prepareSseResponse(res: StreamResponse) {
   res.flushHeaders?.();
 }
 
-function normalizeStreamError(error: unknown) {
+export function normalizeStreamError(error: unknown) {
   if (error instanceof z.ZodError) return "invalid_agent_stream_input";
-  if (error instanceof Error) return error.message;
+  if (error instanceof Error && error.name === "AbortError") {
+    return "agent_stream_aborted";
+  }
+  if (error instanceof Error && error.name === "TimeoutError") {
+    return "agent_stream_timeout";
+  }
   return "agent_stream_failed";
 }

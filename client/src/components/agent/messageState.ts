@@ -1,21 +1,4 @@
-import type {
-  AgentTraceEntry,
-  ChatMessage,
-  ChatMessageState,
-  SourceCard,
-} from "./types";
-
-export function upsertTraceEntry(
-  entries: AgentTraceEntry[] | undefined,
-  next: AgentTraceEntry
-) {
-  const current = entries ?? [];
-  const index = current.findIndex(entry => entry.stage === next.stage);
-  if (index === -1) return [...current, next];
-  return current.map((entry, entryIndex) =>
-    entryIndex === index ? { ...entry, ...next } : entry
-  );
-}
+import type { ChatMessage, ChatMessageState, SourceCard } from "./types";
 
 export function markAssistantMessageRecoverable(
   messages: ChatMessage[],
@@ -24,6 +7,7 @@ export function markAssistantMessageRecoverable(
     content: string;
     state: ChatMessageState;
     recoveryPrompt: string;
+    retryUserMessageId?: string;
     messageId?: string;
     quotaTier?: string;
     finalElapsedMs?: number;
@@ -39,6 +23,7 @@ export function markAssistantMessageRecoverable(
           state: input.state,
           recoveryMessage: input.content,
           recoveryPrompt: input.recoveryPrompt,
+          retryUserMessageId: input.retryUserMessageId,
           quotaTier: input.quotaTier,
           finalElapsedMs: input.finalElapsedMs ?? message.finalElapsedMs,
         }

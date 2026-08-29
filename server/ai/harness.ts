@@ -55,6 +55,7 @@ import type {
   AgentContextSourceRecord,
   AgentIdentity,
   AgentKnowledgeIndexStatusOutput,
+  AgentMessageRecord,
   AgentModel,
   AgentQuota,
   AgentQuestionRadarOutput,
@@ -142,8 +143,45 @@ export type AgentService = {
 export function createAgentService(deps: AgentServiceDeps): AgentService {
   const now = deps.now ?? (() => new Date());
 
+  async function resolveRetryUserMessage(input: {
+    retryUserMessageId?: string;
+    message: string;
+    conversation: AgentConversationRecord | null;
+    identity: AgentIdentity;
+  }): Promise<AgentMessageRecord | null> {
+    if (!input.retryUserMessageId) return null;
+    if (!input.conversation) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Retry requires an existing conversation",
+      });
+    }
+
+    const messages = await deps.conversationStore.getMessages({
+      conversationId: input.conversation.id,
+      identity: input.identity,
+    });
+    const userMessage = messages.find(
+      message => message.id === input.retryUserMessageId
+    );
+    if (
+      !userMessage ||
+      userMessage.conversationId !== input.conversation.id ||
+      userMessage.role !== "user" ||
+      userMessage.status !== "completed" ||
+      userMessage.content !== input.message
+    ) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Retry user message is invalid",
+      });
+    }
+    return userMessage;
+  }
+
   async function completeAssistantAnswer(input: {
     conversationId: string;
+    userMessageId: string;
     runId: string;
     quota: AgentQuota;
     answer: AgentAnswer;
@@ -183,6 +221,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
     return {
       status: "completed",
       conversationId: input.conversationId,
+      userMessageId: input.userMessageId,
       messageId: assistantMessage.id,
       answer: input.answer,
       sourceCards,
@@ -237,7 +276,11 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         identity,
         now: now(),
       });
-      return { conversation, messages, contextSources };
+      return {
+        conversation,
+        messages: hideSupersededFailedAssistantMessages(messages),
+        contextSources,
+      };
     },
 
     async addContext(ctx, input) {
@@ -457,9 +500,13 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
             title: buildConversationTitle(input.message),
           })
         : null;
-      const scope = existingConversation
-        ? scopeFromConversation(existingConversation)
-        : requestedScope;
+      const retryUserMessage = await resolveRetryUserMessage({
+        retryUserMessageId: input.retryUserMessageId,
+        message: input.message,
+        conversation: existingConversation,
+        identity,
+      });
+      const scope = requestedScope;
       const limit = getQuotaLimit(identity.type);
       const quota = await deps.quotaStore.reserveDailyMessage(
         identity,
@@ -482,12 +529,14 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           scope,
           title: buildConversationTitle(input.message),
         }));
-      const userMessage = await deps.conversationStore.addMessage({
-        conversationId: conversation.id,
-        role: "user",
-        status: "completed",
-        content: input.message,
-      });
+      const userMessage =
+        retryUserMessage ??
+        (await deps.conversationStore.addMessage({
+          conversationId: conversation.id,
+          role: "user",
+          status: "completed",
+          content: input.message,
+        }));
       const startedAt = now();
       const run = await deps.conversationStore.startRun({
         conversationId: conversation.id,
@@ -509,6 +558,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
 
           return completeAssistantAnswer({
             conversationId: conversation.id,
+            userMessageId: userMessage.id,
             runId: run.id,
             quota,
             answer,
@@ -544,6 +594,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         if (inventoryAnswer) {
           return completeAssistantAnswer({
             conversationId: conversation.id,
+            userMessageId: userMessage.id,
             runId: run.id,
             quota,
             answer: inventoryAnswer,
@@ -560,6 +611,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         if (findPostAnswer) {
           return completeAssistantAnswer({
             conversationId: conversation.id,
+            userMessageId: userMessage.id,
             runId: run.id,
             quota,
             answer: findPostAnswer,
@@ -612,6 +664,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         return {
           status: "completed",
           conversationId: conversation.id,
+          userMessageId: userMessage.id,
           messageId: assistantMessage.id,
           answer,
           sourceCards: answer.sourceCards,
@@ -666,6 +719,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           return {
             status: "completed",
             conversationId: conversation.id,
+            userMessageId: userMessage.id,
             messageId: assistantMessage.id,
             answer,
             sourceCards: answer.sourceCards,
@@ -693,6 +747,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         return {
           status: "failed",
           conversationId: conversation.id,
+          userMessageId: userMessage.id,
           messageId: failedMessage.id,
           quota,
           runStatus: "failed",
@@ -714,9 +769,13 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
             title: buildConversationTitle(input.message),
           })
         : null;
-      const scope = existingConversation
-        ? scopeFromConversation(existingConversation)
-        : requestedScope;
+      const retryUserMessage = await resolveRetryUserMessage({
+        retryUserMessageId: input.retryUserMessageId,
+        message: input.message,
+        conversation: existingConversation,
+        identity,
+      });
+      const scope = requestedScope;
       const limit = getQuotaLimit(identity.type);
       const quota = await deps.quotaStore.reserveDailyMessage(
         identity,
@@ -740,8 +799,6 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         return output;
       }
 
-      emit({ type: "status", stage: "understanding", elapsedMs: elapsedMs() });
-
       const conversation =
         existingConversation ??
         (await deps.conversationStore.createOrLoadConversation({
@@ -749,11 +806,20 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           scope,
           title: buildConversationTitle(input.message),
         }));
-      const userMessage = await deps.conversationStore.addMessage({
+      const userMessage =
+        retryUserMessage ??
+        (await deps.conversationStore.addMessage({
+          conversationId: conversation.id,
+          role: "user",
+          status: "completed",
+          content: input.message,
+        }));
+      emit({
+        type: "status",
+        stage: "understanding",
+        elapsedMs: elapsedMs(),
         conversationId: conversation.id,
-        role: "user",
-        status: "completed",
-        content: input.message,
+        userMessageId: userMessage.id,
       });
       const run = await deps.conversationStore.startRun({
         conversationId: conversation.id,
@@ -783,6 +849,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
 
           const output = await completeAssistantAnswer({
             conversationId: conversation.id,
+            userMessageId: userMessage.id,
             runId: run.id,
             quota,
             answer,
@@ -843,6 +910,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
 
           const output = await completeAssistantAnswer({
             conversationId: conversation.id,
+            userMessageId: userMessage.id,
             runId: run.id,
             quota,
             answer: inventoryAnswer,
@@ -874,6 +942,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
 
           const output = await completeAssistantAnswer({
             conversationId: conversation.id,
+            userMessageId: userMessage.id,
             runId: run.id,
             quota,
             answer: findPostAnswer,
@@ -971,6 +1040,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         const output: AgentSendMessageOutput = {
           status: "completed",
           conversationId: conversation.id,
+          userMessageId: userMessage.id,
           messageId: assistantMessage.id,
           answer,
           sourceCards: answer.sourceCards,
@@ -1044,6 +1114,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
           const output: AgentSendMessageOutput = {
             status: "completed",
             conversationId: conversation.id,
+            userMessageId: userMessage.id,
             messageId: assistantMessage.id,
             answer,
             sourceCards: answer.sourceCards,
@@ -1079,6 +1150,7 @@ export function createAgentService(deps: AgentServiceDeps): AgentService {
         const output: AgentSendMessageOutput = {
           status: "failed",
           conversationId: conversation.id,
+          userMessageId: userMessage.id,
           messageId: failedMessage.id,
           quota,
           runStatus: "failed",
@@ -1161,14 +1233,6 @@ export function inferScope(
   return { type: "site" };
 }
 
-function scopeFromConversation(
-  conversation: AgentConversationRecord
-): AgentScope {
-  return conversation.scopeValue
-    ? { type: conversation.scopeType, value: conversation.scopeValue }
-    : { type: conversation.scopeType };
-}
-
 function buildConversationTitle(message: string) {
   const normalized = message.replace(/\s+/g, " ").trim();
   return normalized.length > 80
@@ -1214,6 +1278,37 @@ function truncateConversationMemory(content: string) {
   return normalized.length > 900
     ? `${normalized.slice(0, 897).trim()}...`
     : normalized;
+}
+
+function hideSupersededFailedAssistantMessages(
+  messages: AgentMessageRecord[]
+): AgentMessageRecord[] {
+  const visible: AgentMessageRecord[] = [];
+  let turn: AgentMessageRecord[] = [];
+
+  const flushTurn = () => {
+    const hasCompletedAssistant = turn.some(
+      message => message.role === "assistant" && message.status === "completed"
+    );
+    visible.push(
+      ...turn.filter(
+        message =>
+          !(
+            hasCompletedAssistant &&
+            message.role === "assistant" &&
+            message.status === "failed"
+          )
+      )
+    );
+    turn = [];
+  };
+
+  for (const message of messages) {
+    if (message.role === "user" && turn.length > 0) flushTurn();
+    turn.push(message);
+  }
+  flushTurn();
+  return visible;
 }
 
 function buildSuggestedPrompts(scope: AgentScope) {

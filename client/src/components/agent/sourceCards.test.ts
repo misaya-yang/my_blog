@@ -184,6 +184,7 @@ describe("Agent source cards", () => {
       content: "The assistant timed out.",
       state: "timeout",
       recoveryPrompt: "Explain source trust.",
+      retryUserMessageId: "user-1",
     });
 
     expect(next).toHaveLength(2);
@@ -196,6 +197,7 @@ describe("Agent source cards", () => {
       content: "Partial grounded answer.",
       recoveryMessage: "The assistant timed out.",
       recoveryPrompt: "Explain source trust.",
+      retryUserMessageId: "user-1",
       state: "timeout",
       streaming: false,
     });

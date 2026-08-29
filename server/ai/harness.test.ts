@@ -1303,6 +1303,111 @@ describe("AI agent harness", () => {
     ]);
   });
 
+  it("reuses the persisted user message when sendMessage retries a failed turn", async () => {
+    const { service, conversationStore, model } = createHarness();
+    const ctx = visitorContextWithId("visitor-send-retry");
+    vi.mocked(model.generate).mockRejectedValueOnce(
+      new Error("provider failed before completing")
+    );
+
+    const failed = await service.sendMessage(ctx, {
+      message: "Explain retry persistence",
+      routeContext,
+    });
+    expect(failed.status).toBe("failed");
+    if (failed.status !== "failed") return;
+
+    const retried = await service.sendMessage(ctx, {
+      conversationId: failed.conversationId,
+      retryUserMessageId: failed.userMessageId,
+      message: "Explain retry persistence",
+      routeContext,
+    });
+
+    expect(retried.status).toBe("completed");
+    expect(conversationStore.messages).toHaveLength(3);
+    expect(conversationStore.messages.map(message => message.role)).toEqual([
+      "user",
+      "assistant",
+      "assistant",
+    ]);
+    expect(
+      conversationStore.messages.filter(message => message.role === "user")
+    ).toHaveLength(1);
+    expect(conversationStore.runs.map(run => run.question)).toEqual([
+      "Explain retry persistence",
+      "Explain retry persistence",
+    ]);
+
+    const detail = await service.getConversation(ctx, {
+      conversationId: failed.conversationId,
+    });
+    expect(detail.messages.map(message => message.role)).toEqual([
+      "user",
+      "assistant",
+    ]);
+    expect(detail.messages.map(message => message.status)).toEqual([
+      "completed",
+      "completed",
+    ]);
+  });
+
+  it("reuses only a matching persisted user message when streamMessage retries", async () => {
+    const { service, conversationStore, model } = createHarness();
+    const ctx = visitorContextWithId("visitor-stream-retry");
+    vi.mocked(model.generate).mockRejectedValueOnce(
+      new Error("stream provider failed")
+    );
+    const firstEvents: AgentStreamEvent[] = [];
+
+    const failed = await service.streamMessage(
+      ctx,
+      { message: "Explain streamed retry persistence", routeContext },
+      event => firstEvents.push(event)
+    );
+    expect(failed.status).toBe("failed");
+    if (failed.status !== "failed") return;
+    expect(firstEvents).toContainEqual(
+      expect.objectContaining({
+        type: "status",
+        stage: "understanding",
+        conversationId: failed.conversationId,
+        userMessageId: failed.userMessageId,
+      })
+    );
+
+    await expect(
+      service.streamMessage(
+        ctx,
+        {
+          conversationId: failed.conversationId,
+          retryUserMessageId: failed.userMessageId,
+          message: "Different content must not reuse the turn",
+          routeContext,
+        },
+        vi.fn()
+      )
+    ).rejects.toThrow("Retry user message is invalid");
+
+    const retried = await service.streamMessage(
+      ctx,
+      {
+        conversationId: failed.conversationId,
+        retryUserMessageId: failed.userMessageId,
+        message: "Explain streamed retry persistence",
+        routeContext,
+      },
+      vi.fn()
+    );
+
+    expect(retried.status).toBe("completed");
+    expect(conversationStore.messages.map(message => message.role)).toEqual([
+      "user",
+      "assistant",
+      "assistant",
+    ]);
+  });
+
   it("prevents one visitor from loading another visitor's conversation", async () => {
     const { service } = createHarness();
     const owner = visitorContextWithId("visitor-owner");
@@ -1349,7 +1454,7 @@ describe("AI agent harness", () => {
     expect(reserveDailyMessage).not.toHaveBeenCalled();
   });
 
-  it("continues a conversation with its stored scope, not the current page scope", async () => {
+  it("uses the current page scope when a conversation continues on another route", async () => {
     const { service, retrieve } = createHarness();
     const ctx = visitorContextWithId("visitor-scope");
 
@@ -1374,7 +1479,10 @@ describe("AI agent harness", () => {
     expect(continued.status).toBe("completed");
     expect(retrieve).toHaveBeenLastCalledWith(
       expect.objectContaining({
-        scope: { type: "track", value: "ai-applications" },
+        scope: {
+          type: "post",
+          value: "isohc-fixed-vector-isometric-residual-mixing",
+        },
       })
     );
   });

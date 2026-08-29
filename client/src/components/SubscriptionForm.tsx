@@ -172,7 +172,7 @@ export function SubscriptionForm({
                   className={cn(
                     "h-8 rounded px-3 text-xs font-medium transition",
                     preferredLanguage === option
-                      ? "bg-primary/15 text-primary"
+                      ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
                   )}
                 >

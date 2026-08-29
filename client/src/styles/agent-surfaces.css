@@ -1,666 +1,321 @@
 @reference "../index.css";
 
+/* ---------------------------------------------------------------------------
+   Assistant surfaces — launcher button and panel shell.
+
+   These are the only visual definitions for the notes assistant chrome.
+   The three stable hooks are .agent-liquid-launcher (entry button),
+   .agent-launcher-orb (icon tile inside it), and .agent-liquid-panel (the
+   panel section). Everything inside the panel is styled with Tailwind
+   utilities against the site tokens, so this file stays deliberately small:
+   one pill entry, one quiet elevated panel. No glass, no glow, no gradients;
+   light/dark comes free from the site tokens, which resolve automatically
+   under .dark. Geometry (fixed positioning, offsets, responsive wrapper) is
+   owned by the component markup, not this file.
+--------------------------------------------------------------------------- */
+
 @layer components {
-  body .agent-liquid-launcher,
   .agent-liquid-launcher {
-    border-color: var(--glass-border);
-    background: linear-gradient(
-      145deg,
-      color-mix(
-        in oklch,
-        var(--surface-primary, var(--surface-card)) 78%,
-        var(--accent) 10%
-      ),
-      color-mix(in oklch, var(--surface-secondary, var(--bg)) 86%, black 10%)
-    );
-    box-shadow:
-      inset 0 1px 0 oklch(0.98 0.012 235 / 12%),
-      0 6px 10px oklch(0.02 0.018 255 / 28%),
-      0 0 12px oklch(0.72 0.16 235 / 16%);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    height: 2.75rem;
+    padding: 0 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--fg);
+    box-shadow: var(--shadow-card);
+    font-family: var(--font-caption, inherit);
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition:
+      transform var(--dur-fast) var(--ease-standard),
+      border-color var(--dur-fast) var(--ease-standard),
+      box-shadow var(--dur-fast) var(--ease-standard);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .agent-liquid-launcher:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+  }
+
+  .agent-liquid-launcher[aria-expanded="true"] {
+    background: var(--secondary);
   }
 
   .agent-launcher-orb {
-    border-color: oklch(0.78 0.16 235 / 34%);
-    background: oklch(0.18 0.05 245 / 58%);
-    color: oklch(0.86 0.12 225);
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    background: transparent;
+    color: var(--primary);
   }
 
   .agent-liquid-panel {
-    border-color: var(--glass-border);
-    background-color: oklch(0.05 0.018 252);
-    background: linear-gradient(
-      180deg,
-      oklch(0.105 0.024 250),
-      oklch(0.048 0.018 252)
-    );
-    border-radius: var(--radius-card);
-    box-shadow:
-      inset 0 1px 0 oklch(0.98 0.012 235 / 10%),
-      0 12px 14px oklch(0.015 0.018 255 / 42%);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
     isolation: isolate;
+    border: 1px solid var(--border);
+    border-radius: 0.72rem;
+    background: var(--bg-elevated);
+    color: var(--fg);
+    box-shadow: var(--shadow-panel);
   }
 
-  .agent-liquid-panel header,
-  .agent-liquid-panel form,
-  .agent-liquid-panel .border-b,
-  .agent-liquid-panel .border-t {
-    border-color: oklch(0.84 0.08 235 / 16%);
+  /* The desktop/tablet panel is anchored at its bottom-right edge, so its
+     resize control lives on the opposite corner. The visual is deliberately
+     only a small corner mark while the 44px hit target remains comfortable
+     for touch and pen input. */
+  .agent-panel-resize-handle {
+    position: absolute;
+    z-index: 2;
+    top: -1.25rem;
+    inset-inline-start: -1.25rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--fg-muted);
+    cursor: nwse-resize;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .agent-liquid-panel textarea,
-  .agent-liquid-panel input {
-    color: oklch(0.93 0.012 235);
+  .agent-panel-resize-handle::before {
+    position: absolute;
+    top: 1.08rem;
+    inset-inline-start: 1.08rem;
+    width: 0.72rem;
+    height: 0.72rem;
+    border-block-start: 2px solid currentColor;
+    border-inline-start: 2px solid currentColor;
+    border-start-start-radius: 0.2rem;
+    content: "";
+    opacity: 0.72;
+    transition:
+      color var(--dur-fast) var(--ease-standard),
+      opacity var(--dur-fast) var(--ease-standard);
   }
 
-  .agent-liquid-panel button:not(:disabled):active {
-    transform: translateY(1px);
+  @media (hover: hover) and (pointer: fine) {
+    .agent-panel-resize-handle:hover {
+      color: var(--primary);
+    }
+
+    .agent-panel-resize-handle:hover::before {
+      opacity: 1;
+    }
   }
 
-  .agent-liquid-panel [class*="rounded-md"],
-  .agent-liquid-panel [class*="rounded-lg"] {
-    border-radius: 0.82rem;
+  .agent-panel-resize-handle:active {
+    color: var(--primary);
   }
 
-  .agent-sources {
-    color: oklch(0.68 0.03 235);
+  .agent-panel-resize-handle:focus-visible {
+    border-radius: 0.45rem;
+    outline: 2px solid var(--ring);
+    outline-offset: -0.2rem;
   }
 
-  .agent-trust-boundary {
-    background:
-      linear-gradient(
-        90deg,
-        color-mix(in oklch, var(--accent) 10%, transparent),
-        transparent 46%
-      ),
-      color-mix(in oklch, var(--surface-secondary, var(--bg)) 74%, transparent);
+  /* Thin scrollbars and a tinted selection inside the panel. The standard
+     properties cover supporting engines; the webkit pair is a fallback for
+     engines without scrollbar-width. */
+  .agent-liquid-panel,
+  .agent-liquid-panel * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--fg-faint) 55%, transparent)
+      transparent;
   }
 
-  .agent-source-card {
-    border-color: color-mix(in oklch, var(--accent) 18%, transparent);
-    background:
-      linear-gradient(
-        135deg,
-        color-mix(in oklch, var(--accent) 7%, transparent),
-        transparent 46%
-      ),
-      color-mix(in oklch, var(--surface-secondary, var(--bg)) 74%, transparent);
+  .agent-liquid-panel ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
   }
 
-  .agent-source-card:hover {
-    border-color: color-mix(in oklch, var(--accent) 34%, transparent);
-    background:
-      linear-gradient(
-        135deg,
-        color-mix(in oklch, var(--accent) 11%, transparent),
-        transparent 54%
-      ),
-      color-mix(
-        in oklch,
-        var(--surface-primary, var(--surface-card)) 70%,
-        transparent
-      );
+  .agent-liquid-panel ::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--fg-faint) 55%, transparent);
   }
 
-  .agent-source-icon {
-    border-color: color-mix(in oklch, var(--accent) 24%, transparent);
-    background: color-mix(in oklch, var(--accent) 12%, transparent);
-    color: var(--accent-soft);
+  .agent-liquid-panel ::-webkit-scrollbar-track {
+    background: transparent;
   }
 
-  .agent-source-card:focus-within {
-    outline: 2px solid var(--focus-ring, var(--surface-focus));
+  .agent-liquid-panel ::selection {
+    background: color-mix(in oklch, var(--primary) 24%, transparent);
+  }
+
+  .agent-answer-prose {
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: 0.96rem;
+    font-weight: 400;
+    letter-spacing: 0.004em;
+    line-break: strict;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+    text-wrap: pretty;
+  }
+
+  html:lang(zh) .agent-answer-prose {
+    letter-spacing: 0.012em;
+    line-height: 1.82;
+  }
+
+  .agent-answer-prose :where(p, ul, ol, blockquote, pre, table) {
+    margin-block: 0 0.95em;
+  }
+
+  .agent-answer-prose :where(h1, h2, h3, h4) {
+    margin-block: 1.35em 0.55em;
+    color: var(--fg);
+    font-family: var(--font-caption);
+    font-weight: 650;
+    letter-spacing: 0;
+    line-height: 1.42;
+    text-wrap: pretty;
+  }
+
+  .agent-answer-prose :where(h1, h2) {
+    font-size: 1.08rem;
+  }
+
+  .agent-answer-prose :where(h3, h4) {
+    font-size: 1rem;
+  }
+
+  .agent-answer-prose > :first-child {
+    margin-top: 0;
+  }
+
+  .agent-answer-prose > :last-child {
+    margin-bottom: 0;
+  }
+
+  .agent-answer-prose :where(ul, ol) {
+    display: grid;
+    gap: 0.42em;
+    padding-inline-start: 1.3rem;
+  }
+
+  .agent-answer-prose li::marker {
+    color: var(--primary);
+  }
+
+  .agent-answer-prose strong {
+    color: var(--fg);
+    font-weight: 650;
+  }
+
+  .agent-answer-prose a {
+    color: var(--primary);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklch, var(--primary) 45%, transparent);
+    text-underline-offset: 0.2em;
+  }
+
+  .agent-answer-prose blockquote {
+    padding-block: 0.15rem;
+    padding-inline-start: 0.9rem;
+    border-inline-start: 2px solid var(--primary);
+    color: var(--fg-muted);
+  }
+
+  .agent-answer-prose pre,
+  .agent-answer-prose table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .agent-answer-prose pre {
+    padding: 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 0.55rem;
+    background: var(--card);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.65;
+  }
+
+  .agent-answer-prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-caption);
+    font-size: 0.78rem;
+    line-height: 1.55;
+  }
+
+  .agent-answer-prose :where(th, td) {
+    padding: 0.45rem 0.55rem;
+    border-bottom: 1px solid var(--border);
+    text-align: start;
+    vertical-align: top;
+  }
+
+  .agent-answer-prose hr {
+    margin-block: 1.25rem;
+    border-color: var(--border);
+  }
+
+  .agent-message-enter {
+    animation: agent-message-enter 180ms var(--ease-standard) both;
+  }
+
+  @keyframes agent-message-enter {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Keyboard focus visibility for assistant controls. The site-wide
+     interactive-focus outline (liquid-materials' :focus-visible rule) never
+     reaches these controls: the panel's focusable elements carry
+     focus-visible:outline-none utilities, and the ring utilities never
+     render here because the site resets kill box-shadow. Re-establish a real
+     outline. !important is required to win against both the outline-none
+     utilities and the site reset specificity layered on top of this rule. */
+  .agent-liquid-launcher:focus-visible,
+  .agent-liquid-panel :focus-visible {
+    outline: 2px solid var(--ring) !important;
     outline-offset: 2px;
   }
 
-  .agent-source-card .line-clamp-1 {
-    max-height: 1.25rem;
-  }
-
-  /* FLG-03 agent layering: compact pill, readable panel, opaque sources. */
-  body .agent-liquid-launcher {
-    position: fixed;
-    overflow: hidden;
-    min-width: 2.9rem;
-    border-color: var(--liquid-border);
-    background:
-      radial-gradient(
-        circle at 22% 10%,
-        var(--liquid-specular),
-        transparent 34%
-      ),
-      linear-gradient(
-        180deg,
-        var(--liquid-panel-tint),
-        var(--liquid-control-tint)
-      );
-    color: var(--fg);
-    box-shadow: var(--liquid-shadow-float);
-  }
-
-  body .agent-liquid-launcher::before {
-    content: "";
-    position: absolute;
-    inset: 1px 1.5rem auto 1.5rem;
-    height: 1px;
-    background: var(--liquid-highlight);
-    pointer-events: none;
-  }
-
-  body .agent-liquid-launcher .agent-launcher-orb {
-    border-color: var(--liquid-border-strong);
-    background:
-      radial-gradient(
-        circle at 35% 22%,
-        var(--liquid-highlight),
-        transparent 44%
-      ),
-      color-mix(in oklch, var(--accent) 12%, var(--liquid-solid-panel));
-    color: var(--fg);
-  }
-
-  body .agent-liquid-panel {
-    position: relative;
-    border-color: var(--liquid-border);
-    border-radius: clamp(1rem, 2vw, 1.35rem);
-    background:
-      radial-gradient(
-        circle at 20% 0%,
-        var(--liquid-specular),
-        transparent 26%
-      ),
-      linear-gradient(
-        180deg,
-        oklch(0.1 0.012 242 / 96%),
-        oklch(0.055 0.01 242 / 97%)
-      );
-    box-shadow: var(--liquid-shadow-float);
-  }
-
-  body .agent-liquid-panel::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(
-      145deg,
-      var(--liquid-highlight-soft),
-      transparent 36%
-    );
-    opacity: 0.9;
-    pointer-events: none;
-  }
-
-  body .agent-liquid-panel > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  body .agent-liquid-panel header,
-  body .agent-liquid-panel form,
-  body .agent-liquid-panel .border-b,
-  body .agent-liquid-panel .border-t {
-    border-color: var(--liquid-border);
-  }
-
-  body .agent-liquid-panel article > div {
-    border-color: color-mix(in oklch, var(--liquid-border) 78%, transparent);
-    background: color-mix(in oklch, var(--liquid-solid-panel) 78%, transparent);
-  }
-
-  body .agent-liquid-panel textarea,
-  body .agent-liquid-panel input {
-    background: transparent;
-    color: var(--fg);
-  }
-
-  body .agent-trust-boundary {
-    background:
-      linear-gradient(90deg, var(--liquid-highlight-soft), transparent 42%),
-      color-mix(in oklch, var(--liquid-solid-panel) 72%, transparent);
-  }
-
-  body .agent-source-card {
-    border-color: color-mix(
-      in oklch,
-      var(--liquid-border-strong) 72%,
-      transparent
-    );
-    background:
-      linear-gradient(145deg, var(--liquid-highlight-soft), transparent 36%),
-      oklch(0.068 0.01 242 / 97%);
-    color: var(--fg);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
-  body .agent-source-card:hover {
-    border-color: var(--liquid-border-strong);
-    background:
-      linear-gradient(145deg, var(--liquid-highlight-soft), transparent 42%),
-      oklch(0.078 0.012 242 / 98%);
-  }
-
-  body .agent-source-card .text-slate-500,
-  body .agent-source-card .text-slate-600 {
-    color: color-mix(in oklch, var(--fg-muted) 88%, white 12%);
-  }
-
-  body .agent-source-icon {
-    border-color: var(--liquid-border);
-    background: color-mix(
-      in oklch,
-      var(--accent) 12%,
-      var(--liquid-solid-panel)
-    );
-    color: var(--accent-bright);
-  }
-
-  @media (max-width: 640px) {
-    body .agent-liquid-panel {
-      border-radius: 1rem;
-    }
-  }
-
-  @media (prefers-reduced-transparency: reduce) {
-    body .agent-liquid-launcher,
-    body .agent-liquid-panel,
-    body .agent-source-card,
-    body .agent-trust-boundary {
-      background: var(--liquid-reduced-bg) !important;
-      box-shadow: none !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-    }
-  }
-}
-
-@layer components {
-  :root {
-    --agent-panel-bg: oklch(0.982 0.006 238 / 98%);
-    --agent-panel-soft: oklch(0.955 0.008 238 / 82%);
-    --agent-panel-raised: oklch(0.992 0.003 238 / 96%);
-    --agent-control-bg: oklch(0.93 0.01 238 / 72%);
-    --agent-control-hover: oklch(0.902 0.012 238 / 86%);
-    --agent-border: oklch(0.69 0.025 235 / 34%);
-    --agent-border-strong: oklch(0.56 0.04 222 / 46%);
-    --agent-divider: oklch(0.74 0.018 235 / 24%);
-    --agent-text: oklch(0.18 0.018 244);
-    --agent-muted: oklch(0.43 0.018 242);
-    --agent-faint: oklch(0.58 0.016 242);
-    --agent-accent: oklch(0.48 0.09 198);
-    --agent-accent-soft: oklch(0.88 0.045 198 / 72%);
-    --agent-send-bg: oklch(0.5 0.095 195);
-    --agent-send-text: oklch(0.99 0.003 220);
-    --agent-shadow:
-      0 26px 70px oklch(0.24 0.026 230 / 20%),
-      0 2px 12px oklch(0.24 0.026 230 / 10%);
-  }
-
-  .dark {
-    --agent-panel-bg: oklch(0.105 0.01 244 / 98%);
-    --agent-panel-soft: oklch(0.148 0.012 244 / 84%);
-    --agent-panel-raised: oklch(0.126 0.011 244 / 96%);
-    --agent-control-bg: oklch(0.19 0.012 244 / 72%);
-    --agent-control-hover: oklch(0.235 0.014 244 / 84%);
-    --agent-border: oklch(0.9 0.008 235 / 14%);
-    --agent-border-strong: oklch(0.78 0.035 215 / 32%);
-    --agent-divider: oklch(0.9 0.008 235 / 10%);
-    --agent-text: oklch(0.94 0.008 235);
-    --agent-muted: oklch(0.75 0.014 235);
-    --agent-faint: oklch(0.58 0.014 235);
-    --agent-accent: oklch(0.76 0.085 190);
-    --agent-accent-soft: oklch(0.24 0.04 195 / 58%);
-    --agent-send-bg: oklch(0.74 0.095 190);
-    --agent-send-text: oklch(0.08 0.008 244);
-    --agent-shadow:
-      0 28px 76px oklch(0.02 0.012 245 / 58%),
-      0 2px 14px oklch(0.02 0.012 245 / 34%);
-  }
-
-  .agent-floating-frame {
-    left: 0;
-    top: 0;
-  }
-
-  .agent-liquid-launcher {
-    border-radius: 0.82rem;
-    border-color: transparent;
-    background: transparent;
-    color: var(--agent-text);
-    box-shadow: none;
-    transform-origin: center;
-  }
-
-  body .agent-liquid-launcher:hover,
-  body .agent-liquid-launcher:focus-visible,
-  body .agent-liquid-launcher[aria-expanded="true"],
-  .agent-liquid-launcher:hover,
-  .agent-liquid-launcher:focus-visible,
-  .agent-liquid-launcher[aria-expanded="true"] {
-    border-color: var(--agent-border-strong);
-    background: var(--agent-panel-bg);
-    color: var(--agent-text);
-    box-shadow: var(--agent-shadow);
-    transform: translateY(-1px);
-  }
-
-  body .agent-liquid-launcher .agent-launcher-orb,
-  .agent-launcher-orb {
-    border-radius: 0.62rem;
-    background: var(--agent-accent-soft);
-    color: var(--agent-accent);
-  }
-
-  body .agent-liquid-panel,
-  .agent-liquid-panel {
-    position: relative;
-    border-color: var(--agent-border) !important;
-    background: var(--agent-panel-bg) !important;
-    color: var(--agent-text);
-    border-radius: 0.9rem;
-    box-shadow: var(--agent-shadow) !important;
-    isolation: isolate;
-  }
-
-  body .agent-liquid-panel::before,
-  .agent-liquid-panel::before {
-    content: none !important;
-  }
-
-  .agent-liquid-panel,
-  .agent-liquid-panel * {
-    box-sizing: border-box;
-    min-width: 0;
-  }
-
-  .agent-liquid-panel :where(.border-b, .border-t, header, form) {
-    border-color: var(--agent-divider) !important;
-  }
-
-  .agent-liquid-panel
-    :where([class*="border-slate"], .agent-source-card, details) {
-    border-color: var(--agent-border) !important;
-  }
-
-  .agent-liquid-panel
-    :where(
-      .text-slate-100,
-      .text-slate-200,
-      .text-white,
-      h2,
-      h3,
-      strong,
-      .font-semibold
-    ) {
-    color: var(--agent-text) !important;
-  }
-
-  .agent-liquid-panel :where(.text-slate-300, .text-slate-400) {
-    color: var(--agent-muted) !important;
-  }
-
-  .agent-liquid-panel :where(.text-slate-500, .text-slate-600) {
-    color: var(--agent-faint) !important;
-  }
-
-  .agent-liquid-panel
-    :where(
-      [class*="bg-slate-950"],
-      [class*="bg-slate-900"],
-      [class*="bg-white/"]
-    ) {
-    background: var(--agent-panel-raised) !important;
-  }
-
-  .agent-panel-header,
-  .agent-topbar {
-    background: color-mix(in oklch, var(--agent-panel-raised) 72%, transparent);
-  }
-
-  .agent-drag-handle {
-    touch-action: none;
-  }
-
-  .agent-drag-indicator {
-    color: var(--agent-faint);
-  }
-
-  .agent-panel-actions {
-    min-width: fit-content;
-  }
-
-  .agent-frame-controls {
-    border: 1px solid var(--agent-border);
-    border-radius: 0.62rem;
-    background: var(--agent-control-bg);
-    padding: 0.125rem;
-  }
-
-  .agent-frame-control {
-    display: grid;
-    width: 1.75rem;
-    height: 1.75rem;
-    place-items: center;
-    border-radius: 0.48rem;
-    color: var(--agent-muted);
-    font-size: 0.68rem;
-    font-weight: 700;
-    line-height: 1;
-    transition:
-      background 160ms ease,
-      color 160ms ease;
-  }
-
-  .agent-frame-control:hover,
-  .agent-frame-control:focus-visible,
-  .agent-frame-control-active {
-    background: var(--agent-panel-raised);
-    color: var(--agent-text);
-  }
-
-  .agent-frame-resize-handle {
-    position: absolute;
-    right: 0.3rem;
-    bottom: 0.3rem;
-    z-index: 2;
-    display: grid;
-    width: 1.25rem;
-    height: 1.25rem;
-    place-items: center;
-    border-radius: 0.35rem;
-    color: var(--agent-faint);
-    cursor: nwse-resize;
-    touch-action: none;
-  }
-
-  .agent-close-button:hover,
-  .agent-liquid-panel button:not(:disabled):hover {
-    border-color: var(--agent-border-strong) !important;
-    background: var(--agent-control-hover) !important;
-    color: var(--agent-text) !important;
-  }
-
-  .agent-topbar {
-    padding-block: 0.5rem;
-  }
-
-  body .agent-trust-boundary,
-  .agent-trust-boundary {
-    flex: 1 1 15rem;
-    max-width: 100%;
-    border-color: var(--agent-border) !important;
-    background: color-mix(
-      in oklch,
-      var(--agent-accent-soft) 48%,
-      transparent
-    ) !important;
-    color: var(--agent-muted);
-  }
-
-  body .agent-trust-boundary-attached,
-  .agent-trust-boundary-attached {
-    border-color: var(--agent-border-strong) !important;
-    background: color-mix(
-      in oklch,
-      var(--agent-accent-soft) 72%,
-      var(--agent-panel-raised) 28%
-    ) !important;
-  }
-
-  .agent-message-scroll {
-    scroll-padding-block: 1rem 8rem;
-  }
-
-  .agent-message-bubble {
-    overflow-wrap: anywhere;
-  }
-
-  .agent-message-bubble .prose {
-    color: var(--agent-text);
-  }
-
-  .agent-message-bubble :where(pre, code) {
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-  }
-
-  .agent-liquid-panel form > div {
-    border-color: var(--agent-border-strong) !important;
-    background: var(--agent-panel-soft) !important;
-  }
-
-  .agent-liquid-panel textarea {
-    color: var(--agent-text) !important;
-  }
-
-  .agent-liquid-panel textarea::placeholder {
-    color: var(--agent-faint) !important;
-  }
-
-  .agent-liquid-panel form button[type="submit"],
-  .agent-liquid-panel form button[type="button"]:last-child {
-    background: var(--agent-send-bg) !important;
-    color: var(--agent-send-text) !important;
-  }
-
-  .agent-sources {
-    color: var(--agent-muted);
-    overflow-x: hidden;
-  }
-
-  .agent-source-summary {
-    overflow-x: hidden;
-  }
-
-  .agent-source-chips {
-    overflow: hidden;
-  }
-
-  .agent-source-chip {
-    max-width: min(12rem, 34vw);
-    border-color: var(--agent-border) !important;
-    background: var(--agent-control-bg) !important;
-  }
-
-  .agent-source-toggle,
-  .agent-source-open {
-    background: transparent !important;
-  }
-
-  .agent-source-list {
-    max-height: min(35vh, 20rem);
-    overscroll-behavior: contain;
-  }
-
-  body .agent-source-card,
-  .agent-source-card {
-    border-radius: 0.66rem;
-    border-color: var(--agent-border) !important;
-    background: var(--agent-panel-raised) !important;
-    color: var(--agent-muted);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-
-  body .agent-source-card:hover,
-  .agent-source-card:hover {
-    border-color: var(--agent-border-strong) !important;
-    background: color-mix(
-      in oklch,
-      var(--agent-panel-raised) 86%,
-      var(--agent-accent-soft) 14%
-    ) !important;
-  }
-
-  body .agent-source-icon,
-  .agent-source-icon {
-    border-color: transparent !important;
-    background: var(--agent-accent-soft) !important;
-    color: var(--agent-accent) !important;
-  }
-
-  .agent-source-detail summary {
-    color: var(--agent-faint);
-  }
-
-  @media (max-width: 640px) {
+  /* Mobile: the wrapper becomes a full-screen sheet, so the panel drops its
+     chrome and fills the dynamic viewport edge to edge. */
+  @media (max-width: 767.98px) {
     .agent-liquid-panel {
-      border-radius: 0.9rem;
+      height: 100dvh;
+      border: 0;
+      border-radius: 0;
     }
 
-    .agent-panel-header {
-      padding: 0.75rem 0.875rem;
-    }
-
-    .agent-topbar {
-      padding: 0.5rem 0.875rem;
-    }
-
-    .agent-topbar > div {
-      gap: 0.5rem;
-      align-items: flex-start;
-    }
-
-    .agent-quota-badge {
-      max-width: 10.5rem;
-    }
-
-    .agent-history-button {
-      width: 2.5rem !important;
-      min-height: 2.25rem !important;
-      justify-content: center;
-      overflow: hidden;
-      padding-inline: 0 !important;
-      color: transparent !important;
-      font-size: 0 !important;
-    }
-
-    .agent-history-button svg {
-      width: 0.95rem;
-      height: 0.95rem;
-      color: var(--agent-muted) !important;
-    }
-
-    .agent-trust-boundary {
-      flex-basis: 100%;
-      padding-block: 0.35rem;
-    }
-
-    .agent-message-bubble {
-      max-width: min(100%, 32rem);
-    }
-
-    .agent-source-list {
-      max-height: min(32vh, 16rem);
+    .agent-answer-prose {
+      font-size: 1rem;
+      line-height: 1.82;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .agent-liquid-launcher,
-    .agent-liquid-panel button,
-    .agent-source-card {
-      transition: none !important;
-      transform: none !important;
+    .agent-panel-resize-handle::before {
+      transition: none;
+    }
+
+    .agent-message-enter {
+      animation: none;
     }
   }
 }

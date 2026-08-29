@@ -73,7 +73,9 @@ function completedResponse(
 }
 
 function sseResponse(events: unknown[]) {
-  const body = events.map(event => `data: ${JSON.stringify(event)}\n\n`).join("");
+  const body = events
+    .map(event => `data: ${JSON.stringify(event)}\n\n`)
+    .join("");
   return new Response(`${body}data: [DONE]\n\n`, {
     headers: { "content-type": "text/event-stream" },
   });
@@ -219,6 +221,37 @@ describe("LLM Responses adapter", () => {
       )
     ).rejects.toThrow("provider interrupted");
     expect(deltas).toEqual(["partial"]);
+  });
+
+  it("rejects token-capped incomplete responses instead of saving partial text as complete", async () => {
+    ENV.forgeApiKey = "test-key";
+    ENV.forgeApiUrl = "https://api.deepseek.com";
+    globalThis.fetch = vi.fn(async () =>
+      sseResponse([
+        {
+          type: "response.output_text.delta",
+          sequence_number: 1,
+          item_id: "message-1",
+          output_index: 0,
+          content_index: 0,
+          delta: "partial",
+          logprobs: [],
+        },
+        {
+          type: "response.incomplete",
+          sequence_number: 2,
+          response: completedResponse("partial", {
+            status: "incomplete",
+            error: null,
+            incomplete_details: { reason: "max_output_tokens" },
+          }),
+        },
+      ])
+    );
+
+    await expect(
+      invokeLLMStream({ input: "hello" }, () => undefined)
+    ).rejects.toThrow("response incomplete: max_output_tokens");
   });
 
   it("preserves abort identity for the agent stream error contract", async () => {

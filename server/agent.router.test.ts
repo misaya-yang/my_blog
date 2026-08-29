@@ -291,6 +291,19 @@ describe("agent router", () => {
         scope: { type: "post", value: "x".repeat(201) },
       })
     ).toThrow();
+
+    const conversationId = "11111111-1111-4111-8111-111111111111";
+    const retryUserMessageId = "22222222-2222-4222-8222-222222222222";
+    expect(() =>
+      agentSendMessageInput.parse({
+        ...valid,
+        conversationId,
+        retryUserMessageId,
+      })
+    ).not.toThrow();
+    expect(() =>
+      agentSendMessageInput.parse({ ...valid, retryUserMessageId })
+    ).toThrow("Retry requires an existing conversation");
   });
 
   it("exposes conversation history endpoints", async () => {

@@ -17,20 +17,18 @@ import { useLocation } from "wouter";
 import {
   AlertCircle,
   BookOpen,
-  Check,
   ExternalLink,
   FileText,
-  Grip,
   History,
   Loader2,
   LogIn,
-  Move,
-  Paperclip,
   RotateCcw,
   Send,
-  ShieldCheck,
+  Square,
+  SquarePen,
   X,
 } from "lucide-react";
+import { siteConfig } from "@shared/site";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -42,10 +40,7 @@ import {
   buildRouteContext,
   BLOG_AGENT_OPEN_EVENT,
   getCompanionPromptKeys,
-  getCompanionWelcomeKeys,
-  inferClientScope,
   type BlogAgentOpenDetail,
-  type AgentScope,
   type AgentRouteContext,
 } from "./routeContext";
 import {
@@ -54,11 +49,19 @@ import {
   getSourceHref,
   normalizeSourceText,
 } from "./sourceCardLinks";
+import { markAssistantMessageRecoverable, toChatMessage } from "./messageState";
 import {
-  markAssistantMessageRecoverable,
-  toChatMessage,
-  upsertTraceEntry,
-} from "./messageState";
+  AGENT_PANEL_STORAGE_KEY,
+  DEFAULT_AGENT_PANEL_SIZE,
+  MIN_AGENT_PANEL_SIZE,
+  agentPanelSizesEqual,
+  clampAgentPanelSize,
+  getAgentPanelKeyboardDelta,
+  getAgentPanelSizeBounds,
+  parseStoredAgentPanelSize,
+  resizeAgentPanelFromTopLeft,
+  type AgentPanelSize,
+} from "./panelSize";
 import {
   isAbortError,
   isTimeoutError,
@@ -66,13 +69,26 @@ import {
   type AgentAnswerMode,
 } from "./streamClient";
 import type {
-  AgentTraceEntry,
   ChatMessage,
   ChatMessageState,
   ConversationItem,
   QuotaInfo,
   SourceCard,
 } from "./types";
+
+interface AgentPanelResizeGesture {
+  pointerId: number;
+  startX: number;
+  startY: number;
+  startSize: AgentPanelSize;
+}
+
+const PERSISTED_AGENT_PANEL_BOUNDS = {
+  minWidth: MIN_AGENT_PANEL_SIZE.width,
+  maxWidth: 2048,
+  minHeight: MIN_AGENT_PANEL_SIZE.height,
+  maxHeight: 1600,
+};
 
 const AgentMarkdown = lazy(() =>
   import("./AgentMarkdown").then(module => ({ default: module.AgentMarkdown }))
@@ -85,51 +101,53 @@ export {
   getSourceHref,
 } from "./sourceCardLinks";
 
-const AGENT_FRAME_STORAGE_KEY = "misaya:blog-agent-frame:v1";
-const AGENT_FRAME_EDGE_GAP = 16;
-const AGENT_FRAME_DEFAULT_SIZE = { width: 520, height: 680 };
-const AGENT_FRAME_MIN_SIZE = { width: 360, height: 420 };
-const AGENT_FRAME_PRESETS = {
-  compact: { width: 420, height: 560 },
-  comfortable: AGENT_FRAME_DEFAULT_SIZE,
-  wide: { width: 640, height: 720 },
-} as const;
+function readInitialAgentPanelSize() {
+  if (typeof window === "undefined") return DEFAULT_AGENT_PANEL_SIZE;
 
-export type AgentFramePreset = keyof typeof AGENT_FRAME_PRESETS;
+  try {
+    return parseStoredAgentPanelSize(
+      window.localStorage.getItem(AGENT_PANEL_STORAGE_KEY),
+      window.innerWidth >= 768
+        ? getCurrentAgentPanelSizeBounds()
+        : PERSISTED_AGENT_PANEL_BOUNDS
+    );
+  } catch {
+    return DEFAULT_AGENT_PANEL_SIZE;
+  }
+}
 
-export type AgentFrameState = {
-  width: number;
-  height: number;
-  x: number;
-  y: number;
-  preset?: AgentFramePreset;
-};
+function getCurrentAgentPanelSizeBounds() {
+  if (typeof window === "undefined") {
+    return getAgentPanelSizeBounds(416, 736);
+  }
 
-type AgentFrameControls = {
-  isFloating: boolean;
-  dragHandleProps?: {
-    title: string;
-    onPointerDown: (event: ReactPointerEvent<HTMLElement>) => void;
-  };
-  activePreset?: AgentFramePreset;
-  resizeHandle?: ReactNode;
-  onApplyPreset: (preset: AgentFramePreset) => void;
-  onReset: () => void;
-};
-
-type ViewportSize = {
-  width: number;
-  height: number;
-};
+  const headerBottom = document
+    .querySelector<HTMLElement>(".site-header")
+    ?.getBoundingClientRect().bottom;
+  const reservedTop =
+    typeof headerBottom === "number" && Number.isFinite(headerBottom)
+      ? Math.max(0, headerBottom)
+      : 72;
+  return getAgentPanelSizeBounds(
+    window.innerWidth,
+    window.innerHeight,
+    reservedTop
+  );
+}
 
 export function BlogAgentRoot() {
   const [location] = useLocation();
   const { session } = useAuth();
   const { language, t } = useLanguage();
   const isMobile = useIsMobile();
+  const [documentTitle, setDocumentTitle] = useState(() =>
+    typeof document === "undefined"
+      ? ""
+      : stripDocumentTitleSuffix(document.title)
+  );
   const routeContext = useMemo(
-    () => buildRouteContext(location, language),
-    [location, language]
+    () => buildRouteContext(location, language, documentTitle),
+    [location, language, documentTitle]
   );
   const hiddenOnRoute = isBlogAgentHiddenRoute(location);
   const [open, setOpen] = useState(false);
@@ -140,21 +158,21 @@ export function BlogAgentRoot() {
     string | undefined
   >();
   const [notice, setNotice] = useState<string | null>(null);
-  const [contextDraft, setContextDraft] = useState("");
-  const [contextOpen, setContextOpen] = useState(false);
-  const [attachedContextCount, setAttachedContextCount] = useState(0);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [streaming, setStreaming] = useState(false);
   const [quota, setQuota] = useState<QuotaInfo | null>(null);
   const [composerFocusToken, setComposerFocusToken] = useState(0);
+  const [panelSize, setPanelSize] = useState(readInitialAgentPanelSize);
   const launcherRef = useRef<HTMLButtonElement | null>(null);
   const panelRef = useRef<HTMLElement | null>(null);
+  const panelSizeRef = useRef(panelSize);
+  const panelResizeGestureRef = useRef<AgentPanelResizeGesture | null>(null);
   const draftInputRef = useRef<HTMLTextAreaElement | null>(null);
   const messageScrollerRef = useRef<HTMLDivElement | null>(null);
   const pendingAssistantFocusRef = useRef<string | null>(null);
   const shouldFollowStreamRef = useRef(true);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const streamAbortRef = useRef<AbortController | null>(null);
+  const discardedAbortControllersRef = useRef(new WeakSet<AbortController>());
   const previousIdentityKeyRef = useRef<string | null>(null);
   const utils = trpc.useUtils();
   const panelId = "blog-agent-panel";
@@ -181,8 +199,6 @@ export function BlogAgentRoot() {
       retry: 1,
     }
   );
-  const sendMessage = trpc.agent.sendMessage.useMutation();
-  const addContext = trpc.agent.addContext.useMutation();
   const visitorLogin = trpc.auth.visitorLogin.useMutation();
   const identityKey = getAgentSessionKey(session);
   const pendingVisitorRetryPromptRef = useRef<string | null>(null);
@@ -192,6 +208,24 @@ export function BlogAgentRoot() {
   }, [bootstrap.data?.quota]);
 
   useEffect(() => {
+    function readTitle() {
+      setDocumentTitle(stripDocumentTitleSuffix(document.title));
+    }
+
+    readTitle();
+    const titleElement = document.head.querySelector("title");
+    if (!titleElement) return;
+
+    const observer = new MutationObserver(readTitle);
+    observer.observe(titleElement, {
+      childList: true,
+      characterData: true,
+      subtree: true,
+    });
+    return () => observer.disconnect();
+  }, [location, language]);
+
+  useEffect(() => {
     if (previousIdentityKeyRef.current === null) {
       previousIdentityKeyRef.current = identityKey;
       return;
@@ -199,7 +233,7 @@ export function BlogAgentRoot() {
     if (previousIdentityKeyRef.current === identityKey) return;
 
     previousIdentityKeyRef.current = identityKey;
-    streamAbortRef.current?.abort();
+    discardAndAbortActiveStream();
     const pendingVisitorRetryPrompt = pendingVisitorRetryPromptRef.current;
     pendingVisitorRetryPromptRef.current = null;
 
@@ -208,9 +242,6 @@ export function BlogAgentRoot() {
     setConversationId(undefined);
     setSelectedConversationId(undefined);
     setNotice(pendingVisitorRetryPrompt ? t("agent.quota.visitorReady") : null);
-    setContextDraft("");
-    setContextOpen(false);
-    setAttachedContextCount(0);
     setHistoryOpen(false);
     setStreaming(false);
     setQuota(null);
@@ -221,18 +252,64 @@ export function BlogAgentRoot() {
   }, [identityKey, t, utils.agent.listConversations]);
 
   useEffect(() => {
-    if (!conversationDetail.data) return;
-    setConversationId(conversationDetail.data.conversation.id);
-    setMessages(conversationDetail.data.messages.map(toChatMessage));
-    setAttachedContextCount(
-      conversationDetail.data.contextSources?.length ?? 0
-    );
+    const detail = conversationDetail.data;
+    // Guard against a detail that settles after its selection was dropped
+    // (New thread clears selectedConversationId, but TanStack Query lets the
+    // in-flight fetch finish): applying the stale payload would resurrect
+    // the old conversation over the fresh empty thread.
+    if (!detail || !selectedConversationId) return;
+    if (detail.conversation.id !== selectedConversationId) return;
+    setConversationId(detail.conversation.id);
+    setMessages(detail.messages.map(toChatMessage));
     setNotice(null);
-  }, [conversationDetail.data]);
+    setComposerFocusToken(token => token + 1);
+  }, [conversationDetail.data, selectedConversationId]);
 
   useEffect(() => {
-    if (conversationDetail.isError) setNotice(t("agent.error.history"));
+    if (!conversationDetail.isError) return;
+    setSelectedConversationId(undefined);
+    setNotice(t("agent.error.history"));
+    setComposerFocusToken(token => token + 1);
   }, [conversationDetail.isError, t]);
+
+  useEffect(() => {
+    if (!open || !isMobile) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isMobile, open]);
+
+  useEffect(() => {
+    panelSizeRef.current = panelSize;
+    try {
+      window.localStorage.setItem(
+        AGENT_PANEL_STORAGE_KEY,
+        JSON.stringify(panelSize)
+      );
+    } catch {
+      // Storage can be unavailable in privacy-restricted browsing modes. The
+      // in-memory size remains fully usable for the current page session.
+    }
+  }, [panelSize]);
+
+  useEffect(() => {
+    if (isMobile) return;
+
+    function fitPanelToViewport() {
+      const bounds = getCurrentAgentPanelSizeBounds();
+      setPanelSize(current => {
+        const next = clampAgentPanelSize(current, bounds);
+        panelSizeRef.current = next;
+        return agentPanelSizesEqual(current, next) ? current : next;
+      });
+    }
+
+    fitPanelToViewport();
+    window.addEventListener("resize", fitPanelToViewport);
+    return () => window.removeEventListener("resize", fitPanelToViewport);
+  }, [isMobile]);
 
   useEffect(() => {
     const scroller = messageScrollerRef.current;
@@ -240,8 +317,13 @@ export function BlogAgentRoot() {
     scroller.scrollTop = scroller.scrollHeight;
   }, [messages, streaming]);
 
+  const prevOpenRef = useRef(false);
+
   useEffect(() => {
+    const wasOpen = prevOpenRef.current;
+    prevOpenRef.current = open;
     if (!open) return;
+
     const frame = window.requestAnimationFrame(() => {
       if (composerFocusToken > 0) {
         draftInputRef.current?.focus({ preventScroll: true });
@@ -249,7 +331,12 @@ export function BlogAgentRoot() {
         return;
       }
 
-      panelRef.current?.focus({ preventScroll: true });
+      // Panel focus belongs to the closed->open transition only. Resetting
+      // the focus token above re-runs this effect, and a second panel focus
+      // there would steal the caret from the textarea.
+      if (!wasOpen) {
+        panelRef.current?.focus({ preventScroll: true });
+      }
     });
     return () => window.cancelAnimationFrame(frame);
   }, [composerFocusToken, open, isMobile]);
@@ -270,30 +357,41 @@ export function BlogAgentRoot() {
       window.removeEventListener(BLOG_AGENT_OPEN_EVENT, handleExternalOpen);
   }, []);
 
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.repeat) return;
+      if (!(event.metaKey || event.ctrlKey)) return;
+      if (event.key.toLowerCase() !== "i") return;
+      if (hiddenOnRoute) return;
+      event.preventDefault();
+      toggleAgent();
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [hiddenOnRoute]);
+
   if (hiddenOnRoute) return null;
 
+  const postTitle =
+    routeContext.routeType === "post" ? routeContext.postTitle : undefined;
   const suggestedPrompts = buildCompanionPrompts(
     routeContext,
     t,
-    bootstrap.data?.suggestedPrompts
+    bootstrap.data?.suggestedPrompts,
+    postTitle
   );
-  const welcomeCopy = getCompanionWelcome(routeContext, t);
-  const currentScope =
-    bootstrap.data?.currentScope ?? inferClientScope(routeContext);
-  const lowQuota = quota ? quota.remaining <= 1 : false;
   const conversationSwitching =
     Boolean(selectedConversationId) &&
     (conversationDetail.isFetching ||
       conversationId !== selectedConversationId);
-  async function handleSubmit(message: string) {
+
+  async function handleSubmit(
+    message: string,
+    retry?: { assistantMessageId: string; userMessageId: string }
+  ) {
     const trimmed = message.trim();
-    if (
-      !trimmed ||
-      sendMessage.isPending ||
-      streaming ||
-      conversationSwitching ||
-      bootstrap.isError
-    )
+    if (!trimmed || streaming || conversationSwitching || bootstrap.isError)
       return;
 
     const timestamp = Date.now();
@@ -304,47 +402,61 @@ export function BlogAgentRoot() {
     };
     const assistantMessageId = `assistant-${timestamp}`;
     const assistantDraft: ChatMessage = {
-      id: assistantMessageId,
+      id: retry?.assistantMessageId ?? assistantMessageId,
       role: "assistant",
       content: "",
-      traceEntries: [],
       streaming: true,
+      retryUserMessageId: retry?.userMessageId,
     };
+    const activeAssistantMessageId = assistantDraft.id;
     setNotice(null);
-    setDraft("");
+    if (shouldClearAgentDraft(draft, trimmed, Boolean(retry))) setDraft("");
     setStreaming(true);
-    pendingAssistantFocusRef.current = assistantMessageId;
+    pendingAssistantFocusRef.current = activeAssistantMessageId;
     shouldFollowStreamRef.current = true;
-    setMessages(current => [...current, userMessage, assistantDraft]);
+    setMessages(current => {
+      if (!retry) {
+        return [...current, userMessage, assistantDraft];
+      }
+      return current.map(item =>
+        item.id === retry.assistantMessageId ? assistantDraft : item
+      );
+    });
     const controller = new AbortController();
     streamAbortRef.current = controller;
+    let confirmedUserMessageId = retry?.userMessageId;
+    let historyInvalidated = false;
 
     try {
       await streamAgentMessage({
         conversationId,
+        retryUserMessageId: retry?.userMessageId,
         message: trimmed,
         routeContext,
         answerMode: inferAnswerMode(trimmed, routeContext),
         signal: controller.signal,
         onStatus: event => {
+          if (event.conversationId) setConversationId(event.conversationId);
+          if (
+            event.conversationId &&
+            event.userMessageId &&
+            !historyInvalidated
+          ) {
+            historyInvalidated = true;
+            void utils.agent.listConversations.invalidate();
+          }
+          if (event.userMessageId) {
+            confirmedUserMessageId = event.userMessageId;
+            setMessages(current =>
+              current.map(item =>
+                item.id === activeAssistantMessageId
+                  ? { ...item, retryUserMessageId: event.userMessageId }
+                  : item
+              )
+            );
+          }
           shouldFollowStreamRef.current = isAgentNearBottom(
             messageScrollerRef.current
-          );
-          setMessages(current =>
-            current.map(item =>
-              item.id === assistantMessageId
-                ? {
-                    ...item,
-                    traceEntries: upsertTraceEntry(item.traceEntries, {
-                      stage: event.stage,
-                      elapsedMs: event.elapsedMs,
-                      sourceCount: event.sourceCount,
-                      currentPageContextInjected:
-                        event.currentPageContextInjected,
-                    }),
-                  }
-                : item
-            )
           );
         },
         onAnswerDelta: delta => {
@@ -353,7 +465,7 @@ export function BlogAgentRoot() {
           );
           setMessages(current =>
             current.map(item =>
-              item.id === assistantMessageId
+              item.id === activeAssistantMessageId
                 ? { ...item, content: `${item.content}${delta}` }
                 : item
             )
@@ -365,30 +477,41 @@ export function BlogAgentRoot() {
           shouldFollowStreamRef.current = false;
 
           if (response.status === "blocked") {
-            setDraft(trimmed);
+            restoreDraftIfEmpty(trimmed);
             setMessages(current =>
-              markAssistantMessageRecoverable(current, assistantMessageId, {
-                content: getQuotaBlockedNotice(response.quota.tier, t),
-                state: "quota_blocked",
-                recoveryPrompt: trimmed,
-                quotaTier: response.quota.tier,
-                finalElapsedMs: event.elapsedMs,
-              })
+              markAssistantMessageRecoverable(
+                current,
+                activeAssistantMessageId,
+                {
+                  content: getQuotaBlockedNotice(response.quota.tier, t),
+                  state: "quota_blocked",
+                  recoveryPrompt: trimmed,
+                  quotaTier: response.quota.tier,
+                  finalElapsedMs: event.elapsedMs,
+                }
+              )
             );
             return;
           }
 
           if (response.status === "failed") {
             const failureNotice = getAgentFailureNotice(response.errorCode, t);
-            setDraft(trimmed);
+            setConversationId(response.conversationId);
+            void utils.agent.listConversations.invalidate();
+            restoreDraftIfEmpty(trimmed);
             setMessages(current =>
-              markAssistantMessageRecoverable(current, assistantMessageId, {
-                messageId: response.messageId,
-                content: failureNotice,
-                state: getAgentFailureState(response.errorCode),
-                recoveryPrompt: trimmed,
-                finalElapsedMs: event.elapsedMs,
-              })
+              markAssistantMessageRecoverable(
+                current,
+                activeAssistantMessageId,
+                {
+                  messageId: response.messageId,
+                  content: failureNotice,
+                  state: getAgentFailureState(response.errorCode),
+                  recoveryPrompt: trimmed,
+                  retryUserMessageId: response.userMessageId,
+                  finalElapsedMs: event.elapsedMs,
+                }
+              )
             );
             return;
           }
@@ -397,7 +520,7 @@ export function BlogAgentRoot() {
           void utils.agent.listConversations.invalidate();
           setMessages(current =>
             current.map(item =>
-              item.id === assistantMessageId
+              item.id === activeAssistantMessageId
                 ? {
                     ...item,
                     id: response.messageId,
@@ -415,21 +538,45 @@ export function BlogAgentRoot() {
       });
     } catch (error) {
       shouldFollowStreamRef.current = false;
-      setDraft(trimmed);
+      const interruptedForReset =
+        discardedAbortControllersRef.current.has(controller);
+      discardedAbortControllersRef.current.delete(controller);
+      if (!interruptedForReset) restoreDraftIfEmpty(trimmed);
       const failure = getClientStreamFailure(error, t);
       setMessages(current =>
-        markAssistantMessageRecoverable(current, assistantMessageId, {
+        markAssistantMessageRecoverable(current, activeAssistantMessageId, {
           content: failure.content,
           state: failure.state,
           recoveryPrompt: trimmed,
+          retryUserMessageId: confirmedUserMessageId,
         })
       );
     } finally {
-      if (streamAbortRef.current === controller) {
+      if (shouldFinalizeAgentStream(streamAbortRef.current, controller)) {
         streamAbortRef.current = null;
+        setStreaming(false);
       }
-      setStreaming(false);
     }
+  }
+
+  function handleRetry(
+    assistantMessageId: string,
+    prompt: string,
+    userMessageId: string
+  ) {
+    void handleSubmit(prompt, { assistantMessageId, userMessageId });
+  }
+
+  function discardAndAbortActiveStream() {
+    const controller = streamAbortRef.current;
+    if (!controller) return;
+    discardedAbortControllersRef.current.add(controller);
+    streamAbortRef.current = null;
+    controller.abort();
+  }
+
+  function restoreDraftIfEmpty(prompt: string) {
+    setDraft(current => (current.trim() ? current : prompt));
   }
 
   function handleCancelStreaming() {
@@ -474,6 +621,17 @@ export function BlogAgentRoot() {
     });
   }
 
+  function handleNewThread() {
+    discardAndAbortActiveStream();
+    setStreaming(false);
+    setMessages([]);
+    setConversationId(undefined);
+    setSelectedConversationId(undefined);
+    setNotice(null);
+    setDraft("");
+    setComposerFocusToken(token => token + 1);
+  }
+
   function handlePanelKeyDown(event: ReactKeyboardEvent<HTMLElement>) {
     const nativeEvent = event.nativeEvent as KeyboardEvent & {
       isComposing?: boolean;
@@ -497,7 +655,10 @@ export function BlogAgentRoot() {
     const last = focusable[focusable.length - 1];
     const active = document.activeElement;
 
-    if (event.shiftKey && active === first) {
+    // When the panel section itself holds focus (the closed->open initial
+    // state), Shift+Tab would otherwise leave the modal dialog and land on
+    // the covered page behind it; wrap to the last control instead.
+    if (event.shiftKey && (active === first || active === panelRef.current)) {
       event.preventDefault();
       last.focus();
     } else if (!event.shiftKey && active === last) {
@@ -506,70 +667,87 @@ export function BlogAgentRoot() {
     }
   }
 
-  async function handleAttachContext(input: {
-    kind: "pasted_text" | "text_file" | "markdown_file";
-    content: string;
-    filename?: string;
-    mimeType?: string;
-  }) {
-    const trimmed = input.content.trim();
-    if (!trimmed || addContext.isPending) return;
-
-    try {
-      const response = await addContext.mutateAsync({
-        conversationId,
-        routeContext,
-        kind: input.kind,
-        filename: input.filename,
-        mimeType: input.mimeType,
-        content: trimmed,
-      });
-
-      if (response.status === "blocked") {
-        setNotice(t("agent.context.blocked"));
-        return;
-      }
-
-      setConversationId(response.conversationId);
-      setAttachedContextCount(count => count + 1);
-      setContextDraft("");
-      setContextOpen(false);
-      setNotice(t("agent.context.attached"));
-      void utils.agent.listConversations.invalidate();
-      void utils.agent.getConversation.invalidate({
-        conversationId: response.conversationId,
-      });
-    } catch {
-      setNotice(t("agent.context.error"));
-    }
-  }
-
   function handleLoadConversation(nextConversationId: string) {
+    if (streaming) return;
+    panelRef.current?.focus({ preventScroll: true });
     setNotice(null);
     setSelectedConversationId(nextConversationId);
     setHistoryOpen(false);
   }
 
-  async function handleFileInput(file: File) {
-    const kind = getContextFileKind(file.name);
-    if (!kind) {
-      setNotice(t("agent.context.unsupported"));
+  function setClampedPanelSize(nextSize: AgentPanelSize) {
+    const next = clampAgentPanelSize(
+      nextSize,
+      getCurrentAgentPanelSizeBounds()
+    );
+    panelSizeRef.current = next;
+    setPanelSize(current =>
+      agentPanelSizesEqual(current, next) ? current : next
+    );
+  }
+
+  function resetPanelSize() {
+    setClampedPanelSize(DEFAULT_AGENT_PANEL_SIZE);
+  }
+
+  function handlePanelResizePointerDown(
+    event: ReactPointerEvent<HTMLButtonElement>
+  ) {
+    event.currentTarget.focus({ preventScroll: true });
+    event.currentTarget.setPointerCapture(event.pointerId);
+    panelResizeGestureRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      startSize: panelSizeRef.current,
+    };
+  }
+
+  function handlePanelResizePointerMove(
+    event: ReactPointerEvent<HTMLButtonElement>
+  ) {
+    const gesture = panelResizeGestureRef.current;
+    if (!gesture || gesture.pointerId !== event.pointerId) return;
+    event.preventDefault();
+    setClampedPanelSize(
+      resizeAgentPanelFromTopLeft(
+        gesture.startSize,
+        event.clientX - gesture.startX,
+        event.clientY - gesture.startY,
+        getCurrentAgentPanelSizeBounds()
+      )
+    );
+  }
+
+  function finishPanelResize(event: ReactPointerEvent<HTMLButtonElement>) {
+    if (panelResizeGestureRef.current?.pointerId !== event.pointerId) return;
+    panelResizeGestureRef.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }
+
+  function handlePanelResizeKeyDown(
+    event: ReactKeyboardEvent<HTMLButtonElement>
+  ) {
+    if (event.key === "Home") {
+      event.preventDefault();
+      event.stopPropagation();
+      resetPanelSize();
       return;
     }
 
-    try {
-      const content = await file.text();
-      await handleAttachContext({
-        kind,
-        filename: file.name,
-        mimeType: file.type || getFallbackMimeType(kind),
-        content,
-      });
-    } catch {
-      setNotice(t("agent.context.error"));
-    } finally {
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
+    const delta = getAgentPanelKeyboardDelta(
+      event.key,
+      event.shiftKey ? 32 : 16
+    );
+    if (!delta) return;
+    event.preventDefault();
+    event.stopPropagation();
+    setClampedPanelSize({
+      width: panelSizeRef.current.width + delta.width,
+      height: panelSizeRef.current.height + delta.height,
+    });
   }
 
   return (
@@ -577,7 +755,6 @@ export function BlogAgentRoot() {
       <AgentLauncher
         buttonRef={launcherRef}
         open={open}
-        lowQuota={lowQuota}
         label={t("agent.launcher.label")}
         tooltip={t("agent.launcher.tooltip")}
         controls={panelId}
@@ -585,75 +762,90 @@ export function BlogAgentRoot() {
       />
 
       {open && (
-        <AgentFloatingFrame isMobile={isMobile}>
-          {frameControls => (
-            <>
-              <AgentPanel
-                isMobile={isMobile}
-                panelId={panelId}
-                titleId={panelTitleId}
-                panelRef={panelRef}
-                draftInputRef={draftInputRef}
-                bootstrapping={bootstrap.isLoading}
-                bootstrapRetrying={bootstrap.isFetching}
-                bootstrapError={bootstrap.isError}
-                currentScope={currentScope}
-                draft={draft}
-                messages={messages}
-                notice={notice}
-                quota={quota}
-                contextDraft={contextDraft}
-                contextOpen={contextOpen}
-                attachedContextCount={attachedContextCount}
-                attachingContext={addContext.isPending}
-                historyOpen={historyOpen}
-                conversations={conversations.data ?? []}
-                historyLoading={
-                  conversations.isLoading || conversationDetail.isFetching
-                }
-                conversationSwitching={conversationSwitching}
-                activeConversationId={conversationId}
-                suggestedPrompts={suggestedPrompts}
-                welcomeTitle={welcomeCopy.title}
-                welcomeBody={welcomeCopy.body}
-                sending={sendMessage.isPending || streaming}
-                visitorLoading={visitorLogin.isPending}
-                frameControls={frameControls}
-                onClose={closeAgent}
-                onRetryBootstrap={() => void bootstrap.refetch()}
-                onPanelKeyDown={handlePanelKeyDown}
-                onDraftChange={setDraft}
-                onContextDraftChange={setContextDraft}
-                onToggleContext={() => setContextOpen(value => !value)}
-                onAttachPastedContext={() =>
-                  handleAttachContext({
-                    kind: "pasted_text",
-                    content: contextDraft,
-                  })
-                }
-                onPickContextFile={() => fileInputRef.current?.click()}
-                onToggleHistory={() => setHistoryOpen(value => !value)}
-                onLoadConversation={handleLoadConversation}
-                onPrompt={handleSubmit}
-                onSubmit={handleSubmit}
-                onCancel={handleCancelStreaming}
-                onContinueAsVisitor={handleContinueAsVisitor}
-                messageScrollerRef={messageScrollerRef}
-                pendingAssistantFocusRef={pendingAssistantFocusRef}
-              />
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".txt,.md,text/plain,text/markdown"
-                className="hidden"
-                onChange={event => {
-                  const file = event.currentTarget.files?.[0];
-                  if (file) void handleFileInput(file);
-                }}
-              />
-            </>
+        <div
+          data-agent-panel-shell
+          data-agent-panel-width={isMobile ? undefined : panelSize.width}
+          data-agent-panel-height={isMobile ? undefined : panelSize.height}
+          className={cn(
+            "agent-panel-shell fixed z-[65]",
+            isMobile ? "inset-0" : "bottom-3 right-3"
           )}
-        </AgentFloatingFrame>
+          style={
+            isMobile
+              ? undefined
+              : {
+                  width: panelSize.width,
+                  height: panelSize.height,
+                }
+          }
+        >
+          {!isMobile && (
+            <button
+              data-agent-resize-handle
+              type="button"
+              className="agent-panel-resize-handle"
+              aria-label={t("agent.panel.resize")}
+              title={t("agent.panel.resizeHint")}
+              aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown Home"
+              onClick={event => {
+                // Keyboard activation sends a click with detail 0; pointer
+                // users keep single-click free for starting a drag.
+                if (event.detail === 0) resetPanelSize();
+              }}
+              onDoubleClick={event => {
+                event.preventDefault();
+                resetPanelSize();
+              }}
+              onKeyDown={handlePanelResizeKeyDown}
+              onPointerDown={handlePanelResizePointerDown}
+              onPointerMove={handlePanelResizePointerMove}
+              onPointerUp={finishPanelResize}
+              onPointerCancel={finishPanelResize}
+              onLostPointerCapture={() => {
+                panelResizeGestureRef.current = null;
+              }}
+            />
+          )}
+          <AgentPanel
+            isMobile={isMobile}
+            panelId={panelId}
+            titleId={panelTitleId}
+            panelRef={panelRef}
+            draftInputRef={draftInputRef}
+            bootstrapRetrying={bootstrap.isFetching}
+            bootstrapError={bootstrap.isError}
+            draft={draft}
+            messages={messages}
+            notice={notice}
+            quota={quota}
+            historyOpen={historyOpen}
+            conversations={conversations.data ?? []}
+            historyLoading={
+              conversations.isLoading || conversationDetail.isFetching
+            }
+            conversationSwitching={conversationSwitching}
+            activeConversationId={conversationId}
+            isPostRoute={routeContext.routeType === "post"}
+            postTitle={postTitle}
+            suggestedPrompts={suggestedPrompts}
+            sending={streaming}
+            visitorLoading={visitorLogin.isPending}
+            onClose={closeAgent}
+            onNewThread={handleNewThread}
+            onRetryBootstrap={() => void bootstrap.refetch()}
+            onPanelKeyDown={handlePanelKeyDown}
+            onDraftChange={setDraft}
+            onToggleHistory={() => setHistoryOpen(value => !value)}
+            onLoadConversation={handleLoadConversation}
+            onPrompt={handleSubmit}
+            onRetry={handleRetry}
+            onSubmit={handleSubmit}
+            onCancel={handleCancelStreaming}
+            onContinueAsVisitor={handleContinueAsVisitor}
+            messageScrollerRef={messageScrollerRef}
+            pendingAssistantFocusRef={pendingAssistantFocusRef}
+          />
+        </div>
       )}
     </>
   );
@@ -662,7 +854,6 @@ export function BlogAgentRoot() {
 export function AgentLauncher({
   buttonRef,
   open,
-  lowQuota,
   label,
   tooltip,
   controls,
@@ -670,7 +861,6 @@ export function AgentLauncher({
 }: {
   buttonRef: RefObject<HTMLButtonElement | null>;
   open: boolean;
-  lowQuota: boolean;
   label: string;
   tooltip: string;
   controls: string;
@@ -685,306 +875,46 @@ export function AgentLauncher({
       aria-label={label}
       title={tooltip}
       onClick={onClick}
-      className="agent-liquid-launcher fixed bottom-5 right-5 z-[60] inline-flex h-11 items-center gap-2.5 rounded-[0.82rem] border border-transparent px-3 text-sm font-semibold transition sm:bottom-6 sm:right-6 sm:px-4"
+      className={cn(
+        "agent-liquid-launcher fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-[66] inline-flex h-11 items-center gap-2.5 px-3 text-sm font-medium",
+        // The header owns Close while the panel is open; a visible launcher
+        // would sit on top of the composer's bottom-right corner.
+        open && "hidden"
+      )}
     >
-      <span className="agent-launcher-orb grid h-8 w-8 place-items-center rounded-[0.62rem]">
-        {open ? <X className="h-4 w-4" /> : <BookOpen className="h-4 w-4" />}
+      <span className="agent-launcher-orb grid h-8 w-8 place-items-center">
+        <BookOpen className="h-4 w-4" />
       </span>
       <span className="hidden sm:inline">{label}</span>
-      {lowQuota && (
-        <span
-          className="h-2 w-2 rounded-full bg-slate-400"
-          aria-hidden="true"
-        />
-      )}
     </button>
   );
 }
 
-export function AgentFloatingFrame({
-  isMobile,
+function AgentHeaderButton({
+  label,
+  ariaExpanded,
+  disabled = false,
+  onClick,
   children,
 }: {
-  isMobile: boolean;
-  children: (controls: AgentFrameControls) => ReactNode;
+  label: string;
+  ariaExpanded?: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+  children: ReactNode;
 }) {
-  const { t } = useLanguage();
-  const [frame, setFrame] = useState<AgentFrameState>(() =>
-    getDefaultAgentFrameState()
-  );
-  const [frameReady, setFrameReady] = useState(false);
-
-  useEffect(() => {
-    if (isMobile) {
-      setFrameReady(false);
-      return;
-    }
-
-    setFrame(readStoredAgentFrameState());
-    setFrameReady(true);
-  }, [isMobile]);
-
-  useEffect(() => {
-    if (isMobile || !frameReady) return;
-    window.localStorage.setItem(AGENT_FRAME_STORAGE_KEY, JSON.stringify(frame));
-  }, [frame, frameReady, isMobile]);
-
-  useEffect(() => {
-    if (isMobile) return;
-    function handleResize() {
-      setFrame(current => clampAgentFrameState(current));
-    }
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isMobile]);
-
-  if (isMobile) {
-    return (
-      <div className="fixed inset-x-3 bottom-20 z-[59] h-[min(720px,calc(100dvh-6rem))]">
-        {children({
-          isFloating: false,
-          onApplyPreset: () => {},
-          onReset: () => {},
-        })}
-      </div>
-    );
-  }
-
-  function startDrag(event: ReactPointerEvent<HTMLElement>) {
-    event.preventDefault();
-    const startFrame = frame;
-    const startX = event.clientX;
-    const startY = event.clientY;
-    const pointerId = event.pointerId;
-    const previousUserSelect = document.body.style.userSelect;
-    document.body.style.userSelect = "none";
-    event.currentTarget.setPointerCapture?.(pointerId);
-
-    function handleMove(moveEvent: PointerEvent) {
-      if (moveEvent.pointerId !== pointerId) return;
-      setFrame(current =>
-        clampAgentFrameState({
-          ...current,
-          x: startFrame.x + moveEvent.clientX - startX,
-          y: startFrame.y + moveEvent.clientY - startY,
-        })
-      );
-    }
-
-    function cleanup() {
-      document.body.style.userSelect = previousUserSelect;
-      window.removeEventListener("pointermove", handleMove);
-      window.removeEventListener("pointerup", cleanup);
-      window.removeEventListener("pointercancel", cleanup);
-    }
-
-    window.addEventListener("pointermove", handleMove);
-    window.addEventListener("pointerup", cleanup, { once: true });
-    window.addEventListener("pointercancel", cleanup, { once: true });
-  }
-
-  function startResize(event: ReactPointerEvent<HTMLButtonElement>) {
-    event.preventDefault();
-    event.stopPropagation();
-    const startFrame = frame;
-    const startX = event.clientX;
-    const startY = event.clientY;
-    const pointerId = event.pointerId;
-    const previousUserSelect = document.body.style.userSelect;
-    document.body.style.userSelect = "none";
-    event.currentTarget.setPointerCapture?.(pointerId);
-
-    function handleMove(moveEvent: PointerEvent) {
-      if (moveEvent.pointerId !== pointerId) return;
-      setFrame(current =>
-        clampAgentFrameState({
-          ...current,
-          width: startFrame.width + moveEvent.clientX - startX,
-          height: startFrame.height + moveEvent.clientY - startY,
-          preset: undefined,
-        })
-      );
-    }
-
-    function cleanup() {
-      document.body.style.userSelect = previousUserSelect;
-      window.removeEventListener("pointermove", handleMove);
-      window.removeEventListener("pointerup", cleanup);
-      window.removeEventListener("pointercancel", cleanup);
-    }
-
-    window.addEventListener("pointermove", handleMove);
-    window.addEventListener("pointerup", cleanup, { once: true });
-    window.addEventListener("pointercancel", cleanup, { once: true });
-  }
-
-  function applyPreset(preset: AgentFramePreset) {
-    const size = AGENT_FRAME_PRESETS[preset];
-    setFrame(current =>
-      clampAgentFrameState({
-        ...current,
-        ...size,
-        preset,
-      })
-    );
-  }
-
-  function resetFrame() {
-    setFrame(getDefaultAgentFrameState());
-  }
-
   return (
-    <div
-      className="agent-floating-frame fixed z-[59]"
-      style={{
-        width: frame.width,
-        height: frame.height,
-        transform: `translate3d(${frame.x}px, ${frame.y}px, 0)`,
-      }}
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      aria-expanded={ariaExpanded}
+      disabled={disabled}
+      onClick={onClick}
+      className="grid h-8 w-8 place-items-center rounded-md text-[var(--fg-muted)] transition-colors hover:bg-[var(--surface-inline)] hover:text-[var(--fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:pointer-events-none disabled:opacity-45"
     >
-      {children({
-        isFloating: true,
-        dragHandleProps: {
-          title: t("agent.frame.drag"),
-          onPointerDown: startDrag,
-        },
-        activePreset: frame.preset,
-        onApplyPreset: applyPreset,
-        onReset: resetFrame,
-        resizeHandle: (
-          <button
-            type="button"
-            aria-label={t("agent.frame.resize")}
-            title={t("agent.frame.resize")}
-            onPointerDown={startResize}
-            className="agent-frame-resize-handle"
-          >
-            <Grip className="h-3.5 w-3.5" />
-          </button>
-        ),
-      })}
-    </div>
-  );
-}
-
-function getViewportSize(): ViewportSize {
-  if (typeof window === "undefined") {
-    return { width: 1280, height: 800 };
-  }
-  return { width: window.innerWidth, height: window.innerHeight };
-}
-
-export function getDefaultAgentFrameState(
-  viewport: ViewportSize = getViewportSize()
-): AgentFrameState {
-  const width = Math.min(
-    AGENT_FRAME_DEFAULT_SIZE.width,
-    Math.max(
-      AGENT_FRAME_MIN_SIZE.width,
-      viewport.width - AGENT_FRAME_EDGE_GAP * 2
-    )
-  );
-  const height = Math.min(
-    AGENT_FRAME_DEFAULT_SIZE.height,
-    Math.max(
-      AGENT_FRAME_MIN_SIZE.height,
-      viewport.height - AGENT_FRAME_EDGE_GAP * 2
-    )
-  );
-
-  return clampAgentFrameState(
-    {
-      width,
-      height,
-      x: viewport.width - width - 24,
-      y: viewport.height - height - 96,
-      preset: "comfortable",
-    },
-    viewport
-  );
-}
-
-export function clampAgentFrameState(
-  input: AgentFrameState,
-  viewport: ViewportSize = getViewportSize()
-): AgentFrameState {
-  const maxWidth = Math.max(
-    AGENT_FRAME_MIN_SIZE.width,
-    viewport.width - AGENT_FRAME_EDGE_GAP * 2
-  );
-  const maxHeight = Math.max(
-    AGENT_FRAME_MIN_SIZE.height,
-    viewport.height - AGENT_FRAME_EDGE_GAP * 2
-  );
-  const width = clamp(input.width, AGENT_FRAME_MIN_SIZE.width, maxWidth);
-  const height = clamp(input.height, AGENT_FRAME_MIN_SIZE.height, maxHeight);
-  const maxX = Math.max(
-    AGENT_FRAME_EDGE_GAP,
-    viewport.width - width - AGENT_FRAME_EDGE_GAP
-  );
-  const maxY = Math.max(
-    AGENT_FRAME_EDGE_GAP,
-    viewport.height - height - AGENT_FRAME_EDGE_GAP
-  );
-
-  return {
-    width,
-    height,
-    x: clamp(input.x, AGENT_FRAME_EDGE_GAP, maxX),
-    y: clamp(input.y, AGENT_FRAME_EDGE_GAP, maxY),
-    preset: input.preset,
-  };
-}
-
-function readStoredAgentFrameState() {
-  try {
-    const rawValue = window.localStorage.getItem(AGENT_FRAME_STORAGE_KEY);
-    if (!rawValue) return getDefaultAgentFrameState();
-    const parsed = JSON.parse(rawValue) as Partial<AgentFrameState>;
-    if (
-      typeof parsed.width !== "number" ||
-      typeof parsed.height !== "number" ||
-      typeof parsed.x !== "number" ||
-      typeof parsed.y !== "number"
-    ) {
-      return getDefaultAgentFrameState();
-    }
-    return clampAgentFrameState({
-      width: parsed.width,
-      height: parsed.height,
-      x: parsed.x,
-      y: parsed.y,
-      preset: isAgentFramePreset(parsed.preset) ? parsed.preset : undefined,
-    });
-  } catch {
-    return getDefaultAgentFrameState();
-  }
-}
-
-function isAgentFramePreset(value: unknown): value is AgentFramePreset {
-  return value === "compact" || value === "comfortable" || value === "wide";
-}
-
-function getAgentFramePresetShortcut(preset: AgentFramePreset) {
-  if (preset === "compact") return "S";
-  if (preset === "comfortable") return "M";
-  return "L";
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max);
-}
-
-export function isAgentNearBottom(
-  element:
-    | Pick<HTMLElement, "scrollHeight" | "scrollTop" | "clientHeight">
-    | null
-    | undefined,
-  threshold = 96
-) {
-  if (!element) return true;
-  return (
-    element.scrollHeight - element.scrollTop - element.clientHeight <= threshold
+      {children}
+    </button>
   );
 }
 
@@ -994,40 +924,31 @@ export function AgentPanel({
   titleId,
   panelRef,
   draftInputRef,
-  bootstrapping,
   bootstrapRetrying,
   bootstrapError,
-  currentScope,
   draft,
   messages,
   notice,
   quota,
-  contextDraft,
-  contextOpen,
-  attachedContextCount,
-  attachingContext,
   historyOpen,
   conversations,
   historyLoading,
   conversationSwitching,
   activeConversationId,
+  isPostRoute,
+  postTitle,
   suggestedPrompts,
-  welcomeTitle,
-  welcomeBody,
   sending,
   visitorLoading,
-  frameControls,
   onClose,
+  onNewThread,
   onRetryBootstrap,
   onPanelKeyDown,
   onDraftChange,
-  onContextDraftChange,
-  onToggleContext,
-  onAttachPastedContext,
-  onPickContextFile,
   onToggleHistory,
   onLoadConversation,
   onPrompt,
+  onRetry,
   onSubmit,
   onCancel,
   onContinueAsVisitor,
@@ -1039,45 +960,35 @@ export function AgentPanel({
   titleId: string;
   panelRef: RefObject<HTMLElement | null>;
   draftInputRef: RefObject<HTMLTextAreaElement | null>;
-  bootstrapping: boolean;
   bootstrapRetrying: boolean;
   bootstrapError: boolean;
-  currentScope: AgentScope;
   draft: string;
   messages: ChatMessage[];
   notice: string | null;
-  quota: {
-    limit: number;
-    used: number;
-    remaining: number;
-    tier: string;
-  } | null;
-  contextDraft: string;
-  contextOpen: boolean;
-  attachedContextCount: number;
-  attachingContext: boolean;
+  quota: QuotaInfo | null;
   historyOpen: boolean;
   conversations: ConversationItem[];
   historyLoading: boolean;
   conversationSwitching: boolean;
   activeConversationId?: string;
+  isPostRoute: boolean;
+  postTitle?: string;
   suggestedPrompts: string[];
-  welcomeTitle: string;
-  welcomeBody: string;
   sending: boolean;
   visitorLoading: boolean;
-  frameControls: AgentFrameControls;
   onClose: () => void;
+  onNewThread: () => void;
   onRetryBootstrap: () => void;
   onPanelKeyDown: (event: ReactKeyboardEvent<HTMLElement>) => void;
   onDraftChange: (value: string) => void;
-  onContextDraftChange: (value: string) => void;
-  onToggleContext: () => void;
-  onAttachPastedContext: () => void;
-  onPickContextFile: () => void;
   onToggleHistory: () => void;
   onLoadConversation: (conversationId: string) => void;
   onPrompt: (message: string) => void;
+  onRetry: (
+    assistantMessageId: string,
+    message: string,
+    userMessageId: string
+  ) => void;
   onSubmit: (message: string) => void;
   onCancel: () => void;
   onContinueAsVisitor: (recoveryPrompt?: string) => void;
@@ -1085,11 +996,11 @@ export function AgentPanel({
   pendingAssistantFocusRef: MutableRefObject<string | null>;
 }) {
   const { t } = useLanguage();
-  const hasStreamingAssistant = messages.some(
-    message => message.role === "assistant" && message.streaming
-  );
-  const inputDisabled =
-    bootstrapping || bootstrapError || conversationSwitching;
+  const inputDisabled = bootstrapError || conversationSwitching;
+
+  useEffect(() => {
+    resizeAgentTextarea(draftInputRef.current);
+  }, [draft, draftInputRef]);
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -1106,159 +1017,119 @@ export function AgentPanel({
       aria-labelledby={titleId}
       tabIndex={-1}
       onKeyDown={onPanelKeyDown}
-      className="agent-liquid-panel flex h-full min-h-[420px] flex-col overflow-hidden rounded-md border text-slate-100"
+      className="agent-liquid-panel flex h-dvh min-h-0 flex-col overflow-hidden md:h-full"
     >
-      <header className="agent-panel-header flex items-start justify-between gap-3 border-b border-slate-700/50 px-4 py-3.5">
-        <div
-          className={cn(
-            "agent-drag-handle flex min-w-0 flex-1 items-start gap-3",
-            frameControls.isFloating && "cursor-move select-none"
-          )}
-          {...frameControls.dragHandleProps}
+      <header className="flex h-[calc(3.5rem+env(safe-area-inset-top))] shrink-0 items-center gap-2.5 border-b border-[var(--border)] pb-0 pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] pt-[env(safe-area-inset-top)]">
+        <span
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-[var(--border)] text-[var(--fg-muted)]"
+          aria-hidden="true"
         >
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-slate-600/45 bg-slate-900/70 text-slate-200">
-            <BookOpen className="h-4 w-4" />
-          </span>
-          <div className="min-w-0">
-            <h2 id={titleId} className="text-sm font-semibold text-white">
-              {t("agent.header.title")}
-            </h2>
-            <p className="mt-0.5 truncate text-xs text-slate-400">
-              {t("agent.header.subtitle")}
-            </p>
-          </div>
-          {frameControls.isFloating && (
-            <span className="agent-drag-indicator ml-auto hidden shrink-0 items-center gap-1 text-[0.68rem] text-slate-500 sm:inline-flex">
-              <Move className="h-3.5 w-3.5" />
-              {t("agent.frame.drag")}
-            </span>
-          )}
-        </div>
-        <div className="agent-panel-actions flex shrink-0 items-center gap-1">
-          {frameControls.isFloating && (
-            <div className="agent-frame-controls hidden items-center gap-1 sm:flex">
-              {(["compact", "comfortable", "wide"] as AgentFramePreset[]).map(
-                preset => (
-                  <button
-                    key={preset}
-                    type="button"
-                    aria-label={t(`agent.frame.${preset}`)}
-                    title={t(`agent.frame.${preset}`)}
-                    onClick={() => frameControls.onApplyPreset(preset)}
-                    className={cn(
-                      "agent-frame-control",
-                      frameControls.activePreset === preset &&
-                        "agent-frame-control-active"
-                    )}
-                  >
-                    {getAgentFramePresetShortcut(preset)}
-                  </button>
-                )
-              )}
-              <button
-                type="button"
-                aria-label={t("agent.frame.reset")}
-                title={t("agent.frame.reset")}
-                onClick={frameControls.onReset}
-                className="agent-frame-control"
-              >
-                <RotateCcw className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          )}
-          <button
-            type="button"
-            aria-label={t("agent.header.close")}
-            onClick={onClose}
-            className="agent-close-button grid h-11 w-11 shrink-0 place-items-center rounded-md text-slate-400 transition hover:bg-white/5 hover:text-white sm:h-8 sm:w-8"
+          <BookOpen className="h-4 w-4" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <h2
+            id={titleId}
+            className="truncate text-sm font-semibold text-[var(--fg)]"
           >
+            {t("agent.header.title")}
+          </h2>
+          <p className="truncate text-xs text-[var(--fg-muted)]">
+            {t("agent.header.subtitle")}
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-0.5">
+          <AgentHeaderButton
+            label={t("agent.history.button")}
+            ariaExpanded={historyOpen}
+            disabled={sending}
+            onClick={onToggleHistory}
+          >
+            <History className="h-4 w-4" />
+          </AgentHeaderButton>
+          <AgentHeaderButton
+            label={t("agent.thread.new")}
+            onClick={onNewThread}
+          >
+            <SquarePen className="h-4 w-4" />
+          </AgentHeaderButton>
+          <AgentHeaderButton label={t("agent.header.close")} onClick={onClose}>
             <X className="h-4 w-4" />
-          </button>
+          </AgentHeaderButton>
         </div>
       </header>
 
-      <div className="agent-topbar border-b border-slate-800 px-4 py-2 text-xs text-slate-300">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-slate-600/45 bg-slate-900/55 px-2.5 py-1 text-slate-300">
-              <BookOpen className="h-3.5 w-3.5 text-slate-400" />
-              {scopeLabel(currentScope, t)}
-            </span>
-            {quota && <AgentQuotaBadge quota={quota} />}
-            <AgentTrustBoundary
-              currentScope={currentScope}
-              attachedContextCount={attachedContextCount}
-            />
-          </div>
-          <button
-            type="button"
-            onClick={onToggleHistory}
-            aria-expanded={historyOpen}
-            className={cn(
-              "agent-history-button inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-medium transition sm:min-h-0 sm:px-2.5 sm:py-1.5",
-              historyOpen
-                ? "border-slate-500 bg-slate-900 text-slate-100"
-                : "border-slate-700 bg-white/[0.025] text-slate-300 hover:border-slate-500 hover:bg-slate-900 hover:text-slate-100"
-            )}
-          >
-            <History className="h-3.5 w-3.5" />
-            {t("agent.history.button")}
-          </button>
-        </div>
-        {quota && shouldShowQuotaCallout(quota) && (
-          <AgentQuotaCallout quota={quota} />
-        )}
+      <div className="shrink-0 border-b border-[var(--border)] px-4 py-1.5">
+        <p className="truncate text-xs text-[var(--fg-muted)]">
+          {isPostRoute && postTitle ? (
+            <>
+              <span className="text-[var(--fg-faint)]">
+                {t("agent.context.currentReading")}
+              </span>
+              <span
+                className="mx-1.5 text-[var(--fg-faint)]"
+                aria-hidden="true"
+              >
+                ·
+              </span>
+              {postTitle}
+            </>
+          ) : (
+            t("agent.context.siteWide")
+          )}
+        </p>
       </div>
 
       {historyOpen && (
         <AgentHistoryPanel
           conversations={conversations}
           loading={historyLoading}
+          disabled={sending}
           activeConversationId={activeConversationId}
           onLoadConversation={onLoadConversation}
         />
       )}
 
+      {/* The QA harness locates this scroller as the panel's only
+          overflow-y-auto div; keep that utility class stable. */}
       <div
         ref={messageScrollerRef}
-        className="agent-message-scroll min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-4 pb-8 pt-4"
+        className="min-h-0 flex-1 overscroll-contain overflow-y-auto overflow-x-hidden px-4 pb-8 pt-5 sm:px-5"
       >
-        {bootstrapping && (
-          <div className="grid h-full place-items-center text-sm text-slate-400">
-            <Loader2 className="mb-3 h-5 w-5 animate-spin text-slate-400" />
-            {t("agent.header.subtitle")}
-          </div>
-        )}
-
-        {!bootstrapping && bootstrapError && (
+        {bootstrapError && (
           <AgentBootstrapUnavailable
             retrying={bootstrapRetrying}
             onRetry={onRetryBootstrap}
           />
         )}
 
-        {!bootstrapping && !bootstrapError && messages.length === 0 && (
-          <div className="flex min-h-full flex-col justify-start gap-4 py-2">
+        {!bootstrapError && messages.length === 0 && (
+          <div className="flex flex-col gap-4 py-2">
             <div>
-              <div className="mb-3 grid h-11 w-11 place-items-center rounded-md border border-slate-700 bg-slate-950/55 text-slate-300">
-                <BookOpen className="h-5 w-5" />
+              <div
+                className="mb-3 grid h-8 w-8 place-items-center rounded-md border border-[var(--border)] text-[var(--fg-muted)]"
+                aria-hidden="true"
+              >
+                <BookOpen className="h-4 w-4" />
               </div>
-              <h3 className="text-lg font-semibold text-white">
-                {welcomeTitle}
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-slate-400">
-                {welcomeBody}
+              <p className="max-w-[30rem] text-sm leading-6 text-[var(--fg-muted)]">
+                {isPostRoute
+                  ? t("agent.empty.postBody")
+                  : t("agent.empty.siteBody")}
               </p>
             </div>
-            <div className="grid gap-2">
+            <div className="grid gap-0.5">
               {suggestedPrompts.map(prompt => (
                 <button
                   key={prompt}
                   type="button"
                   disabled={sending || inputDisabled}
                   onClick={() => onPrompt(prompt)}
-                  className="min-h-11 rounded-md border border-slate-700 bg-slate-950/45 px-3 py-2 text-left text-sm font-medium leading-6 text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 disabled:opacity-60"
+                  className="group flex items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-sm leading-6 text-[var(--fg-muted)] transition-colors hover:text-[var(--fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:opacity-60"
                 >
+                  <span
+                    aria-hidden="true"
+                    className="h-3.5 w-px shrink-0 bg-[var(--border)] transition-colors group-hover:bg-[var(--primary)]"
+                  />
                   {prompt}
                 </button>
               ))}
@@ -1267,10 +1138,11 @@ export function AgentPanel({
         )}
 
         {messages.length > 0 && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {messages.map(message => (
               <article
                 key={message.id}
+                data-agent-message-role={message.role}
                 ref={node => {
                   if (node && message.id === pendingAssistantFocusRef.current) {
                     pendingAssistantFocusRef.current = null;
@@ -1280,119 +1152,94 @@ export function AgentPanel({
                   }
                 }}
                 className={cn(
-                  "agent-message-row flex min-w-0 gap-3",
-                  message.role === "user" ? "justify-end" : "justify-start"
+                  "agent-message-enter flex min-w-0",
+                  message.role === "user"
+                    ? "agent-message-user justify-end"
+                    : "agent-message-assistant w-full"
                 )}
               >
-                {message.role === "assistant" && (
-                  <span className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-md border border-slate-700 bg-slate-950/55 text-slate-300">
-                    <BookOpen className="h-4 w-4" />
-                  </span>
-                )}
-                <div
-                  className={cn(
-                    "agent-message-bubble max-w-[86%] rounded-md px-3.5 py-2.5 text-sm leading-6",
-                    message.role === "user"
-                      ? "border border-slate-600/50 bg-slate-100/10 text-slate-100"
-                      : "border border-slate-700/70 bg-slate-950/35 text-slate-200"
-                  )}
-                >
-                  {message.role === "assistant" ? (
-                    <div className="prose prose-sm prose-invert max-w-none prose-p:my-2 prose-li:my-1">
-                      <AgentReasoningTrace message={message} />
-                      <Suspense
-                        fallback={
-                          <p className="whitespace-pre-wrap">
-                            {message.content}
-                          </p>
-                        }
-                      >
-                        {message.content ? (
-                          <AgentMarkdown>{message.content}</AgentMarkdown>
-                        ) : (
-                          <p className="text-slate-500">
-                            {t("agent.trace.waiting")}
-                          </p>
-                        )}
-                      </Suspense>
-                    </div>
-                  ) : (
-                    <p className="whitespace-pre-wrap">{message.content}</p>
-                  )}
-                  {message.sourceCards && message.sourceCards.length > 0 && (
-                    <AgentSourceCards sources={message.sourceCards} />
-                  )}
-                  {message.role === "assistant" &&
-                    message.relatedQuestions &&
-                    message.relatedQuestions.length > 0 && (
-                      <AgentRelatedQuestions
-                        questions={message.relatedQuestions}
-                        disabled={sending}
-                        onPrompt={onPrompt}
+                {message.role === "assistant" ? (
+                  <div className="flex w-full min-w-0 flex-col gap-3">
+                    {message.streaming && (
+                      <div className="flex items-center gap-1.5 text-xs text-[var(--fg-faint)]">
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        <span>{t("agent.trace.waiting")}</span>
+                      </div>
+                    )}
+                    {/* On a failed turn the recovery card already headlines the
+                        notice; only render the prose body when it carries an
+                        actual (partial) answer. */}
+                    {message.content &&
+                      message.content !== message.recoveryMessage && (
+                        <div className="agent-answer-prose max-w-none break-words [overflow-wrap:anywhere]">
+                          <Suspense
+                            fallback={
+                              <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
+                                {message.content}
+                              </p>
+                            }
+                          >
+                            <AgentMarkdown>{message.content}</AgentMarkdown>
+                          </Suspense>
+                        </div>
+                      )}
+                    {message.sourceCards && message.sourceCards.length > 0 && (
+                      <AgentSourceCards sources={message.sourceCards} />
+                    )}
+                    {message.relatedQuestions &&
+                      message.relatedQuestions.length > 0 && (
+                        <AgentRelatedQuestions
+                          questions={message.relatedQuestions}
+                          disabled={sending}
+                          onPrompt={onPrompt}
+                        />
+                      )}
+                    {message.state && (
+                      <AgentMessageRecovery
+                        message={message}
+                        disabled={sending || inputDisabled}
+                        visitorLoading={visitorLoading}
+                        onRetry={onRetry}
+                        onContinueAsVisitor={onContinueAsVisitor}
                       />
                     )}
-                  {message.role === "assistant" && message.state && (
-                    <AgentMessageRecovery
-                      message={message}
-                      disabled={sending || inputDisabled}
-                      visitorLoading={visitorLoading}
-                      onRetry={onPrompt}
-                      onContinueAsVisitor={onContinueAsVisitor}
-                    />
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <div className="max-w-[84%] break-words rounded-[0.65rem] bg-[var(--secondary)] px-3.5 py-2.5 text-sm leading-6 text-[var(--secondary-foreground)] [overflow-wrap:anywhere]">
+                    <p className="whitespace-pre-wrap">{message.content}</p>
+                  </div>
+                )}
               </article>
             ))}
-            {sending && !hasStreamingAssistant && (
-              <div className="flex items-center gap-3 text-sm text-slate-400">
-                <span className="grid h-8 w-8 place-items-center rounded-md border border-slate-700 bg-slate-950/55 text-slate-300">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                </span>
-                {t("agent.header.subtitle")}
-              </div>
-            )}
           </div>
         )}
       </div>
 
       {notice && (
-        <div className="px-4 pb-3">
+        <div className="px-3 pt-3 sm:px-4">
           <AgentNotice tone="warning" message={notice} />
         </div>
       )}
 
-      <AgentContextDock
-        open={contextOpen}
-        value={contextDraft}
-        count={attachedContextCount}
-        attaching={attachingContext}
-        disabled={inputDisabled}
-        onChange={onContextDraftChange}
-        onToggle={onToggleContext}
-        onAttach={onAttachPastedContext}
-        onPickFile={onPickContextFile}
-      />
+      {quota && quota.remaining <= 1 && (
+        <p className="px-3 pt-2 text-xs text-[var(--fg-faint)] sm:px-4">
+          {t("agent.quota.low", { remaining: quota.remaining })}
+        </p>
+      )}
 
-      <form onSubmit={submit} className="border-t border-slate-800 p-3">
-        <div className="flex items-end gap-2 rounded-md border border-slate-700 bg-slate-950/45 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
-          <Button
-            type="button"
-            size="icon"
-            onClick={onToggleContext}
-            disabled={inputDisabled}
-            aria-label={t("agent.context.toggle")}
-            className={cn(
-              "h-11 w-11 shrink-0 rounded-md border border-slate-700 bg-white/[0.025] text-slate-400 hover:bg-slate-900 hover:text-slate-100 sm:h-10 sm:w-10",
-              contextOpen && "border-slate-500 bg-slate-900 text-slate-100"
-            )}
-          >
-            <Paperclip className="h-4 w-4" />
-          </Button>
+      <form
+        onSubmit={submit}
+        className="shrink-0 border-t border-[var(--border)] bg-[var(--bg-elevated)] p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] md:pb-3"
+      >
+        <div className="flex items-end gap-2">
           <Textarea
             ref={draftInputRef}
             value={draft}
             disabled={inputDisabled}
-            onChange={event => onDraftChange(event.target.value)}
+            onChange={event => {
+              onDraftChange(event.target.value);
+              resizeAgentTextarea(event.currentTarget);
+            }}
             onKeyDown={event => {
               if (
                 event.key === "Enter" &&
@@ -1405,162 +1252,34 @@ export function AgentPanel({
             }}
             placeholder={t("agent.input.placeholder")}
             rows={1}
-            className="max-h-28 min-h-11 resize-none border-0 bg-transparent text-sm text-slate-100 shadow-none placeholder:text-slate-500 focus-visible:ring-0 sm:min-h-10"
+            className="max-h-28 min-h-11 flex-1 resize-none bg-[var(--card)] text-sm leading-6 text-[var(--fg)] shadow-none placeholder:text-[var(--fg-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
           />
           <Button
-            type={sending ? "button" : "submit"}
+            type="button"
             size="icon"
-            onClick={sending ? onCancel : undefined}
+            onClick={event => {
+              if (sending) {
+                onCancel();
+                return;
+              }
+              event.currentTarget.form?.requestSubmit();
+            }}
             disabled={(!draft.trim() && !sending) || inputDisabled}
             aria-label={
               sending ? t("agent.input.cancel") : t("agent.input.send")
             }
-            className={cn(
-              "h-11 w-11 shrink-0 rounded-md text-white sm:h-10 sm:w-10",
-              sending
-                ? "bg-slate-700 hover:bg-slate-600"
-                : "bg-slate-100 text-slate-950 hover:bg-white"
-            )}
+            title={sending ? t("agent.input.cancel") : t("agent.input.send")}
+            className="h-11 w-11 shrink-0 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-hover)] sm:h-10 sm:w-10"
           >
-            {sending ? <X className="h-4 w-4" /> : <Send className="h-4 w-4" />}
+            {sending ? (
+              <Square className="h-4 w-4" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </form>
-      {frameControls.resizeHandle}
     </section>
-  );
-}
-
-function AgentContextDock({
-  open,
-  value,
-  count,
-  attaching,
-  disabled,
-  onChange,
-  onToggle,
-  onAttach,
-  onPickFile,
-}: {
-  open: boolean;
-  value: string;
-  count: number;
-  attaching: boolean;
-  disabled: boolean;
-  onChange: (value: string) => void;
-  onToggle: () => void;
-  onAttach: () => void;
-  onPickFile: () => void;
-}) {
-  const { t } = useLanguage();
-
-  return (
-    <div className="border-t border-slate-800 px-3 py-2">
-      <div className="flex items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={onToggle}
-          disabled={disabled}
-          className="inline-flex min-h-11 min-w-0 items-center gap-2 rounded-md px-2 py-2 text-xs font-medium text-slate-400 transition hover:text-slate-100 sm:min-h-0 sm:px-1.5 sm:py-1"
-        >
-          <Paperclip className="h-3.5 w-3.5 text-slate-400" />
-          <span className="truncate">{t("agent.context.title")}</span>
-          {count > 0 && (
-            <span className="rounded-full border border-slate-600/50 bg-slate-900 px-1.5 text-[0.68rem] text-slate-300">
-              {t("agent.context.count", { count })}
-            </span>
-          )}
-        </button>
-        {count > 0 && (
-          <span className="inline-flex items-center gap-1 text-[0.7rem] text-slate-400">
-            <Check className="h-3.5 w-3.5" />
-            {t("agent.context.active")}
-          </span>
-        )}
-      </div>
-
-      {open && (
-        <div className="mt-2 rounded-md border border-slate-700 bg-slate-950/45 p-2">
-          <p className="mb-2 text-xs leading-5 text-slate-400">
-            {t("agent.context.supported")}
-          </p>
-          <Textarea
-            value={value}
-            onChange={event => onChange(event.target.value)}
-            disabled={disabled}
-            placeholder={t("agent.context.placeholder")}
-            rows={3}
-            className="max-h-28 min-h-20 resize-none border-0 bg-transparent text-xs leading-5 text-slate-100 shadow-none placeholder:text-slate-500 focus-visible:ring-0"
-          />
-          <div className="mt-2 flex items-center justify-between gap-2">
-            <button
-              type="button"
-              onClick={onPickFile}
-              disabled={attaching || disabled}
-              className="inline-flex min-h-11 items-center gap-1.5 rounded-md border border-slate-700 bg-white/[0.025] px-3 py-2 text-xs text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 hover:text-slate-100 disabled:opacity-50 sm:min-h-0 sm:px-2.5 sm:py-1.5"
-            >
-              <FileText className="h-3.5 w-3.5" />
-              {t("agent.context.file")}
-            </button>
-            <Button
-              type="button"
-              size="sm"
-              disabled={!value.trim() || attaching || disabled}
-              onClick={onAttach}
-              className="h-11 rounded-md bg-slate-100 px-3 text-xs text-slate-950 hover:bg-white sm:h-8"
-            >
-              {attaching ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                t("agent.context.attach")
-              )}
-            </Button>
-          </div>
-          <p className="mt-2 text-[0.7rem] leading-5 text-slate-500">
-            {count > 0
-              ? t("agent.context.lifecycle")
-              : t("agent.context.limit")}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function AgentTrustBoundary({
-  currentScope,
-  attachedContextCount,
-}: {
-  currentScope: AgentScope;
-  attachedContextCount: number;
-}) {
-  const { t } = useLanguage();
-  const contextKey =
-    attachedContextCount > 0
-      ? "agent.trust.contextAttached"
-      : "agent.trust.contextPrivate";
-  const hasAttachedContext = attachedContextCount > 0;
-
-  return (
-    <details
-      open={hasAttachedContext}
-      className={cn(
-        "agent-trust-boundary min-w-0 rounded-md border px-2.5 py-1",
-        hasAttachedContext && "agent-trust-boundary-attached"
-      )}
-    >
-      <summary className="flex cursor-pointer list-none items-center gap-1.5 text-xs font-medium text-slate-300">
-        <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
-        <span className="truncate">
-          {t("agent.trust.publicScope", {
-            scope: scopeLabel(currentScope, t),
-          })}
-        </span>
-      </summary>
-      <p className="mt-1 pl-5 text-xs leading-5 text-slate-500">
-        {t(contextKey)}
-      </p>
-    </details>
   );
 }
 
@@ -1573,18 +1292,18 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
   const previewSources = getVisibleSourceCards(sources, false);
 
   return (
-    <div className="agent-sources mt-3 border-t border-slate-800/80 pt-3">
-      <div className="agent-source-summary flex min-w-0 flex-wrap items-center justify-between gap-2 text-xs">
+    <div className="mt-3 border-t border-[var(--border)] pt-3">
+      <div className="flex min-w-0 flex-wrap items-center justify-between gap-2 text-xs">
         <div className="flex min-w-0 flex-1 items-center gap-2">
-          <span className="shrink-0 font-semibold text-slate-500">
+          <span className="shrink-0 font-semibold text-[var(--fg-muted)]">
             {t("agent.sources.summary", { count: sources.length })}
           </span>
-          <div className="agent-source-chips flex min-w-0 flex-1 items-center gap-1.5">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
             {previewSources.map(source => (
               <AgentSourcePreviewChip key={source.sourceId} source={source} />
             ))}
             {sources.length > previewSources.length && (
-              <span className="agent-source-chip shrink-0 rounded-md border border-slate-700 bg-slate-950/35 px-2 py-0.5 text-[0.68rem] font-medium text-slate-500">
+              <span className="shrink-0 rounded-md border border-[var(--border)] bg-[var(--bg-elevated)] px-2 py-0.5 text-[0.68rem] font-medium text-[var(--fg-muted)]">
                 {t("agent.sources.previewMore", {
                   count: sources.length - previewSources.length,
                 })}
@@ -1596,34 +1315,37 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
           type="button"
           aria-expanded={expanded}
           onClick={() => setExpanded(value => !value)}
-          className="agent-source-toggle inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-slate-700 bg-white/[0.025] px-2.5 py-1.5 text-xs font-medium text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 hover:text-slate-100"
+          className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-[var(--border)] px-2.5 py-1.5 text-xs font-medium text-[var(--fg-muted)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
         >
           {expanded ? t("agent.sources.hide") : t("agent.sources.view")}
         </button>
       </div>
       {expanded && (
-        <div className="agent-source-list mt-2 grid gap-2 overflow-y-auto pr-1">
+        <div className="mt-2 grid max-h-[min(35vh,20rem)] gap-2 overflow-y-auto pr-1">
           {visibleSources.map(source => {
             const title = source.postTitle || t("agent.sources.site");
             const hasBlogLink =
               source.sourceType !== "user_context" && Boolean(source.postSlug);
-            const currentPageSource =
-              isCurrentPathSource(source, currentPath) ||
-              isCurrentPageSource(source);
+            const currentPageSource = isCurrentPathSource(source, currentPath);
             const section =
               source.sectionTitle ?? getSourceSectionLabel(source, t);
             const excerpt = formatSourceExcerpt(source);
-            const relevanceReason = getDisplayRelevanceReason(source, t);
+            const relevanceReason = getDisplayRelevanceReason(
+              source,
+              currentPageSource,
+              t
+            );
             const href = hasBlogLink ? getSourceHref(source) : undefined;
 
             return (
               <div
                 key={source.sourceId}
-                className="agent-source-card rounded-md border border-slate-700/80 bg-slate-950/30 px-2.5 py-2"
+                data-agent-source-id={source.sourceId}
+                className="rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] px-2.5 py-2"
               >
                 <div className="flex min-w-0 items-start gap-2.5">
                   <span
-                    className="agent-source-icon mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-md border"
+                    className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-md border border-[var(--border)] bg-[var(--card)] text-[var(--fg-muted)]"
                     aria-hidden="true"
                   >
                     <FileText className="h-3.5 w-3.5" />
@@ -1631,23 +1353,23 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
                   <div className="min-w-0 flex-1">
                     <div className="flex min-w-0 items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <div className="truncate text-sm font-semibold text-slate-100">
+                        <div className="truncate text-sm font-semibold text-[var(--fg)]">
                           {section}
                         </div>
                         {source.postTitle && section !== title && (
-                          <div className="mt-0.5 truncate text-[0.72rem] text-slate-500">
+                          <div className="mt-0.5 truncate text-[0.72rem] text-[var(--fg-muted)]">
                             {title}
                           </div>
                         )}
                       </div>
                       <div className="inline-flex shrink-0 items-center gap-1">
-                        <span className="rounded border border-slate-700 bg-white/[0.025] px-1.5 py-0.5 text-[0.65rem] font-medium text-slate-400">
+                        <span className="rounded border border-[var(--border)] bg-[var(--card)] px-1.5 py-0.5 text-[0.65rem] font-medium text-[var(--fg-muted)]">
                           {source.sourceType === "user_context"
                             ? t("agent.sources.context")
                             : t("agent.sources.blog")}
                         </span>
                         {currentPageSource && (
-                          <span className="rounded border border-slate-600/50 bg-slate-900 px-1.5 py-0.5 text-[0.65rem] font-medium text-slate-300">
+                          <span className="rounded border border-[var(--border)] bg-[var(--card)] px-1.5 py-0.5 text-[0.65rem] font-medium text-[var(--primary)]">
                             {t("agent.sources.currentPage")}
                           </span>
                         )}
@@ -1666,7 +1388,7 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
                                 navigate
                               );
                             }}
-                            className="agent-source-open grid h-7 w-7 place-items-center rounded-md border border-slate-700 text-slate-400 transition hover:border-slate-500 hover:text-slate-100"
+                            className="grid h-7 w-7 place-items-center rounded-md border border-[var(--border)] text-[var(--fg-muted)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
                           >
                             <ExternalLink className="h-3.5 w-3.5 shrink-0" />
                           </a>
@@ -1674,17 +1396,17 @@ export function AgentSourceCards({ sources }: { sources: SourceCard[] }) {
                       </div>
                     </div>
                     {(excerpt || relevanceReason) && (
-                      <details className="agent-source-detail mt-1">
-                        <summary className="cursor-pointer list-none text-[0.7rem] font-medium text-slate-500">
+                      <details className="mt-1">
+                        <summary className="cursor-pointer list-none text-[0.7rem] font-medium text-[var(--fg-muted)]">
                           {t("agent.sources.details")}
                         </summary>
                         {excerpt && (
-                          <p className="mt-1 text-xs leading-5 text-slate-500">
+                          <p className="mt-1 break-words text-xs leading-5 text-[var(--fg-muted)] [overflow-wrap:anywhere]">
                             {excerpt}
                           </p>
                         )}
                         {relevanceReason && (
-                          <p className="mt-1 text-[0.7rem] leading-5 text-slate-500">
+                          <p className="mt-1 break-words text-[0.7rem] leading-5 text-[var(--fg-muted)] [overflow-wrap:anywhere]">
                             {t("agent.sources.reason")}: {relevanceReason}
                           </p>
                         )}
@@ -1711,7 +1433,7 @@ function AgentSourcePreviewChip({ source }: { source: SourceCard }) {
 
   return (
     <span
-      className="agent-source-chip truncate rounded-md border border-slate-700 bg-slate-950/35 px-2 py-0.5 text-[0.68rem] font-medium text-slate-400"
+      className="max-w-[min(12rem,34vw)] truncate rounded-md border border-[var(--border)] bg-[var(--bg-elevated)] px-2 py-0.5 text-[0.68rem] font-medium text-[var(--fg-muted)]"
       title={title}
     >
       {title}
@@ -1817,113 +1539,6 @@ function normalizePathWithoutHash(value: string) {
   return value.split("#")[0].split("?")[0] || "/";
 }
 
-function AgentReasoningTrace({ message }: { message: ChatMessage }) {
-  const { t } = useLanguage();
-  if (message.role !== "assistant") return null;
-
-  const traceEntries = message.traceEntries ?? [];
-  const hasTrace = message.streaming || traceEntries.length > 0;
-  if (!hasTrace) return null;
-
-  const elapsedMs = getAgentDisplayElapsedMs(message);
-  const stageDurations = getTraceStageDurations(traceEntries);
-  const summaryKey = message.streaming
-    ? "agent.trace.thinking"
-    : "agent.trace.done";
-
-  return (
-    <details
-      open={message.streaming}
-      className="not-prose mb-3 rounded-md border border-slate-700 bg-slate-950/45"
-    >
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-xs font-medium text-slate-300">
-        <span>
-          {t(summaryKey)}
-          {elapsedMs > 0 && (
-            <span className="ml-1 text-slate-500">
-              {t("agent.trace.elapsed", {
-                seconds: formatElapsedSeconds(elapsedMs),
-              })}
-            </span>
-          )}
-        </span>
-        {message.streaming && (
-          <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-slate-400" />
-        )}
-      </summary>
-      <div className="border-t border-slate-800 px-3 py-2">
-        {traceEntries.length > 0 && (
-          <ol className="grid gap-1.5 text-xs leading-5 text-slate-400">
-            {stageDurations.map(entry => (
-              <li
-                key={entry.stage}
-                className="flex items-center justify-between gap-3"
-              >
-                <span>{traceStageLabel(entry, t)}</span>
-                <span className="shrink-0 text-slate-600">
-                  {formatElapsedSeconds(entry.durationMs)}s
-                </span>
-              </li>
-            ))}
-          </ol>
-        )}
-      </div>
-    </details>
-  );
-}
-
-export type AgentTraceStageDuration = AgentTraceEntry & {
-  durationMs: number;
-};
-
-export function getAgentDisplayElapsedMs(message: ChatMessage) {
-  if (
-    typeof message.finalElapsedMs === "number" &&
-    Number.isFinite(message.finalElapsedMs)
-  ) {
-    return Math.max(0, message.finalElapsedMs);
-  }
-  return Math.max(
-    0,
-    ...(message.traceEntries ?? []).map(entry => entry.elapsedMs)
-  );
-}
-
-export function getTraceStageDurations(
-  entries: AgentTraceEntry[]
-): AgentTraceStageDuration[] {
-  let previousElapsedMs = 0;
-  return entries
-    .slice()
-    .sort((left, right) => left.elapsedMs - right.elapsedMs)
-    .map(entry => {
-      const elapsedMs = Math.max(0, entry.elapsedMs);
-      const durationMs = Math.max(0, elapsedMs - previousElapsedMs);
-      previousElapsedMs = elapsedMs;
-      return { ...entry, elapsedMs, durationMs };
-    });
-}
-
-function traceStageLabel(
-  entry: AgentTraceEntry,
-  t: (key: string, params?: Record<string, string | number>) => string
-) {
-  if (entry.stage === "sources") {
-    return t("agent.trace.stage.sources", {
-      count: entry.sourceCount ?? 0,
-      current:
-        entry.currentPageContextInjected === true
-          ? t("agent.trace.currentPage")
-          : "",
-    });
-  }
-  return t(`agent.trace.stage.${entry.stage}`);
-}
-
-function formatElapsedSeconds(elapsedMs: number) {
-  return (elapsedMs / 1000).toFixed(elapsedMs < 10_000 ? 1 : 0);
-}
-
 export function inferAnswerMode(
   message: string,
   routeContext?: AgentRouteContext
@@ -1960,8 +1575,8 @@ function AgentRelatedQuestions({
   const { t } = useLanguage();
 
   return (
-    <div className="mt-3 border-t border-slate-800 pt-3">
-      <div className="mb-2 text-[0.7rem] font-semibold uppercase text-slate-500">
+    <div className="mt-3 border-t border-[var(--border)] pt-3">
+      <div className="mb-2 text-[0.7rem] font-semibold uppercase text-[var(--fg-faint)]">
         {t("agent.related.title")}
       </div>
       <div className="flex flex-wrap gap-2">
@@ -1971,7 +1586,7 @@ function AgentRelatedQuestions({
             type="button"
             disabled={disabled}
             onClick={() => onPrompt(question)}
-            className="rounded-md border border-slate-700 bg-white/[0.025] px-2.5 py-1.5 text-left text-xs leading-5 text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 disabled:opacity-60"
+            className="rounded-md border border-[var(--border)] bg-[var(--bg-elevated)] px-2.5 py-1.5 text-left text-xs leading-5 text-[var(--fg-muted)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:opacity-60"
           >
             {question}
           </button>
@@ -1981,32 +1596,30 @@ function AgentRelatedQuestions({
   );
 }
 
-function isCurrentPageSource(source: SourceCard) {
-  if (source.isCurrentPage) return true;
-  return source.relevanceReason
-    .toLowerCase()
-    .startsWith("current public article context");
-}
-
-function getDisplayRelevanceReason(
+export function getDisplayRelevanceReason(
   source: SourceCard,
+  currentPageSource: boolean,
   t: (key: string, params?: Record<string, string | number>) => string
 ) {
-  if (!isCurrentPageSource(source)) return source.relevanceReason;
   const stripped = source.relevanceReason
     .replace(/^Current public article context\.?\s*/i, "")
     .trim();
-  return stripped || t("agent.sources.currentPage");
+  if (stripped) return stripped;
+  return currentPageSource
+    ? t("agent.sources.currentPage")
+    : t("agent.sources.blog");
 }
 
 function AgentHistoryPanel({
   conversations,
   loading,
+  disabled,
   activeConversationId,
   onLoadConversation,
 }: {
   conversations: ConversationItem[];
   loading: boolean;
+  disabled: boolean;
   activeConversationId?: string;
   onLoadConversation: (conversationId: string) => void;
 }) {
@@ -2014,12 +1627,10 @@ function AgentHistoryPanel({
   const visible = conversations.slice(0, 8);
 
   return (
-    <div className="border-b border-slate-800 bg-slate-950/55 px-4 py-3">
-      <div className="mb-2 flex items-center justify-between gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-slate-500">
+    <div className="shrink-0 border-b border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-3 sm:px-4">
+      <div className="mb-2 flex items-center justify-between gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-[var(--fg-muted)]">
         <span>{t("agent.history.title")}</span>
-        {loading && (
-          <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-400" />
-        )}
+        {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
       </div>
       {visible.length > 0 ? (
         <div className="grid max-h-48 gap-2 overflow-y-auto pr-1">
@@ -2028,27 +1639,21 @@ function AgentHistoryPanel({
             return (
               <button
                 key={conversation.id}
+                data-agent-conversation-id={conversation.id}
                 type="button"
+                disabled={disabled}
                 onClick={() => onLoadConversation(conversation.id)}
                 className={cn(
-                  "grid grid-cols-[1fr_auto] items-center gap-3 rounded-md border px-3 py-2 text-left text-xs leading-5 transition",
+                  "grid grid-cols-[1fr_auto] items-center gap-3 rounded-md border bg-[var(--card)] px-3 py-2 text-left text-xs leading-5 transition-colors disabled:pointer-events-none disabled:opacity-55",
                   active
-                    ? "border-slate-500 bg-slate-900 text-slate-100"
-                    : "border-slate-700 bg-white/[0.025] text-slate-300 hover:border-slate-500 hover:bg-slate-900"
+                    ? "border-[var(--primary)] text-[var(--fg)]"
+                    : "border-[var(--border)] text-[var(--fg-muted)] hover:border-[var(--border-strong)] hover:text-[var(--fg)]"
                 )}
               >
-                <span className="min-w-0">
-                  <span className="block truncate font-medium">
-                    {conversation.title || t("agent.history.continue")}
-                  </span>
-                  <span className="block truncate text-slate-500">
-                    {conversation.scopeValue || conversation.scopeType}
-                    {conversation.ownerType
-                      ? ` · ${getConversationOwnerLabel(conversation.ownerType, t)}`
-                      : ""}
-                  </span>
+                <span className="min-w-0 truncate font-medium">
+                  {conversation.title || t("agent.history.continue")}
                 </span>
-                <span className="shrink-0 text-right text-[0.68rem] leading-4 text-slate-500">
+                <span className="shrink-0 text-right text-[0.68rem] leading-4 text-[var(--fg-muted)]">
                   {formatConversationTime(
                     conversation.lastMessageAt ?? conversation.updatedAt,
                     t
@@ -2059,7 +1664,9 @@ function AgentHistoryPanel({
           })}
         </div>
       ) : (
-        <div className="text-xs text-slate-600">{t("agent.history.empty")}</div>
+        <div className="text-xs text-[var(--fg-muted)]">
+          {t("agent.history.empty")}
+        </div>
       )}
     </div>
   );
@@ -2080,60 +1687,24 @@ function formatConversationTime(
   }).format(date);
 }
 
-function getConversationOwnerLabel(
-  ownerType: ConversationItem["ownerType"],
-  t: (key: string) => string
-) {
-  if (ownerType === "admin") return t("agent.history.owner.admin");
-  if (ownerType === "visitor") return t("agent.history.owner.visitor");
-  return t("agent.history.owner.anonymous");
-}
-
-function AgentQuotaBadge({
-  quota,
-}: {
-  quota: { limit: number; remaining: number; tier?: string };
-}) {
-  const { t } = useLanguage();
-  const key =
-    quota.remaining <= 1 ? "agent.quota.low" : "agent.quota.remaining";
-
-  return (
-    <span
-      className="agent-quota-badge inline-flex items-center gap-1.5 rounded-md border border-slate-500/25 bg-white/[0.03] px-2.5 py-1 text-slate-300"
-      title={quota.tier ? `${quota.tier} quota` : undefined}
-    >
-      <LogIn className="h-3.5 w-3.5 text-slate-400" />
-      {t(key, { remaining: quota.remaining, limit: quota.limit })}
-    </span>
-  );
-}
-
-function AgentQuotaCallout({
-  quota,
-}: {
-  quota: { remaining: number; tier: string };
-}) {
-  const { t } = useLanguage();
-  const message =
-    quota.tier === "admin"
-      ? t("agent.quota.adminDetail")
-      : t("agent.quota.lowDetail");
-
-  return (
-    <div className="mt-2 rounded-md border border-slate-700 bg-slate-950/45 px-3 py-2 text-xs leading-5 text-slate-300">
-      {message}
-    </div>
-  );
-}
-
-function shouldShowQuotaCallout(quota: { remaining: number; tier: string }) {
-  return quota.remaining <= 1 || quota.tier === "admin";
-}
-
 export function isBlogAgentHiddenRoute(path: string) {
   const pathname = path.split(/[?#]/, 1)[0] || "/";
   return /^\/(write|manage|login)(\/|$)/.test(pathname);
+}
+
+export function shouldFinalizeAgentStream(
+  activeController: AbortController | null,
+  completedController: AbortController
+) {
+  return activeController === completedController;
+}
+
+export function shouldClearAgentDraft(
+  currentDraft: string,
+  submittedMessage: string,
+  retrying: boolean
+) {
+  return !retrying || currentDraft.trim() === submittedMessage.trim();
 }
 
 function AgentNotice({
@@ -2146,10 +1717,8 @@ function AgentNotice({
   return (
     <div
       className={cn(
-        "flex items-start gap-2 rounded-lg border px-3 py-2 text-sm leading-6",
-        tone === "error"
-          ? "border-red-300/25 bg-red-950/30 text-red-100"
-          : "border-slate-700 bg-slate-950/45 text-slate-300"
+        "flex items-start gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 text-sm leading-6",
+        tone === "error" ? "text-[var(--danger-ink)]" : "text-[var(--fg-muted)]"
       )}
     >
       <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
@@ -2169,19 +1738,23 @@ function AgentBootstrapUnavailable({
 
   return (
     <div className="grid min-h-full place-items-center py-8">
-      <div className="w-full rounded-md border border-red-300/25 bg-red-950/20 p-4 text-sm leading-6 text-red-100">
+      <div className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] p-4 text-sm leading-6">
         <div className="mb-3 flex items-start gap-2.5">
-          <AlertCircle className="mt-1 h-4 w-4 shrink-0" />
+          <AlertCircle className="mt-1 h-4 w-4 shrink-0 text-[var(--danger-ink)]" />
           <div>
-            <p className="font-semibold">{t("agent.bootstrap.unavailable")}</p>
-            <p className="mt-1 text-red-100/75">{t("agent.error.bootstrap")}</p>
+            <p className="font-semibold text-[var(--fg)]">
+              {t("agent.bootstrap.unavailable")}
+            </p>
+            <p className="mt-1 text-[var(--fg-muted)]">
+              {t("agent.error.bootstrap")}
+            </p>
           </div>
         </div>
         <button
           type="button"
           disabled={retrying}
           onClick={onRetry}
-          className="inline-flex min-h-10 items-center gap-2 rounded-md border border-red-200/25 bg-red-100/10 px-3 py-2 text-xs font-semibold text-red-50 transition hover:bg-red-100/15 disabled:opacity-60"
+          className="inline-flex min-h-10 items-center gap-2 rounded-md border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-xs font-semibold text-[var(--fg)] transition-colors hover:border-[var(--border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:opacity-60"
         >
           {retrying ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -2205,7 +1778,11 @@ function AgentMessageRecovery({
   message: ChatMessage;
   disabled: boolean;
   visitorLoading: boolean;
-  onRetry: (message: string) => void;
+  onRetry: (
+    assistantMessageId: string,
+    message: string,
+    userMessageId: string
+  ) => void;
   onContinueAsVisitor: (recoveryPrompt?: string) => void;
 }) {
   const { t } = useLanguage();
@@ -2214,16 +1791,19 @@ function AgentMessageRecovery({
 
   const canRetry =
     Boolean(message.recoveryPrompt) &&
+    Boolean(message.retryUserMessageId) &&
     (state === "cancelled" || state === "failed" || state === "timeout");
   const canUseVisitor =
     state === "quota_blocked" && message.quotaTier === "anonymous";
 
   return (
-    <div className="not-prose mt-3 rounded-md border border-slate-700 bg-slate-950/45 px-3 py-2 text-xs leading-5 text-slate-300">
+    <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 text-xs leading-5 text-[var(--fg-muted)]">
       {message.recoveryMessage && (
-        <p className="font-medium text-slate-200">{message.recoveryMessage}</p>
+        <p className="font-medium text-[var(--fg)]">
+          {message.recoveryMessage}
+        </p>
       )}
-      <p className={message.recoveryMessage ? "mt-1 text-slate-400" : ""}>
+      <p className={message.recoveryMessage ? "mt-1" : ""}>
         {t(getRecoveryMessageKey(state))}
       </p>
       {(canRetry || canUseVisitor) && (
@@ -2232,8 +1812,14 @@ function AgentMessageRecovery({
             <button
               type="button"
               disabled={disabled}
-              onClick={() => onRetry(message.recoveryPrompt ?? "")}
-              className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-slate-600 bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-slate-950 transition hover:bg-white disabled:opacity-60"
+              onClick={() =>
+                onRetry(
+                  message.id,
+                  message.recoveryPrompt ?? "",
+                  message.retryUserMessageId ?? ""
+                )
+              }
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-md bg-[var(--primary)] px-2.5 py-1.5 text-xs font-semibold text-[var(--primary-foreground)] transition-colors hover:bg-[var(--primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:opacity-60"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               {t("agent.input.retry")}
@@ -2244,7 +1830,7 @@ function AgentMessageRecovery({
               type="button"
               disabled={visitorLoading}
               onClick={() => onContinueAsVisitor(message.recoveryPrompt)}
-              className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-slate-600 bg-white/[0.025] px-2.5 py-1.5 text-xs font-semibold text-slate-200 transition hover:bg-slate-900 disabled:opacity-60"
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--card)] px-2.5 py-1.5 text-xs font-semibold text-[var(--fg)] transition-colors hover:border-[var(--border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:opacity-60"
             >
               {visitorLoading ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -2266,10 +1852,6 @@ function getRecoveryMessageKey(state: ChatMessageState) {
   if (state === "quota_blocked") return "agent.recovery.quota";
   if (state === "no_source") return "agent.recovery.noSource";
   return "agent.recovery.failed";
-}
-
-function scopeLabel(scope: AgentScope, t: (key: string) => string) {
-  return t(`agent.scope.${scope.type}`);
 }
 
 function getQuotaBlockedNotice(tier: string, t: (key: string) => string) {
@@ -2329,19 +1911,6 @@ function getAgentSessionKey(session: ReturnType<typeof useAuth>["session"]) {
   return "anonymous";
 }
 
-function getContextFileKind(
-  fileName: string
-): "markdown_file" | "text_file" | null {
-  const lower = fileName.toLowerCase();
-  if (lower.endsWith(".md")) return "markdown_file";
-  if (lower.endsWith(".txt")) return "text_file";
-  return null;
-}
-
-function getFallbackMimeType(kind: "markdown_file" | "text_file") {
-  return kind === "markdown_file" ? "text/markdown" : "text/plain";
-}
-
 function getFocusableElements(container: HTMLElement) {
   const selectors = [
     "a[href]",
@@ -2360,37 +1929,52 @@ function getFocusableElements(container: HTMLElement) {
   );
 }
 
+function resizeAgentTextarea(element: HTMLTextAreaElement | null): void {
+  if (!element) return;
+  element.style.height = "auto";
+  element.style.height = `${Math.min(element.scrollHeight, 112)}px`;
+}
+
 function buildCompanionPrompts(
   routeContext: AgentRouteContext,
   t: (key: string, values?: Record<string, string | number>) => string,
-  serverPrompts?: string[]
+  serverPrompts?: string[],
+  postTitle?: string
 ) {
   const prompts = getCompanionPromptKeys(routeContext)
-    .map(key => t(key))
+    .map(key => {
+      if (key !== "agent.prompts.postCoreWithTitle") return t(key);
+      if (postTitle) return t(key, { title: postTitle });
+      return t("agent.prompts.postAbstraction");
+    })
     .filter(prompt => prompt && !prompt.startsWith("agent.prompts."));
   if (prompts.length > 0) return prompts.slice(0, 3);
-  if (serverPrompts && serverPrompts.length > 0)
-    return serverPrompts.slice(0, 3);
-  return fallbackPrompts(t);
+  return (serverPrompts ?? []).slice(0, 3);
 }
 
-function getCompanionWelcome(
-  routeContext: AgentRouteContext,
-  t: (key: string, values?: Record<string, string | number>) => string
-) {
-  const keys = getCompanionWelcomeKeys(routeContext);
-  return {
-    title: t(keys.titleKey),
-    body: t(keys.bodyKey),
-  };
+function getDocumentTitleSuffix() {
+  const [, suffix] = siteConfig.titleTemplate.split("%s");
+  return suffix ?? ` · ${siteConfig.name}`;
 }
 
-function fallbackPrompts(
-  t: (key: string, values?: Record<string, string | number>) => string
+function stripDocumentTitleSuffix(rawTitle: string) {
+  const title = rawTitle.trim();
+  const suffix = getDocumentTitleSuffix();
+  if (suffix && title.endsWith(suffix)) {
+    return title.slice(0, -suffix.length).trim();
+  }
+  return title;
+}
+
+export function isAgentNearBottom(
+  element:
+    | Pick<HTMLElement, "scrollHeight" | "scrollTop" | "clientHeight">
+    | null
+    | undefined,
+  threshold = 96
 ) {
-  return [
-    t("agent.prompts.siteThemes"),
-    t("agent.prompts.compareTracks"),
-    t("agent.prompts.readingPath"),
-  ];
+  if (!element) return true;
+  return (
+    element.scrollHeight - element.scrollTop - element.clientHeight <= threshold
+  );
 }

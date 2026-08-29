@@ -3,18 +3,16 @@ import {
   BLOG_AGENT_OPEN_EVENT,
   buildRouteContext,
   getCompanionPromptKeys,
-  getCompanionWelcomeKeys,
   inferClientScope,
   openBlogAgentWithPrompt,
 } from "./routeContext";
 import {
-  clampAgentFrameState,
-  getAgentDisplayElapsedMs,
-  getDefaultAgentFrameState,
-  getTraceStageDurations,
+  getDisplayRelevanceReason,
   inferAnswerMode,
   isAgentNearBottom,
   isBlogAgentHiddenRoute,
+  shouldClearAgentDraft,
+  shouldFinalizeAgentStream,
 } from "./BlogAgentRoot";
 import {
   AGENT_STREAM_TIMEOUT_MS,
@@ -37,6 +35,28 @@ describe("BlogAgent route context", () => {
       type: "post",
       value: "agent-harness-engine",
     });
+  });
+
+  it("carries the current post title through the route context", () => {
+    const context = buildRouteContext(
+      "/post/agent-harness-engine",
+      "zh",
+      "Agent Harness 工程实践"
+    );
+    const untitledContext = buildRouteContext(
+      "/post/agent-harness-engine",
+      "zh"
+    );
+
+    expect(context).toMatchObject({
+      routeType: "post",
+      postSlug: "agent-harness-engine",
+      postTitle: "Agent Harness 工程实践",
+    });
+    expect(untitledContext).toMatchObject({ routeType: "post" });
+    if (untitledContext.routeType === "post") {
+      expect(untitledContext.postTitle).toBeUndefined();
+    }
   });
 
   it("infers AI application track scope", () => {
@@ -69,7 +89,7 @@ describe("BlogAgent route context", () => {
     const algorithmsContext = buildRouteContext("/algorithms", "en");
 
     expect(getCompanionPromptKeys(postContext)).toContain(
-      "agent.prompts.postAbstraction"
+      "agent.prompts.postCoreWithTitle"
     );
     expect(getCompanionPromptKeys(postContext)).toContain(
       "agent.prompts.nextReading"
@@ -83,21 +103,6 @@ describe("BlogAgent route context", () => {
     expect(getCompanionPromptKeys(postContext)).not.toEqual(
       getCompanionPromptKeys(applicationsContext)
     );
-  });
-
-  it("uses article and track welcome copy keys", () => {
-    expect(
-      getCompanionWelcomeKeys(buildRouteContext("/post/agent-loop", "en"))
-    ).toEqual({
-      titleKey: "agent.welcome.postTitle",
-      bodyKey: "agent.welcome.postBody",
-    });
-    expect(
-      getCompanionWelcomeKeys(buildRouteContext("/applications", "en"))
-    ).toEqual({
-      titleKey: "agent.welcome.trackTitle",
-      bodyKey: "agent.welcome.trackBody",
-    });
   });
 
   it("hides the public Blog Agent on owner and auth routes only", () => {
@@ -132,62 +137,6 @@ describe("BlogAgent route context", () => {
     ).toBe("deep");
   });
 
-  it("prefers final elapsed time over cumulative trace status values", () => {
-    expect(
-      getAgentDisplayElapsedMs({
-        id: "assistant-1",
-        role: "assistant",
-        content: "Done",
-        finalElapsedMs: 8420,
-        traceEntries: [
-          { stage: "retrieval", elapsedMs: 1200 },
-          { stage: "saving", elapsedMs: 2300 },
-        ],
-      })
-    ).toBe(8420);
-  });
-
-  it("derives clamped stage durations from cumulative trace events", () => {
-    expect(
-      getTraceStageDurations([
-        { stage: "understanding", elapsedMs: 100 },
-        { stage: "retrieval", elapsedMs: 450 },
-        { stage: "saving", elapsedMs: 425 },
-        { stage: "answer", elapsedMs: 700 },
-      ]).map(entry => ({
-        stage: entry.stage,
-        durationMs: entry.durationMs,
-      }))
-    ).toEqual([
-      { stage: "understanding", durationMs: 100 },
-      { stage: "saving", durationMs: 325 },
-      { stage: "retrieval", durationMs: 25 },
-      { stage: "answer", durationMs: 250 },
-    ]);
-  });
-
-  it("keeps the desktop frame inside the viewport", () => {
-    expect(
-      clampAgentFrameState(
-        { width: 900, height: 900, x: -200, y: 1200 },
-        { width: 800, height: 700 }
-      )
-    ).toMatchObject({
-      width: 768,
-      height: 668,
-      x: 16,
-      y: 16,
-    });
-
-    expect(getDefaultAgentFrameState({ width: 1440, height: 900 })).toEqual({
-      width: 520,
-      height: 680,
-      x: 896,
-      y: 124,
-      preset: "comfortable",
-    });
-  });
-
   it("only follows streaming output when the reader is near the bottom", () => {
     expect(
       isAgentNearBottom({
@@ -203,6 +152,64 @@ describe("BlogAgent route context", () => {
         clientHeight: 440,
       } as HTMLElement)
     ).toBe(false);
+  });
+
+  it("only finalizes the controller that still owns the active stream", () => {
+    const completed = new AbortController();
+    const replacement = new AbortController();
+
+    expect(shouldFinalizeAgentStream(completed, completed)).toBe(true);
+    expect(shouldFinalizeAgentStream(replacement, completed)).toBe(false);
+    expect(shouldFinalizeAgentStream(null, completed)).toBe(false);
+  });
+
+  it("clears the retried prompt but preserves a newly edited draft", () => {
+    expect(
+      shouldClearAgentDraft(
+        "Explain retry persistence",
+        "Explain retry persistence",
+        true
+      )
+    ).toBe(true);
+    expect(
+      shouldClearAgentDraft(
+        "A different follow-up draft",
+        "Explain retry persistence",
+        true
+      )
+    ).toBe(false);
+    expect(shouldClearAgentDraft("Any draft", "New message", false)).toBe(true);
+  });
+
+  it("removes stale current-page source prefixes after route changes", () => {
+    const source = {
+      sourceId: "post:agent-loop:1",
+      postTitle: "Agent Loop",
+      postSlug: "agent-loop",
+      tagSlugs: [],
+      excerpt: "Loop details",
+      relevanceReason: "Current public article context. Matched loop terms.",
+    };
+    const translate = (key: string) =>
+      key === "agent.sources.currentPage" ? "Current page" : "Blog";
+
+    expect(getDisplayRelevanceReason(source, false, translate)).toBe(
+      "Matched loop terms."
+    );
+    expect(
+      getDisplayRelevanceReason(
+        { ...source, relevanceReason: "Current public article context." },
+        true,
+        translate
+      )
+    ).toBe("Current page");
+    expect(
+      getDisplayRelevanceReason(
+        { ...source, relevanceReason: "Current public article context." },
+        false,
+        translate
+      )
+    ).toBe("Blog");
   });
 
   it("dispatches an open event with an article prompt", () => {
@@ -346,6 +353,56 @@ describe("BlogAgent route context", () => {
       String((fetchMock.mock.calls[0][1] as RequestInit).body)
     );
     expect(requestBody.answerMode).toBe("compare");
+
+    vi.unstubAllGlobals();
+  });
+
+  it("sends retry identity and exposes persisted turn ids from status", async () => {
+    const onStatus = vi.fn();
+    const encoder = new TextEncoder();
+    const body = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          encoder.encode(
+            [
+              'data: {"type":"status","stage":"understanding","elapsedMs":2,"conversationId":"conv-1","userMessageId":"user-1"}',
+              "",
+              'data: {"type":"final","elapsedMs":9,"output":{"status":"failed","conversationId":"conv-1","userMessageId":"user-1","messageId":"msg-1","quota":{"limit":10,"used":1,"remaining":9,"resetAt":"2026-06-06T16:00:00.000Z","tier":"anonymous","allowed":true},"runStatus":"failed","errorCode":"agent_generation_failed"}}',
+              "",
+            ].join("\n")
+          )
+        );
+        controller.close();
+      },
+    });
+    const fetchMock = vi.fn(async () => new Response(body, { status: 200 }));
+    vi.stubGlobal("window", { setTimeout, clearTimeout });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await streamAgentMessage({
+      conversationId: "conv-1",
+      retryUserMessageId: "user-1",
+      message: "Retry the same turn",
+      routeContext: buildRouteContext("/", "en"),
+      onStatus,
+      onAnswerDelta: vi.fn(),
+      onFinal: vi.fn(),
+    });
+
+    expect(onStatus).toHaveBeenCalledWith(
+      expect.objectContaining({
+        conversationId: "conv-1",
+        userMessageId: "user-1",
+      })
+    );
+    const requestBody = JSON.parse(
+      String((fetchMock.mock.calls[0][1] as RequestInit).body)
+    );
+    expect(requestBody).toMatchObject({
+      conversationId: "conv-1",
+      retryUserMessageId: "user-1",
+      message: "Retry the same turn",
+    });
 
     vi.unstubAllGlobals();
   });

@@ -34,10 +34,16 @@ export const agentAnswerModeInput = z.enum([
   "reading_path",
 ]);
 
-export const agentSendMessageInput = z.object({
-  conversationId: z.string().uuid().optional(),
-  message: z.string().trim().min(1).max(4000),
-  routeContext: agentRouteContextInput,
-  scope: agentScopeInput.optional(),
-  answerMode: agentAnswerModeInput.optional(),
-});
+export const agentSendMessageInput = z
+  .object({
+    conversationId: z.string().uuid().optional(),
+    retryUserMessageId: z.string().uuid().optional(),
+    message: z.string().trim().min(1).max(4000),
+    routeContext: agentRouteContextInput,
+    scope: agentScopeInput.optional(),
+    answerMode: agentAnswerModeInput.optional(),
+  })
+  .refine(input => !input.retryUserMessageId || input.conversationId, {
+    message: "Retry requires an existing conversation",
+    path: ["conversationId"],
+  });

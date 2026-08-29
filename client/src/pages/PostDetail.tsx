@@ -848,14 +848,13 @@ export default function PostDetail() {
               {(primaryEntryItem || seriesContext) && (
                 <section
                   className="article-entry-layer glass-dock"
-                  aria-labelledby="article-entry-title"
+                  aria-label={t("post.entry.title")}
                 >
                   <div className="article-entry-brief">
                     <div className="article-entry-heading">
                       <p className="article-entry-kicker">
                         {t("post.entry.kicker")}
                       </p>
-                      <h2 id="article-entry-title">{t("post.entry.title")}</h2>
                     </div>
 
                     {primaryEntryItem && (

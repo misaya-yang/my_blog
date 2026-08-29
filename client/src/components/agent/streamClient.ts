@@ -7,6 +7,7 @@ export type AgentAnswerMode = "summary" | "deep" | "compare" | "reading_path";
 
 type AgentStreamCallbacks = {
   conversationId?: string;
+  retryUserMessageId?: string;
   message: string;
   routeContext: AgentRouteContext;
   answerMode?: AgentAnswerMode;
@@ -18,6 +19,8 @@ type AgentStreamCallbacks = {
 
 type AgentStreamStatusEvent = AgentTraceEntry & {
   type: "status";
+  conversationId?: string;
+  userMessageId?: string;
 };
 
 type AgentStreamFinalEvent = {
@@ -37,6 +40,7 @@ type AgentSendMessageResponse =
   | {
       status: "completed";
       conversationId: string;
+      userMessageId: string;
       messageId: string;
       answer: {
         answerMarkdown: string;
@@ -51,6 +55,7 @@ type AgentSendMessageResponse =
   | {
       status: "failed";
       conversationId: string;
+      userMessageId: string;
       messageId: string;
       quota: QuotaInfo;
       runStatus: "failed";
@@ -59,6 +64,7 @@ type AgentSendMessageResponse =
 
 export async function streamAgentMessage({
   conversationId,
+  retryUserMessageId,
   message,
   routeContext,
   answerMode,
@@ -85,6 +91,7 @@ export async function streamAgentMessage({
       },
       body: JSON.stringify({
         conversationId,
+        retryUserMessageId,
         message,
         routeContext,
         answerMode,
