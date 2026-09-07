@@ -19,13 +19,15 @@ function formatDay(value: string | Date | null, locale: string) {
   return new Date(value).toLocaleDateString(locale, {
     month: "short",
     day: "2-digit",
+    timeZone: "UTC",
   });
 }
 
-function formatMonth(year: number, month: number, locale: string) {
+export function formatMonth(year: number, month: number, locale: string) {
   return new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString(locale, {
     year: "numeric",
     month: "long",
+    timeZone: "UTC",
   });
 }
 

@@ -1,3 +1,4 @@
+import { normalizeMarkdownMath } from "@shared/markdown-math";
 import { Check, Copy } from "lucide-react";
 import { useEffect } from "react";
 import ReactMarkdown from "react-markdown";
@@ -136,7 +137,7 @@ export default function MarkdownRenderer({
         },
       }}
     >
-      {content}
+      {normalizeMarkdownMath(content)}
     </ReactMarkdown>
   );
 }

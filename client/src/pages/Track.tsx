@@ -2,7 +2,6 @@ import { ArticleCard, type ArticleCardPost } from "@/components/ArticleCard";
 import {
   SiteHeader,
   SpaceBackdrop,
-  StatTile,
   EmptyState,
 } from "@/components/ResearchShell";
 import { Button } from "@/components/ui/button";
@@ -16,15 +15,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
 import { buildRouteMetadata } from "@shared/metadata";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Eye,
-  FileText,
-  Folder,
-  GitBranch,
-  Network,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, FileText, GitBranch } from "lucide-react";
 import { Link } from "wouter";
 
 function resolvePostTitle(posts: ArticleCardPost[], slug: string) {
@@ -50,10 +41,6 @@ function TrackPage({ kind }: { kind: TrackKind }) {
     ? ((posts?.posts ?? []) as ArticleCardPost[])
     : [];
   const publicSeries = getPublicTrackSeries(kind, trackPosts);
-  const totalViews = trackPosts.reduce(
-    (sum, post) => sum + (post.viewCount || 0),
-    0
-  );
 
   useSeo(
     buildRouteMetadata(siteUrl, {
@@ -72,11 +59,6 @@ function TrackPage({ kind }: { kind: TrackKind }) {
       <main className="relative z-10">
         <section className="container track-index-page px-4 pb-12 pt-14 sm:px-6 md:pt-[4.5rem]">
           <div className="page-hero track-index-hero min-w-0">
-            <div className="signal-chip mb-6">
-              <Network className="h-4 w-4" />
-              {t(config.topicTitleKey)}
-            </div>
-
             <h1 className="page-title track-page-title">
               {t(config.titleKey)}
             </h1>
@@ -84,62 +66,17 @@ function TrackPage({ kind }: { kind: TrackKind }) {
               {t(config.subtitleKey)}
             </p>
 
-            <div className="track-context-strip mt-7">
-              <div className="track-map-note">
-                <Network className="h-5 w-5 text-primary" />
-                <p>
-                  {t(
-                    kind === "algorithms"
-                      ? "track.algorithms.mapNote"
-                      : "track.applications.mapNote"
-                  )}
-                </p>
-              </div>
-              <div className="track-focus-chips">
-                {config.focusKeys.slice(0, 4).map(key => (
-                  <span key={key}>{t(key)}</span>
-                ))}
-              </div>
-            </div>
-
-            <div className="track-stat-grid track-stat-row mt-6 grid max-w-4xl grid-cols-3 gap-2 sm:gap-3">
-              <StatTile
-                icon={<FileText className="h-5 w-5" />}
-                value={
-                  hasLoadedPosts ? (
-                    trackPosts.length
-                  ) : (
-                    <span
-                      className="stat-value-skeleton"
-                      aria-label={t("common.ui.loading")}
-                    />
-                  )
-                }
-                label={t("home.statArticles")}
-              />
-              <StatTile
-                icon={<Folder className="h-5 w-5" />}
-                value={config.topics.length}
-                label={t("track.statTopics")}
-              />
-              <StatTile
-                icon={<Eye className="h-5 w-5" />}
-                value={
-                  hasLoadedPosts ? (
-                    totalViews
-                  ) : (
-                    <span
-                      className="stat-value-skeleton"
-                      aria-label={t("common.ui.loading")}
-                    />
-                  )
-                }
-                label={t("home.statViews")}
-              />
+            <div className="track-focus-chips">
+              {config.focusKeys.slice(0, 4).map(key => (
+                <span key={key}>{t(key)}</span>
+              ))}
             </div>
 
             {publicSeries.length > 0 && (
-              <section className="track-path-section mt-7 max-w-5xl">
+              <details className="track-path-section">
+                <summary>
+                  {t("track.seriesTitle")} · {publicSeries.length}
+                </summary>
                 <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
                   <div>
                     <h2 className="section-title">{t("track.seriesTitle")}</h2>
@@ -198,7 +135,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
                     </section>
                   ))}
                 </div>
-              </section>
+              </details>
             )}
           </div>
         </section>
@@ -249,7 +186,6 @@ function TrackPage({ kind }: { kind: TrackKind }) {
               />
             )}
           </div>
-
         </section>
       </main>
     </div>

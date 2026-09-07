@@ -45,6 +45,7 @@ import {
 } from "lucide-react";
 import { Link, useParams } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { normalizeMarkdownMath } from "@shared/markdown-math";
 import { langAttr } from "@/lib/contentLang";
 import { lazy, Suspense, useEffect, useState, useCallback } from "react";
 
@@ -405,6 +406,12 @@ function MobileToc({
           <a
             key={heading.id}
             href={`#${heading.id}`}
+            onClick={event => {
+              event.preventDefault();
+              const details = event.currentTarget.closest("details");
+              if (details) details.open = false;
+              scrollToArticleHeading(heading.id, true);
+            }}
             className="text-sm text-muted-foreground hover:text-primary"
             style={{
               paddingLeft: `${(heading.level - 1) * 0.75}rem`,
@@ -427,7 +434,9 @@ function scrollToArticleHeading(id: string, updateHash = false) {
   }
 
   element.scrollIntoView({
-    behavior: "smooth",
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "auto"
+      : "smooth",
     block: "start",
   });
 }
@@ -503,7 +512,9 @@ export default function PostDetail() {
         post.content,
         post.title
       );
-      setHeadings(extractMarkdownHeadingAnchors(articleContent));
+      setHeadings(
+        extractMarkdownHeadingAnchors(normalizeMarkdownMath(articleContent))
+      );
     }
   }, [post?.content, post?.title]);
 

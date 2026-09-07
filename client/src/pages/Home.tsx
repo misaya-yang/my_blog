@@ -1,14 +1,16 @@
-import { useAuth } from "@/_core/hooks/useAuth";
+import { useMemo } from "react";
+import { Link } from "wouter";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import {
   ArticleCard,
+  getArticleCover,
   type ArticleCardPost,
-  type ArticleTrack,
 } from "@/components/ArticleCard";
-import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { SiteHeader } from "@/components/ResearchShell";
+import { GalaxyHero } from "@/components/galaxy/GalaxyHero";
+import { Reveal } from "@/components/Reveal";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
-  getPublicTrackSeries,
   trackConfigs,
   type TrackKind,
   type TrackSeriesConfig,
@@ -16,70 +18,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
 import { buildHomeJsonLd, buildRouteMetadata } from "@shared/metadata";
-import { getContentSeriesBySlug } from "@shared/content-series";
-import {
-  ArrowRight,
-  FileText,
-  GitBranch,
-  Route,
-  Search,
-  Settings2,
-} from "lucide-react";
-import { Link, useLocation } from "wouter";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { langAttr } from "@/lib/contentLang";
-import { FormEvent, useEffect, useMemo, useState } from "react";
-
-const portalTracks: TrackKind[] = ["algorithms", "applications"];
-
-type TrackPanelModel = {
-  track: TrackKind;
-  href: string;
-  label: string;
-  title: string;
-  subtitle: string;
-  meta: string;
-  pathTitle: string;
-  pathSummary: string;
-  actionLabel: string;
-  posts: ArticleCardPost[];
-};
-
-function getArticleTrack(post: ArticleCardPost): ArticleTrack {
-  return post.category?.slug === "ai-applications"
-    ? "applications"
-    : "algorithms";
-}
-
-function countTrackPosts(posts: ArticleCardPost[], track: TrackKind) {
-  const categorySlug = trackConfigs[track].categorySlug;
-  return posts.filter(post => post.category?.slug === categorySlug).length;
-}
-
-function renderHeroTitle(language: "en" | "zh") {
-  if (language === "zh") {
-    return (
-      <>
-        {/* Authored per line, like the English title below. Left to wrap on
-            its own the run broke after 应 and stranded 用 alone at 76px. */}
-        <span className="home-title-line">AI 算法与</span>
-        <span className="home-title-line">
-          <span className="home-title-accent">AI</span> 应用
-        </span>
-      </>
-    );
-  }
-
-  return (
-    <>
-      <span className="home-title-line">AI Algorithms</span>
-      <span className="home-title-line">
-        and <span className="home-title-accent">AI</span>
-      </span>
-      <span className="home-title-line">Applications</span>
-    </>
-  );
-}
 
 export function getPostPublishedTime(post: ArticleCardPost) {
   if (!post.publishedAt) return 0;
@@ -136,426 +75,205 @@ export function getRepresentativePosts(
   return sortPostsNewestFirst(trackPosts).slice(0, 2);
 }
 
-function getPanelPathSummary(
-  track: TrackKind,
-  primarySeries: TrackSeriesConfig | null,
-  t: (key: string, vars?: Record<string, string | number>) => string
-) {
-  if (primarySeries) return t(primarySeries.promiseKey);
-  if (track === "applications") return t("home.applicationsPathSummary");
-  return t("home.algorithmsPathSummary");
-}
-
-function getPostSeriesLabel(
-  post: ArticleCardPost,
-  fallback: string,
-  t: (key: string, vars?: Record<string, string | number>) => string
-) {
-  const series = post.seriesSlug
-    ? getContentSeriesBySlug(post.seriesSlug)
-    : null;
-  return series ? t(series.titleKey) : (post.seriesTitle ?? fallback);
-}
-
-function FeaturedNote({
-  post,
-  isLoading,
-  showSlowLoading,
-  t,
-  isAdmin,
-}: {
-  post?: ArticleCardPost;
-  isLoading: boolean;
-  showSlowLoading: boolean;
-  t: (key: string, vars?: Record<string, string | number>) => string;
-  isAdmin: boolean;
-}) {
-  return (
-    <section
-      className="home-featured-note article-card open-group"
-      aria-label={t("home.latestNote")}
-    >
-      <div className="home-featured-note-head">
-        <span>
-          <FileText className="h-4 w-4" />
-          {t("home.latestNote")}
-        </span>
-        {isAdmin && (
-          <Link href="/manage">
-            <Button
-              variant="outline"
-              size="icon"
-              className="glass-button h-9 w-9"
-              aria-label={t("nav.manageArticles")}
-              title={t("nav.manageArticles")}
-            >
-              <Settings2 className="h-4 w-4" />
-            </Button>
-          </Link>
-        )}
-      </div>
-
-      {isLoading ? (
-        <div className="home-note-skeleton" aria-busy="true">
-          <p>
-            {showSlowLoading
-              ? t("home.loadingArticlesSlow")
-              : t("home.loadingArticles")}
-          </p>
-          <span />
-          <strong />
-        </div>
-      ) : post ? (
-        <div className="home-featured-note-body">
-          <Link href={`/post/${post.slug}`}>
-            <h2 {...langAttr(post.title)}>{post.title}</h2>
-          </Link>
-          <p {...langAttr(post.excerpt)}>{post.excerpt}</p>
-          <Link href={`/post/${post.slug}`} className="home-inline-action">
-            {t("home.readMore")}
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      ) : (
-        <div className="article-empty-state state-surface liquid-surface">
-          <h3>{t("home.noArticles")}</h3>
-          <p>{t("home.noArticlesRecovery")}</p>
-        </div>
-      )}
-    </section>
-  );
-}
-
-function TrackPanel({
-  model,
-  t,
-}: {
-  model: TrackPanelModel;
-  t: (key: string, vars?: Record<string, string | number>) => string;
-}) {
-  return (
-    <section
-      className={`home-track-panel home-track-panel-${model.track} open-group`}
-    >
-      <div className="home-track-panel-head">
-        <span>{model.label}</span>
-        <strong>{model.meta}</strong>
-      </div>
-
-      <div className="home-track-panel-main">
-        <div className="home-track-panel-copy">
-          <Link href={model.href} className="home-track-title-link">
-            <h2>{model.title}</h2>
-          </Link>
-          <p className="home-track-summary">{model.subtitle}</p>
-          <Link href={model.href} className="home-track-action">
-            {model.actionLabel}
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-
-        <div className="home-track-panel-detail">
-          <div className="home-track-path">
-            <span>
-              <GitBranch className="h-4 w-4" />
-              {t("home.trackPathLabel")}
-            </span>
-            <strong>{model.pathTitle}</strong>
-            <p>{model.pathSummary}</p>
-          </div>
-
-          <div className="home-track-post-list">
-            {model.posts.length > 0 ? (
-              model.posts.map(post => (
-                <Link key={post.id} href={`/post/${post.slug}`}>
-                  <span>{getPostSeriesLabel(post, model.label, t)}</span>
-                  <strong {...langAttr(post.title)}>{post.title}</strong>
-                </Link>
-              ))
-            ) : (
-              <div className="home-track-empty state-surface liquid-surface">
-                {t("home.emptyTrack")}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function StartHerePath({
-  featuredPost,
-  t,
-}: {
-  featuredPost?: ArticleCardPost;
-  t: (key: string, vars?: Record<string, string | number>) => string;
-}) {
-  return (
-    <nav
-      className="home-start-path glass-dock"
-      aria-label={t("home.startHere")}
-    >
-      <div className="home-start-path-copy">
-        <Route className="h-4 w-4 text-primary" aria-hidden="true" />
-        <div>
-          <strong>{t("home.startHere")}</strong>
-          <span>{t("home.startHereHint")}</span>
-        </div>
-      </div>
-      <div className="home-start-path-actions">
-        {featuredPost && (
-          <Link href={`/post/${featuredPost.slug}`} className="gap-1.5">
-            {t("home.startLatest")}
-            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-          </Link>
-        )}
-        <Link href="/applications" className="gap-1.5">
-          {t("home.startApplications")}
-          <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-        </Link>
-        <Link href="/algorithms" className="gap-1.5">
-          {t("home.startAlgorithms")}
-          <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-        </Link>
-      </div>
-    </nav>
-  );
-}
-
 export default function Home() {
-  const { isAdmin } = useAuth();
   const { language, t } = useLanguage();
+  const zh = language === "zh";
   const siteUrl = getClientSiteUrl();
-  const [, navigate] = useLocation();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showSlowLoading, setShowSlowLoading] = useState(false);
-
-  const { data: posts, isLoading } = trpc.posts.list.useQuery({
+  const { data, isLoading, isError, refetch } = trpc.posts.list.useQuery({
     status: "published",
     limit: 20,
     orderBy: "publishedAt",
   });
-
-  const publishedPosts = useMemo(
-    () => sortPostsNewestFirst((posts?.posts ?? []) as ArticleCardPost[]),
-    [posts?.posts]
+  const posts = useMemo(
+    () => sortPostsNewestFirst((data?.posts ?? []) as ArticleCardPost[]),
+    [data?.posts]
   );
-  const publicSeriesByTrack = useMemo<
-    Record<TrackKind, ReturnType<typeof getPublicTrackSeries>>
-  >(
-    () => ({
-      algorithms: getPublicTrackSeries("algorithms", publishedPosts),
-      applications: getPublicTrackSeries("applications", publishedPosts),
-    }),
-    [publishedPosts]
-  );
-
-  useEffect(() => {
-    if (!isLoading) {
-      setShowSlowLoading(false);
-      return;
-    }
-
-    const timer = window.setTimeout(() => setShowSlowLoading(true), 1200);
-    return () => window.clearTimeout(timer);
-  }, [isLoading]);
-
+  const featured = posts[0];
   useSeo(
     buildRouteMetadata(siteUrl, {
       title: t("home.title"),
       description: t("home.subtitle"),
       path: "/",
-      locale: language === "zh" ? "zh-CN" : "en-US",
+      locale: zh ? "zh-CN" : "en-US",
     }),
     buildHomeJsonLd(siteUrl)
   );
 
-  const trackPanels = useMemo<TrackPanelModel[]>(
-    () =>
-      portalTracks.map(track => {
-        const config = trackConfigs[track];
-        const publicSeries = publicSeriesByTrack[track];
-        const primarySeries = getPrimarySeries(publicSeries, publishedPosts);
-        const publicCount = countTrackPosts(publishedPosts, track);
-        const pathCount = publicSeries.length;
-        const pathCountLabel = t(
-          pathCount === 1 ? "home.pathCountOne" : "home.pathCountOther",
-          { count: pathCount }
-        );
-        const publicNoteCountLabel = t(
-          publicCount === 1
-            ? "home.publicNoteCountOne"
-            : "home.publicNoteCountOther",
-          { count: publicCount }
-        );
-
-        return {
-          track,
-          href: config.href,
-          label: t(
-            track === "algorithms"
-              ? "home.algorithmsLabel"
-              : "home.applicationsLabel"
-          ),
-          title: t(config.titleKey),
-          subtitle: t(config.subtitleKey),
-          meta: isLoading
-            ? t("home.pathsPending")
-            : `${pathCountLabel} · ${publicNoteCountLabel}`,
-          pathTitle: primarySeries
-            ? t(primarySeries.titleKey)
-            : t("home.algorithmsPathTitle"),
-          pathSummary: getPanelPathSummary(track, primarySeries, t),
-          actionLabel:
-            track === "applications"
-              ? t("home.enterApplications")
-              : t("home.enterAlgorithms"),
-          posts: getRepresentativePosts(publishedPosts, track),
-        };
-      }),
-    [isLoading, publishedPosts, publicSeriesByTrack, t]
-  );
-
-  const featuredPost = publishedPosts[0];
-  const morePosts = publishedPosts.slice(1, 5);
-
-  function runSearch() {
-    const query = searchQuery.trim();
-    navigate(query ? `/search?q=${encodeURIComponent(query)}` : "/search");
-  }
-
-  function submitSearch(event: FormEvent) {
-    event.preventDefault();
-    runSearch();
-  }
-
   return (
-    <div className="space-page">
-      <SpaceBackdrop subtle />
+    <div className="space-page observatory-home">
       <SiteHeader active="home" />
-
-      <main className="relative z-10">
-        <section className="home-index-spread container px-4 py-8 sm:px-6 lg:py-10">
-          <div className="home-index-grid">
-            <section className="home-intro-rail open-group">
-              <p className="home-index-kicker">{t("home.kicker")}</p>
-              <h1 className="home-title text-foreground">
-                {renderHeroTitle(language)}
-              </h1>
-              <p className="home-subtitle text-muted-foreground">
-                {t("home.subtitle")}
-              </p>
-
-              <form
-                onSubmit={submitSearch}
-                className="home-index-search home-search-dock glass-dock"
-              >
-                <label className="sr-only" htmlFor="home-search-query">
-                  {t("home.searchPlaceholder")}
-                </label>
-                <div className="home-search-field">
-                  <Search className="h-4 w-4" aria-hidden="true" />
-                  <Input
-                    id="home-search-query"
-                    type="search"
-                    autoComplete="search"
-                    placeholder={t("home.searchPlaceholder")}
-                    value={searchQuery}
-                    onChange={event => setSearchQuery(event.target.value)}
-                    className="h-12 border-0 bg-transparent px-0 text-base font-medium text-foreground shadow-none placeholder:text-muted-foreground focus-visible:ring-0"
-                  />
-                  <Button type="submit" className="home-search-submit">
-                    {t("discovery.searchButton")}
-                  </Button>
-                </div>
-              </form>
-
-              <StartHerePath featuredPost={featuredPost} t={t} />
-            </section>
-
-            <section
-              className="home-track-panel-grid"
-              aria-label={t("home.researchIndex")}
-            >
-              {trackPanels.map(model => (
-                <TrackPanel key={model.track} model={model} t={t} />
-              ))}
-            </section>
-
-            <div className="home-featured-band">
-              <FeaturedNote
-                post={featuredPost}
-                isLoading={isLoading}
-                showSlowLoading={showSlowLoading}
-                t={t}
-                isAdmin={isAdmin}
-              />
+      <main>
+        <section
+          className="observatory-hero observatory-container"
+          aria-labelledby="hero-title"
+        >
+          <div className="observatory-hero-copy">
+            <h1 id="hero-title" lang="en">
+              <span>Misaya</span>
+              <span>Notes.</span>
+            </h1>
+            <p>
+              {zh
+                ? "模型机制、长上下文与智能体工程。记录推导、实验，以及真正运行过的系统。"
+                : "Model mechanics, long context, and agents. Derivations, experiments, and systems put to the test."}
+            </p>
+            <div className="observatory-actions">
+              <a className="observatory-primary" href="#featured">
+                {zh ? "阅读笔记" : "Read the notes"}
+                <ArrowRight size={18} />
+              </a>
+              <Link className="observatory-text-link" href="/about">
+                {zh ? "关于我" : "About me"}
+                <ArrowUpRight size={17} />
+              </Link>
             </div>
+          </div>
+          <GalaxyHero />
+          <div className="observatory-hero-foot">
+            <span>{zh ? "研究与实践" : "Research & practice"}</span>
+            <a href="#featured">
+              {zh ? "向下探索" : "Scroll to explore"}
+              <ArrowRight size={14} />
+            </a>
           </div>
         </section>
 
-        <section
-          id="research-index"
-          className="home-more-notes open-group hairline-list container px-4 pb-16 sm:px-6"
-        >
-          <div className="home-more-notes-head">
-            <div>
-              <h2>{t("home.moreNotes")}</h2>
-              <p>{t("home.moreNotesHint")}</p>
-            </div>
-            <Link href="/archive" className="home-inline-action">
-              {t("home.allNotes")}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-
-          {isLoading ? (
-            <div className="home-more-note-skeletons" aria-busy="true">
-              {[1, 2, 3, 4].map(item => (
-                <div key={item} className="article-skeleton">
-                  <span />
-                  <strong />
-                  <em />
-                  <i />
+        <div className="observatory-container observatory-content">
+          <Reveal>
+            <section
+              id="featured"
+              className="observatory-featured"
+              aria-label={t("home.latestNote")}
+            >
+              {isLoading ? (
+                <div className="observatory-loading" role="status">
+                  {t("home.loadingArticles")}
                 </div>
-              ))}
-            </div>
-          ) : morePosts.length ? (
-            <div className="home-more-note-grid">
-              {morePosts.map((post, index) => (
+              ) : featured ? (
+                <>
+                  <Link
+                    href={`/post/${featured.slug}`}
+                    className="observatory-featured-image"
+                    aria-label={featured.title}
+                  >
+                    <img
+                      src={getArticleCover(featured)}
+                      alt=""
+                      width="640"
+                      height="360"
+                    />
+                  </Link>
+                  <div className="observatory-featured-copy">
+                    <p className="observatory-label">{t("home.latestNote")}</p>
+                    <Link href={`/post/${featured.slug}`}>
+                      <h2 {...langAttr(featured.title)}>{featured.title}</h2>
+                    </Link>
+                    <p {...langAttr(featured.excerpt)}>{featured.excerpt}</p>
+                    <Link
+                      className="observatory-text-link"
+                      href={`/post/${featured.slug}`}
+                    >
+                      {t("home.readMore")}
+                      <ArrowUpRight size={18} />
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <div className="observatory-loading">
+                  <p>
+                    {isError
+                      ? t("home.noArticlesRecovery")
+                      : t("home.noArticles")}
+                  </p>
+                  {isError && (
+                    <button
+                      className="observatory-text-link"
+                      onClick={() => void refetch()}
+                    >
+                      {zh ? "重新加载" : "Try again"}
+                    </button>
+                  )}
+                </div>
+              )}
+            </section>
+          </Reveal>
+
+          <Reveal>
+            <section
+              className="observatory-directions"
+              aria-labelledby="directions-title"
+            >
+              <h2 id="directions-title" className="observatory-label">
+                {zh ? "研究方向" : "Research directions"}
+              </h2>
+              <div className="observatory-direction-grid">
+                {(["algorithms", "applications"] as const).map(kind => (
+                  <Link
+                    key={kind}
+                    href={trackConfigs[kind].href}
+                    className="observatory-direction"
+                  >
+                    <div>
+                      <h3>{t(trackConfigs[kind].titleKey)}</h3>
+                      <p>
+                        {kind === "algorithms"
+                          ? zh
+                            ? "深入模型机制、生成建模与长上下文。"
+                            : "Inside model mechanics, generative modeling, and long context."
+                          : zh
+                            ? "构建能持续执行、验证与改进的智能系统。"
+                            : "Building agents and systems that execute, verify, and improve."}
+                      </p>
+                    </div>
+                    <ArrowUpRight size={24} />
+                  </Link>
+                ))}
+              </div>
+            </section>
+          </Reveal>
+
+          <Reveal>
+            <section
+              id="research-index"
+              className="observatory-notes"
+              aria-labelledby="notes-title"
+            >
+              <div className="observatory-section-heading">
+                <h2 id="notes-title">{t("home.moreNotes")}</h2>
+                <Link className="observatory-text-link" href="/archive">
+                  {t("home.allNotes")}
+                  <ArrowRight size={17} />
+                </Link>
+              </div>
+              {posts.slice(1, 5).map((post, index) => (
                 <ArticleCard
                   key={post.id}
                   post={post}
                   index={index + 1}
                   language={language}
                   t={t}
-                  track={getArticleTrack(post)}
+                  track={
+                    post.category?.slug === "ai-applications"
+                      ? "applications"
+                      : "algorithms"
+                  }
                 />
               ))}
-            </div>
-          ) : (
-            <div className="article-empty-state state-surface liquid-surface">
-              <h3>{t("home.noArticles")}</h3>
-              <p>{t("home.noArticlesRecovery")}</p>
-              <div>
-                <Link href="/archive" className="article-tag">
-                  {t("nav.archive")}
-                </Link>
-                <Link href="/search" className="article-tag">
-                  {t("nav.search")}
-                </Link>
-              </div>
-            </div>
-          )}
-        </section>
-      </main>
+            </section>
+          </Reveal>
 
-      <footer className="relative z-10 border-t border-border bg-background/60">
-        <div className="container flex flex-col gap-3 px-4 py-8 text-sm text-muted-foreground sm:px-6 md:flex-row md:items-center md:justify-between">
-          <p>{t("common.copyright")}</p>
-          <p>{t("home.footerTagline")}</p>
+          <section className="observatory-about">
+            <p>{t("home.footerTagline")}</p>
+            <Link href="/about" className="observatory-text-link">
+              {zh ? "认识 Misaya" : "Meet Misaya"}
+              <ArrowUpRight size={18} />
+            </Link>
+          </section>
         </div>
+      </main>
+      <footer className="observatory-footer observatory-container">
+        <p>{t("common.copyright")}</p>
+        <p>{t("home.footerTagline")}</p>
       </footer>
     </div>
   );

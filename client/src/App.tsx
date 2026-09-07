@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef } from "react";
 import { Route, Switch, useLocation } from "wouter";
+import { ScrollRestoration } from "./components/ScrollRestoration";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider, useLanguage } from "./contexts/LanguageContext";
@@ -9,7 +10,7 @@ import { BrandMark, SpaceBackdrop } from "@/components/ResearchShell";
 
 const Home = lazy(() => import("./pages/Home"));
 const Toaster = lazy(() =>
-  import("@/components/ui/sonner").then((module) => ({ default: module.Toaster }))
+  import("@/components/ui/sonner").then(module => ({ default: module.Toaster }))
 );
 const PostDetail = lazy(() => import("./pages/PostDetail"));
 const Editor = lazy(() => import("./pages/Editor"));
@@ -21,16 +22,18 @@ const Search = lazy(() => import("./pages/Search"));
 const About = lazy(() => import("./pages/About"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AlgorithmsPage = lazy(() =>
-  import("./pages/Track").then((module) => ({ default: module.AlgorithmsPage }))
+  import("./pages/Track").then(module => ({ default: module.AlgorithmsPage }))
 );
 const ApplicationsPage = lazy(() =>
-  import("./pages/Track").then((module) => ({ default: module.ApplicationsPage }))
+  import("./pages/Track").then(module => ({ default: module.ApplicationsPage }))
 );
 const TagPage = lazy(() =>
-  import("./pages/TaxonomyPage").then((module) => ({ default: module.TagPage }))
+  import("./pages/TaxonomyPage").then(module => ({ default: module.TagPage }))
 );
 const CategoryPage = lazy(() =>
-  import("./pages/TaxonomyPage").then((module) => ({ default: module.CategoryPage }))
+  import("./pages/TaxonomyPage").then(module => ({
+    default: module.CategoryPage,
+  }))
 );
 
 function RouteLoading() {
@@ -172,6 +175,7 @@ function App() {
           </Suspense>
           <AnalyticsRouteTracker />
           <RouteEffectController />
+          <ScrollRestoration />
           <Router />
           <BlogAgentRoot />
         </ErrorBoundary>

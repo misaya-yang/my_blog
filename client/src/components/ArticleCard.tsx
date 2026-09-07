@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, Calendar, Eye } from "lucide-react";
+import { ArrowRight, BookOpen, Calendar } from "lucide-react";
 import { getContentSeriesBySlug } from "@shared/content-series";
 import { estimateReadingMinutes } from "@shared/reading-time";
 import { Link } from "wouter";
@@ -154,6 +154,10 @@ function pickTheme<T extends ArticleVisualTheme>(text: string, themes: T[]): T {
   return themes[hash % themes.length];
 }
 
+export function getArticleCover(post: ArticleCardPost, track?: ArticleTrack) {
+  return post.coverImage || ARTICLE_THUMBNAILS[visualTheme(post, track)];
+}
+
 export function ArticleCard({
   post,
   index,
@@ -245,10 +249,6 @@ export function ArticleCard({
             {post.readingMinutes ||
               estimateReadingMinutes(post.content || "")}{" "}
             {t("home.minRead")}
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Eye className="h-3.5 w-3.5" />
-            {post.viewCount || 0} {t("home.reads")}
           </span>
           <Link href={`/post/${post.slug}`} className="article-read-link">
             {t("home.readMore")}{" "}

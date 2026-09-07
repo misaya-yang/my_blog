@@ -165,7 +165,11 @@ export function SiteHeader({
       <div className="container flex h-[68px] items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-3">
           {backHref ? (
-            <Link href={backHref} className="nav-ink gap-2">
+            <Link
+              href={backHref}
+              className="nav-ink gap-2"
+              aria-label={backLabel || t("nav.back")}
+            >
               <ArrowLeft className="h-4 w-4" />
               <span className="hidden sm:inline">
                 {backLabel || t("nav.back")}
