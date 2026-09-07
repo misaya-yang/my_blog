@@ -263,9 +263,12 @@
     background: var(--v2-solid-data) !important;
   }
 
-  .surface-open:not(:hover):not(:focus-within),
-  .open-group:not(:hover):not(:focus-within),
-  .space-page:not(.owner-dark-scope)
+  :where(body:not(:has(.public-universe)))
+    .surface-open:not(:hover):not(:focus-within),
+  :where(body:not(:has(.public-universe)))
+    .open-group:not(:hover):not(:focus-within),
+  :where(body:not(:has(.public-universe)))
+    .space-page:not(.owner-dark-scope)
     :is(
       .liquid-panel,
       .liquid-surface,

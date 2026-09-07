@@ -170,6 +170,7 @@ function TrackPage({ kind }: { kind: TrackKind }) {
               <div className="grid gap-4">
                 {trackPosts.map((post, index) => (
                   <ArticleCard
+                    showVisual={false}
                     key={post.id}
                     post={post}
                     index={index}

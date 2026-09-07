@@ -80,7 +80,7 @@ describe("MarkdownRenderer", () => {
     expect(html).toContain('class="hljs-keyword">const</span>');
     expect(html).toContain("verifier");
     expect(html).toContain(
-      '<pre class="overflow-x-auto"><code>plain fenced block'
+      '<pre class="overflow-x-auto" tabindex="0"><code>plain fenced block'
     );
     expect(html).toContain(
       '<code class="rounded bg-muted px-1.5 py-0.5 font-mono text-sm">token</code>'

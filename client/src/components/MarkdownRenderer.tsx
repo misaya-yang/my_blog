@@ -82,28 +82,37 @@ export default function MarkdownRenderer({
             className="h-auto max-w-full rounded-lg border border-border"
           />
         ),
-        pre: ({ node: _node, children, ...props }: any) => {
+        pre: ({ node, children, ...props }: any) => {
           const code = extractCode(children);
           const codeId = code ? `code-${hashString(code)}` : "";
+          const language =
+            node?.children?.[0]?.properties?.className
+              ?.find((name: string) => name.startsWith("language-"))
+              ?.replace("language-", "") || "Code";
 
           return (
-            <div className="group relative">
-              <pre className="overflow-x-auto" {...props}>
+            <div className="markdown-code-block">
+              <div className="markdown-code-toolbar">
+                <span>{language}</span>
+                {code && onCopyCode ? (
+                  <button
+                    type="button"
+                    aria-label={copyCodeLabel}
+                    title={copyCodeLabel}
+                    onClick={() => onCopyCode(code, codeId)}
+                    className="markdown-code-copy"
+                  >
+                    {copiedCode === codeId ? (
+                      <Check className="h-4 w-4 text-primary" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </button>
+                ) : null}
+              </div>
+              <pre className="overflow-x-auto" tabIndex={0} {...props}>
                 {children}
               </pre>
-              {code && onCopyCode ? (
-                <button
-                  aria-label={copyCodeLabel}
-                  onClick={() => onCopyCode(code, codeId)}
-                  className="absolute right-3 top-3 rounded-md bg-card/90 p-2 opacity-90 transition-colors hover:bg-muted hover:opacity-100 focus-visible:opacity-100"
-                >
-                  {copiedCode === codeId ? (
-                    <Check className="h-4 w-4 text-primary" />
-                  ) : (
-                    <Copy className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </button>
-              ) : null}
             </div>
           );
         },

@@ -1,7 +1,4 @@
-import {
-  SiteHeader,
-  SpaceBackdrop,
-} from "@/components/ResearchShell";
+import { SiteHeader, SpaceBackdrop } from "@/components/ResearchShell";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getClientSiteUrl, useSeo } from "@/lib/seo";
 import { buildRouteMetadata } from "@shared/metadata";
@@ -19,7 +16,7 @@ export default function About() {
   );
 
   return (
-    <div className="space-page">
+    <div className="space-page author-page">
       <SpaceBackdrop subtle />
       <SiteHeader active="about" />
 
@@ -30,7 +27,9 @@ export default function About() {
               <BookOpen className="h-4 w-4" />
               {t("about.kicker")}
             </div>
-            <h1 className="page-title about-title">{t("about.title")}</h1>
+            <h1 className="page-title about-title" lang="en">
+              misaya<span>Misaya Yang</span>
+            </h1>
             <p className="page-copy about-copy mt-5">{t("about.subtitle")}</p>
             <p className="about-note">{t("about.focusBody")}</p>
           </article>

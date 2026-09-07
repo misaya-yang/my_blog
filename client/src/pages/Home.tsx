@@ -1,13 +1,8 @@
-import { useMemo } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import {
-  ArticleCard,
-  getArticleCover,
-  type ArticleCardPost,
-} from "@/components/ArticleCard";
+import { ArticleCard, type ArticleCardPost } from "@/components/ArticleCard";
 import { SiteHeader } from "@/components/ResearchShell";
-import { GalaxyHero } from "@/components/galaxy/GalaxyHero";
 import { Reveal } from "@/components/Reveal";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
@@ -88,7 +83,18 @@ export default function Home() {
     () => sortPostsNewestFirst((data?.posts ?? []) as ArticleCardPost[]),
     [data?.posts]
   );
-  const featured = posts[0];
+  const [selectedNote, setSelectedNote] = useState(0);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const featuredPosts = posts.slice(0, 6);
+  const featured =
+    featuredPosts[
+      Math.min(selectedNote, Math.max(0, featuredPosts.length - 1))
+    ];
+  const outline =
+    featured?.content
+      ?.match(/^##\s+.+$/gm)
+      ?.slice(0, 3)
+      .map(heading => heading.replace(/^##\s+/, "")) ?? [];
   useSeo(
     buildRouteMetadata(siteUrl, {
       title: t("home.title"),
@@ -103,72 +109,109 @@ export default function Home() {
     <div className="space-page observatory-home">
       <SiteHeader active="home" />
       <main>
-        <section
-          className="observatory-hero observatory-container"
-          aria-labelledby="hero-title"
-        >
-          <div className="observatory-hero-copy">
-            <h1 id="hero-title" lang="en">
-              <span>Misaya</span>
-              <span>Notes.</span>
-            </h1>
-            <p>
-              {zh
-                ? "模型机制、长上下文与智能体工程。记录推导、实验，以及真正运行过的系统。"
-                : "Model mechanics, long context, and agents. Derivations, experiments, and systems put to the test."}
-            </p>
-            <div className="observatory-actions">
-              <a className="observatory-primary" href="#featured">
-                {zh ? "阅读笔记" : "Read the notes"}
-                <ArrowRight size={18} />
-              </a>
-              <Link className="observatory-text-link" href="/about">
-                {zh ? "关于我" : "About me"}
-                <ArrowUpRight size={17} />
-              </Link>
+        <div className="observatory-hero-scroll">
+          <section
+            className="observatory-hero observatory-container"
+            aria-labelledby="hero-title"
+          >
+            <div className="observatory-hero-copy">
+              <h1 id="hero-title" lang="en">
+                Misaya Notes
+              </h1>
+              <p>
+                {zh
+                  ? "模型机制、长上下文与智能体工程。记录推导、实验，以及真正运行过的系统。"
+                  : "Model mechanics, long context, and agents. Derivations, experiments, and systems put to the test."}
+              </p>
+              <div className="observatory-actions">
+                <a className="observatory-primary" href="#featured">
+                  {zh ? "阅读笔记" : "Read the notes"}
+                  <ArrowRight size={18} />
+                </a>
+                <Link className="observatory-text-link" href="/about">
+                  {zh ? "关于我" : "About me"}
+                  <ArrowUpRight size={17} />
+                </Link>
+              </div>
             </div>
-          </div>
-          <GalaxyHero />
-          <div className="observatory-hero-foot">
-            <span>{zh ? "研究与实践" : "Research & practice"}</span>
-            <a href="#featured">
-              {zh ? "向下探索" : "Scroll to explore"}
-              <ArrowRight size={14} />
-            </a>
-          </div>
-        </section>
+            <div className="observatory-hero-foot">
+              <span>{zh ? "研究与实践" : "Research & practice"}</span>
+              <a href="#featured">
+                {zh ? "向下探索" : "Scroll to explore"}
+                <ArrowRight size={14} />
+              </a>
+            </div>
+          </section>
+        </div>
 
         <div className="observatory-container observatory-content">
           <Reveal>
             <section
               id="featured"
               className="observatory-featured"
-              aria-label={t("home.latestNote")}
+              aria-labelledby="recent-notes-title"
             >
+              <div className="observatory-featured-heading">
+                <h2 id="recent-notes-title">
+                  {zh ? "近期笔记" : "Recent notes"}
+                </h2>
+                <Link className="observatory-text-link" href="/archive">
+                  {t("home.allNotes")}
+                  <ArrowUpRight size={17} />
+                </Link>
+              </div>
               {isLoading ? (
                 <div className="observatory-loading" role="status">
                   {t("home.loadingArticles")}
                 </div>
               ) : featured ? (
                 <>
-                  <Link
-                    href={`/post/${featured.slug}`}
-                    className="observatory-featured-image"
-                    aria-label={featured.title}
+                  <div
+                    className="observatory-paper-preview"
+                    ref={previewRef}
+                    key={featured.slug}
                   >
-                    <img
-                      src={getArticleCover(featured)}
-                      alt=""
-                      width="640"
-                      height="360"
-                    />
-                  </Link>
-                  <div className="observatory-featured-copy">
-                    <p className="observatory-label">{t("home.latestNote")}</p>
+                    <div className="observatory-paper-meta">
+                      <span>
+                        {featured.category?.name ||
+                          (zh ? "研究笔记" : "Research note")}
+                      </span>
+                      {featured.publishedAt && (
+                        <time
+                          dateTime={new Date(
+                            featured.publishedAt
+                          ).toISOString()}
+                        >
+                          {new Date(featured.publishedAt).toLocaleDateString(
+                            zh ? "zh-CN" : "en-US",
+                            {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              timeZone: "UTC",
+                            }
+                          )}
+                        </time>
+                      )}
+                    </div>
                     <Link href={`/post/${featured.slug}`}>
-                      <h2 {...langAttr(featured.title)}>{featured.title}</h2>
+                      <h3 {...langAttr(featured.title)}>{featured.title}</h3>
                     </Link>
-                    <p {...langAttr(featured.excerpt)}>{featured.excerpt}</p>
+                    <p
+                      className="observatory-paper-excerpt"
+                      {...langAttr(featured.excerpt)}
+                    >
+                      {featured.excerpt}
+                    </p>
+                    {outline.length > 0 && (
+                      <ul className="observatory-paper-outline">
+                        {outline.map(heading => (
+                          <li key={heading} {...langAttr(heading)}>
+                            {heading}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                     <Link
                       className="observatory-text-link"
                       href={`/post/${featured.slug}`}
@@ -176,6 +219,44 @@ export default function Home() {
                       {t("home.readMore")}
                       <ArrowUpRight size={18} />
                     </Link>
+                  </div>
+                  <div
+                    className="observatory-paper-picker"
+                    aria-label={
+                      zh ? "切换文章预览" : "Choose an article preview"
+                    }
+                  >
+                    <p className="observatory-label">
+                      {zh ? "选择文章" : "Choose a note"}
+                    </p>
+                    {featuredPosts.map((post, index) => (
+                      <button
+                        type="button"
+                        key={post.slug}
+                        aria-pressed={featured.slug === post.slug}
+                        onClick={() => {
+                          setSelectedNote(index);
+                          if (matchMedia("(max-width: 850px)").matches) {
+                            requestAnimationFrame(() =>
+                              previewRef.current?.scrollIntoView({
+                                block: "start",
+                                behavior: matchMedia(
+                                  "(prefers-reduced-motion: reduce)"
+                                ).matches
+                                  ? "auto"
+                                  : "smooth",
+                              })
+                            );
+                          }
+                        }}
+                      >
+                        <span className="observatory-paper-number">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <span {...langAttr(post.title)}>{post.title}</span>
+                        <ArrowUpRight size={16} aria-hidden="true" />
+                      </button>
+                    ))}
                   </div>
                 </>
               ) : (
@@ -245,9 +326,10 @@ export default function Home() {
                   <ArrowRight size={17} />
                 </Link>
               </div>
-              {posts.slice(1, 5).map((post, index) => (
+              {posts.slice(6, 12).map((post, index) => (
                 <ArticleCard
                   key={post.id}
+                  showVisual={false}
                   post={post}
                   index={index + 1}
                   language={language}
@@ -273,7 +355,9 @@ export default function Home() {
       </main>
       <footer className="observatory-footer observatory-container">
         <p>{t("common.copyright")}</p>
-        <p>{t("home.footerTagline")}</p>
+        <Link href="/about">
+          Misaya Yang <ArrowUpRight size={13} />
+        </Link>
       </footer>
     </div>
   );

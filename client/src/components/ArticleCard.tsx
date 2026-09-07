@@ -39,6 +39,7 @@ type ArticleCardProps = {
   t: (key: string, vars?: Record<string, string | number>) => string;
   track?: ArticleTrack;
   featured?: boolean;
+  showVisual?: boolean;
 };
 
 type ArticleVisualTheme =
@@ -68,6 +69,7 @@ function formatDate(
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "UTC",
   });
 }
 
@@ -165,6 +167,7 @@ export function ArticleCard({
   t,
   track,
   featured = false,
+  showVisual = true,
 }: ArticleCardProps) {
   const visibleTags = Array.isArray(post.tags) ? post.tags.slice(0, 1) : [];
   const series = seriesLabel(post, t);
@@ -174,31 +177,34 @@ export function ArticleCard({
 
   return (
     <article
+      data-visual={showVisual}
       className={
         featured
           ? "article-card article-card-featured liquid-surface group"
           : "article-card liquid-surface group"
       }
     >
-      <Link href={`/post/${post.slug}`} aria-label={post.title}>
-        {post.coverImage ? (
-          <img
-            src={post.coverImage}
-            alt=""
-            className="article-visual article-visual-image object-cover"
-          />
-        ) : (
-          <img
-            src={thumbnailSrc}
-            alt=""
-            width={640}
-            height={360}
-            loading={featured ? "eager" : "lazy"}
-            decoding="async"
-            className={`article-visual article-visual-thumb article-visual-${theme}`}
-          />
-        )}
-      </Link>
+      {showVisual && (
+        <Link href={`/post/${post.slug}`} aria-label={post.title}>
+          {post.coverImage ? (
+            <img
+              src={post.coverImage}
+              alt=""
+              className="article-visual article-visual-image object-cover"
+            />
+          ) : (
+            <img
+              src={thumbnailSrc}
+              alt=""
+              width={640}
+              height={360}
+              loading={featured ? "eager" : "lazy"}
+              decoding="async"
+              className={`article-visual article-visual-thumb article-visual-${theme}`}
+            />
+          )}
+        </Link>
+      )}
       <div className="article-copy">
         <div className="article-tags">
           <span className="article-tag article-tag-primary">

@@ -1,0 +1,481 @@
+/* Public surface policy: open at rest, a single quiet boundary on interaction.
+   Geometry stays fixed; the star renderer handles contrast behind reading areas. */
+@layer components {
+  html[data-route-kind]
+    body
+    .public-universe
+    .space-page[class]:not(.owner-dark-scope):not(.route-loading-page)
+    :is(
+      .observatory-featured,
+      .observatory-notes,
+      .observatory-paper-preview,
+      .observatory-paper-picker,
+      .paper-reader-main,
+      .toc-surface,
+      .about-focus-ledger,
+      .about-links-rail,
+      .archive-timeline,
+      .article-card,
+      .taxonomy-side-panel,
+      .taxonomy-notes-surface,
+      .search-results-surface,
+      .search-result-row,
+      .track-series-card,
+      .archive-post-row
+    ) {
+    background: transparent !important;
+    background-image: none !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease;
+  }
+  html[data-route-kind]
+    body
+    .public-universe
+    .space-page[class]:not(.owner-dark-scope):not(.route-loading-page)
+    :is(
+      .observatory-paper-preview,
+      .paper-reader-main,
+      .toc-surface,
+      .about-links-rail,
+      .article-card,
+      .search-result-row,
+      .track-series-card,
+      .archive-post-row
+    ):focus-within {
+    border-color: color-mix(
+      in srgb,
+      var(--observatory-line) 60%,
+      transparent
+    ) !important;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    html[data-route-kind]
+      body
+      .public-universe
+      .space-page[class]:not(.owner-dark-scope):not(.route-loading-page)
+      :is(
+        .observatory-paper-preview,
+        .paper-reader-main,
+        .toc-surface,
+        .about-links-rail,
+        .article-card,
+        .search-result-row,
+        .track-series-card,
+        .archive-post-row
+      ):hover {
+      border-color: color-mix(
+        in srgb,
+        var(--observatory-line) 60%,
+        transparent
+      ) !important;
+    }
+  }
+  html[data-route-kind]
+    body
+    .public-universe
+    .space-page[class]:not(.owner-dark-scope):not(.route-loading-page)
+    :is(
+      .observatory-featured-heading,
+      .observatory-paper-picker,
+      .about-note,
+      .about-focus-ledger > div,
+      .about-focus-ledger p
+    ) {
+    border-color: transparent !important;
+  }
+  .public-universe .observatory-featured-heading {
+    border-bottom: 0;
+  }
+  .public-universe .observatory-paper-picker button {
+    border-color: transparent !important;
+  }
+  .public-universe .observatory-paper-picker button[aria-pressed="true"] {
+    background: color-mix(
+      in srgb,
+      var(--observatory-accent) 7%,
+      transparent
+    ) !important;
+    box-shadow: none !important;
+  }
+  .public-universe .public-search-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 760px;
+    margin: 28px 0 24px;
+    padding: 8px 10px 8px 18px;
+    border: 1px solid var(--observatory-line);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--observatory-bg) 70%, transparent);
+  }
+  .public-universe .public-search-form:focus-within {
+    border-color: var(--observatory-accent);
+  }
+  .public-universe .public-search-form:has(input:focus-visible) {
+    box-shadow: 0 0 0 1px var(--observatory-accent);
+  }
+  html[data-route-kind]
+    body
+    .public-universe
+    .space-page.search-page
+    .public-search-input,
+  html[data-route-kind]
+    body
+    .public-universe
+    .space-page.search-page
+    .public-search-input:focus-visible {
+    flex: 1;
+    min-width: 0;
+    height: 44px;
+    padding: 0;
+    border: 0 !important;
+    border-radius: 0;
+    background: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+    font-size: 16px;
+    color: var(--observatory-ink);
+  }
+  .public-universe .public-search-submit {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    border-radius: 10px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .public-universe
+      .space-page
+      :is(.article-card, .paper-reader-main, .toc-surface, .search-result-row) {
+      transition: none !important;
+    }
+  }
+}
+@layer components {
+  .public-universe .paper-toc-rail .toc-surface nav {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  html[data-route-kind]
+    body
+    .public-universe
+    .space-page[class]:not(.owner-dark-scope):not(.route-loading-page)
+    .article-reading-header
+    :is(.border-b, .article-entry-layer) {
+    border-color: transparent !important;
+  }
+  .public-universe .paper-reader-main .article-reading-header {
+    border-bottom: 1px solid var(--observatory-line);
+  }
+}
+.public-universe .observatory-home .observatory-content,
+.public-universe
+  .observatory-home
+  .observatory-content
+  > :has(> .observatory-directions),
+.public-universe .observatory-home .observatory-directions {
+  pointer-events: none;
+}
+.public-universe .observatory-home .observatory-direction-grid {
+  pointer-events: auto;
+}
+
+/* One code surface; the toolbar never covers source text. */
+@layer components {
+  .markdown-code-block {
+    --code-ink: #283643;
+    --code-muted: #63707c;
+    --code-keyword: #924064;
+    --code-literal: #20618a;
+    --code-string: #326c50;
+    margin: 1.5rem 0;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    background: rgb(220 228 236 / 45%);
+    color: var(--code-ink);
+  }
+  .dark .markdown-code-block {
+    --code-ink: #c9d4df;
+    --code-muted: #8f9eac;
+    --code-keyword: #d8a0b7;
+    --code-literal: #8ec2ed;
+    --code-string: #a5c6ab;
+    background: rgb(16 25 34 / 72%);
+  }
+  .markdown-code-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 44px;
+    padding: 4px 8px 4px 18px;
+    color: var(--code-muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1;
+  }
+  .markdown-code-copy {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: inherit;
+  }
+  .markdown-code-copy:hover {
+    background: rgb(128 145 162 / 14%);
+  }
+  .markdown-code-copy:focus-visible {
+    outline: 2px solid var(--public-accent);
+    outline-offset: -2px;
+  }
+  html[data-route-kind]
+    .public-universe
+    .paper-reader-main
+    .article-prose
+    .markdown-code-block
+    > pre {
+    margin: 0 !important;
+    padding: 8px 18px 18px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: auto !important;
+    max-width: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(128 145 162 / 45%) transparent;
+    color: var(--code-ink) !important;
+  }
+  .markdown-code-block > pre:focus-visible {
+    outline: 2px solid var(--public-accent);
+    outline-offset: -2px;
+  }
+  html[data-route-kind] .public-universe .markdown-code-block pre > code {
+    display: block;
+    width: max-content;
+    min-width: 100%;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: var(--code-ink) !important;
+    overflow: visible !important;
+    font-size: 13px !important;
+    line-height: 1.75 !important;
+    white-space: pre;
+  }
+}
+/* Unlayered to override the asynchronously loaded highlight.js theme. */
+.markdown-code-block .hljs-comment,
+.markdown-code-block .hljs-quote {
+  color: var(--code-muted);
+}
+.markdown-code-block .hljs-keyword,
+.markdown-code-block .hljs-selector-tag {
+  color: var(--code-keyword);
+}
+.markdown-code-block .hljs-number,
+.markdown-code-block .hljs-literal,
+.markdown-code-block .hljs-built_in,
+.markdown-code-block .hljs-title {
+  color: var(--code-literal);
+}
+.markdown-code-block .hljs-string,
+.markdown-code-block .hljs-regexp {
+  color: var(--code-string);
+}
+
+@layer components {
+  html[data-route-kind]
+    .public-universe
+    .space-page
+    .article-card[data-visual="false"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  html[data-route-kind] .public-universe main:has(> .taxonomy-layout) {
+    width: 100%;
+    max-width: 1180px;
+    margin-inline: auto;
+    padding-inline: 32px;
+  }
+  html[data-route-kind] .public-universe .taxonomy-layout {
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 32px;
+  }
+  html[data-route-kind] .public-universe .taxonomy-side-panel {
+    position: static !important;
+    inset: auto !important;
+    align-self: start;
+  }
+  html[data-route-kind]
+    .public-universe
+    .taxonomy-side-panel
+    .research-index-row {
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  html[data-route-kind]
+    .public-universe
+    .taxonomy-side-panel
+    .research-index-row:hover {
+    background: color-mix(
+      in srgb,
+      var(--public-text) 4%,
+      transparent
+    ) !important;
+  }
+  @media (max-width: 850px) {
+    html[data-route-kind] .public-universe main:has(> .taxonomy-layout) {
+      padding-inline: 20px;
+    }
+    html[data-route-kind] .public-universe .taxonomy-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    html[data-route-kind] .public-universe .taxonomy-side-panel {
+      order: 3;
+      width: 100%;
+    }
+  }
+}
+@layer components {
+  html[data-route-kind] .public-universe .taxonomy-layout > * {
+    width: 100% !important;
+    min-width: 0;
+    max-width: none !important;
+    justify-self: stretch;
+    align-self: start;
+  }
+  @media (max-width: 850px) {
+    html[data-route-kind]
+      .public-universe
+      .space-page
+      main:has(> .taxonomy-layout) {
+      padding-inline: 20px !important;
+    }
+  }
+}
+@layer components {
+  html[data-route-kind]
+    .public-universe
+    .taxonomy-notes-surface
+    > .section-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px !important;
+  }
+  html[data-route-kind]
+    .public-universe
+    .taxonomy-notes-surface
+    .section-heading-action {
+    margin: 0 !important;
+    width: auto !important;
+  }
+  html[data-route-kind] .public-universe .taxonomy-notes-surface .article-card {
+    padding: 20px 12px !important;
+  }
+}
+@layer components {
+  html[data-route-kind] .public-universe .search-recovery-primary {
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  @media (max-width: 639px) {
+    html[data-route-kind] .public-universe .search-recovery-primary {
+      display: flex !important;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+    }
+    html[data-route-kind] .public-universe .search-recovery-actions {
+      order: 1 !important;
+    }
+  }
+}
+@layer components {
+  html[data-route-kind]
+    .public-universe
+    .space-page
+    main:has(> .taxonomy-layout) {
+    max-width: 1180px !important;
+    padding-inline: 32px !important;
+  }
+  html[data-route-kind]
+    .public-universe
+    .taxonomy-notes-surface
+    > .section-header
+    .section-heading-row {
+    margin: 0 !important;
+  }
+  html[data-route-kind] .public-universe .about-focus-ledger :is(li, a, span) {
+    font-family: var(--font-sans) !important;
+  }
+  @media (max-width: 850px) {
+    html[data-route-kind]
+      .public-universe
+      .space-page
+      main:has(> .taxonomy-layout) {
+      padding-inline: 20px !important;
+    }
+  }
+}
+@layer components {
+  html[data-route-kind]
+    .public-universe
+    .paper-reader-main
+    .article-prose
+    .technical-table-wrap {
+    border: 0 !important;
+    border-radius: 12px !important;
+    background: color-mix(
+      in srgb,
+      var(--public-text) 4%,
+      transparent
+    ) !important;
+    scrollbar-width: thin;
+  }
+  html[data-route-kind]
+    .public-universe
+    .paper-reader-main
+    .article-prose
+    .technical-table-wrap
+    table {
+    display: table !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+  html[data-route-kind]
+    .public-universe
+    .paper-reader-main
+    .article-prose
+    .technical-table-wrap
+    th {
+    background: color-mix(
+      in srgb,
+      var(--public-text) 5%,
+      transparent
+    ) !important;
+    color: var(--public-text) !important;
+  }
+  html[data-route-kind]
+    .public-universe
+    .paper-reader-main
+    .article-prose
+    .technical-table-wrap
+    td {
+    color: var(--reader-ink) !important;
+  }
+}

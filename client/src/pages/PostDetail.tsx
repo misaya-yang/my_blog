@@ -813,6 +813,7 @@ export default function PostDetail() {
                           year: "numeric",
                           month: "long",
                           day: "numeric",
+                          timeZone: "UTC",
                         }
                       )
                     : t("post.unpublished")}

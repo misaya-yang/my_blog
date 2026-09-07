@@ -39,6 +39,7 @@ function formatDate(value: string | Date | null, locale: string) {
     year: "numeric",
     month: "short",
     day: "2-digit",
+    timeZone: "UTC",
   });
 }
 
@@ -149,36 +150,28 @@ export default function Search() {
           <p className="page-copy mt-5">{t("discovery.searchSubtitle")}</p>
         </section>
 
-        <form
-          onSubmit={handleSubmit}
-          className="home-search-dock glass-dock mt-9 max-w-4xl"
-        >
-          <div className="home-search-dock-title">
-            <SearchIcon className="h-5 w-5" />
-            <span>{t("discovery.searchButton")}</span>
-          </div>
+        <form onSubmit={handleSubmit} className="public-search-form">
           <label className="sr-only" htmlFor="search-page-query">
             {t("discovery.searchPlaceholder")}
           </label>
-          <div className="home-search-field md:col-span-2">
-            <Input
-              id="search-page-query"
-              type="search"
-              autoComplete="search"
-              value={input}
-              onChange={event => setInput(event.target.value)}
-              placeholder={t("discovery.searchPlaceholder")}
-              className="h-11 border-0 bg-transparent px-0 text-base text-foreground shadow-none placeholder:text-muted-foreground focus-visible:ring-0"
-            />
-            <Button
-              type="submit"
-              size="icon"
-              className="home-search-submit"
-              aria-label={t("discovery.searchButton")}
-            >
-              <SearchIcon className="h-5 w-5" />
-            </Button>
-          </div>
+
+          <Input
+            id="search-page-query"
+            type="search"
+            autoComplete="search"
+            value={input}
+            onChange={event => setInput(event.target.value)}
+            placeholder={t("discovery.searchPlaceholder")}
+            className="public-search-input"
+          />
+          <Button
+            type="submit"
+            size="icon"
+            className="public-search-submit"
+            aria-label={t("discovery.searchButton")}
+          >
+            <SearchIcon className="h-5 w-5" />
+          </Button>
         </form>
 
         <Surface

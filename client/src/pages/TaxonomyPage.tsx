@@ -75,70 +75,72 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
         ) : taxonomy ? (
           <div className="taxonomy-layout">
             <section className="taxonomy-hero page-hero">
-                <div className="signal-chip mb-6">
-                  {kind === "tag" ? (
-                    <Hash className="h-4 w-4" />
-                  ) : (
-                    <Folder className="h-4 w-4" />
-                  )}
-                  {kind === "tag"
-                    ? t("discovery.tagKicker")
-                    : t("discovery.categoryKicker")}
-                </div>
-                <h1 className="page-title">{taxonomy.name}</h1>
-                {taxonomy.description && (
-                  <p className="page-copy mt-5">{taxonomy.description}</p>
+              <div className="signal-chip mb-6">
+                {kind === "tag" ? (
+                  <Hash className="h-4 w-4" />
+                ) : (
+                  <Folder className="h-4 w-4" />
                 )}
-                <p className="mt-5 text-sm text-muted-foreground">
-                  {t("discovery.articlesCount", { count: data.total })}
-                </p>
-              </section>
+                {kind === "tag"
+                  ? t("discovery.tagKicker")
+                  : t("discovery.categoryKicker")}
+              </div>
+              <h1 className="page-title">{taxonomy.name}</h1>
+              {taxonomy.description && (
+                <p className="page-copy mt-5">{taxonomy.description}</p>
+              )}
+              <p className="mt-5 text-sm text-muted-foreground">
+                {t("discovery.articlesCount", { count: data.total })}
+              </p>
+            </section>
 
-              <Surface as="aside" className="taxonomy-side-panel" variant="floating">
-                <SectionHeader
-                  icon={<Tags className="h-4 w-4" />}
-                  title={t("discovery.siblingTags")}
-                />
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {data.siblingTags?.length ? (
-                    data.siblingTags.slice(0, 16).map((tag: any) => (
-                      <Link
-                        key={tag.slug}
-                        href={`/tags/${tag.slug}`}
-                        className="article-tag px-3 py-1.5"
+            <Surface
+              as="aside"
+              className="taxonomy-side-panel"
+              variant="floating"
+            >
+              <SectionHeader
+                icon={<Tags className="h-4 w-4" />}
+                title={t("discovery.siblingTags")}
+              />
+              <div className="mt-4 flex flex-wrap gap-2">
+                {data.siblingTags?.length ? (
+                  data.siblingTags.slice(0, 16).map((tag: any) => (
+                    <Link
+                      key={tag.slug}
+                      href={`/tags/${tag.slug}`}
+                      className="article-tag px-3 py-1.5"
+                    >
+                      {tag.name}
+                    </Link>
+                  ))
+                ) : (
+                  <span className="text-sm text-muted-foreground">
+                    {t("discovery.noSiblingTags")}
+                  </span>
+                )}
+              </div>
+
+              {matchingTrack && (
+                <div className="mt-7">
+                  <SectionHeader
+                    icon={<Network className="h-4 w-4" />}
+                    title={t(matchingTrack.topicTitleKey)}
+                  />
+                  <div className="mt-4 grid gap-2">
+                    {matchingTrack.topics.map(topic => (
+                      <div
+                        key={topic.labelKey}
+                        className="research-index-row min-h-[3.5rem] px-4 py-3 text-sm"
                       >
-                        {tag.name}
-                      </Link>
-                    ))
-                  ) : (
-                    <span className="text-sm text-muted-foreground">
-                      {t("discovery.noSiblingTags")}
-                    </span>
-                  )}
-                </div>
-
-                {matchingTrack && (
-                  <div className="mt-7">
-                    <SectionHeader
-                      icon={<Network className="h-4 w-4" />}
-                      title={t(matchingTrack.topicTitleKey)}
-                    />
-                    <div className="mt-4 grid gap-2">
-                      {matchingTrack.topics.map(topic => (
-                        <div
-                          key={topic.labelKey}
-                          className="research-index-row min-h-[3.5rem] px-4 py-3 text-sm"
-                        >
-                          <span>{t(topic.labelKey)}</span>
-                          <span className="text-primary">
-                            {t(topic.metaKey)}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                        <span>{t(topic.labelKey)}</span>
+                        <span className="text-primary">{t(topic.metaKey)}</span>
+                      </div>
+                    ))}
                   </div>
-                )}
-              </Surface>
+                </div>
+              )}
+            </Surface>
 
             <Surface className="taxonomy-notes-surface hairline-list">
               <SectionHeader
@@ -159,6 +161,7 @@ function TaxonomyPage({ kind }: { kind: TaxonomyKind }) {
                 <div className="mt-5 grid gap-4">
                   {data.posts.map((post: any, index: number) => (
                     <ArticleCard
+                      showVisual={false}
                       key={post.id}
                       post={post}
                       index={index}

@@ -6,6 +6,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider, useLanguage } from "./contexts/LanguageContext";
 import { trackPageView } from "@/lib/analytics";
 import { BlogAgentRoot } from "@/components/agent/BlogAgentRoot";
+import { GalaxyHero } from "./components/galaxy/GalaxyHero";
 import { BrandMark, SpaceBackdrop } from "@/components/ResearchShell";
 
 const Home = lazy(() => import("./pages/Home"));
@@ -120,6 +121,19 @@ function getRouteKind(location: string) {
   return "system";
 }
 
+function PublicSurface() {
+  const [location] = useLocation();
+  const kind = getRouteKind(location);
+  const publicPage = kind === "home" || kind === "reader" || kind === "public";
+  if (!publicPage) return <Router />;
+  return (
+    <div className="public-universe">
+      <GalaxyHero />
+      <Router />
+    </div>
+  );
+}
+
 function RouteEffectController() {
   const [location] = useLocation();
   const didMount = useRef(false);
@@ -176,7 +190,7 @@ function App() {
           <AnalyticsRouteTracker />
           <RouteEffectController />
           <ScrollRestoration />
-          <Router />
+          <PublicSurface />
           <BlogAgentRoot />
         </ErrorBoundary>
       </LanguageProvider>

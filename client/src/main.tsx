@@ -7,6 +7,7 @@ import superjson from "superjson";
 import App from "./App";
 import { getLoginUrl } from "./const";
 import "./index.css";
+import "@fontsource-variable/source-sans-3";
 import "./styles/public-components.css";
 import "./styles/visual-refresh.css";
 import "./styles/owner-tools.css";
@@ -14,6 +15,7 @@ import "./styles/liquid-materials.css";
 import "./styles/agent-surfaces.css";
 import "./styles/notebook.css";
 import "./styles/observatory.css";
+import "./styles/public-surfaces.css";
 import { initAnalytics } from "./lib/analytics";
 
 const queryClient = new QueryClient();
