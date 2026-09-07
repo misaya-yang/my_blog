@@ -18,6 +18,7 @@ export type ArticleCardPost = {
   title: string;
   excerpt?: string | null;
   content?: string | null;
+  outline?: string[];
   coverImage?: string | null;
   publishedAt?: string | Date | null;
   readingMinutes?: number | null;

@@ -74,11 +74,15 @@ export default function Home() {
   const { language, t } = useLanguage();
   const zh = language === "zh";
   const siteUrl = getClientSiteUrl();
-  const { data, isLoading, isError, refetch } = trpc.posts.list.useQuery({
-    status: "published",
-    limit: 20,
-    orderBy: "publishedAt",
-  });
+  const { data, isLoading, isError, refetch } = trpc.posts.list.useQuery(
+    {
+      status: "published",
+      summaryOnly: true,
+      limit: 20,
+      orderBy: "publishedAt",
+    },
+    { staleTime: 60_000, refetchOnWindowFocus: false }
+  );
   const posts = useMemo(
     () => sortPostsNewestFirst((data?.posts ?? []) as ArticleCardPost[]),
     [data?.posts]
@@ -91,10 +95,12 @@ export default function Home() {
       Math.min(selectedNote, Math.max(0, featuredPosts.length - 1))
     ];
   const outline =
+    featured?.outline ??
     featured?.content
       ?.match(/^##\s+.+$/gm)
       ?.slice(0, 3)
-      .map(heading => heading.replace(/^##\s+/, "")) ?? [];
+      .map(heading => heading.replace(/^##\s+/, "")) ??
+    [];
   useSeo(
     buildRouteMetadata(siteUrl, {
       title: t("home.title"),

@@ -46,9 +46,11 @@
       .track-series-card,
       .archive-post-row
     ):focus-within {
+    outline: 1px solid var(--reader-hover-border);
+    outline-offset: -1px;
     border-color: color-mix(
       in srgb,
-      var(--observatory-line) 60%,
+      var(--reader-hover-border) 100%,
       transparent
     ) !important;
   }
@@ -67,9 +69,11 @@
         .track-series-card,
         .archive-post-row
       ):hover {
+      outline: 1px solid var(--reader-hover-border);
+      outline-offset: -1px;
       border-color: color-mix(
         in srgb,
-        var(--observatory-line) 60%,
+        var(--reader-hover-border) 100%,
         transparent
       ) !important;
     }
@@ -477,5 +481,130 @@
     .technical-table-wrap
     td {
     color: var(--reader-ink) !important;
+  }
+}
+
+/* Reading focus: resting surfaces stay open; hover, current and keyboard differ. */
+.public-universe {
+  --reader-hover-border: #778f9f;
+  --reader-focus: #087c9d;
+  --reader-current-bg: #e2edf3;
+}
+.dark .public-universe {
+  --reader-hover-border: #546776;
+  --reader-focus: #8cd6ec;
+  --reader-current-bg: #162e3b;
+}
+@layer components {
+  html[data-route-kind] .public-universe .space-page .paper-toc-rail {
+    top: 92px !important;
+  }
+  html[data-route-kind]
+    .public-universe
+    .space-page
+    .paper-toc-rail
+    .toc-surface {
+    max-height: calc(100svh - 116px);
+    padding: 16px 12px !important;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(
+        in srgb,
+        var(--reader-hover-border) 55%,
+        transparent
+      )
+      transparent;
+  }
+  html[data-route-kind]
+    .public-universe
+    .space-page
+    :is(.toc-surface, .mobile-toc-shell)
+    .reader-toc-link {
+    display: block;
+    margin-block: 2px !important;
+    padding-block: 9px !important;
+    padding-right: 10px !important;
+    padding-left: max(12px, var(--toc-indent, 12px)) !important;
+    border: 1px solid transparent !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+    text-decoration: none;
+    color: var(--observatory-muted) !important;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease;
+  }
+  html[data-route-kind]
+    .public-universe
+    .space-page
+    :is(.toc-surface, .mobile-toc-shell)
+    .reader-toc-link[aria-current="location"] {
+    color: var(--observatory-ink) !important;
+    background: var(--reader-current-bg) !important;
+    border-left: 3px solid var(--reader-focus) !important;
+    font-weight: 600 !important;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    html[data-route-kind]
+      .public-universe
+      .space-page
+      :is(.toc-surface, .mobile-toc-shell)
+      .reader-toc-link:hover {
+      border-color: var(--reader-hover-border) !important;
+      color: var(--observatory-ink) !important;
+    }
+  }
+  html[data-route-kind]
+    .public-universe
+    .space-page
+    :is(a, button, input, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--reader-focus) !important;
+    outline-offset: 2px !important;
+  }
+  html[data-route-kind]
+    .public-universe
+    .space-page
+    .public-search-input:focus-visible {
+    outline: none !important; /* The single input shell owns the focus boundary. */
+  }
+  .public-universe .public-search-form:has(input:focus-visible) {
+    outline: 2px solid var(--reader-focus);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .public-universe .reader-toc-link {
+      transition: none !important;
+    }
+  }
+}
+@layer components {
+  html[data-route-kind] .public-universe .space-page .toc-surface > h3 {
+    position: sticky;
+    top: -16px;
+    z-index: 1;
+    margin: -16px -12px 12px !important;
+    padding: 18px 16px 14px !important;
+    background: linear-gradient(var(--observatory-bg) 80%, transparent);
+  }
+  html[data-route-kind] .public-universe .space-page .mobile-toc-shell {
+    border: 1px solid var(--reader-hover-border) !important;
+    border-radius: 12px !important;
+    background: transparent !important;
+  }
+  html[data-route-kind] .public-universe .space-page .mobile-toc-nav {
+    max-height: 55svh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+@layer components {
+  /* The document already reserves 92px for sticky navigation. Do not add it twice. */
+  html[data-route-kind]
+    .public-universe
+    .article-prose
+    :is(h1, h2, h3, h4, h5, h6)[id] {
+    scroll-margin-top: 20px !important;
   }
 }

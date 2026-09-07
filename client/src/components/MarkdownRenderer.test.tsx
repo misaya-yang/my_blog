@@ -108,4 +108,13 @@ describe("MarkdownRenderer", () => {
 
     expect(html).toContain('aria-label="可横向滚动的文章表格"');
   });
+  it("keeps unsupported code languages readable and HTML escaped", () => {
+    const html = renderToStaticMarkup(
+      <MarkdownRenderer
+        content={"```unknown-language\n<script>alert(1)</script>\n```"}
+      />
+    );
+    expect(html).toContain("&lt;script&gt;alert(1)&lt;/script&gt;");
+    expect(html).not.toContain("<script>");
+  });
 });

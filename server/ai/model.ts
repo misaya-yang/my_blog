@@ -70,7 +70,8 @@ export const defaultAgentModel: AgentModel = {
     const answer = normalizeAgentAnswer(
       parsed,
       sourceCards,
-      result.webSearchUsed
+      result.webSearchUsed,
+      prefersChinese(input.message, input.routeContext.locale) ? "zh" : "en"
     );
 
     return {
@@ -127,7 +128,8 @@ export const defaultAgentModel: AgentModel = {
     const answer = normalizeAgentAnswer(
       parseMarkdownAnswerWithSourceMarker(result.content.trim()),
       sourceCards,
-      result.webSearchUsed
+      result.webSearchUsed,
+      prefersChinese(input.message, input.routeContext.locale) ? "zh" : "en"
     );
 
     return {
@@ -416,7 +418,8 @@ function splitSourceMarkerIds(rawSourceIds: string) {
 export function normalizeAgentAnswer(
   parsed: Partial<AgentAnswer>,
   sourceCards: AgentSourceCard[],
-  webSearchUsed = false
+  webSearchUsed = false,
+  locale = "en"
 ): AgentModelResult["answer"] {
   const sourceIds = sourceCards.map(source => source.sourceId);
   const hasSources = sourceCards.length > 0;
@@ -431,7 +434,11 @@ export function normalizeAgentAnswer(
       ),
       sourceIds: [],
       sourceCards: [],
-      relatedQuestions: normalizeRelatedQuestions(parsed.relatedQuestions, []),
+      relatedQuestions: normalizeRelatedQuestions(
+        parsed.relatedQuestions,
+        [],
+        locale
+      ),
       confidence: parsed.confidence ?? "medium",
       refusalReason: undefined,
     };
@@ -460,7 +467,8 @@ export function normalizeAgentAnswer(
     sourceCards: finalSourceCards,
     relatedQuestions: normalizeRelatedQuestions(
       parsed.relatedQuestions,
-      finalSourceCards
+      finalSourceCards,
+      locale
     ),
     confidence: parsed.confidence ?? "medium",
     refusalReason: undefined,
@@ -858,7 +866,8 @@ export function buildContextSourceCards(
 
 function normalizeRelatedQuestions(
   relatedQuestions: unknown,
-  sourceCards: AgentSourceCard[]
+  sourceCards: AgentSourceCard[],
+  locale = "en"
 ) {
   const explicit = Array.isArray(relatedQuestions)
     ? relatedQuestions.filter(isNonEmptyString)
@@ -867,6 +876,8 @@ function normalizeRelatedQuestions(
 
   const primary =
     sourceCards.find(source => source.postSlug)?.postTitle ?? "this topic";
+  if (locale === "zh")
+    return [`《${primary}》的核心观点是什么？`, "接下来应该读博客里的哪篇？"];
   return [
     `What is the core argument of ${primary}?`,
     "What should I read next on this blog?",

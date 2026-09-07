@@ -42,7 +42,10 @@ const discoveryPost = {
 };
 
 vi.mock("./db", () => ({
-  searchPublicPosts: vi.fn(async () => ({ results: [discoveryPost], total: 1 })),
+  searchPublicPosts: vi.fn(async () => ({
+    results: [discoveryPost],
+    total: 1,
+  })),
   getPublicTagPage: vi.fn(async () => ({
     tag,
     posts: [discoveryPost],
@@ -108,11 +111,15 @@ describe("discovery router", () => {
   it("returns tag, category, archive, and post context discovery payloads", async () => {
     const caller = appRouter.createCaller(createAnonymousContext());
 
-    await expect(caller.discovery.tag({ slug: "harness-engine" })).resolves.toMatchObject({
+    await expect(
+      caller.discovery.tag({ slug: "harness-engine" })
+    ).resolves.toMatchObject({
       tag: { slug: "harness-engine" },
       total: 1,
     });
-    await expect(caller.discovery.category({ slug: "ai-applications" })).resolves.toMatchObject({
+    await expect(
+      caller.discovery.category({ slug: "ai-applications" })
+    ).resolves.toMatchObject({
       category: { slug: "ai-applications" },
       total: 1,
     });
@@ -124,5 +131,14 @@ describe("discovery router", () => {
     ).resolves.toMatchObject({
       related: [{ slug: "agent-harness-engine-evaluating-tool-using-agents" }],
     });
+    const context = await caller.discovery.postContext({
+      slug: "agent-harness-engine-evaluating-tool-using-agents",
+    });
+    expect(context.related[0]).not.toHaveProperty("content");
+    expect(Object.keys(context.related[0]).sort()).toEqual([
+      "id",
+      "slug",
+      "title",
+    ]);
   });
 });

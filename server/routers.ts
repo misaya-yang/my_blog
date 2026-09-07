@@ -1,3 +1,5 @@
+import { extractMarkdownHeadings } from "../shared/heading-anchors.js";
+import { estimateReadingMinutes } from "../shared/reading-time.js";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { systemRouter } from "./_core/systemRouter.js";
@@ -53,7 +55,10 @@ async function refreshAgentKnowledgeAfterPostMutation(action: string) {
     await reindexPublicKnowledgeChunks();
     return { status: "fresh" as const };
   } catch (error) {
-    console.error(`[Knowledge] Failed to refresh chunks after ${action}:`, error);
+    console.error(
+      `[Knowledge] Failed to refresh chunks after ${action}:`,
+      error
+    );
     recordKnowledgeReindexFailure(error);
     return {
       status: "stale" as const,
@@ -137,7 +142,21 @@ export const appRouter = router({
         if (!result) {
           throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
         }
-        return result;
+        // Navigation links do not need to download neighboring articles' bodies.
+        const link = ({
+          id,
+          slug,
+          title,
+        }: {
+          id: number;
+          slug: string;
+          title: string;
+        }) => ({ id, slug, title });
+        return {
+          previous: result.previous ? link(result.previous) : null,
+          next: result.next ? link(result.next) : null,
+          related: result.related.map(link),
+        };
       }),
   }),
 
@@ -158,6 +177,7 @@ export const appRouter = router({
             .enum(["createdAt", "publishedAt", "viewCount", "featured"])
             .default("createdAt"),
           includeUnpublished: z.boolean().optional(),
+          summaryOnly: z.boolean().optional(),
         })
       )
       .query(async ({ input, ctx }) => {
@@ -180,7 +200,27 @@ export const appRouter = router({
           visibility:
             isAdmin && input.includeUnpublished ? input.visibility : "public",
         });
-        return { posts, total };
+        return {
+          posts: input.summaryOnly
+            ? posts.map(post => ({
+                ...post,
+                content: "",
+                excerpt:
+                  post.excerpt ||
+                  `${post.content
+                    .replace(/[#*$\\`\n]/g, " ")
+                    .trim()
+                    .slice(0, 220)}...`,
+                readingMinutes:
+                  post.readingMinutes || estimateReadingMinutes(post.content),
+                outline: extractMarkdownHeadings(post.content)
+                  .filter(heading => heading.level === 2)
+                  .slice(0, 3)
+                  .map(heading => heading.text),
+              }))
+            : posts,
+          total,
+        };
       }),
 
     getBySlug: publicProcedure
@@ -320,9 +360,11 @@ export const appRouter = router({
         });
       }),
 
-    getVersions: blogAdminProcedure.input(z.number()).query(async ({ input }) => {
-      return await db.getPostVersions(input);
-    }),
+    getVersions: blogAdminProcedure
+      .input(z.number())
+      .query(async ({ input }) => {
+        return await db.getPostVersions(input);
+      }),
 
     restoreVersion: blogAdminProcedure
       .input(
@@ -356,8 +398,9 @@ export const appRouter = router({
           title: version.title,
           content: version.content,
         });
-        const knowledgeRefresh =
-          await refreshAgentKnowledgeAfterPostMutation("post version restore");
+        const knowledgeRefresh = await refreshAgentKnowledgeAfterPostMutation(
+          "post version restore"
+        );
         return { success: true, knowledgeRefresh };
       }),
   }),

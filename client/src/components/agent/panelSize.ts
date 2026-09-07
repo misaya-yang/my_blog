@@ -11,8 +11,8 @@ export interface AgentPanelSizeBounds {
 }
 
 export const DEFAULT_AGENT_PANEL_SIZE: AgentPanelSize = {
-  width: 392,
-  height: 640,
+  width: 448,
+  height: 660,
 };
 
 export const MIN_AGENT_PANEL_SIZE: AgentPanelSize = {

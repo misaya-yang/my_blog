@@ -319,3 +319,310 @@
     }
   }
 }
+
+/* Reading assistant: same typography and blue-gray palette as the public reader. */
+.agent-panel-shell,
+.agent-liquid-launcher {
+  --font-sans:
+    "Source Sans 3 Variable", "PingFang SC", "Source Han Sans SC",
+    "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+  --font-caption: var(--font-sans);
+  --fg: #1d2b39;
+  --fg-muted: #536677;
+  --fg-faint: #687b8b;
+  --bg-elevated: #f8fafc;
+  --card: #f1f5f8;
+  --border: #d3dfe7;
+  --border-strong: #819aa9;
+  --primary: #12647e;
+  --primary-hover: #0e5268;
+  --primary-foreground: #ffffff;
+  --ring: #0b7594;
+  --surface-inline: #e9f0f5;
+  --secondary: #e7eff5;
+  --secondary-foreground: #233c50;
+  font-family: var(--font-sans);
+}
+.dark .agent-panel-shell,
+.dark .agent-liquid-launcher {
+  --fg: #e4edf4;
+  --fg-muted: #a4b5c3;
+  --fg-faint: #8196a6;
+  --bg-elevated: #0e171f;
+  --card: #14222c;
+  --border: #2a3c49;
+  --border-strong: #637f91;
+  --primary: #89d0e5;
+  --primary-hover: #a7ddec;
+  --primary-foreground: #10222c;
+  --ring: #8cd6ec;
+  --surface-inline: #1a2c38;
+  --secondary: #1b3343;
+  --secondary-foreground: #e4edf4;
+}
+@layer components {
+  .agent-panel-shell .agent-liquid-panel {
+    border-radius: 18px;
+    background: var(--bg-elevated);
+    box-shadow: 0 18px 60px rgb(7 20 31 / 18%);
+    outline: none;
+  }
+  .agent-panel-shell .agent-liquid-panel:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: -2px;
+  }
+  .agent-panel-shell .agent-panel-header {
+    height: calc(68px + env(safe-area-inset-top));
+    padding-inline: 18px;
+    border-bottom: 0;
+  }
+  .agent-panel-shell .agent-panel-header h2 {
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .agent-panel-shell .agent-panel-header p {
+    font-size: 12px;
+  }
+  .agent-panel-shell .agent-header-mark {
+    border: 0;
+    background: transparent;
+    color: var(--primary);
+  }
+  .agent-panel-shell .agent-header-mark svg {
+    width: 22px;
+    height: 22px;
+  }
+  .agent-panel-shell .agent-header-action {
+    width: 36px;
+    height: 36px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+  }
+  .agent-panel-shell .agent-context-row {
+    margin: 0 20px 6px;
+    padding: 8px 0 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .agent-panel-shell .agent-context-row p {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .agent-panel-shell .agent-message-scroller {
+    padding: 18px 20px 24px;
+  }
+  .agent-panel-shell .agent-empty-state {
+    padding-top: 28px;
+    gap: 24px;
+  }
+  .agent-panel-shell .agent-empty-state h3 {
+    margin-bottom: 10px;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+  .agent-panel-shell .agent-empty-state p {
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  .agent-panel-shell .agent-prompt-row {
+    margin-block: 3px;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: var(--fg);
+  }
+  .agent-panel-shell .agent-prompt-row > span {
+    display: none;
+  }
+  .agent-panel-shell .agent-prompt-row::after {
+    content: "↗";
+    margin-left: auto;
+    color: var(--fg-faint);
+  }
+  .agent-panel-shell .agent-header-action[aria-expanded="true"] {
+    background: var(--surface-inline);
+    color: var(--fg);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .agent-panel-shell :is(.agent-header-action, .agent-prompt-row):hover {
+      border-color: var(--border-strong);
+      background: var(--surface-inline);
+    }
+  }
+  .agent-panel-shell :is(button, a, summary):focus-visible,
+  .agent-liquid-launcher:focus-visible {
+    outline: 2px solid var(--ring) !important;
+    outline-offset: 2px;
+    box-shadow: none !important;
+  }
+  .agent-panel-shell .agent-composer {
+    padding: 10px 16px 12px;
+    border-top: 0;
+  }
+  .agent-panel-shell .agent-composer-field {
+    align-items: flex-end;
+    padding: 8px;
+    gap: 6px;
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    background: var(--card);
+  }
+  .agent-panel-shell .agent-composer-field:focus-within {
+    outline: 2px solid var(--ring);
+    outline-offset: 1px;
+  }
+  .agent-panel-shell .agent-composer textarea {
+    border: 0 !important;
+    border-radius: 0;
+    padding: 8px 6px;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    font-size: 16px;
+    line-height: 1.5;
+    min-height: 40px;
+  }
+  .agent-panel-shell .agent-composer button {
+    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+  }
+  .agent-panel-shell .agent-composer-hint {
+    margin: 8px 4px 0;
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--fg-faint);
+  }
+  .agent-panel-shell .agent-answer-prose {
+    font-size: 15px;
+    line-height: 1.8;
+    letter-spacing: 0;
+  }
+  .agent-panel-shell .agent-message-user > div {
+    border-radius: 13px 13px 4px 13px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .agent-panel-shell .agent-history-panel {
+    margin: 2px 16px 0;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+  }
+  .agent-panel-shell .agent-history-panel button {
+    background: transparent;
+    border-color: transparent;
+  }
+  .agent-panel-shell .agent-answer-prose :is(pre, table, .katex-display) {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  .agent-panel-shell .agent-answer-prose .katex {
+    color: inherit;
+  }
+  @media (max-width: 767px) {
+    .agent-panel-shell .agent-liquid-panel {
+      border-radius: 0;
+      border: 0;
+    }
+    .agent-panel-shell .agent-header-action {
+      width: 40px;
+      height: 40px;
+    }
+    .agent-panel-shell .agent-composer {
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+    .agent-panel-shell .agent-composer-hint {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .agent-panel-shell *,
+    .agent-liquid-launcher {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
+@layer components {
+  .agent-panel-shell .agent-sources {
+    border-top: 0;
+    padding-top: 4px;
+  }
+  .agent-panel-shell .agent-sources > div:first-child {
+    gap: 10px;
+  }
+  .agent-panel-shell .agent-sources span[class*="border"] {
+    border-color: transparent;
+    background: var(--surface-inline);
+  }
+  .agent-panel-shell .agent-source-list > div {
+    border-color: transparent;
+    background: var(--card);
+    border-radius: 10px;
+  }
+  .agent-panel-shell .agent-source-list a {
+    width: 36px;
+    height: 36px;
+    border-color: transparent;
+  }
+  .agent-panel-shell .agent-source-list a:hover {
+    border-color: var(--border-strong);
+  }
+}
+@layer components {
+  .agent-panel-shell .agent-composer textarea {
+    font-size: 16px !important;
+    border-radius: 0 !important;
+  }
+  .agent-panel-shell .agent-empty-state p {
+    font-size: 15px !important;
+  }
+}
+@layer components {
+  .agent-panel-shell .agent-composer-field:focus-within {
+    border-color: var(--ring);
+    outline-offset: -1px;
+  }
+  .agent-panel-shell .agent-source-heading {
+    display: flex !important;
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 6px;
+  }
+  .agent-panel-shell .agent-source-actions {
+    width: 100%;
+    min-width: 0;
+  }
+  .agent-panel-shell .agent-source-actions a {
+    margin-left: auto;
+    width: 36px !important;
+    height: 36px !important;
+  }
+  .agent-panel-shell .agent-source-list > div {
+    border-color: transparent !important;
+    background: var(--card) !important;
+  }
+  .agent-panel-shell .agent-sources span[class*="border"] {
+    border-color: transparent !important;
+  }
+  .agent-panel-shell .agent-related-questions {
+    border-top: 0;
+  }
+  .agent-panel-shell .agent-related-questions button {
+    border-color: transparent;
+    background: var(--card);
+    border-radius: 10px;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .agent-panel-shell
+      :is(.agent-source-list > div, .agent-related-questions button):hover {
+      border-color: var(--border-strong) !important;
+    }
+  }
+}

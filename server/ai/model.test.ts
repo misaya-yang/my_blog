@@ -61,6 +61,17 @@ const isohcMetadataSource: KnowledgeSearchResult = {
 };
 
 describe("agent answer quality normalization", () => {
+  it("localizes default follow-up questions for Chinese reading", () => {
+    const answer = normalizeAgentAnswer(
+      { answerMarkdown: "有来源的回答" },
+      [harnessSource],
+      false,
+      "zh"
+    );
+    expect(answer.relatedQuestions[0]).toContain("核心观点");
+    expect(answer.relatedQuestions[1]).toBe("接下来应该读博客里的哪篇？");
+  });
+
   it("normalizes invalid answer types and preserves real source cards", () => {
     const answer = normalizeAgentAnswer(
       {

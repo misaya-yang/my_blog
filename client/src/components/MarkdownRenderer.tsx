@@ -1,8 +1,10 @@
 import { normalizeMarkdownMath } from "@shared/markdown-math";
 import { Check, Copy } from "lucide-react";
-import { useEffect } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import rehypeHighlight from "rehype-highlight";
+import { readingHighlight } from "@/lib/readingHighlight";
+import "highlight.js/styles/github-dark.min.css";
+import "katex/dist/katex.min.css";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
@@ -19,10 +21,13 @@ type MarkdownRendererProps = {
   copiedCode?: string | null;
   copyCodeLabel?: string;
   tableLabel?: string;
-  onCopyCode?: (code: string, id: string) => void;
+  onCopyCode?: (
+    code: string,
+    id: string
+  ) => void | boolean | Promise<void | boolean>;
 };
 
-export default function MarkdownRenderer({
+function MarkdownRenderer({
   content,
   headings = [],
   copiedCode,
@@ -30,17 +35,12 @@ export default function MarkdownRenderer({
   tableLabel = "Scrollable table",
   onCopyCode,
 }: MarkdownRendererProps) {
-  useEffect(() => {
-    void import("highlight.js/styles/github-dark.min.css");
-    void import("katex/dist/katex.min.css");
-  }, []);
-
   const headingIdResolver = createHeadingIdResolver(headings);
 
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm, remarkMath]}
-      rehypePlugins={[rehypeKatex, rehypeHighlight]}
+      rehypePlugins={[rehypeKatex, readingHighlight]}
       components={{
         h1: createHeadingComponent(
           "h1",
@@ -95,19 +95,13 @@ export default function MarkdownRenderer({
               <div className="markdown-code-toolbar">
                 <span>{language}</span>
                 {code && onCopyCode ? (
-                  <button
-                    type="button"
-                    aria-label={copyCodeLabel}
-                    title={copyCodeLabel}
-                    onClick={() => onCopyCode(code, codeId)}
-                    className="markdown-code-copy"
-                  >
-                    {copiedCode === codeId ? (
-                      <Check className="h-4 w-4 text-primary" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                  </button>
+                  <CodeCopyButton
+                    code={code}
+                    codeId={codeId}
+                    label={copyCodeLabel}
+                    copied={copiedCode === codeId}
+                    onCopy={onCopyCode}
+                  />
                 ) : null}
               </div>
               <pre className="overflow-x-auto" tabIndex={0} {...props}>
@@ -151,6 +145,52 @@ export default function MarkdownRenderer({
   );
 }
 
+function CodeCopyButton({
+  code,
+  codeId,
+  label,
+  copied,
+  onCopy,
+}: {
+  code: string;
+  codeId: string;
+  label: string;
+  copied: boolean;
+  onCopy: NonNullable<MarkdownRendererProps["onCopyCode"]>;
+}) {
+  const [localCopied, setLocalCopied] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      clearTimeout(timer.current);
+    };
+  }, []);
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      className="markdown-code-copy"
+      onClick={async () => {
+        const result = await onCopy(code, codeId);
+        if (result === false || !mounted.current) return;
+        setLocalCopied(true);
+        clearTimeout(timer.current);
+        timer.current = setTimeout(() => setLocalCopied(false), 2000);
+      }}
+    >
+      {copied || localCopied ? (
+        <Check className="h-4 w-4 text-primary" />
+      ) : (
+        <Copy className="h-4 w-4" />
+      )}
+    </button>
+  );
+}
+
 function createHeadingComponent(
   Tag: "h1" | "h2" | "h3" | "h4" | "h5" | "h6",
   resolveHeadingId: (text: string) => string | undefined,
@@ -191,3 +231,6 @@ function hashString(value: string) {
   }
   return Math.abs(hash).toString(36);
 }
+
+// Reading-position updates must not remount headings, formulas or focused code.
+export default memo(MarkdownRenderer);

@@ -1,3 +1,6 @@
+import { memo } from "react";
+import { Link } from "wouter";
+import { normalizeMarkdownMath } from "@shared/markdown-math";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
@@ -6,32 +9,56 @@ import "katex/dist/katex.min.css";
 
 type AgentMarkdownProps = {
   children: string;
+  onNavigate?: () => void;
 };
 
-export function AgentMarkdown({ children }: AgentMarkdownProps) {
+export const AgentMarkdown = memo(function AgentMarkdown({
+  children,
+  onNavigate,
+}: AgentMarkdownProps) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm, remarkMath]}
       rehypePlugins={[[rehypeKatex, { strict: "ignore", throwOnError: false }]]}
       components={{
-        a: ({ node: _node, href, children: linkChildren, ...props }) => (
-          <a {...props} href={href} target="_blank" rel="noreferrer">
-            {linkChildren}
-          </a>
-        ),
+        a: ({ node: _node, href, children: linkChildren, ...props }) => {
+          const local =
+            href?.startsWith("#") ||
+            (href?.startsWith("/") && !href.startsWith("//"));
+          return local ? (
+            <Link
+              {...props}
+              href={href!}
+              onClick={event => {
+                if (
+                  !event.metaKey &&
+                  !event.ctrlKey &&
+                  !event.shiftKey &&
+                  !event.altKey &&
+                  event.button === 0
+                )
+                  onNavigate?.();
+              }}
+            >
+              {linkChildren}
+            </Link>
+          ) : (
+            <a {...props} href={href} target="_blank" rel="noreferrer">
+              {linkChildren}
+            </a>
+          );
+        },
         // Model-authored Markdown must not make the reader's browser fetch
         // arbitrary third-party pixels. Source links remain explicit and
         // user-initiated; images degrade to their accessible label.
-        img: ({ node: _node, alt }) =>
-          alt ? <span>{alt}</span> : null,
+        img: ({ node: _node, alt }) => (alt ? <span>{alt}</span> : null),
         code: ({
           node: _node,
           className,
           children: codeChildren,
           ...props
         }) => {
-          const inline =
-            !className && !String(codeChildren).endsWith("\n");
+          const inline = !className && !String(codeChildren).endsWith("\n");
           return inline ? (
             <code
               {...props}
@@ -47,13 +74,7 @@ export function AgentMarkdown({ children }: AgentMarkdownProps) {
         },
       }}
     >
-      {normalizeMathDelimiters(children)}
+      {normalizeMarkdownMath(children)}
     </ReactMarkdown>
   );
-}
-
-function normalizeMathDelimiters(markdown: string) {
-  return markdown
-    .replace(/\\\[((?:.|\n)*?)\\\]/g, (_, formula: string) => `$$${formula}$$`)
-    .replace(/\\\(((?:.|\n)*?)\\\)/g, (_, formula: string) => `$${formula}$`);
-}
+});

@@ -10,8 +10,8 @@ const agent: TranslationDict = {
     zh: "询问公开笔记与阅读路径",
   },
   "agent.header.title": {
-    en: "Notes Assistant",
-    zh: "笔记助手",
+    en: "Reading assistant",
+    zh: "阅读助手",
   },
   "agent.header.subtitle": {
     en: "Misaya Notes",
@@ -69,9 +69,19 @@ const agent: TranslationDict = {
     en: "No time",
     zh: "无时间",
   },
+  "agent.empty.postTitle": { en: "About this note", zh: "关于这篇笔记" },
+  "agent.empty.siteTitle": { en: "Explore the notes", zh: "查找与理解笔记" },
+  "agent.input.label": {
+    en: "Ask the reading assistant",
+    zh: "向阅读助手提问",
+  },
+  "agent.input.hint": {
+    en: "Enter to send · Shift + Enter for a new line",
+    zh: "Enter 发送 · Shift + Enter 换行",
+  },
   "agent.input.placeholder": {
-    en: "Ask about a note, section, or reading path...",
-    zh: "询问笔记、小节或阅读路径...",
+    en: "Ask about these notes…",
+    zh: "询问笔记或阅读路径…",
   },
   "agent.input.send": {
     en: "Send",

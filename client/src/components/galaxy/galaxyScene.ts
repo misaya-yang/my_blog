@@ -110,7 +110,7 @@ export function createGalaxy(
   geometry.setAttribute("aSize", new BufferAttribute(sizes, 1));
   const controls = host.parentElement!;
   const deformation = `
-    uniform float uTime;
+    uniform float uTime; uniform float uLight;
     uniform vec3 uPagePose;
     uniform vec2 uPreviousPointer;
     uniform float uEnergy;
@@ -157,6 +157,7 @@ export function createGalaxy(
     }
   `;
   const uniforms = {
+    uCanvasSize: { value: new Vector2(1, 1) },
     uCopyBounds: { value: new Vector4(-2, -2, -1, -1) },
     uCopyOpacity: { value: 1 },
     uQuietBoxes: {
@@ -198,7 +199,7 @@ export function createGalaxy(
         float n = noise(p*4.0 + uTime*0.003)*0.55 + noise(p*11.0)*0.28 + noise(p*27.0)*0.17;
         float mist = pow(n,2.0) * exp(-dot(p,p)*2.2);
         vec3 night = vec3(0.0015,0.003,0.0055) + vec3(0.007,0.014,0.021)*mist;
-        vec3 day = vec3(0.9387,0.9560,0.9734) - vec3(0.085,0.062,0.028)*mist;
+        vec3 day = vec3(0.9387,0.9560,0.9734) - vec3(0.022,0.013,0.0)*mist;
         gl_FragColor = vec4(mix(night,day,uLight),1.0);
         #include <colorspace_fragment>
       }`,
@@ -229,7 +230,7 @@ export function createGalaxy(
         if (d > 1.0) discard;
         float warm = smoothstep(0.05,0.45,vColor.r-vColor.b);
         vec3 ink = mix(vec3(0.025,0.09,0.18),vec3(0.23,0.12,0.065),warm);
-        gl_FragColor = vec4(mix(vColor, ink, uLight), (1.0 - smoothstep(0.25, 1.0, d)) * 0.8 * (1.0 - uDisperse * 0.25));
+        gl_FragColor = vec4(mix(vColor, ink, uLight), (1.0 - smoothstep(0.15, 1.0, d)) * mix(0.8,0.44,uLight) * (1.0 - uDisperse * 0.25));
         #include <colorspace_fragment>
       }`,
   });
@@ -274,7 +275,7 @@ export function createGalaxy(
         vColor = aColor;
         vBrightness = 0.94 + 0.06 * sin(uTime * 0.6 + aCenter.x * 4.0);
         vec4 center = particleView(aCenter, 0.0);
-        center.xy += position.xy * aSize;
+        center.xy += position.xy * mix(aSize, min(aSize,0.75)*0.9, uLight);
         gl_Position = projectionMatrix * center;
       }`,
     fragmentShader: `varying vec2 vUv; varying vec3 vColor; varying float vBrightness;
@@ -288,10 +289,11 @@ export function createGalaxy(
         float alpha = (core + corona + halo) * vBrightness * (1.0 - uDisperse * 0.25);
         vec3 emission = mix(vColor * 1.15, vec3(1.25), core * 0.38);
         float warm = smoothstep(0.05,0.45,vColor.r-vColor.b);
-        vec3 tint = mix(vec3(0.015,0.07,0.16),vec3(0.23,0.12,0.065),warm);
-        vec3 ink = mix(tint, vec3(0.97,0.99,1.0), core);
-        float lightAlpha = (core + corona * 1.3 + halo * 0.65) * (1.0 - uDisperse * 0.25);
-        gl_FragColor = vec4(mix(emission, ink, uLight), mix(alpha, lightAlpha, uLight));
+        // Daylight stars have colored solid cores, not white holes in dark rings.
+        vec3 tint = mix(vec3(0.016,0.13,0.30),vec3(0.34,0.15,0.055),warm);
+        float dayCore = 1.0-smoothstep(0.025,0.13,r);
+        float lightAlpha = (dayCore*0.94 + exp(-r*r*70.0)*0.14) * (1.0-uDisperse*0.35);
+        gl_FragColor = vec4(mix(emission, tint, uLight), mix(alpha, lightAlpha, uLight));
         #include <colorspace_fragment>
       }`,
   });
@@ -325,8 +327,8 @@ export function createGalaxy(
       void main() {
         float r2 = dot(vUv,vUv);
         if (r2 > 1.0) discard;
-        float alpha = exp(-r2*4.8) * mix(0.006,0.03,uLight) * pow(1.0-uDisperse,2.0);
-        gl_FragColor = vec4(mix(vec3(0.06,0.19,0.31),vec3(0.008,0.025,0.06),uLight),alpha);
+        float alpha = exp(-r2*4.8) * mix(0.006,0.012,uLight) * pow(1.0-uDisperse,2.0);
+        gl_FragColor = vec4(mix(vec3(0.06,0.19,0.31),vec3(0.38,0.60,0.84),uLight),alpha);
         #include <colorspace_fragment>
       }`,
   });
@@ -399,13 +401,16 @@ export function createGalaxy(
     trailMaterial,
     volumeMaterial,
   ]) {
-    opticalMaterial.vertexShader =
-      `varying float vReadability;
+    // Mask pixels, not billboard vertices: large near stars otherwise interpolate
+    // an unmasked corner across text even when their center is inside the reader.
+    opticalMaterial.fragmentShader =
+      `
       uniform vec4 uCopyBounds; uniform float uCopyOpacity;
       uniform vec4 uQuietBoxes[4];
       uniform float uReading; uniform vec2 uGatherZone;
-      float readableArea(vec4 clip) {
-        vec2 p = clip.xy / clip.w * 0.5 + 0.5;
+      uniform vec2 uCanvasSize;
+      float readableArea() {
+        vec2 p = gl_FragCoord.xy / uCanvasSize;
         float x = smoothstep(uCopyBounds.x-0.05,uCopyBounds.x,p.x) * (1.0-smoothstep(uCopyBounds.z,uCopyBounds.z+0.08,p.x));
         float y = smoothstep(uCopyBounds.y-0.04,uCopyBounds.y,p.y) * (1.0-smoothstep(uCopyBounds.w,uCopyBounds.w+0.04,p.y));
         float edge = mix(0.12,1.0,smoothstep(0.44,0.90,abs(p.x-0.5)*2.0));
@@ -420,17 +425,12 @@ export function createGalaxy(
         return quiet * (1.0-x*y*0.96*uCopyOpacity) * mix(1.0,max(edge,openBand*smoothstep(0.34,0.48,p.x)),uReading);
       }
 ` +
-      opticalMaterial.vertexShader.replace(
-        /gl_Position = projectionMatrix \* (view|center);/g,
-        "$& vReadability = readableArea(gl_Position);"
-      );
-    opticalMaterial.fragmentShader =
-      "varying float vReadability;\n" +
       opticalMaterial.fragmentShader.replace(
         "#include <colorspace_fragment>",
-        "gl_FragColor.a *= vReadability;\n#include <colorspace_fragment>"
+        "gl_FragColor.a *= readableArea();\n#include <colorspace_fragment>"
       );
   }
+
   let frame = 0,
     disposed = false,
     visible = true,
@@ -638,6 +638,10 @@ export function createGalaxy(
     mobile = width < 600;
     renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.25 : 1.5));
     uniforms.uPixelRatio.value = renderer.getPixelRatio();
+    uniforms.uCanvasSize.value.set(
+      width * renderer.getPixelRatio(),
+      height * renderer.getPixelRatio()
+    );
     uniforms.uAspect.value = width / height;
     geometry.setDrawRange(0, mobile ? 5600 : count);
     starGeometry.instanceCount = mobile ? 360 : starCount;

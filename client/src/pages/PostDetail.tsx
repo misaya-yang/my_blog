@@ -1,3 +1,4 @@
+import { useArticleReadingPosition } from "@/hooks/useArticleReadingPosition";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { ArticleFeedback } from "@/components/ArticleFeedback";
 import {
@@ -51,7 +52,8 @@ import { lazy, Suspense, useEffect, useState, useCallback } from "react";
 
 import { toast } from "sonner";
 
-const MarkdownRenderer = lazy(() => import("@/components/MarkdownRenderer"));
+const loadMarkdownRenderer = () => import("@/components/MarkdownRenderer");
+const MarkdownRenderer = lazy(loadMarkdownRenderer);
 
 function postVisualVariant(slug?: string) {
   if (
@@ -390,9 +392,11 @@ function truncateText(value: string, maxLength: number) {
 function MobileToc({
   headings,
   t,
+  activeHeading,
 }: {
   headings: ArticleHeading[];
   t: Translate;
+  activeHeading: string;
 }) {
   if (headings.length === 0) return null;
 
@@ -406,16 +410,19 @@ function MobileToc({
           <a
             key={heading.id}
             href={`#${heading.id}`}
+            aria-current={activeHeading === heading.id ? "location" : undefined}
             onClick={event => {
               event.preventDefault();
               const details = event.currentTarget.closest("details");
               if (details) details.open = false;
-              scrollToArticleHeading(heading.id, true);
+              scrollToArticleHeading(heading.id, true, event.detail === 0);
             }}
-            className="text-sm text-muted-foreground hover:text-primary"
-            style={{
-              paddingLeft: `${(heading.level - 1) * 0.75}rem`,
-            }}
+            className="reader-toc-link text-sm text-muted-foreground hover:text-primary"
+            style={
+              {
+                "--toc-indent": `${Math.max(0, heading.level - 2) * 12 + 12}px`,
+              } as React.CSSProperties
+            }
           >
             {heading.text}
           </a>
@@ -425,12 +432,21 @@ function MobileToc({
   );
 }
 
-function scrollToArticleHeading(id: string, updateHash = false) {
+function scrollToArticleHeading(
+  id: string,
+  updateHash = false,
+  focusTarget = false
+) {
   const element = document.getElementById(id);
   if (!element) return;
 
-  if (updateHash) {
-    window.history.pushState(null, "", `#${encodeURIComponent(id)}`);
+  const hash = `#${encodeURIComponent(id)}`;
+  if (updateHash && window.location.hash !== hash) {
+    window.history.pushState(null, "", hash);
+  }
+  if (focusTarget) {
+    element.tabIndex = -1;
+    element.focus({ preventScroll: true });
   }
 
   element.scrollIntoView({
@@ -477,16 +493,28 @@ export default function PostDetail() {
   const { isAdmin } = useAuth();
   const { language, t } = useLanguage();
   const siteUrl = getClientSiteUrl();
-  const [activeHeading, setActiveHeading] = useState<string>("");
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  // Fetch renderer, formulas and styles concurrently with the article request.
+  useEffect(() => {
+    void loadMarkdownRenderer().catch(() => undefined);
+  }, []);
 
   const { data: post, isLoading } = trpc.posts.getBySlug.useQuery(slug || "", {
     enabled: Boolean(slug),
     retry: false,
+    staleTime: query =>
+      query.state.data?.visibility === "public" &&
+      query.state.data?.status === "published"
+        ? 60_000
+        : 0,
+    refetchOnWindowFocus: query => query.state.data?.visibility !== "public",
   });
   const { data: postContext } = trpc.discovery.postContext.useQuery(
     { slug: slug || "" },
-    { enabled: Boolean(slug && post) }
+    {
+      enabled: Boolean(slug && post),
+      staleTime: 60_000,
+      refetchOnWindowFocus: false,
+    }
   );
   useSeo(
     post
@@ -518,39 +546,25 @@ export default function PostDetail() {
     }
   }, [post?.content, post?.title]);
 
-  useEffect(() => {
-    if (headings.length === 0 || !window.location.hash) return;
-
-    const targetId = decodeURIComponent(window.location.hash.slice(1));
-    window.requestAnimationFrame(() => {
-      scrollToArticleHeading(targetId);
-    });
-  }, [headings, post?.slug]);
+  const activeHeading = useArticleReadingPosition(headings);
 
   useEffect(() => {
-    if (headings.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      entries => {
-        const visible = entries
-          .filter(entry => entry.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        const nextId = visible[0]?.target.id;
-        if (nextId) setActiveHeading(nextId);
-      },
-      {
-        rootMargin: "-18% 0px -65% 0px",
-        threshold: [0, 1],
-      }
+    if (!activeHeading) return;
+    const container = document.querySelector<HTMLElement>(
+      ".paper-toc-rail .toc-surface"
     );
-
-    headings.forEach(heading => {
-      const element = document.getElementById(heading.id);
-      if (element) observer.observe(element);
-    });
-
-    return () => observer.disconnect();
-  }, [headings]);
+    const link = container?.querySelector<HTMLElement>(
+      '[aria-current="location"]'
+    );
+    if (!container || !link) return;
+    // Only move the TOC scroller. scrollIntoView would also move the article.
+    const bounds = container.getBoundingClientRect();
+    const target = link.getBoundingClientRect();
+    if (target.top < bounds.top + 48 || target.bottom > bounds.bottom - 20) {
+      container.scrollTop +=
+        target.top - bounds.top - container.clientHeight * 0.35;
+    }
+  }, [activeHeading]);
 
   const copyToClipboard = useCallback(
     async (value: string, successMessage: string) => {
@@ -592,11 +606,9 @@ export default function PostDetail() {
   };
 
   const copyCode = useCallback(
-    async (code: string, id: string) => {
+    async (code: string, _id: string) => {
       const copied = await copyToClipboard(code, t("post.codeCopied"));
-      if (!copied) return;
-      setCopiedCode(id);
-      setTimeout(() => setCopiedCode(null), 2000);
+      return copied;
     },
     [copyToClipboard, t]
   );
@@ -959,7 +971,11 @@ export default function PostDetail() {
               </div>
             )}
 
-            <MobileToc headings={headings} t={t} />
+            <MobileToc
+              headings={headings}
+              t={t}
+              activeHeading={activeHeading}
+            />
 
             {/* Post Content */}
             <div
@@ -972,7 +988,6 @@ export default function PostDetail() {
                 <MarkdownRenderer
                   content={readableContent}
                   headings={headings}
-                  copiedCode={copiedCode}
                   copyCodeLabel={t("post.copyCode")}
                   tableLabel={t("post.scrollableTable")}
                   onCopyCode={copyCode}
@@ -1194,15 +1209,22 @@ export default function PostDetail() {
                   <a
                     key={heading.id}
                     href={`#${heading.id}`}
-                    className={`block text-sm transition-colors ${
+                    aria-current={
+                      activeHeading === heading.id ? "location" : undefined
+                    }
+                    className={`reader-toc-link block text-sm transition-colors ${
                       activeHeading === heading.id
                         ? "text-primary font-medium"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
-                    style={{ paddingLeft: `${(heading.level - 1) * 0.75}rem` }}
+                    style={
+                      {
+                        "--toc-indent": `${Math.max(0, heading.level - 2) * 12 + 12}px`,
+                      } as React.CSSProperties
+                    }
                     onClick={e => {
                       e.preventDefault();
-                      scrollToArticleHeading(heading.id, true);
+                      scrollToArticleHeading(heading.id, true, e.detail === 0);
                     }}
                   >
                     {heading.text}

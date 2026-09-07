@@ -2,9 +2,9 @@ export function initAnalytics() {
   const endpoint = import.meta.env.VITE_ANALYTICS_ENDPOINT;
   const websiteId = import.meta.env.VITE_ANALYTICS_WEBSITE_ID;
 
-  initWebVitals();
-
   if (!endpoint || !websiteId) return;
+
+  initWebVitals();
 
   const script = document.createElement("script");
   script.defer = true;
@@ -15,7 +15,10 @@ export function initAnalytics() {
 
 type AnalyticsPayload = Record<string, unknown>;
 
-export function trackAnalyticsEvent(name: string, payload: AnalyticsPayload = {}) {
+export function trackAnalyticsEvent(
+  name: string,
+  payload: AnalyticsPayload = {}
+) {
   if (typeof window === "undefined") return;
 
   const endpoint = import.meta.env.VITE_ANALYTICS_ENDPOINT;
@@ -63,17 +66,35 @@ export function trackClientError(payload: {
 }
 
 export function initWebVitals() {
-  if (typeof window === "undefined" || typeof PerformanceObserver === "undefined") return;
+  if (
+    typeof window === "undefined" ||
+    typeof PerformanceObserver === "undefined"
+  )
+    return;
 
   const observe = (type: string) => {
     try {
-      const observer = new PerformanceObserver((list) => {
+      const observer = new PerformanceObserver(list => {
         const entry = list.getEntries().at(-1);
         if (!entry) return;
+        const shift = entry as PerformanceEntry & {
+          value?: number;
+          hadRecentInput?: boolean;
+        };
+        if (type === "layout-shift" && shift.hadRecentInput) return;
+        const value =
+          type === "layout-shift"
+            ? shift.value
+            : type === "event"
+              ? entry.duration
+              : entry.startTime;
+        if (value === undefined) return;
         trackAnalyticsEvent("web_vital", {
           metric: type,
-          value: Math.round(entry.startTime),
+          value: type === "layout-shift" ? value : Math.round(value),
           name: entry.name,
+          // These are raw samples, not aggregate CLS or INP scores.
+          aggregation: "raw",
         });
       });
       observer.observe({ type, buffered: true });

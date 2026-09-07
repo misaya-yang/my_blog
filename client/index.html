@@ -53,50 +53,6 @@
     />
     <meta name="twitter:image" content="/og-default.svg" />
     <link rel="canonical" href="https://misaya.online/" />
-    <!-- Preload the Latin display face only where it can contribute to the
-         first public heading. Chinese UI and direct article routes use other
-         faces at first paint, so a static preload only creates browser noise. -->
-    <script>
-      (() => {
-        const pathname = window.location.pathname;
-        const displayRoutes = new Set([
-          "/",
-          "/about",
-          "/algorithms",
-          "/applications",
-          "/archive",
-          "/search",
-        ]);
-        const usesDisplayFace =
-          displayRoutes.has(pathname) ||
-          pathname.startsWith("/tags/") ||
-          pathname.startsWith("/categories/");
-
-        let savedLanguage = null;
-        try {
-          savedLanguage = window.localStorage.getItem("blog-language");
-        } catch {
-          // Storage can be unavailable in hardened browser contexts.
-        }
-
-        let language = savedLanguage;
-        if (language !== "en" && language !== "zh") {
-          language = window.navigator.language.toLowerCase().startsWith("zh")
-            ? "zh"
-            : "en";
-        }
-
-        if (language !== "en" || !usesDisplayFace) return;
-
-        const preload = document.createElement("link");
-        preload.rel = "preload";
-        preload.href = "/fonts/fraunces-latin.woff2";
-        preload.as = "font";
-        preload.type = "font/woff2";
-        preload.crossOrigin = "anonymous";
-        document.head.appendChild(preload);
-      })();
-    </script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/site.webmanifest" />
     <link

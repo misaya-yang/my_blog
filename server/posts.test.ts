@@ -221,6 +221,16 @@ describe("posts router", () => {
     vi.clearAllMocks();
   });
 
+  it("returns compact home previews without downloading article bodies", async () => {
+    const { ctx } = createAnonymousContext();
+    const caller = appRouter.createCaller(ctx);
+    const result = await caller.posts.list({ status: "published", summaryOnly: true });
+    expect(result.posts[0].content).toBe("");
+    expect(result.posts[0].title).toBe(seededPost.title);
+    expect(result.posts[0]).toHaveProperty("outline");
+    expect(result.posts[0].readingMinutes).toBeGreaterThan(0);
+  });
+
   it("should list published posts for anonymous users", async () => {
     const { ctx } = createAnonymousContext();
     const caller = appRouter.createCaller(ctx);
