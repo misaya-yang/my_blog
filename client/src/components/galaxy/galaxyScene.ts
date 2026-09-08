@@ -67,19 +67,29 @@ export function createGalaxy(
   const palette = ["#a9b8e8", "#d5dcf2", "#f1eef5", "#d6a5b9"].map(
     value => new Color(value)
   );
-  // Sample the approved rose/lvy artwork, with shallow depth for legible letters.
+  // The source supplies petal edges; roll each edge into a thick, cupped ribbon.
+  // Keep the signature in the recessed heart rather than flattening the flower.
   function sample(index: number) {
     const point = ((index * 97) % (rosePoints.length / 2)) * 2;
     const x = rosePoints[point],
       y = rosePoints[point + 1];
-    const center = Math.abs(x) < 0.95 && Math.abs(y) < 0.75;
-    const scatter = center ? 0.008 : 0.035;
+    const radius = Math.hypot(x, y);
+    const angle = Math.atan2(y, x);
+    const signature = Math.abs(x) < 0.65 && Math.abs(y) < 0.7;
+    if (signature) return [x, y, 0.35 + (random() - 0.5) * 0.045];
+    const across = index % 4 === 0 ? random() : Math.pow(random(), 4);
+    const ribbonWidth = 0.16 + radius * 0.085;
+    const inset = across * ribbonWidth;
+    const curl = Math.sin(across * Math.PI) * 0.55;
+    const depth =
+      0.85 * Math.cos(radius * 1.35) +
+      0.48 * Math.sin(angle * 3 + radius * 1.8) +
+      curl +
+      (random() - 0.5) * 0.16;
     return [
-      x + (random() - 0.5) * scatter,
-      y + (random() - 0.5) * scatter,
-      center
-        ? 0
-        : Math.sin(Math.atan2(y, x) * 3) * 0.16 + (random() - 0.5) * 0.12,
+      x - Math.cos(angle) * inset + (random() - 0.5) * 0.06,
+      y - Math.sin(angle) * inset + (random() - 0.5) * 0.06,
+      depth,
     ];
   }
   for (let i = 0; i < count; i++) {
@@ -287,7 +297,7 @@ export function createGalaxy(
       uniform float uPixelRatio;
       varying vec3 vColor;
       void main() {
-        vColor = color;
+        vColor = color * (0.65 + 0.35 * smoothstep(-1.2, 1.2, position.z));
         vec4 view = particleView(position, 0.0);
         gl_Position = projectionMatrix * view;
         gl_PointSize = clamp(aSize * uPixelRatio * 9.0 / -view.z, 1.0, 6.0) * mix(1.0, 1.18, uLight);
@@ -518,7 +528,9 @@ export function createGalaxy(
     elapsed = 0,
     hover = 0,
     targetHover = 0;
-  const orientation = new Quaternion().setFromEuler(new Euler(0.06, -0.08, 0));
+  const orientation = new Quaternion().setFromEuler(
+    new Euler(0.36, -0.28, -0.06)
+  );
   const initialOrientation = orientation.clone();
   const angularAxis = new Vector3(0, 1, 0);
   const increment = new Quaternion();
@@ -699,6 +711,11 @@ export function createGalaxy(
       orientation.premultiply(increment).normalize();
     }
     group.quaternion.copy(orientation);
+    // Bounded rocking reveals depth without spinning the signature out of view.
+    if (!reducedMotion) {
+      group.rotateY(Math.sin(elapsed * 0.18) * 0.12);
+      group.rotateX(Math.sin(elapsed * 0.13) * 0.065);
+    }
     const splitBlend = uniforms.uSplit.value;
     const worldHeight =
       2 * Math.tan((camera.fov * Math.PI) / 360) * camera.position.z;
