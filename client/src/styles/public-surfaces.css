@@ -21,6 +21,8 @@
       .search-results-surface,
       .search-result-row,
       .track-series-card,
+      .series-step,
+      .research-index-row,
       .archive-post-row
     ) {
     background: transparent !important;
@@ -31,6 +33,18 @@
     transition:
       border-color 180ms ease,
       background-color 180ms ease;
+  }
+  html[data-route-kind] .public-universe .space-page .series-step {
+    padding: 14px 18px !important;
+    gap: 16px;
+  }
+  html[data-route-kind]
+    body
+    .public-universe
+    .space-page[class]:not(.owner-dark-scope):not(.route-loading-page)
+    .series-step:focus-visible {
+    border-radius: 10px !important;
+    outline-offset: 6px !important;
   }
   html[data-route-kind]
     body
@@ -147,13 +161,24 @@
     border-bottom: 0 !important;
   }
   html[data-route-kind] .public-universe .space-page .site-header {
-    background: linear-gradient(rgb(250 249 248 / 94%), rgb(250 249 248 / 75%)) !important;
+    background: linear-gradient(rgb(244 246 250), rgb(244 246 250)) !important;
     border-bottom: 0 !important;
     box-shadow: none !important;
     backdrop-filter: blur(16px);
   }
+  html[data-route-kind] .public-universe .space-page .site-header::after {
+    content: "";
+    position: absolute;
+    inset: 100% 0 auto;
+    height: 20px;
+    pointer-events: none;
+    background: linear-gradient(rgb(244 246 250), transparent);
+  }
+  html.dark[data-route-kind] .public-universe .space-page .site-header::after {
+    background: linear-gradient(rgb(8 10 15), transparent);
+  }
   html.dark[data-route-kind] .public-universe .space-page .site-header {
-    background: linear-gradient(rgb(8 10 15 / 92%), rgb(8 10 15 / 70%)) !important;
+    background: linear-gradient(rgb(8 10 15), rgb(8 10 15)) !important;
     border-bottom: 0 !important;
     box-shadow: none !important;
   }
@@ -218,12 +243,17 @@
     border-color: transparent !important;
   }
   .public-universe .observatory-paper-picker button[aria-pressed="true"] {
-    background: color-mix(
-      in srgb,
-      var(--observatory-accent) 7%,
-      transparent
-    ) !important;
+    background: transparent !important;
     box-shadow: none !important;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .public-universe .observatory-paper-picker button:hover {
+      background: var(--reader-row-hover) !important;
+    }
+  }
+  .public-universe .observatory-paper-picker button:focus-visible {
+    outline: 2px solid var(--observatory-accent);
+    outline-offset: 3px;
   }
   .public-universe .public-search-form {
     display: flex;
@@ -727,7 +757,7 @@
     .space-page
     :is(a, button, input, summary, [tabindex]):focus-visible {
     outline: 2px solid var(--reader-focus) !important;
-    outline-offset: 2px !important;
+    outline-offset: 6px !important;
   }
   html[data-route-kind]
     .public-universe

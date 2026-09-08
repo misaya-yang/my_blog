@@ -1261,7 +1261,7 @@
 }
 .observatory-home main > .galaxy-visual {
   position: fixed;
-  inset: 68px 0 0;
+  inset: 0;
   width: 100%;
   height: auto;
   margin: 0;
@@ -1844,7 +1844,7 @@ html:not(.dark) .public-universe {
 }
 .public-universe > .galaxy-visual {
   position: fixed;
-  inset: 68px 0 0;
+  inset: 0;
   width: 100%;
   height: auto;
   margin: 0;
@@ -2065,7 +2065,7 @@ html:not(.dark) .public-universe {
 }
 @media (max-width: 639px) {
   .public-universe > .galaxy-visual {
-    top: 64px;
+    top: 0;
   }
 }
 .public-universe > .galaxy-visual:focus {
@@ -2164,5 +2164,10 @@ html:not(.dark) .public-universe {
 }
 
 /* The generated particle stencil is also the WebGL fallback. */
-html:not(.dark) .galaxy-poster { filter: invert(1); mix-blend-mode: multiply; }
-.dark .galaxy-poster { mix-blend-mode: screen; }
+html:not(.dark) .galaxy-poster {
+  filter: invert(1);
+  mix-blend-mode: multiply;
+}
+.dark .galaxy-poster {
+  mix-blend-mode: screen;
+}

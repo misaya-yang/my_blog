@@ -176,6 +176,14 @@ const home: TranslationDict = {
     en: "No public articles are archived yet.",
     zh: "暂无可归档的公开文章。",
   },
+  "discovery.archiveFailed": {
+    en: "Archive is unavailable",
+    zh: "归档暂时不可用",
+  },
+  "discovery.archiveFailedHint": {
+    en: "The request failed. Retry to load the public notes.",
+    zh: "请求没有成功，请重试以加载公开文章。",
+  },
   "discovery.articlesCount": { en: "{count} articles", zh: "{count} 篇文章" },
   "discovery.updated": { en: "Updated {date}", zh: "更新于 {date}" },
   "discovery.searchKicker": { en: "Full-site search", zh: "全站搜索" },

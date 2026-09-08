@@ -10,6 +10,7 @@ import {
   InstancedBufferAttribute,
   InstancedBufferGeometry,
   Mesh,
+  Matrix4,
   PlaneGeometry,
   NormalBlending,
   Vector2,
@@ -21,6 +22,7 @@ import {
   WebGLRenderer,
 } from "three";
 import rosePoints from "./rosePoints.json";
+import { createContourFlow } from "./contourFlow";
 import { projectTrackball, trackballDelta } from "./trackball";
 import { getPageScene } from "./pageScene";
 import { getScrollMotion } from "./scrollMotion";
@@ -51,20 +53,28 @@ export function createGalaxy(
   scene.add(group);
   // Dust and luminous stars have independent geometry and optical profiles.
   // Billboard stars keep a broad halo without relying on hardware point-size limits.
-  const count = 6200;
+  const count = 4600;
   const positions = new Float32Array(count * 3);
+  const sourceFlow = createContourFlow(rosePoints);
+  const flows = new Float32Array(count * 2);
   const colors = new Float32Array(count * 3);
+  const dayColors = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
-  const starCount = 180;
+  const starCount = 210;
+  const starFlows = new Float32Array(starCount * 2);
   const starPositions = new Float32Array(starCount * 3);
   const starColors = new Float32Array(starCount * 3);
+  const dayStarColors = new Float32Array(starCount * 3);
   const starSizes = new Float32Array(starCount);
   let seed = 42;
   const random = () => {
     seed = (1664525 * seed + 1013904223) >>> 0;
     return seed / 4294967296;
   };
-  const palette = ["#a9b8e8", "#d5dcf2", "#f1eef5", "#d6a5b9"].map(
+  const palette = ["#8fcfff", "#c9e9ff", "#ffbd87", "#eebccf"].map(
+    value => new Color(value)
+  );
+  const dayPalette = ["#3478bc", "#518fac", "#c48b62", "#8e80ba"].map(
     value => new Color(value)
   );
   // The source supplies petal edges; roll each edge into a thick, cupped ribbon.
@@ -77,15 +87,15 @@ export function createGalaxy(
     const angle = Math.atan2(y, x);
     const signature = Math.abs(x) < 0.65 && Math.abs(y) < 0.7;
     if (signature) return [x, y, 0.35 + (random() - 0.5) * 0.045];
-    const across = index % 4 === 0 ? random() : Math.pow(random(), 4);
+    const across = index % 4 === 0 ? random() : Math.pow(random(), 6);
     const ribbonWidth = 0.16 + radius * 0.085;
     const inset = across * ribbonWidth;
     const curl = Math.sin(across * Math.PI) * 0.55;
     const depth =
-      0.85 * Math.cos(radius * 1.35) +
-      0.48 * Math.sin(angle * 3 + radius * 1.8) +
+      1.25 * Math.cos(radius * 1.35) +
+      0.7 * Math.sin(angle * 3 + radius * 1.8) +
       curl +
-      (random() - 0.5) * 0.16;
+      (random() - 0.5) * 0.06;
     return [
       x - Math.cos(angle) * inset + (random() - 0.5) * 0.06,
       y - Math.sin(angle) * inset + (random() - 0.5) * 0.06,
@@ -98,8 +108,17 @@ export function createGalaxy(
         ? [(random() - 0.5) * 9.5, (random() - 0.5) * 8, (random() - 0.5) * 4]
         : sample(i);
     positions.set(p, i * 3);
-    palette[i % 13 === 0 ? 3 : i % 3].toArray(colors, i * 3);
-    sizes[i] = 0.8 + Math.pow(random(), 2) * 2.0;
+    const source = ((i * 97) % (rosePoints.length / 2)) * 2;
+    if (i % 31 !== 0) flows.set(sourceFlow.subarray(source, source + 2), i * 2);
+    palette[i % 10 < 6 ? 0 : i % 10 < 8 ? 1 : i % 10 === 8 ? 2 : 3].toArray(
+      colors,
+      i * 3
+    );
+    dayPalette[i % 10 < 6 ? 0 : i % 10 < 8 ? 1 : i % 10 === 8 ? 2 : 3].toArray(
+      dayColors,
+      i * 3
+    );
+    sizes[i] = 1.1 + Math.pow(random(), 2) * 2.8;
   }
   for (let i = 0; i < starCount; i++) {
     const p = sample(i + 13);
@@ -108,17 +127,29 @@ export function createGalaxy(
     p[1] += (random() - 0.5) * 0.25;
     if (i % 19 === 0) p[2] += 0.6;
     starPositions.set(p, i * 3);
-    palette[i % 11 === 0 ? 3 : i % 3].toArray(starColors, i * 3);
+    const source = (((i + 13) * 97) % (rosePoints.length / 2)) * 2;
+    starFlows.set(sourceFlow.subarray(source, source + 2), i * 2);
+    palette[i % 4].toArray(starColors, i * 3);
+    dayPalette[i % 4].toArray(dayStarColors, i * 3);
     starSizes[i] =
-      i % 17 === 0 ? 0.8 + random() * 0.6 : 0.32 + Math.pow(random(), 3) * 0.5;
+      i % 23 === 0
+        ? 2.8 + random() * 0.5
+        : i % 5 === 0
+          ? 1.4 + random() * 0.4
+          : 0.4 + Math.pow(random(), 2) * 0.45;
   }
   const geometry = new BufferGeometry();
   geometry.setAttribute("position", new BufferAttribute(positions, 3));
+  geometry.setAttribute("aFlow", new BufferAttribute(flows, 2));
   geometry.setAttribute("color", new BufferAttribute(colors, 3));
+  geometry.setAttribute("aDayColor", new BufferAttribute(dayColors, 3));
   geometry.setAttribute("aSize", new BufferAttribute(sizes, 1));
   const controls = host.parentElement!;
   const deformation = `
     uniform float uTime; uniform float uLight;
+    attribute vec2 aFlow;
+    float flowPhase(vec3 p, float age) { return fract((uTime-age)*0.32 + dot(p,vec3(12.3,7.1,2.9))); }
+    float flowFade(vec3 p) { float f = flowPhase(p,0.0); return smoothstep(0.0,0.12,f)*(1.0-smoothstep(0.88,1.0,f)); }
     uniform vec3 uPagePose;
     uniform vec2 uPreviousPointer;
     uniform float uEnergy;
@@ -137,20 +168,22 @@ export function createGalaxy(
       return exp(-dot(delta,delta)*24.0)*uHover;
     }
     vec4 particleView(vec3 original, float age) {
+      mat4 particleMatrix = modelViewMatrix;
       float radius = length(original);
       float scroll = mix(uScrollPhase,uPreviousScrollPhase,min(age*1.6,1.0));
-      float angle = sin((uTime - age) * 0.12) * 0.018
-        + scroll * (0.38 + radius*0.045);
+      float angle = scroll * (0.38 + radius*0.045);
       mat2 orbit = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
       vec3 p = original;
+      p.xy += aFlow * (flowPhase(original,age)*2.0-1.0);
       p.xy = orbit * p.xy;
-      p.z += sin((uTime - age) * 0.65 + original.x * 1.7 + original.y) * 0.07;
+
+
       p.z += (sin(original.y*0.7+scroll*0.8)-sin(original.y*0.7))*0.36;
       float burst = uDisperse;
       vec3 radial = normalize(original + vec3(0.0001));
       vec3 tangent = normalize(vec3(-original.y, original.x, original.z * 0.15) + vec3(0.0001));
       p += radial * burst * (0.35 + radius * 0.65) + tangent * burst * 0.45;
-      vec4 view = modelViewMatrix * vec4(p, 1.0);
+      vec4 view = particleMatrix * vec4(p, 1.0);
       vec3 seed = fract(sin(vec3(dot(original,vec3(12.9898,78.233,37.719)), dot(original,vec3(39.346,11.135,83.155)), dot(original,vec3(73.156,52.235,9.151)))) * 43758.5453);
       float split = mix(uSplit,uPreviousSplit,min(age*0.8,1.0));
       float local = clamp((split-seed.x*0.18)/0.82,0.0,1.0);
@@ -160,9 +193,9 @@ export function createGalaxy(
       destination.xy = mat2(cp,-sp,sp,cp) * destination.xy;
       destination.z += sin(destination.x * 0.4 + uPagePose.x) * uPagePose.y * 2.0;
       destination += vec3(sin((uTime-age)*0.18+seed.y*6.283+scroll*0.7),cos((uTime-age)*0.13+seed.z*6.283+scroll*0.5),sin((uTime-age)*0.11+seed.x*6.283+scroll*0.4))*0.45;
-      vec4 dispersedView = modelViewMatrix * vec4(destination,1.0);
+      vec4 dispersedView = particleMatrix * vec4(destination,1.0);
       dispersedView.z = -4.5 - abs(dispersedView.z + 4.5) * 0.6;
-      vec3 bend = (modelViewMatrix * vec4(sin(original.y*0.7),cos(original.z*0.6),sin(original.x*0.7),0.0)).xyz;
+      vec3 bend = (particleMatrix * vec4(sin(original.y*0.7),cos(original.z*0.6),sin(original.x*0.7),0.0)).xyz;
       view.xyz = mix(view.xyz,dispersedView.xyz,blend) + bend*sin(blend*3.14159)*1.1;
       vec4 projected = projectionMatrix * view;
       vec2 delta = projected.xy / projected.w - mix(uPointer, uPreviousPointer, min(age * 0.65, 1.0));
@@ -180,6 +213,7 @@ export function createGalaxy(
     }
   `;
   const uniforms = {
+    uPoseHistory: { value: Array.from({ length: 16 }, () => new Matrix4()) },
     uCanvasSize: { value: new Vector2(1, 1) },
     uCopyBounds: { value: new Vector4(-2, -2, -1, -1) },
     uCopyOpacity: { value: 1 },
@@ -224,7 +258,7 @@ export function createGalaxy(
         float n = noise(p*4.0 + uTime*0.003)*0.55 + noise(p*11.0)*0.28 + noise(p*27.0)*0.17;
         float mist = pow(n,2.0) * exp(-dot(p,p)*2.2);
         vec3 night = vec3(0.0024,0.0030,0.0050) + vec3(0.005,0.004,0.009)*mist;
-        vec3 day = vec3(0.955,0.947,0.939) - vec3(0.004,0.005,0.004)*mist;
+        vec3 day = vec3(0.90,0.92,0.95) + vec3(0.025,0.020,0.015)*exp(-dot(p,p)*1.4);
         gl_FragColor = vec4(mix(night,day,uLight),1.0);
         #include <colorspace_fragment>
       }`,
@@ -279,7 +313,7 @@ export function createGalaxy(
         float glow = exp(-r*r*14.0)*0.10;
         float warm = smoothstep(0.05,0.45,vColor.r-vColor.b);
         vec3 day = mix(vec3(0.18,0.34,0.56),vec3(0.51,0.36,0.21),warm);
-        gl_FragColor = vec4(mix(vColor,day,uLight),(core+glow)*vTwinkle*mix(0.7,0.48,uLight));
+        gl_FragColor = vec4(mix(vColor,day,uLight),(core+glow)*vTwinkle*mix(0.7,0.90,uLight));
         #include <colorspace_fragment>
       }`,
   });
@@ -293,22 +327,23 @@ export function createGalaxy(
     blending: light ? NormalBlending : AdditiveBlending,
     uniforms,
     vertexShader: `${deformation}
-      attribute float aSize;
+      attribute float aSize; attribute vec3 aDayColor;
       uniform float uPixelRatio;
-      varying vec3 vColor;
+      varying vec3 vColor; varying float vFlow;
       void main() {
-        vColor = color * (0.65 + 0.35 * smoothstep(-1.2, 1.2, position.z));
+        vFlow = flowFade(position);
+        vColor = mix(color, aDayColor, uLight) * (0.65 + 0.35 * smoothstep(-1.2, 1.2, position.z));
         vec4 view = particleView(position, 0.0);
         gl_Position = projectionMatrix * view;
-        gl_PointSize = clamp(aSize * uPixelRatio * 9.0 / -view.z, 1.0, 6.0) * mix(1.0, 1.18, uLight);
+        gl_PointSize = clamp(aSize * uPixelRatio * 9.0 / -view.z, 1.0, 6.0) * mix(1.0, 1.6, uLight);
       }`,
-    fragmentShader: `varying vec3 vColor; uniform float uDisperse; uniform float uLight;
+    fragmentShader: `varying vec3 vColor; varying float vFlow; uniform float uDisperse; uniform float uLight;
       void main() {
         float d = length(gl_PointCoord - 0.5) * 2.0;
         if (d > 1.0) discard;
         float warm = smoothstep(0.05,0.45,vColor.r-vColor.b);
-        vec3 ink = mix(vec3(0.20,0.23,0.34),vec3(0.39,0.22,0.29),warm);
-        gl_FragColor = vec4(mix(vColor, ink, uLight), (1.0 - smoothstep(0.15, 1.0, d)) * mix(0.65,0.86,uLight) * (1.0 - uDisperse * 0.25));
+        vec3 ink = mix(vec3(0.07,0.20,0.48),vec3(0.55,0.12,0.26),warm);
+        gl_FragColor = vec4(vColor, (1.0 - smoothstep(0.15, 1.0, d)) * mix(0.65,0.72,uLight) * vFlow * (1.0 - uDisperse * 0.25));
         #include <colorspace_fragment>
       }`,
   });
@@ -339,6 +374,14 @@ export function createGalaxy(
     "aSize",
     new InstancedBufferAttribute(starSizes, 1)
   );
+  starGeometry.setAttribute(
+    "aDayColor",
+    new InstancedBufferAttribute(dayStarColors, 3)
+  );
+  starGeometry.setAttribute(
+    "aFlow",
+    new InstancedBufferAttribute(starFlows, 2)
+  );
   starGeometry.instanceCount = starCount;
   const starMaterial = new ShaderMaterial({
     transparent: true,
@@ -346,42 +389,39 @@ export function createGalaxy(
     blending: light ? NormalBlending : AdditiveBlending,
     uniforms,
     vertexShader: `${deformation}
-      attribute vec3 aCenter; attribute vec3 aColor; attribute float aSize;
-      varying vec2 vUv; varying vec3 vColor; varying float vBrightness; varying float vProminence; varying float vLens;
+      attribute vec3 aCenter; attribute vec3 aColor; attribute vec3 aDayColor; attribute float aSize;
+      uniform vec2 uCanvasSize; uniform float uPixelRatio;
+      varying vec2 vUv; varying vec3 vColor; varying float vBrightness; varying float vProminence; varying float vLens; varying float vCoreRadius;
       void main() {
         vUv = position.xy * 2.0;
-        vColor = aColor;
-        float phase = dot(aCenter,vec3(4.1,7.7,3.3));
-        vBrightness = 0.78 + 0.16*sin(uTime*0.67+phase) + 0.06*sin(uTime*1.13+phase*1.7);
-        vProminence = smoothstep(0.65, 1.1, aSize);
+        vColor = mix(aColor,aDayColor,uLight);
+        vBrightness = (0.82 + 0.18*sin(uTime*0.42+length(aCenter.xy)*1.15))*flowFade(aCenter);
+        vProminence = smoothstep(1.1,2.8,aSize);
         vec4 center = particleView(aCenter, 0.0);
         vLens = cursorLight(center);
-        float breathe = 0.96+0.04*sin(uTime*0.41+phase);
-        center.xy += position.xy * mix(aSize, min(aSize,1.0)*0.9, uLight) * breathe * (1.0+vLens*0.10);
+        // Bound the luminous core in screen pixels independently from its halo.
+        float depth = clamp(10.0 / -center.z,0.7,1.3);
+        float diameter = (18.0 + aSize*15.0)*depth;
+        float corePixels = (0.9 + aSize*1.0)*depth;
+        vCoreRadius = corePixels / (diameter*0.5);
+        float worldSize = diameter * 2.0 * (-center.z) / (projectionMatrix[1][1] * uCanvasSize.y / uPixelRatio);
+        center.xy += position.xy * worldSize;
         gl_Position = projectionMatrix * center;
       }`,
-    fragmentShader: `varying vec2 vUv; varying vec3 vColor; varying float vBrightness; varying float vProminence; varying float vLens;
+    fragmentShader: `varying vec2 vUv; varying vec3 vColor; varying float vBrightness; varying float vProminence; varying float vLens; varying float vCoreRadius;
       uniform float uDisperse; uniform float uLight;
       void main() {
         float r = length(vUv);
         if (r > 1.0) discard;
-        float core = 1.0 - smoothstep(mix(0.045, 0.025, uLight), mix(0.115, 0.065, uLight), r);
-        float corona = exp(-r*r*85.0) * 0.36;
-        float halo = exp(-r*r*mix(6.0,18.0,uLight)) * 0.085;
-        float alpha = (core + corona + halo * 1.1) * (vBrightness+vLens*0.12) * (1.0 - uDisperse * 0.25);
-        vec3 emission = mix(vColor * 1.15, vec3(1.25), core * 0.38);
-        float warm = smoothstep(0.05,0.45,vColor.r-vColor.b);
-        // Daylight uses silver-blue pinpoints and a translucent spectral corona.
-        // Only the brightest stars carry a small diffraction glint.
-        float dayCore = 1.0-smoothstep(0.025,0.12,r);
-        float dayCorona = exp(-r*r*110.0);
-        float glint = (exp(-abs(vUv.x)*210.0)*exp(-abs(vUv.y)*16.0)
-          + exp(-abs(vUv.y)*210.0)*exp(-abs(vUv.x)*16.0)) * vProminence;
-        vec3 tint = mix(vec3(0.23,0.25,0.38),vec3(0.45,0.25,0.33),warm);
-        tint = mix(tint, vec3(0.30,0.34,0.48), dayCore*0.22);
-        float lightAlpha = (dayCore*0.78 + dayCorona*0.26 + exp(-r*r*18.0)*0.035 + glint*0.32)
-          * (0.25+vBrightness*0.75+vLens*0.25) * (1.0-uDisperse*0.35);
-        gl_FragColor = vec4(mix(emission, tint, uLight), mix(alpha, lightAlpha, uLight));
+        float core = exp(-r*r/(vCoreRadius*vCoreRadius)*1.5);
+        float corona = exp(-r*r/(vCoreRadius*vCoreRadius)*0.25);
+        float halo = exp(-r*r*9.0);
+        float glint = (exp(-abs(vUv.x)*90.0)*exp(-abs(vUv.y)*12.0)
+          + exp(-abs(vUv.y)*90.0)*exp(-abs(vUv.x)*12.0))*vProminence;
+        float night = core*1.65 + corona*0.28 + halo*0.055 + glint*0.06;
+        float day = core*0.95 + corona*0.20 + halo*0.018 + glint*0.22;
+        vec3 emission = mix(vColor,vec3(1.0),core*0.45);
+        gl_FragColor = vec4(mix(emission,vColor,uLight),mix(night,day,uLight)*(vBrightness+vLens*0.15)*(1.0-uDisperse*0.25));
         #include <colorspace_fragment>
       }`,
   });
@@ -396,6 +436,7 @@ export function createGalaxy(
     "aCenter",
     new InstancedBufferAttribute(positions, 3)
   );
+  volumeGeometry.setAttribute("aFlow", new InstancedBufferAttribute(flows, 2));
   volumeGeometry.instanceCount = 1600;
   const volumeMaterial = new ShaderMaterial({
     uniforms,
@@ -450,22 +491,33 @@ export function createGalaxy(
     "aColor",
     new InstancedBufferAttribute(starColors, 3)
   );
+  trailGeometry.setAttribute(
+    "aFlow",
+    new InstancedBufferAttribute(starFlows, 2)
+  );
   trailGeometry.instanceCount = starCount;
+  // Only trail vertices need the historical transform array.
+  const trailDeformation =
+    "uniform mat4 uPoseHistory[16];\n" +
+    deformation.replace(
+      "mat4 particleMatrix = modelViewMatrix;",
+      "      float historyIndex = clamp(age * 30.0, 0.0, 15.0);\n      int h = int(floor(historyIndex));\n      mat4 particleMatrix = age <= 0.0 ? modelViewMatrix : uPoseHistory[h];\n      if (h < 15 && age > 0.0) particleMatrix = particleMatrix * (1.0-fract(historyIndex)) + uPoseHistory[h+1] * fract(historyIndex);\n"
+    );
   const trailMaterial = new ShaderMaterial({
     transparent: true,
     depthWrite: false,
     blending: light ? NormalBlending : AdditiveBlending,
     uniforms,
-    vertexShader: `${deformation}
+    vertexShader: `${trailDeformation}
       attribute vec3 aCenter; attribute vec3 aColor;
       varying float vAge; varying float vEdge; varying vec3 vColor;
       void main() {
         vAge = position.x; vEdge = position.y; vColor = aColor;
-        float age = vAge * (0.9 + uEnergy * 0.65);
+        float age = vAge * 0.48;
         vec4 center = particleView(aCenter, age);
-        vec4 next = particleView(aCenter, age + 0.05);
+        vec4 next = particleView(aCenter, min(age + 0.033, 0.5));
         vec2 tangent = normalize(next.xy - center.xy + vec2(0.00001));
-        center.xy += vec2(-tangent.y, tangent.x) * position.y * 0.013 * (1.0 - vAge);
+        center.xy += vec2(-tangent.y, tangent.x) * position.y * 0.022 * (1.0 - vAge);
         gl_Position = projectionMatrix * center;
       }`,
     fragmentShader: `varying float vAge; varying float vEdge; varying vec3 vColor;
@@ -473,7 +525,7 @@ export function createGalaxy(
       void main() {
         float alpha = pow(1.0 - vAge, 1.8) * (1.0 - vEdge * vEdge) * mix(0.506,0.30,uLight) * (1.0 - uDisperse * 0.255);
         vec3 ink = vec3(0.16, 0.31, 0.53);
-        gl_FragColor = vec4(mix(vColor, ink, uLight), alpha*(0.22+uEnergy*0.78));
+        gl_FragColor = vec4(mix(vColor, ink, uLight), alpha*(0.12+uEnergy*0.88));
         #include <colorspace_fragment>
       }`,
   });
@@ -493,6 +545,7 @@ export function createGalaxy(
     // an unmasked corner across text even when their center is inside the reader.
     opticalMaterial.fragmentShader =
       `
+      uniform float uLight;
       uniform vec4 uCopyBounds; uniform float uCopyOpacity;
       uniform vec4 uQuietBoxes[4];
       uniform float uReading; uniform vec2 uGatherZone;
@@ -501,22 +554,24 @@ export function createGalaxy(
         vec2 p = gl_FragCoord.xy / uCanvasSize;
         float x = smoothstep(uCopyBounds.x-0.05,uCopyBounds.x,p.x) * (1.0-smoothstep(uCopyBounds.z,uCopyBounds.z+0.08,p.x));
         float y = smoothstep(uCopyBounds.y-0.04,uCopyBounds.y,p.y) * (1.0-smoothstep(uCopyBounds.w,uCopyBounds.w+0.04,p.y));
-        float edge = mix(0.20,0.75,smoothstep(0.44,0.90,abs(p.x-0.5)*2.0));
+        float edge = mix(mix(0.20,0.34,uLight),mix(0.75,0.95,uLight),smoothstep(0.44,0.90,abs(p.x-0.5)*2.0));
         float openBand = smoothstep(uGatherZone.x,uGatherZone.x+0.06,p.y) * (1.0-smoothstep(uGatherZone.y-0.06,uGatherZone.y,p.y));
         float quiet = 1.0;
         for (int i=0;i<4;i++) {
           vec4 b = uQuietBoxes[i];
           float qx = smoothstep(b.x-0.04,b.x+0.02,p.x)*(1.0-smoothstep(b.z-0.02,b.z+0.04,p.x));
           float qy = smoothstep(b.y-0.025,b.y+0.02,p.y)*(1.0-smoothstep(b.w-0.02,b.w+0.025,p.y));
-          quiet *= 1.0-qx*qy*0.72;
+          quiet *= 1.0-qx*qy*mix(0.72,0.55,uLight);
         }
         return quiet * (1.0-x*y*0.96*uCopyOpacity) * mix(1.0,max(edge,openBand*smoothstep(0.34,0.48,p.x)),uReading);
       }
 ` +
-      opticalMaterial.fragmentShader.replace(
-        "#include <colorspace_fragment>",
-        "gl_FragColor.a *= readableArea();\n#include <colorspace_fragment>"
-      );
+      opticalMaterial.fragmentShader
+        .replaceAll("uniform float uLight;", "")
+        .replace(
+          "#include <colorspace_fragment>",
+          "gl_FragColor.a *= readableArea();\n#include <colorspace_fragment>"
+        );
   }
 
   let frame = 0,
@@ -534,11 +589,11 @@ export function createGalaxy(
   const initialOrientation = orientation.clone();
   const angularAxis = new Vector3(0, 1, 0);
   const increment = new Quaternion();
-  const autoAxis = new Vector3(0.18, 0.9, 0.3).normalize();
   let angularSpeed = 0,
     dragging = false,
     activePointer = -1,
-    lastMoveTime = 0;
+    lastMoveTime = 0,
+    releaseTime = -10;
   let dragPoint = new Vector3();
   const pointer = new Vector2(4, 4);
   const pointerTarget = new Vector2(4, 4);
@@ -562,6 +617,9 @@ export function createGalaxy(
   let gather = 0;
   let scrollProgress = pageScene.mode === "home" ? 0 : 1;
   let lastFlowSample = 0;
+  let historyClock = 0,
+    historyReady = false;
+  const viewPose = new Matrix4();
   let bounds = host.getBoundingClientRect();
   function paint(dt = 0.016) {
     const smoothing = 1 - Math.exp(-dt * 9);
@@ -583,6 +641,9 @@ export function createGalaxy(
       host.dataset.scrollPhase = uniforms.uScrollPhase.value.toFixed(3);
       host.dataset.scrollSpeed = flowSpeed.toFixed(3);
       host.dataset.pointerInfluence = hover.toFixed(2);
+      host.dataset.returnAngle = orientation
+        .angleTo(initialOrientation)
+        .toFixed(4);
     }
     if (pageScene.mode === "home" && !stage?.isConnected) bindHome();
     if (pageScene.mode === "author" && !copy?.isConnected)
@@ -702,20 +763,18 @@ export function createGalaxy(
         uniforms.uEnergy.value) *
       smoothing;
     if (!dragging && !paused) {
-      if (angularSpeed > 0.002) {
+      if (angularSpeed > 0.002 && elapsed - releaseTime < 0.45) {
         increment.setFromAxisAngle(angularAxis, angularSpeed * dt);
         orientation.premultiply(increment).normalize();
-        angularSpeed *= Math.exp(-dt * 2.8);
+        angularSpeed *= Math.exp(-dt * 6);
       }
-      increment.setFromAxisAngle(autoAxis, dt * 0.006 * uniforms.uSplit.value);
-      orientation.premultiply(increment).normalize();
+      if (elapsed - releaseTime >= 0.45) {
+        orientation.slerp(initialOrientation, 1 - Math.exp(-dt * 2.4));
+        angularSpeed = 0;
+      }
     }
     group.quaternion.copy(orientation);
-    // Bounded rocking reveals depth without spinning the signature out of view.
-    if (!reducedMotion) {
-      group.rotateY(Math.sin(elapsed * 0.18) * 0.12);
-      group.rotateX(Math.sin(elapsed * 0.13) * 0.065);
-    }
+    // Ambient flow follows local strokes; user input owns the 3D orientation.
     const splitBlend = uniforms.uSplit.value;
     const worldHeight =
       2 * Math.tan((camera.fov * Math.PI) / 360) * camera.position.z;
@@ -724,14 +783,15 @@ export function createGalaxy(
     const copyRight = copy?.getBoundingClientRect().right ?? bounds.left;
     const roseLeft = Math.max(
       bounds.width * 0.43,
-      copyRight - bounds.left + 28
+      copyRight - bounds.left - 35
     );
-    const roseRight = bounds.width - 32;
+    const roseRight = bounds.width - 12;
     const roseWidth = Math.max(120, roseRight - roseLeft);
     const homeScale = Math.min(
       1,
-      ((roseWidth / bounds.width) * worldWidth) / 8.2,
-      worldHeight / 10.2
+      ((roseWidth / bounds.width) * worldWidth) /
+        (bounds.width < 900 ? 7.2 : 6.3),
+      worldHeight / 8.0
     );
     const homeX =
       ((roseLeft + roseRight) / 2 / bounds.width - 0.5) * worldWidth;
@@ -748,6 +808,19 @@ export function createGalaxy(
         : homeScale * homeComposition + (1 - homeComposition)
     );
     group.position.y = mobile ? 2.1 * (1 - splitBlend) : 0;
+    camera.updateMatrixWorld();
+    group.updateMatrixWorld();
+    viewPose.multiplyMatrices(camera.matrixWorldInverse, group.matrixWorld);
+    historyClock += dt;
+    if (!historyReady) {
+      uniforms.uPoseHistory.value.forEach(matrix => matrix.copy(viewPose));
+      historyReady = true;
+    } else if (historyClock >= 1 / 30) {
+      for (let i = 15; i > 0; i--)
+        uniforms.uPoseHistory.value[i].copy(uniforms.uPoseHistory.value[i - 1]);
+      historyClock %= 1 / 30;
+    }
+    uniforms.uPoseHistory.value[0].copy(viewPose);
     renderer.render(scene, camera);
   }
   function tick(now: number) {
@@ -789,9 +862,12 @@ export function createGalaxy(
       height * renderer.getPixelRatio()
     );
     uniforms.uAspect.value = width / height;
-    geometry.setDrawRange(0, mobile ? 5600 : count);
-    starGeometry.instanceCount = mobile ? 100 : starCount;
-    trailGeometry.instanceCount = mobile ? 100 : starCount;
+    geometry.setDrawRange(
+      0,
+      light ? (mobile ? 2500 : 3600) : mobile ? 3200 : count
+    );
+    starGeometry.instanceCount = mobile ? 180 : starCount;
+    trailGeometry.instanceCount = mobile ? 180 : starCount;
     volumeGeometry.instanceCount = mobile ? 700 : 1600;
     distantGeometry.setDrawRange(0, mobile ? 90 : distantCount);
     renderer.setSize(width, height);
@@ -808,6 +884,13 @@ export function createGalaxy(
   intersection.observe(host);
   const move = (event: PointerEvent) => {
     if (reducedMotion) return;
+    // Recover even if pointerup was lost outside the browser/capture surface.
+    if (
+      dragging &&
+      event.pointerId === activePointer &&
+      (event.buttons & 1) === 0
+    )
+      finishDrag();
     pointerTarget.set(
       ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
       1 - ((event.clientY - bounds.top) / bounds.height) * 2
@@ -857,18 +940,24 @@ export function createGalaxy(
     controls.dataset.dragging = "true";
     move(event);
   };
-  const up = (event: PointerEvent) => {
-    if (event.pointerId !== activePointer) return;
+  const finishDrag = () => {
+    if (!dragging) return;
+    const pointerId = activePointer;
     dragging = false;
     activePointer = -1;
-    if (event.type === "pointercancel" || event.timeStamp - lastMoveTime > 100)
-      angularSpeed = 0;
+    releaseTime = elapsed;
+    angularSpeed = 0;
     controls.dataset.dragging = "false";
-    if (controls.hasPointerCapture(event.pointerId))
-      controls.releasePointerCapture(event.pointerId);
+    if (controls.hasPointerCapture(pointerId))
+      controls.releasePointerCapture(pointerId);
+  };
+  const up = (event: PointerEvent) => {
+    if (event.pointerId !== activePointer) return;
+    finishDrag();
     if (event.pointerType !== "mouse") targetHover = 0;
   };
   const leave = () => {
+    finishDrag();
     targetHover = 0;
     requestPaint();
   };
@@ -906,6 +995,7 @@ export function createGalaxy(
         )
         .normalize();
       angularSpeed = 0;
+      releaseTime = elapsed;
     }
     requestPaint();
   };
@@ -913,8 +1003,9 @@ export function createGalaxy(
   // Track the pointer across reading surfaces too; only artwork starts a drag.
   window.addEventListener("pointermove", move);
   controls.addEventListener("pointerdown", down);
-  controls.addEventListener("pointerup", up);
-  controls.addEventListener("pointercancel", up);
+  window.addEventListener("pointerup", up, true);
+  window.addEventListener("pointercancel", up, true);
+  controls.addEventListener("lostpointercapture", up);
   document.documentElement.addEventListener("pointerleave", leave);
   window.addEventListener("blur", leave);
   controls.addEventListener("keydown", key);
@@ -953,6 +1044,11 @@ export function createGalaxy(
       requestPaint();
     },
     setTheme(isLight: boolean) {
+      light = isLight;
+      geometry.setDrawRange(
+        0,
+        light ? (mobile ? 2500 : 3600) : mobile ? 3200 : count
+      );
       uniforms.uLight.value = isLight ? 1 : 0;
       material.blending =
         starMaterial.blending =
@@ -977,8 +1073,9 @@ export function createGalaxy(
       document.removeEventListener("visibilitychange", sync);
       window.removeEventListener("pointermove", move);
       controls.removeEventListener("pointerdown", down);
-      controls.removeEventListener("pointerup", up);
-      controls.removeEventListener("pointercancel", up);
+      window.removeEventListener("pointerup", up, true);
+      window.removeEventListener("pointercancel", up, true);
+      controls.removeEventListener("lostpointercapture", up);
       document.documentElement.removeEventListener("pointerleave", leave);
       window.removeEventListener("blur", leave);
       controls.removeEventListener("keydown", key);

@@ -42,7 +42,13 @@ export default function Archive() {
   const { language, t } = useLanguage();
   const siteUrl = getClientSiteUrl();
   const locale = language === "zh" ? "zh-CN" : "en-US";
-  const { data: groups, isLoading } = trpc.discovery.archive.useQuery();
+  const {
+    data: groups,
+    isLoading,
+    isError,
+    isFetching,
+    refetch,
+  } = trpc.discovery.archive.useQuery();
   const total =
     groups?.reduce((sum: number, group: any) => sum + group.posts.length, 0) ??
     0;
@@ -70,7 +76,9 @@ export default function Archive() {
           <p className="page-copy mt-5">
             {isLoading
               ? t("discovery.archiveLoading")
-              : t("discovery.archiveSubtitle", { count: total })}
+              : isError
+                ? t("discovery.archiveFailedHint")
+                : t("discovery.archiveSubtitle", { count: total })}
           </p>
         </section>
 
@@ -79,6 +87,22 @@ export default function Archive() {
             <LoadingState
               title={t("common.loadingNotes")}
               description={t("common.loadingHint")}
+            />
+          ) : isError ? (
+            <EmptyState
+              icon={<CalendarDays className="h-4 w-4" />}
+              title={t("discovery.archiveFailed")}
+              action={
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="glass-button"
+                  disabled={isFetching}
+                  onClick={() => void refetch()}
+                >
+                  {t("common.retry")}
+                </Button>
+              }
             />
           ) : groups?.length ? (
             <div className="archive-timeline-groups grid gap-8">
