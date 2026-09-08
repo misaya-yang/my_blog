@@ -126,13 +126,7 @@ export function GalaxyHero() {
         <div className="galaxy-scene" ref={host} aria-hidden="true">
           <img
             className="galaxy-poster"
-            src={
-              needsFallback
-                ? theme === "light"
-                  ? "/images/galaxy-poster-light.svg"
-                  : "/images/galaxy-poster.png"
-                : undefined
-            }
+            src={needsFallback ? "/images/rose-lvy-source.png" : undefined}
             width="837"
             height="600"
             alt=""

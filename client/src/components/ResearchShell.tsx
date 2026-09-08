@@ -271,7 +271,7 @@ export function SiteHeader({
                 <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="site-mobile-sheet glass-popover w-[20rem] p-0">
+            <SheetContent className="site-mobile-sheet glass-popover w-[20rem] overflow-y-auto overscroll-contain p-0">
               <SheetHeader className="site-mobile-sheet-header p-5">
                 <SheetTitle className="site-mobile-sheet-title flex items-center gap-3">
                   <BrandMark />

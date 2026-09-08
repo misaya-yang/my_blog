@@ -173,9 +173,9 @@ export default function Home() {
               ) : featured ? (
                 <>
                   <div
+                    id="recent-note-preview"
                     className="observatory-paper-preview"
                     ref={previewRef}
-                    key={featured.slug}
                   >
                     <div className="observatory-paper-meta">
                       <span>
@@ -240,6 +240,16 @@ export default function Home() {
                         type="button"
                         key={post.slug}
                         aria-pressed={featured.slug === post.slug}
+                        aria-controls="recent-note-preview"
+                        onPointerEnter={event => {
+                          if (
+                            event.pointerType === "mouse" &&
+                            matchMedia("(hover: hover) and (pointer: fine)")
+                              .matches
+                          )
+                            setSelectedNote(index);
+                        }}
+                        onFocus={() => setSelectedNote(index)}
                         onClick={() => {
                           setSelectedNote(index);
                           if (matchMedia("(max-width: 850px)").matches) {

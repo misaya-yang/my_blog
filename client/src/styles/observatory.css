@@ -453,7 +453,7 @@
   color: var(--observatory-accent);
 }
 .observatory-text-link:hover {
-  text-decoration: underline;
+  text-decoration: none;
   text-underline-offset: 6px;
 }
 .observatory-hero-foot {
@@ -1011,7 +1011,7 @@
     .space-page:not(.owner-dark-scope)
     .site-header
     .nav-ink-active {
-    text-decoration: underline;
+    text-decoration: none;
     text-underline-offset: 7px;
   }
   html[data-route-kind] .space-page:not(.owner-dark-scope) :focus-visible {
@@ -1054,7 +1054,7 @@
 @media (hover: hover) and (pointer: fine) {
   .observatory-direction:hover h3,
   .article-card:hover .article-title {
-    text-decoration: underline;
+    text-decoration: none;
     text-underline-offset: 5px;
     text-decoration-thickness: 1px;
   }
@@ -2162,3 +2162,7 @@ html:not(.dark) .public-universe {
     }
   }
 }
+
+/* The generated particle stencil is also the WebGL fallback. */
+html:not(.dark) .galaxy-poster { filter: invert(1); mix-blend-mode: multiply; }
+.dark .galaxy-poster { mix-blend-mode: screen; }

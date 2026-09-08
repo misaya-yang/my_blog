@@ -1,5 +1,5 @@
-/* Public surface policy: open at rest, a single quiet boundary on interaction.
-   Geometry stays fixed; the star renderer handles contrast behind reading areas. */
+/* Cards own a padded state layer. Reading and navigation stay open; their
+   individual controls carry focus, rather than framing the entire region. */
 @layer components {
   html[data-route-kind]
     body
@@ -25,7 +25,7 @@
     ) {
     background: transparent !important;
     background-image: none !important;
-    border-color: transparent !important;
+    border: 0 !important;
     box-shadow: none !important;
     backdrop-filter: none !important;
     transition:
@@ -38,21 +38,13 @@
     .space-page[class]:not(.owner-dark-scope):not(.route-loading-page)
     :is(
       .observatory-paper-preview,
-      .paper-reader-main,
-      .toc-surface,
-      .about-links-rail,
       .article-card,
       .search-result-row,
       .track-series-card,
       .archive-post-row
-    ):focus-within {
-    outline: 1px solid var(--reader-hover-border);
-    outline-offset: -1px;
-    border-color: color-mix(
-      in srgb,
-      var(--reader-hover-border) 100%,
-      transparent
-    ) !important;
+    ):has(:focus-visible) {
+    background: var(--reader-card-hover) !important;
+    box-shadow: none !important;
   }
   @media (hover: hover) and (pointer: fine) {
     html[data-route-kind]
@@ -61,21 +53,13 @@
       .space-page[class]:not(.owner-dark-scope):not(.route-loading-page)
       :is(
         .observatory-paper-preview,
-        .paper-reader-main,
-        .toc-surface,
-        .about-links-rail,
         .article-card,
         .search-result-row,
         .track-series-card,
         .archive-post-row
       ):hover {
-      outline: 1px solid var(--reader-hover-border);
-      outline-offset: -1px;
-      border-color: color-mix(
-        in srgb,
-        var(--reader-hover-border) 100%,
-        transparent
-      ) !important;
+      background: var(--reader-card-hover) !important;
+      box-shadow: none !important;
     }
   }
   html[data-route-kind]
@@ -93,6 +77,142 @@
   }
   .public-universe .observatory-featured-heading {
     border-bottom: 0;
+  }
+  html[data-route-kind]
+    body
+    .public-universe
+    .space-page[class]:not(.owner-dark-scope):not(.route-loading-page)
+    :is(
+      .observatory-paper-preview,
+      .article-card,
+      .search-result-row,
+      .track-series-card,
+      .archive-post-row
+    ) {
+    border-radius: 16px !important;
+  }
+  html[data-route-kind]
+    body
+    .public-universe
+    .space-page[class]:not(.owner-dark-scope):not(.route-loading-page)
+    :is(
+      .article-card,
+      .search-result-row,
+      .track-series-card,
+      .archive-post-row
+    ) {
+    padding: 24px !important;
+    margin-block: 8px;
+  }
+  .public-universe .observatory-home .observatory-featured {
+    overflow: visible !important;
+    column-gap: 16px !important;
+  }
+  .public-universe .observatory-home .observatory-paper-preview {
+    border-radius: 16px;
+  }
+  .public-universe .observatory-paper-preview h3 {
+    transition: color 160ms ease;
+  }
+  .public-universe .article-copy > a,
+  .public-universe .observatory-paper-preview > a {
+    border-radius: 6px;
+  }
+  .public-universe .article-copy > a:focus-visible .article-title,
+  .public-universe .observatory-paper-preview > a:focus-visible h3,
+  .public-universe .observatory-direction:focus-visible h3 {
+    color: var(--observatory-accent) !important;
+  }
+  html[data-route-kind]
+    .public-universe
+    .space-page
+    :is(.article-title, .observatory-direction h3) {
+    text-decoration: none !important;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .public-universe .article-card:hover .article-title,
+    .public-universe .observatory-paper-preview > a:hover h3,
+    .public-universe .observatory-direction:hover h3 {
+      color: var(--observatory-accent) !important;
+    }
+  }
+  html[data-route-kind] .public-universe .space-page :is(a, button),
+  html[data-route-kind]
+    .public-universe
+    .space-page
+    :is(a, button):is(:hover, :focus-visible, :active) {
+    text-decoration: none !important;
+  }
+  .public-universe .observatory-primary {
+    border-bottom: 0 !important;
+  }
+  html[data-route-kind] .public-universe .space-page .site-header {
+    background: linear-gradient(rgb(250 249 248 / 94%), rgb(250 249 248 / 75%)) !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: blur(16px);
+  }
+  html.dark[data-route-kind] .public-universe .space-page .site-header {
+    background: linear-gradient(rgb(8 10 15 / 92%), rgb(8 10 15 / 70%)) !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+  }
+  html[data-route-kind]
+    .public-universe
+    .space-page
+    .site-header
+    :is(a, button),
+  html[data-route-kind]
+    .public-universe
+    .space-page
+    .site-header
+    :is(a, button):is(:hover, :focus-within, :active) {
+    border-radius: 10px !important;
+  }
+  html[data-route-kind]
+    .public-universe
+    .space-page
+    .site-header
+    .nav-ink-active {
+    background: var(--reader-current-bg) !important;
+    color: var(--observatory-ink);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    html[data-route-kind]
+      .public-universe
+      .space-page
+      .site-header
+      :is(a, button):hover {
+      background: var(--reader-row-hover) !important;
+    }
+  }
+  .public-universe .observatory-home .observatory-hero-copy {
+    bottom: 152px !important;
+  }
+  @media (max-width: 639px) {
+    .public-universe .observatory-home .observatory-hero-copy {
+      bottom: 92px !important;
+    }
+  }
+  @media (max-width: 639px) {
+    html[data-route-kind]
+      body
+      .public-universe
+      .space-page[class]:not(.owner-dark-scope):not(.route-loading-page)
+      :is(
+        .article-card,
+        .search-result-row,
+        .track-series-card,
+        .archive-post-row
+      ) {
+      padding: 20px 16px !important;
+    }
+    .public-universe .observatory-home .observatory-notes {
+      padding-inline: 0 !important;
+    }
+    .public-universe .observatory-home .observatory-section-heading {
+      padding-inline: 16px !important;
+    }
   }
   .public-universe .observatory-paper-picker button {
     border-color: transparent !important;
@@ -484,16 +604,62 @@
   }
 }
 
+@layer components {
+  html[data-route-kind] .public-universe .space-page .archive-month-group {
+    gap: 12px;
+  }
+  html[data-route-kind] .public-universe .space-page .archive-month-header {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center !important;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 0 !important;
+  }
+  html[data-route-kind]
+    .public-universe
+    .space-page
+    .archive-month-header
+    :is(.section-heading-row, .section-heading-action) {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 0;
+  }
+  html[data-route-kind]
+    .public-universe
+    .space-page
+    .archive-month-header
+    .section-heading-action {
+    width: auto !important;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+  html[data-route-kind] .public-universe .space-page .archive-month-posts,
+  html[data-route-kind]
+    .public-universe
+    .space-page
+    .archive-month-posts
+    > .archive-post-row:first-child {
+    margin-top: 0 !important;
+  }
+}
+
 /* Reading focus: resting surfaces stay open; hover, current and keyboard differ. */
 .public-universe {
   --reader-hover-border: #778f9f;
   --reader-focus: #087c9d;
-  --reader-current-bg: #e2edf3;
+  --reader-current-bg: rgb(41 103 139 / 8%);
+  --reader-card-hover: rgb(116 115 140 / 5%);
+  --reader-card-border: rgb(81 115 138 / 24%);
+  --reader-row-hover: rgb(71 108 135 / 6%);
 }
 .dark .public-universe {
   --reader-hover-border: #546776;
   --reader-focus: #8cd6ec;
-  --reader-current-bg: #162e3b;
+  --reader-current-bg: rgb(122 180 205 / 10%);
+  --reader-card-hover: rgb(180 180 213 / 5%);
+  --reader-card-border: rgb(148 185 208 / 24%);
+  --reader-row-hover: rgb(157 191 214 / 7%);
 }
 @layer components {
   html[data-route-kind] .public-universe .space-page .paper-toc-rail {
@@ -524,8 +690,9 @@
     padding-block: 9px !important;
     padding-right: 10px !important;
     padding-left: max(12px, var(--toc-indent, 12px)) !important;
-    border: 1px solid transparent !important;
-    border-radius: 8px !important;
+    border: 0 !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
     background: transparent !important;
     font-size: 14px !important;
     line-height: 1.55 !important;
@@ -533,7 +700,7 @@
     color: var(--observatory-muted) !important;
     transition:
       background-color 150ms ease,
-      border-color 150ms ease;
+      color 150ms ease;
   }
   html[data-route-kind]
     .public-universe
@@ -542,7 +709,7 @@
     .reader-toc-link[aria-current="location"] {
     color: var(--observatory-ink) !important;
     background: var(--reader-current-bg) !important;
-    border-left: 3px solid var(--reader-focus) !important;
+    box-shadow: inset 2px 0 var(--reader-focus) !important;
     font-weight: 600 !important;
   }
   @media (hover: hover) and (pointer: fine) {
@@ -551,7 +718,7 @@
       .space-page
       :is(.toc-surface, .mobile-toc-shell)
       .reader-toc-link:hover {
-      border-color: var(--reader-hover-border) !important;
+      background: var(--reader-row-hover) !important;
       color: var(--observatory-ink) !important;
     }
   }
@@ -587,6 +754,7 @@
     margin: -16px -12px 12px !important;
     padding: 18px 16px 14px !important;
     background: linear-gradient(var(--observatory-bg) 80%, transparent);
+    border: 0 !important;
   }
   html[data-route-kind] .public-universe .space-page .mobile-toc-shell {
     border: 1px solid var(--reader-hover-border) !important;

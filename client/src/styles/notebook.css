@@ -427,8 +427,7 @@ html {
 
   /* Focus must never be quieter than hover. */
   .home-track-post-list a:focus-visible,
-  .home-start-path-actions a:focus-visible,
-  .article-card:has(:focus-visible) {
+  .home-start-path-actions a:focus-visible {
     outline: var(--focus-ring-width) solid var(--v2-accent);
     outline-offset: var(--focus-ring-offset);
   }
