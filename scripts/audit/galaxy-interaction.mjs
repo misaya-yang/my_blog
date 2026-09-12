@@ -19,7 +19,7 @@ try {
   await page.goto(process.env.BASE_URL || "http://localhost:3000/");
   await page.locator("[data-return-angle]").waitFor();
   const host = page.locator("[data-return-angle]");
-  const controls = page.locator('[aria-label^="Interactive galaxy"]');
+  const controls = page.locator(".galaxy-visual");
   const drag = async () => {
     await page.mouse.move(940, 320);
     await page.mouse.down();

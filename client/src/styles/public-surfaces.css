@@ -34,18 +34,6 @@
       border-color 180ms ease,
       background-color 180ms ease;
   }
-  html[data-route-kind] .public-universe .space-page .series-step {
-    padding: 14px 18px !important;
-    gap: 16px;
-  }
-  html[data-route-kind]
-    body
-    .public-universe
-    .space-page[class]:not(.owner-dark-scope):not(.route-loading-page)
-    .series-step:focus-visible {
-    border-radius: 10px !important;
-    outline-offset: 6px !important;
-  }
   html[data-route-kind]
     body
     .public-universe

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocation } from "wouter";
+import { Pause, Play } from "lucide-react";
 import type { createGalaxy } from "./galaxyScene";
 
 export function GalaxyHero() {
@@ -15,6 +16,9 @@ export function GalaxyHero() {
   const host = useRef<HTMLDivElement>(null);
   const [needsFallback, setNeedsFallback] = useState(false);
   const scene = useRef<ReturnType<typeof createGalaxy> | null>(null);
+  const [paused, setPaused] = useState(false);
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
   const [reduced, setReduced] = useState(
     () =>
       typeof matchMedia === "function" &&
@@ -34,7 +38,11 @@ export function GalaxyHero() {
     const showFallback = () => {
       if (!cancelled) setNeedsFallback(true);
     };
+    const hideFallback = () => {
+      if (!cancelled) setNeedsFallback(false);
+    };
     surface.addEventListener("webglcontextlost", showFallback, true);
+    surface.addEventListener("webglcontextrestored", hideFallback, true);
     let idle: number | undefined;
     let timer: ReturnType<typeof setTimeout> | undefined;
     let contentObserver: MutationObserver | undefined;
@@ -49,6 +57,7 @@ export function GalaxyHero() {
               reduced,
               pageRef.current
             );
+            scene.current.setPaused(pausedRef.current);
           } catch {
             showFallback();
           }
@@ -96,6 +105,7 @@ export function GalaxyHero() {
     return () => {
       observer.disconnect();
       surface.removeEventListener("webglcontextlost", showFallback, true);
+      surface.removeEventListener("webglcontextrestored", hideFallback, true);
       contentObserver?.disconnect();
       if (idle !== undefined) window.cancelIdleCallback(idle);
       if (timer) clearTimeout(timer);
@@ -110,17 +120,17 @@ export function GalaxyHero() {
   useEffect(() => {
     scene.current?.setPage(page);
   }, [page]);
+  useEffect(() => {
+    scene.current?.setPaused(paused);
+  }, [paused]);
   return (
     <>
       <div
         className="galaxy-visual"
         data-page={page}
         role="group"
-        tabIndex={reduced ? undefined : 0}
         aria-label={
-          language === "zh"
-            ? "交互星系：拖动可 360 度旋转，方向键旋转，空格暂停或继续，Esc 复位"
-            : "Interactive galaxy: drag for 360-degree rotation or use arrow keys, Space to pause or resume, Escape to reset"
+          language === "zh" ? "交互玫瑰星场" : "Interactive rose field"
         }
       >
         <div className="galaxy-scene" ref={host} aria-hidden="true">
@@ -135,11 +145,40 @@ export function GalaxyHero() {
           />
         </div>
       </div>
-      <span className="galaxy-keyboard-hint" aria-hidden="true">
+      <span id="galaxy-keyboard-description" className="sr-only">
         {language === "zh"
-          ? "方向键旋转 · 空格暂停 · Esc 复位"
-          : "Arrows to rotate · Space to pause · Esc to reset"}
+          ? "方向键旋转，空格暂停或继续，Escape 恢复姿态。"
+          : "Arrow keys rotate, Space pauses or resumes, Escape restores orientation."}
       </span>
+      {!reduced && !needsFallback && (
+        <button
+          type="button"
+          className="galaxy-motion-toggle"
+          aria-label={
+            language === "zh"
+              ? paused
+                ? "继续粒子动画"
+                : "暂停粒子动画"
+              : paused
+                ? "Resume particle animation"
+                : "Pause particle animation"
+          }
+          aria-describedby="galaxy-keyboard-description"
+          aria-pressed={paused}
+          onClick={() => setPaused(value => !value)}
+          onKeyDown={event => {
+            if (event.key.startsWith("Arrow") || event.key === "Escape") {
+              scene.current?.handleKey(event.nativeEvent);
+            }
+          }}
+        >
+          {paused ? (
+            <Play size={15} aria-hidden="true" />
+          ) : (
+            <Pause size={15} aria-hidden="true" />
+          )}
+        </button>
+      )}
     </>
   );
 }
