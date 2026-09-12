@@ -12,7 +12,7 @@ describe("local pointer wake", () => {
     wake.release();
     expect(wake.activeCount(0.12 + WAKE_LIFETIME + 0.01)).toBe(0);
   });
-  it("follows the sweep direction but caps the input impulse at 58 CSS pixels", () => {
+  it("follows the sweep direction but caps the input impulse at 42 CSS pixels", () => {
     for (const [width, height] of [
       [1600, 900],
       [390, 844],
@@ -23,18 +23,18 @@ describe("local pointer wake", () => {
       const impulse = wake.impulses[0];
       expect(impulse.x).toBeGreaterThan(0);
       expect(impulse.y).toBeLessThan(0);
-      expect((Math.hypot(impulse.x, impulse.y) * height) / 2).toBeCloseTo(58);
+      expect((Math.hypot(impulse.x, impulse.y) * height) / 2).toBeCloseTo(42);
     }
   });
   it("does not connect entry after an idle gap, and clears history on reset", () => {
     const wake = new PointerWake();
     wake.push(0, 0, 0, 1000, 800);
     wake.push(100, 100, 0.06, 1000, 800);
-    wake.push(900, 700, 2, 1000, 800);
-    expect(wake.activeCount(2)).toBe(0);
-    wake.push(920, 710, 2.06, 1000, 800);
-    expect(wake.activeCount(2.06)).toBe(1);
+    wake.push(900, 700, WAKE_LIFETIME + 0.4, 1000, 800);
+    expect(wake.activeCount(WAKE_LIFETIME + 0.4)).toBe(0);
+    wake.push(920, 710, WAKE_LIFETIME + 0.46, 1000, 800);
+    expect(wake.activeCount(WAKE_LIFETIME + 0.46)).toBe(1);
     wake.clear();
-    expect(wake.activeCount(2.06)).toBe(0);
+    expect(wake.activeCount(WAKE_LIFETIME + 0.46)).toBe(0);
   });
 });

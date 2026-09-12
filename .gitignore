@@ -51,6 +51,7 @@ pids
 .playwright-mcp/
 
 # Local product audit evidence
+.agents/
 /wpu-*.png
 /wpu-*.txt
 /wpu-*.json

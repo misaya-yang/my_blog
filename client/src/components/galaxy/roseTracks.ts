@@ -144,12 +144,14 @@ export function createRoseTracks(): RoseTrack[] {
         const px = (x - 635) * 0.006,
           py = (655 - y) * 0.006;
         const angle = Math.atan2(py, px);
+        // A gentler depth relief: strong z made near-camera petals swell under
+        // perspective and the right side read overgrown.
         return new Vector3(
           px,
           py,
-          -1.2 +
-            Math.pow(Math.hypot(px, py) / 3.4, 1.4) * 2.0 +
-            (0.6 + Math.hypot(px, py) * 0.45) * Math.cos(angle + layer * 1.7)
+          -1.0 +
+            Math.pow(Math.hypot(px, py) / 3.4, 1.4) * 1.1 +
+            (0.35 + Math.hypot(px, py) * 0.25) * Math.cos(angle + layer * 1.7)
         );
       }),
       true

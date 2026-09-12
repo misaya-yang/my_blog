@@ -478,11 +478,16 @@
   height: clamp(350px, 42vw, 600px);
   width: 118%;
   margin-left: -9%;
+  contain: layout paint size;
+  will-change: transform;
 }
 .galaxy-scene {
   position: absolute;
   inset: 0;
   mask-image: radial-gradient(ellipse, #000 57%, transparent 78%);
+  contain: strict;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 .galaxy-scene canvas,
 .galaxy-poster {

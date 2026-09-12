@@ -5,10 +5,12 @@ export function projectTrackball(
   x: number,
   y: number,
   width: number,
-  height: number
-) {
+  height: number,
+  target?: Vector3
+): Vector3 {
   const radius = Math.min(width, height) * 0.48;
-  const point = new Vector3(
+  const point = target ?? new Vector3();
+  point.set(
     (x - width / 2) / radius,
     (height / 2 - y) / radius,
     0
@@ -20,6 +22,11 @@ export function projectTrackball(
 }
 
 /** Camera-space increments compose without Euler-angle limits or pole locking. */
-export function trackballDelta(from: Vector3, to: Vector3) {
-  return new Quaternion().setFromUnitVectors(from, to);
+export function trackballDelta(
+  from: Vector3,
+  to: Vector3,
+  target?: Quaternion
+): Quaternion {
+  const q = target ?? new Quaternion();
+  return q.setFromUnitVectors(from, to);
 }

@@ -1,8 +1,16 @@
-import { Quaternion, Vector3 } from "three";
+import { Euler, Quaternion, Vector3 } from "three";
 
 export type RotationPhase = "idle" | "dragging" | "inertia" | "returning";
 
 export class RotationMotion {
+  /** Canonical projection-balanced home pose Euler angles (0.28, -0.50, -0.40) */
+  static readonly homeEuler = new Euler(0.28, -0.5, -0.4, "XYZ");
+
+  /** Produces the default home orientation quaternion from homeEuler. */
+  static defaultHomeQuaternion(): Quaternion {
+    return new Quaternion().setFromEuler(RotationMotion.homeEuler);
+  }
+
   readonly orientation: Quaternion;
   readonly axis = new Vector3(0, 1, 0);
   phase: RotationPhase = "idle";
@@ -12,6 +20,26 @@ export class RotationMotion {
 
   constructor(readonly home: Quaternion) {
     this.orientation = home.clone();
+  }
+
+  /**
+   * Applies an incremental drag displacement in screen/surface space.
+   * Converts deltaX and deltaY into an incremental rotation quaternion.
+   */
+  applyDrag(deltaX: number, deltaY: number, sensitivity = 0.005) {
+    if (this.phase !== "dragging") return;
+    const distance = Math.hypot(deltaX, deltaY);
+    if (distance < 0.0001) return;
+    const angle = distance * sensitivity;
+    const axis = new Vector3(-deltaY, deltaX, 0).normalize();
+    const deltaQ = new Quaternion().setFromAxisAngle(axis, angle);
+    this.move(deltaQ, 0.016);
+  }
+
+  /** Advances simulation by dt and returns the updated orientation. */
+  step(dt: number): Quaternion {
+    this.advance(dt);
+    return this.orientation;
   }
 
   begin() {
@@ -49,17 +77,21 @@ export class RotationMotion {
     this.age += dt;
     if (this.phase === "inertia") {
       // Exact exponential integration gives the same coast at 30/60/120 Hz.
+      // A long, low-damped glide keeps the gesture alive after release.
       this.increment.setFromAxisAngle(
         this.axis,
-        (this.speed * (1 - Math.exp(-dt * 15))) / 15
+        (this.speed * (1 - Math.exp(-dt * 3))) / 3
       );
       this.orientation.premultiply(this.increment).normalize();
-      this.speed *= Math.exp(-dt * 15);
-      // Begin home attraction immediately; there is no frozen hand-off frame.
-      this.orientation.slerp(this.home, 1 - Math.exp(-dt * 1.2));
-      if (this.age >= 0.2) this.phase = "returning";
+      this.speed *= Math.exp(-dt * 3);
+      // Gentle home attraction runs through the coast so the settle reads as
+      // one continuous motion instead of a coast that suddenly snaps back.
+      this.orientation.slerp(this.home, 1 - Math.exp(-dt * 0.8));
+      if (this.speed < 0.05) this.phase = "returning";
     } else {
-      this.orientation.slerp(this.home, 1 - Math.exp(-dt * 4.5));
+      // The unhurried ease home: ~0.5s time constant, so a small pull lingers
+      // for a couple of seconds before the rose is whole again.
+      this.orientation.slerp(this.home, 1 - Math.exp(-dt * 2.0));
       this.speed = 0;
       if (this.orientation.angleTo(this.home) < 0.002) this.reset();
     }
