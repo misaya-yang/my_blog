@@ -9,6 +9,7 @@ import {
   ShaderMaterial,
 } from "three";
 import { BloomPyramidPass } from "./bloomPyramid";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 
 describe("BloomPyramidPass", () => {
   const createMockRenderer = () => {
@@ -49,9 +50,6 @@ describe("BloomPyramidPass", () => {
     it("initializes with default options", () => {
       const pass = new BloomPyramidPass();
       expect(pass.strength).toBe(0.75);
-      expect(pass.flare).toBe(0);
-      expect(pass.flareCenter.x).toBe(0.5);
-      expect(pass.flareCenter.y).toBe(0.5);
       expect(pass.radius).toBe(0.65);
       expect(pass.threshold).toBe(0.6);
       expect(pass.knee).toBe(0.35);
@@ -88,16 +86,11 @@ describe("BloomPyramidPass", () => {
       pass.threshold = 0.9;
       pass.knee = 0.15;
       pass.strength = 0.45;
-      pass.flare = 0.6;
-      pass.flareCenter.set(0.3, 0.7);
 
       expect(pass.radius).toBe(0.82);
       expect(pass.threshold).toBe(0.9);
       expect(pass.knee).toBe(0.15);
       expect(pass.strength).toBe(0.45);
-      expect(pass.flare).toBe(0.6);
-      expect(pass.flareCenter.x).toBe(0.3);
-      expect(pass.flareCenter.y).toBe(0.7);
       pass.dispose();
     });
   });
@@ -180,7 +173,56 @@ describe("BloomPyramidPass", () => {
       pass.dispose();
     });
 
-    it("disposes previous render targets on repeated setSize calls", () => {
+    it("retains existing render targets when physical dimensions are unchanged", () => {
+      const pass = new BloomPyramidPass({ levels: 3 });
+      pass.setSize(800, 600);
+      const down = [...pass.downMips];
+      const up = [...pass.upMips];
+      const disposeSpies = [...down, ...up].map(target =>
+        vi.spyOn(target, "dispose")
+      );
+
+      pass.setSize(800, 600);
+      pass.setSize(800.2, 600.8);
+      pass.downMips.forEach((target, index) =>
+        expect(target).toBe(down[index])
+      );
+      pass.upMips.forEach((target, index) => expect(target).toBe(up[index]));
+      for (const spy of disposeSpies) expect(spy).not.toHaveBeenCalled();
+      pass.dispose();
+    });
+
+    it("uses composer physical pixels and applies its resolution scale exactly once", () => {
+      const renderer = {
+        getSize: (target: Vector2) => target.set(1000, 800),
+        getPixelRatio: () => 1.5,
+      } as unknown as WebGLRenderer;
+      const composer = new EffectComposer(renderer);
+      const pass = new BloomPyramidPass({ levels: 3, resolutionScale: 0.5 });
+      composer.addPass(pass);
+      // Composer owns CSS-to-physical conversion: 1000 * 1.5 * 0.5.
+      expect(pass.downMips[0].width).toBe(750);
+      expect(pass.downMips[0].height).toBe(600);
+      expect(composer.readBuffer.texture.type).toBe(HalfFloatType);
+
+      composer.setPixelRatio(1);
+      expect(pass.downMips[0].width).toBe(500);
+      expect(pass.downMips[0].height).toBe(400);
+      const mip = pass.downMips[0];
+      const disposeSpy = vi.spyOn(mip, "dispose");
+      composer.setSize(1000, 800);
+      expect(pass.downMips[0]).toBe(mip);
+      expect(disposeSpy).not.toHaveBeenCalled();
+
+      composer.setSize(390, 844);
+      expect(pass.downMips[0].width).toBe(195);
+      expect(pass.downMips[0].height).toBe(422);
+      expect(disposeSpy).toHaveBeenCalledTimes(1);
+      pass.dispose();
+      composer.dispose();
+    });
+
+    it("disposes previous render targets when dimensions change", () => {
       const pass = new BloomPyramidPass({ levels: 3 });
       pass.setSize(800, 600);
       const oldDownMips = [...pass.downMips];
@@ -198,6 +240,36 @@ describe("BloomPyramidPass", () => {
   });
 
   describe("rendering & feedback loop elimination (BUG-01)", () => {
+    it.each([0, 0.55])(
+      "restores renderer state and writes to screen when requested (strength %s)",
+      strength => {
+        const { renderer, renderLog, getCurrentTarget } = createMockRenderer();
+        const pass = new BloomPyramidPass({ strength, levels: 2 });
+        pass.setSize(800, 600);
+        pass.renderToScreen = true;
+        const readBuffer = new WebGLRenderTarget(800, 600);
+        const writeBuffer = new WebGLRenderTarget(800, 600);
+        const previousTarget = new WebGLRenderTarget(64, 64);
+        renderer.setRenderTarget(previousTarget);
+        renderer.autoClear = false;
+
+        pass.render(renderer, writeBuffer, readBuffer);
+        expect(renderLog.at(-1)?.target).toBeNull();
+        expect(getCurrentTarget()).toBe(previousTarget);
+        expect(renderer.autoClear).toBe(false);
+        if (strength > 0) {
+          expect(
+            Object.keys(renderLog.at(-1)!.material.uniforms).sort()
+          ).toEqual(["bloom", "scene", "strength"]);
+        }
+
+        pass.dispose();
+        readBuffer.dispose();
+        writeBuffer.dispose();
+        previousTarget.dispose();
+      }
+    );
+
     it("guarantees NO WebGL framebuffer feedback loops during pyramid downsample & upsample", () => {
       const { renderer, renderLog } = createMockRenderer();
       const pass = new BloomPyramidPass({ levels: 6, resolutionScale: 0.5 });
@@ -254,7 +326,9 @@ describe("BloomPyramidPass", () => {
       // Check downsample steps 1..5
       for (let i = 1; i <= 5; i++) {
         expect(renderLog[i].target).toBe(pass.downMips[i]);
-        expect(renderLog[i].inputBufferTexture).toBe(pass.downMips[i - 1].texture);
+        expect(renderLog[i].inputBufferTexture).toBe(
+          pass.downMips[i - 1].texture
+        );
       }
 
       // Check upsample steps 6..10
@@ -321,7 +395,9 @@ describe("BloomPyramidPass", () => {
       const readBuffer = new WebGLRenderTarget(800, 600);
       const writeBuffer = new WebGLRenderTarget(800, 600);
 
-      expect(() => pass.render(renderer, writeBuffer, readBuffer)).not.toThrow();
+      expect(() =>
+        pass.render(renderer, writeBuffer, readBuffer)
+      ).not.toThrow();
       expect(renderLog).toHaveLength(1);
       expect(renderLog[0].target).toBe(writeBuffer);
 

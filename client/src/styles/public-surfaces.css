@@ -781,6 +781,8 @@
   }
   html[data-route-kind] .public-universe .space-page .mobile-toc-nav {
     max-height: 55svh;
+    margin-inline: -8px;
+    padding: 8px;
     overflow-y: auto;
     overscroll-behavior: contain;
   }

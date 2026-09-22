@@ -10,6 +10,19 @@ export type RoseTrack = {
   period: number;
 };
 
+/** One gentle cyclic XY pass; preserve the traced center and every depth anchor. */
+export function regularizePetalContour(points: readonly Vector3[]) {
+  return points.map((point, index) => {
+    const before = points[(index + points.length - 1) % points.length];
+    const after = points[(index + 1) % points.length];
+    return new Vector3(
+      point.x * 0.76 + (before.x + after.x) * 0.12,
+      point.y * 0.76 + (before.y + after.y) * 0.12,
+      point.z
+    );
+  });
+}
+
 /** Nested, offset contours traced from rose-lvy-source.png, not radial oval lobes. */
 export function createRoseTracks(): RoseTrack[] {
   const tracks: RoseTrack[] = [];
@@ -140,20 +153,22 @@ export function createRoseTracks(): RoseTrack[] {
   ];
   contours.forEach((contour, layer) => {
     add(
-      contour.map(([x, y]) => {
-        const px = (x - 635) * 0.006,
-          py = (655 - y) * 0.006;
-        const angle = Math.atan2(py, px);
-        // A gentler depth relief: strong z made near-camera petals swell under
-        // perspective and the right side read overgrown.
-        return new Vector3(
-          px,
-          py,
-          -1.0 +
-            Math.pow(Math.hypot(px, py) / 3.4, 1.4) * 1.1 +
-            (0.35 + Math.hypot(px, py) * 0.25) * Math.cos(angle + layer * 1.7)
-        );
-      }),
+      regularizePetalContour(
+        contour.map(([x, y]) => {
+          const px = (x - 635) * 0.006,
+            py = (655 - y) * 0.006;
+          const angle = Math.atan2(py, px);
+          // A gentler depth relief: strong z made near-camera petals swell under
+          // perspective and the right side read overgrown.
+          return new Vector3(
+            px,
+            py,
+            -1.0 +
+              Math.pow(Math.hypot(px, py) / 3.4, 1.4) * 1.1 +
+              (0.35 + Math.hypot(px, py) * 0.25) * Math.cos(angle + layer * 1.7)
+          );
+        })
+      ),
       true
     );
   });

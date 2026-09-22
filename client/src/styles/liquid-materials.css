@@ -1086,8 +1086,6 @@
   .article-agent-prompts:focus-within,
   .article-secondary-actions:hover,
   .article-secondary-actions:focus-within,
-  .mobile-toc-shell:hover,
-  .mobile-toc-shell:focus-within,
   .toc-surface:hover,
   .toc-surface:focus-within {
     border-color: var(--v2-rim) !important;

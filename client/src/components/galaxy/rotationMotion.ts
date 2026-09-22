@@ -3,8 +3,8 @@ import { Euler, Quaternion, Vector3 } from "three";
 export type RotationPhase = "idle" | "dragging" | "inertia" | "returning";
 
 export class RotationMotion {
-  /** Canonical projection-balanced home pose Euler angles (0.28, -0.50, -0.40) */
-  static readonly homeEuler = new Euler(0.28, -0.5, -0.4, "XYZ");
+  /** Front-facing curled petals keep the negative spaces and recessed script readable. */
+  static readonly homeEuler = new Euler(0.52, -0.16, -0.3, "XYZ");
 
   /** Produces the default home orientation quaternion from homeEuler. */
   static defaultHomeQuaternion(): Quaternion {

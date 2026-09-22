@@ -1,16 +1,20 @@
 import { describe, expect, it } from "vitest";
 import {
+  AMBIENT_ENDPOINT_FADE,
   AMBIENT_ROWS,
   bakeAmbientTracks,
   getAmbientProfile,
 } from "@/components/galaxy/ambientScene";
 import { getPageScene } from "@/components/galaxy/pageScene";
 import { TRACK_SAMPLES } from "@/components/galaxy/roseTracks";
+import { samplePackedTrack } from "@/components/galaxy/sampleParticleBase";
 
 describe("Tier 1: Feature Coverage - Deterministic Constellations & Morphing (F12, F13)", () => {
   it("generates deterministic FNV-1a hash seeds insensitive to URL query and hash fragments", () => {
     const p1 = getAmbientProfile("/post/distributed-systems");
-    const p2 = getAmbientProfile("/post/distributed-systems?source=feed&ref=banner");
+    const p2 = getAmbientProfile(
+      "/post/distributed-systems?source=feed&ref=banner"
+    );
     const p3 = getAmbientProfile("/post/distributed-systems#section-2");
 
     expect(p1.family).toBe(p2.family);
@@ -21,7 +25,7 @@ describe("Tier 1: Feature Coverage - Deterministic Constellations & Morphing (F1
     expect(p1.rows[0].points[0][0]).toBe(p2.rows[0].points[0][0]);
   });
 
-  it("produces distinct mathematical curve families across different article slugs", () => {
+  it("produces distinct artistic constellation motifs across article slugs", () => {
     const slugs = [
       "/post/ai-agent-architectures",
       "/post/quantum-annealing",
@@ -34,17 +38,24 @@ describe("Tier 1: Feature Coverage - Deterministic Constellations & Morphing (F1
     ];
 
     const profiles = slugs.map(slug => getAmbientProfile(slug));
-    const families = new Set(profiles.map(p => p.family));
+    const motifs = new Set(profiles.map(p => p.motif));
 
     // Must exhibit diversity across available families
-    expect(families.size).toBeGreaterThanOrEqual(2);
+    expect(motifs.size).toBeGreaterThanOrEqual(3);
     for (const p of profiles) {
-      expect(["rhodonea", "lissajous", "orbits", "ribbon"]).toContain(p.family);
+      expect(p.family).toBe("constellation");
+      expect(["leo", "centaur", "lyre", "cygnus", "crown"]).toContain(p.motif);
     }
   });
 
   it("ensures all generated contour coordinates are strictly finite without NaNs or infinities", () => {
-    const testPaths = ["/post/a", "/post/b", "/archive", "/tags/webgl", "/about"];
+    const testPaths = [
+      "/post/a",
+      "/post/b",
+      "/archive",
+      "/tags/webgl",
+      "/about",
+    ];
 
     for (const path of testPaths) {
       const profile = getAmbientProfile(path);
@@ -59,22 +70,47 @@ describe("Tier 1: Feature Coverage - Deterministic Constellations & Morphing (F1
     }
   });
 
-  it("preserves 6-row layout with 4 outer closed loops and 2 inner open heart anchor strokes", () => {
-    const profile = getAmbientProfile("/post/cinematic-universe");
-    expect(profile.rows).toHaveLength(AMBIENT_ROWS); // 6 rows
-    expect(profile.rows).toHaveLength(6);
-
-    // 4 outer tracks are closed loops
-    for (let i = 0; i < 4; i++) {
-      expect(profile.rows[i].closed).toBe(true);
-    }
-
-    // 2 inner tracks are open strokes anchoring the heart near z = -0.9
-    for (let i = 4; i < 6; i++) {
-      expect(profile.rows[i].closed).toBe(false);
-      for (const [, , z] of profile.rows[i].points) {
-        expect(z).toBeCloseTo(-0.9, 0); // Near -0.9
-      }
+  it("preserves six rows with family-specific topology and continuous closed seams", () => {
+    const profiles = [
+      "/algorithms",
+      "/applications",
+      "/archive",
+      "/series/agents",
+    ].map(getAmbientProfile);
+    expect(new Set(profiles.map(profile => profile.family)).size).toBe(4);
+    for (const profile of profiles) {
+      expect(profile.rows).toHaveLength(AMBIENT_ROWS);
+      profile.rows.forEach((row, index) => {
+        const open = profile.family === "ribbon" && index < 4;
+        expect(row.closed).toBe(!open);
+        expect(row.endpointFade).toBe(open ? AMBIENT_ENDPOINT_FADE : 0);
+        expect(row.length).toBeGreaterThan(0);
+        if (open) {
+          const first = row.points[0],
+            last = row.points.at(-1)!;
+          expect(
+            Math.hypot(...first.map((v, axis) => v - last[axis]))
+          ).toBeGreaterThan(5);
+        } else {
+          expect(row.points.at(-1)).toEqual(row.points[0]);
+          const incoming = row.points
+            .at(-1)!
+            .map((v, axis) => v - row.points.at(-2)![axis]);
+          const outgoing = row.points[1].map(
+            (v, axis) => v - row.points[0][axis]
+          );
+          const dot = incoming.reduce(
+            (sum, v, axis) => sum + v * outgoing[axis],
+            0
+          );
+          expect(
+            dot / (Math.hypot(...incoming) * Math.hypot(...outgoing))
+          ).toBeGreaterThan(0.995);
+        }
+        if (index >= 4)
+          for (const [, , z] of row.points)
+            expect(Math.abs(z + 0.9)).toBeLessThanOrEqual(0.121);
+      });
     }
   });
 
@@ -86,34 +122,30 @@ describe("Tier 1: Feature Coverage - Deterministic Constellations & Morphing (F1
     expect(buffer).toBeInstanceOf(Float32Array);
     expect(buffer.length).toBe(expectedLength);
 
-    // Alpha channel carries row closed flag (1 for closed, 0 for open)
-    // First point of row 0 (outer closed)
-    expect(buffer[3]).toBe(1.0);
-    // First point of row 4 (inner open)
-    const row4Offset = 4 * (TRACK_SAMPLES + 1) * 4;
-    expect(buffer[row4Offset + 3]).toBe(0.0);
+    // RGBA packs xyz + width. Closed/open topology belongs to row metadata.
+    profile.rows.forEach((row, rowIndex) => {
+      row.points.forEach((point, index) => {
+        const offset = (rowIndex * (TRACK_SAMPLES + 1) + index) * 4;
+        expect(buffer[offset + 3]).toBe(1);
+        point.forEach((v, axis) =>
+          expect(buffer[offset + axis]).toBeCloseTo(v, 5)
+        );
+      });
+    });
   });
 
-  it("models smooth GPU morphing exponential cross-fade dynamics with tau = 0.2s", () => {
-    // Cross-fade formula: uAmbientBlend += (ambientTarget - uAmbientBlend) * (1 - Math.exp(-dt * 5.0))
-    let blend = 0.0;
-    const target = 1.0;
-    const dt = 0.016; // 60fps
-
-    const history: number[] = [];
-    for (let t = 0; t <= 1.0; t += dt) {
-      blend += (target - blend) * (1 - Math.exp(-dt * 5.0));
-      history.push(blend);
+  it("interpolates actual packed track texels continuously in the CPU sampling path", () => {
+    const packed = bakeAmbientTracks(getAmbientProfile("/archive"));
+    for (let row = 0; row < AMBIENT_ROWS; row++) {
+      const a = samplePackedTrack(packed, row, 100 / TRACK_SAMPLES);
+      const b = samplePackedTrack(packed, row, 101 / TRACK_SAMPLES);
+      const middle = samplePackedTrack(packed, row, 100.5 / TRACK_SAMPLES);
+      for (let axis = 0; axis < 4; axis++)
+        expect(middle[axis]).toBeCloseTo((a[axis] + b[axis]) / 2, 5);
+      expect(samplePackedTrack(packed, row, 0)).toEqual(
+        samplePackedTrack(packed, row, 1)
+      );
     }
-
-    // After 0.2s (tau = 1/5 = 0.2s): should reach ~1 - 1/e = 63.2%
-    const indexAt0_2s = Math.round(0.2 / dt);
-    expect(history[indexAt0_2s]).toBeCloseTo(0.632, 1);
-
-    // After 0.6s: should reach >95% convergence smoothly
-    const indexAt0_6s = Math.round(0.6 / dt);
-    expect(history[indexAt0_6s]).toBeGreaterThan(0.94);
-    expect(history[indexAt0_6s]).toBeLessThanOrEqual(1.0);
   });
 
   it("classifies page routes deterministically into home, reading, and author modes", () => {

@@ -1,116 +1,112 @@
 import { describe, expect, it } from "vitest";
-import { Euler, Quaternion, Vector3 } from "three";
+import { DataTexture, PerspectiveCamera, Quaternion, Vector3 } from "three";
 import { RotationMotion } from "./rotationMotion";
-import { PointerWake, WAKE_LIFETIME, WAKE_SAMPLES } from "./pointerWake";
+import { ParticleMotion, type ParticleMotionStep } from "./particleMotion";
+import { RenderQuality } from "./renderQuality";
 import {
   getAmbientProfile,
   bakeAmbientTracks,
   AMBIENT_ROWS,
-  AmbientProfile,
 } from "./ambientScene";
-import { getPageScene } from "./pageScene";
 import { getScrollMotion, sharedMotionState } from "./scrollMotion";
-import { projectTrackball, trackballDelta } from "./trackball";
+import { projectTrackball } from "./trackball";
 import { TRACK_SAMPLES } from "./roseTracks";
 
 describe("Milestone 2: Interaction Physics (F8, F9, F10, F11)", () => {
-  describe("F8: Localized Gaussian Wake Dynamics", () => {
-    it("verifies localized Gaussian wake footprint (~70-90px) across screen heights", () => {
-      const getWakeRadiusPx = (height: number) => {
-        const clamped = Math.min(48, Math.max(28, height * 0.042));
-        return clamped * 2; // Diameter in CSS pixels
+  describe("F8: persistent local particle motion", () => {
+    const setup = (count = 2) => {
+      const motion = new ParticleMotion(null, count, { forceCPU: true });
+      const camera = new PerspectiveCamera(50, 1280 / 800, 0.1, 100);
+      const step: ParticleMotionStep = {
+        projectionMatrix: camera.projectionMatrix,
+        width: 1280,
+        height: 800,
+        basePositions: new Float32Array([0, 0, -10, 1, 20, 0, -10, 1]),
+        pointer: {
+          from: { x: 600, y: 400 },
+          to: { x: 680, y: 400 },
+          velocity: { x: 400, y: 0 },
+          active: true,
+        },
       };
+      const offsets = () =>
+        (motion.textures.offset as DataTexture).image.data as Float32Array;
+      return { motion, step, offsets };
+    };
 
-      // Standard desktop viewports
-      const h768 = getWakeRadiusPx(768);
-      const h800 = getWakeRadiusPx(800);
-      const h900 = getWakeRadiusPx(900);
-      const h1080 = getWakeRadiusPx(1080);
-
-      expect(h768).toBeGreaterThanOrEqual(64);
-      expect(h768).toBeLessThanOrEqual(96);
-
-      expect(h800).toBeGreaterThanOrEqual(67);
-      expect(h800).toBeLessThanOrEqual(96);
-
-      expect(h900).toBeGreaterThanOrEqual(75);
-      expect(h900).toBeLessThanOrEqual(96);
-
-      expect(h1080).toBeCloseTo(90.7, 1);
-
-      // Extreme bounds clamping: 28 * 2 = 56px minimum, 48 * 2 = 96px maximum
-      const h400 = getWakeRadiusPx(400); // 400 * 0.042 = 16.8 -> clamped to 28 -> 56px
-      expect(h400).toBe(56);
-
-      const h2160 = getWakeRadiusPx(2160); // 2160 * 0.042 = 90.72 -> clamped to 48 -> 96px
-      expect(h2160).toBe(96);
+    it("applies an actual force only to particles near the swept region", () => {
+      const { motion, step, offsets } = setup();
+      try {
+        for (let i = 0; i < 30; i++) motion.step(1 / 60, step);
+        expect(offsets()[0] * 400).toBeGreaterThan(10);
+        expect(offsets()[4]).toBe(0);
+        expect(offsets()[5]).toBe(0);
+      } finally {
+        motion.dispose();
+      }
     });
 
-    it("verifies mass-stratified decay (~3.2s lifetime) with differential inertia", () => {
-      const smoothstep = (min: number, max: number, x: number) => {
-        const t = Math.max(0, Math.min(1, (x - min) / (max - min)));
-        return t * t * (3 - 2 * t);
-      };
-
-      const calculateWakeDecay = (t: number, seedX: number, seedZ = 0.5) => {
-        if (t <= 0 || t >= WAKE_LIFETIME) return 0;
-        const mass = 0.45 + seedX * seedX * 1.6; // [0.45, 2.05]
-        const attack = 1.0 - Math.exp(-t * 18.0);
-        const damping = Math.exp((-t * (0.8 + seedZ * 0.45)) / mass);
-        const cutoff = 1.0 - smoothstep(0.7, 3.2, t);
-        return attack * damping * cutoff;
-      };
-
-      // Light particle: fast attack, quick dissipation
-      const lightT01 = calculateWakeDecay(0.1, 0.0);
-      const lightT10 = calculateWakeDecay(1.0, 0.0);
-      const lightT25 = calculateWakeDecay(2.5, 0.0);
-      const lightT32 = calculateWakeDecay(3.2, 0.0);
-
-      expect(lightT01).toBeGreaterThan(0.6);
-      expect(lightT10).toBeLessThan(lightT01);
-      expect(lightT25).toBeLessThan(0.05);
-      expect(lightT32).toBe(0.0);
-
-      // Heavy particle: sustained drift over full 3.2s
-      const heavyT01 = calculateWakeDecay(0.1, 1.0);
-      const heavyT10 = calculateWakeDecay(1.0, 1.0);
-      const heavyT20 = calculateWakeDecay(2.0, 1.0);
-      const heavyT32 = calculateWakeDecay(3.2, 1.0);
-
-      expect(heavyT01).toBeGreaterThan(0.6);
-      expect(heavyT10).toBeGreaterThan(lightT10); // Heavy particles linger longer
-      expect(heavyT20).toBeGreaterThan(calculateWakeDecay(2.0, 0.0));
-      expect(heavyT32).toBe(0.0); // Exact quiet at 3.2s
+    it("keeps a long sweep continuous and returns to its orbit after release", () => {
+      const { motion, step, offsets } = setup();
+      try {
+        const positions: number[] = [];
+        for (let i = 0; i < 360; i++) {
+          motion.step(1 / 60, step);
+          positions.push(offsets()[0] * 400);
+        }
+        expect(positions.at(-1)).toBeGreaterThan(20);
+        expect(
+          Math.max(
+            ...positions
+              .slice(120)
+              .map((p, i) => Math.abs(p - positions[i + 119]))
+          )
+        ).toBeLessThan(0.2);
+        step.pointer!.active = false;
+        for (let i = 0; i < 240; i++) motion.step(1 / 60, step);
+        expect(Math.abs(offsets()[0] * 400)).toBeLessThan(0.1);
+      } finally {
+        motion.dispose();
+      }
     });
 
-    it("verifies velocity capping and momentum EMA decay", () => {
-      const wake = new PointerWake();
-      const w = 1280;
-      const h = 800;
-
-      // Swift flick: 500px in 0.1s
-      wake.push(100, 100, 0.0, w, h);
-      wake.push(600, 100, 0.1, w, h);
-
-      expect(wake.activeCount(0.1)).toBe(1);
-
-      // Max displacement is capped to 42 CSS px gain
-      const imp = wake.impulses[0];
-      const maxDisplacement = (42 * 2) / h;
-      expect(imp.x).toBeCloseTo(maxDisplacement, 3);
+    it("resets both velocity and offset without reviving an old impulse", () => {
+      const { motion, step, offsets } = setup();
+      try {
+        for (let i = 0; i < 20; i++) motion.step(1 / 60, step);
+        expect(offsets()[0]).toBeGreaterThan(0);
+        motion.reset();
+        step.pointer!.active = false;
+        for (let i = 0; i < 20; i++) motion.step(1 / 60, step);
+        expect(offsets().some(Boolean)).toBe(false);
+        expect(
+          (
+            (motion.textures.velocity as DataTexture).image.data as Float32Array
+          ).some(Boolean)
+        ).toBe(false);
+      } finally {
+        motion.dispose();
+      }
     });
   });
 
   describe("F9 & F10: 3D Coherent Drag & Canonical Home Euler Slerp Restore", () => {
-    it("guarantees canonical home Euler orientation (0.28, -0.50, -0.40) XYZ", () => {
-      expect(RotationMotion.homeEuler.x).toBeCloseTo(0.28, 5);
-      expect(RotationMotion.homeEuler.y).toBeCloseTo(-0.50, 5);
-      expect(RotationMotion.homeEuler.z).toBeCloseTo(-0.40, 5);
-      expect(RotationMotion.homeEuler.order).toBe("XYZ");
-
+    it("returns to the configured home pose rather than accumulating idle rotation", () => {
       const q = RotationMotion.defaultHomeQuaternion();
       const motion = new RotationMotion(q);
+      expect(
+        q.angleTo(new Quaternion().setFromEuler(RotationMotion.homeEuler))
+      ).toBeCloseTo(0, 5);
+      motion.begin();
+      motion.move(
+        new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), 0.6),
+        0.1
+      );
+      motion.release();
+      for (let i = 0; i < 360; i++) motion.advance(1 / 60);
+      expect(motion.phase).toBe("idle");
+      expect(motion.orientation.angleTo(q)).toBeCloseTo(0, 5);
+      for (let i = 0; i < 1800; i++) motion.advance(1 / 60);
       expect(motion.orientation.angleTo(q)).toBeCloseTo(0, 5);
     });
 
@@ -120,13 +116,19 @@ describe("Milestone 2: Interaction Physics (F8, F9, F10, F11)", () => {
       expect(motion.phase).toBe("dragging");
 
       // Apply moderate drag
-      const moderateDelta = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), 0.03);
+      const moderateDelta = new Quaternion().setFromAxisAngle(
+        new Vector3(0, 1, 0),
+        0.03
+      );
       motion.move(moderateDelta, 0.016);
       expect(motion.speed).toBeCloseTo(0.03 / 0.016, 1);
       expect(motion.speed).toBeLessThan(2.4);
 
       // Apply extreme flick
-      const extremeDelta = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), 0.8);
+      const extremeDelta = new Quaternion().setFromAxisAngle(
+        new Vector3(0, 1, 0),
+        0.8
+      );
       motion.move(extremeDelta, 0.016);
       expect(motion.speed).toBe(2.4); // Capped at 2.4 rad/s
     });
@@ -134,7 +136,10 @@ describe("Milestone 2: Interaction Physics (F8, F9, F10, F11)", () => {
     it("verifies smooth coasting damping (gamma = 3.0) and gentle attraction slerp upon drag release", () => {
       const motion = new RotationMotion(RotationMotion.defaultHomeQuaternion());
       motion.begin();
-      const delta = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), 0.08);
+      const delta = new Quaternion().setFromAxisAngle(
+        new Vector3(1, 0, 0),
+        0.08
+      );
       motion.move(delta, 0.016);
 
       motion.release();
@@ -199,7 +204,9 @@ describe("Milestone 3: Cross-Page Morphing & Multi-Route UI Walkthrough (F12, F1
   describe("F12 & F13: Deterministic Constellations & Ambient Morphing", () => {
     it("generates deterministic profiles across all primary routes with identical hash for query/hash variations", () => {
       const homeProfile = getAmbientProfile("/");
-      const readerProfile = getAmbientProfile("/post/flow-matching-generative-models");
+      const readerProfile = getAmbientProfile(
+        "/post/flow-matching-generative-models"
+      );
       const readerWithQuery = getAmbientProfile(
         "/post/flow-matching-generative-models?source=search&ref=nav#abstract"
       );
@@ -210,7 +217,9 @@ describe("Milestone 3: Cross-Page Morphing & Multi-Route UI Walkthrough (F12, F1
       expect(readerProfile.family).toBe(readerWithQuery.family);
       expect(readerProfile.driftX).toBe(readerWithQuery.driftX);
       expect(readerProfile.glow).toBe(readerWithQuery.glow);
-      expect(readerProfile.rows[0].points[0]).toEqual(readerWithQuery.rows[0].points[0]);
+      expect(readerProfile.rows[0].points[0]).toEqual(
+        readerWithQuery.rows[0].points[0]
+      );
 
       // Different routes yield varied mathematical families
       const families = new Set([
@@ -222,7 +231,7 @@ describe("Milestone 3: Cross-Page Morphing & Multi-Route UI Walkthrough (F12, F1
       expect(families.size).toBeGreaterThanOrEqual(2);
     });
 
-    it("verifies 6-track geometry: 4 outer closed loops and 2 inner open heart anchor tracks at z = -0.9", () => {
+    it("preserves each ambient family topology independently of the home signature", () => {
       const testSlugs = [
         "/post/deep-reinforcement-learning",
         "/post/attention-is-all-you-need",
@@ -234,18 +243,15 @@ describe("Milestone 3: Cross-Page Morphing & Multi-Route UI Walkthrough (F12, F1
         const profile = getAmbientProfile(slug);
         expect(profile.rows).toHaveLength(AMBIENT_ROWS); // exactly 6 tracks
 
-        // Tracks 0-3: outer closed contours
-        for (let i = 0; i < 4; i++) {
-          expect(profile.rows[i].closed).toBe(true);
-          expect(profile.rows[i].points).toHaveLength(TRACK_SAMPLES + 1);
-        }
-
-        // Tracks 4-5: inner open contours anchored near z = -0.9
-        for (let i = 4; i < 6; i++) {
+        expect(profile.family).toBe("constellation");
+        expect(profile.motif).toBeDefined();
+        // Article motifs use six open strokes; they do not inherit rose row topology.
+        for (let i = 0; i < 6; i++) {
           expect(profile.rows[i].closed).toBe(false);
+          expect(profile.rows[i].endpointFade).toBeGreaterThan(0);
           expect(profile.rows[i].points).toHaveLength(TRACK_SAMPLES + 1);
           for (const point of profile.rows[i].points) {
-            expect(point[2]).toBeCloseTo(-0.9, 0);
+            expect(Math.abs(point[2])).toBeLessThan(0.15);
           }
         }
       }
@@ -264,83 +270,45 @@ describe("Milestone 3: Cross-Page Morphing & Multi-Route UI Walkthrough (F12, F1
     });
   });
 
-  describe("F14: Text Quiet Zones & Contrast Protection", () => {
-    it("guarantees text contrast ratio ≥ 4.5:1 across dark and light themes", () => {
-      const luminance = (r: number, g: number, b: number) => {
-        const a = [r, g, b].map(v => {
-          v /= 255;
-          return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-        });
-        return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+  // Text contrast and raster quiet zones require the live browser. Layout-to-
+  // shader quiet-box mapping is covered through the real scene in galaxyScene.test.
+
+  describe("F15: responsive render quality", () => {
+    it("reduces the actual quality profile without cumulative instance halving", () => {
+      const quality = new RenderQuality();
+      const mobile = {
+        devicePixelRatio: 3,
+        mobile: true,
+        coarsePointer: true,
+        light: false,
+        starCount: 128,
       };
-
-      const contrastRatio = (lum1: number, lum2: number) => {
-        const bright = Math.max(lum1, lum2);
-        const dark = Math.min(lum1, lum2);
-        return (bright + 0.05) / (dark + 0.05);
-      };
-
-      // Dark Mode: bg #0b0c0e, text #eeefef
-      const darkBgLum = luminance(0x0b, 0x0c, 0x0e);
-      const darkTextLum = luminance(0xee, 0xef, 0xef);
-      const darkContrast = contrastRatio(darkBgLum, darkTextLum);
-      expect(darkContrast).toBeGreaterThanOrEqual(4.5);
-      expect(darkContrast).toBeGreaterThan(15.0); // >17:1 in practice
-
-      // Light Mode: bg #f8fafc, text #152230
-      const lightBgLum = luminance(0xf8, 0xfa, 0xfc);
-      const lightTextLum = luminance(0x15, 0x22, 0x30);
-      const lightContrast = contrastRatio(lightBgLum, lightTextLum);
-      expect(lightContrast).toBeGreaterThanOrEqual(4.5);
-      expect(lightContrast).toBeGreaterThan(14.0); // >15:1 in practice
+      expect(quality.apply(mobile).trailCount).toBe(128);
+      quality.degrade();
+      expect(quality.apply(mobile).trailCount).toBe(64);
+      expect(quality.apply({ ...mobile, light: true }).trailCount).toBe(64);
+      quality.degrade();
+      expect(
+        quality.apply({ ...mobile, mobile: false, starCount: 300 }).trailCount
+      ).toBe(0);
     });
 
-    it("verifies fragment quiet-zone attenuation formula", () => {
-      const quietAttenuation = (light: boolean) => {
-        // quiet *= 1.0 - qx * qy * mix(0.70, 0.38, uLight)
-        const attenuation = light ? 0.38 : 0.70;
-        return 1.0 - 1.0 * attenuation; // full overlap inside quiet box
+    it("uses device-specific DPR ceilings through the production quality API", () => {
+      const quality = new RenderQuality();
+      const input = {
+        devicePixelRatio: 3,
+        mobile: true,
+        coarsePointer: true,
+        light: false,
+        starCount: 128,
       };
-
-      // Dark mode suppresses 70% of star intensity
-      expect(quietAttenuation(false)).toBeCloseTo(0.30, 2);
-
-      // Light mode suppresses 38% to prevent heavy dark ink dots over text
-      expect(quietAttenuation(true)).toBeCloseTo(0.62, 2);
-    });
-  });
-
-  describe("F15: Responsive Viewport & Prefers-Reduced-Motion", () => {
-    it("verifies mobile particle budget (3,116 particles total)", () => {
-      const mobileDust = 2800;
-      const mobileStars = 128;
-      const mobileTrails = 128;
-      const mobileDistant = 60;
-      const totalMobile = mobileDust + mobileStars + mobileTrails + mobileDistant;
-
-      expect(totalMobile).toBe(3116);
-
-      const desktopDust = 4600;
-      const desktopStars = 300;
-      const desktopTrails = 300;
-      const desktopDistant = 180;
-      const totalDesktop = desktopDust + desktopStars + desktopTrails + desktopDistant;
-
-      expect(totalDesktop).toBe(5380);
-      expect(totalMobile / totalDesktop).toBeLessThan(0.60); // 42% reduction
-    });
-
-    it("verifies mobile touch DPR clamping to 1.25", () => {
-      const getDPR = (dpr: number, isMobile: boolean, isCoarse: boolean) => {
-        return Math.min(dpr, isMobile && isCoarse ? 1.25 : 1.5);
-      };
-
-      // Mobile 3x retina touch screen clamped to 1.25
-      expect(getDPR(3.0, true, true)).toBe(1.25);
-      // Desktop 2x screen clamped to 1.5
-      expect(getDPR(2.0, false, false)).toBe(1.5);
-      // 1x standard screen remains 1.0
-      expect(getDPR(1.0, false, false)).toBe(1.0);
+      expect(quality.apply(input).dpr).toBe(1.25);
+      expect(
+        quality.apply({ ...input, mobile: false, devicePixelRatio: 2 }).dpr
+      ).toBe(1.5);
+      expect(
+        quality.apply({ ...input, mobile: false, devicePixelRatio: 1 }).dpr
+      ).toBe(1);
     });
   });
 });

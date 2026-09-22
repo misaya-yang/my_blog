@@ -47,14 +47,13 @@ describe("drag, coast and return", () => {
     expect(Math.max(...angles) - Math.min(...angles)).toBeLessThan(0.005);
   });
 
-  it("exports canonical home Euler orientation (0.28, -0.50, -0.40) and defaultHomeQuaternion", () => {
-    expect(RotationMotion.homeEuler.x).toBeCloseTo(0.28, 5);
-    expect(RotationMotion.homeEuler.y).toBeCloseTo(-0.5, 5);
-    expect(RotationMotion.homeEuler.z).toBeCloseTo(-0.4, 5);
+  it("uses one canonical home orientation for initial pose and recovery", () => {
     expect(RotationMotion.homeEuler.order).toBe("XYZ");
 
     const quat = RotationMotion.defaultHomeQuaternion();
-    const expectedQuat = new Quaternion().setFromEuler(RotationMotion.homeEuler);
+    const expectedQuat = new Quaternion().setFromEuler(
+      RotationMotion.homeEuler
+    );
     expect(quat.angleTo(expectedQuat)).toBeCloseTo(0, 5);
 
     const motion = new RotationMotion(quat);

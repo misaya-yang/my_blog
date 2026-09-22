@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { ShaderMaterial, WebGLRenderTarget, type WebGLRenderer } from "three";
 import { BloomPyramidPass } from "@/components/galaxy/bloomPyramid";
 import { hexToRgb } from "../harness/testHarness";
 
@@ -206,6 +207,20 @@ describe("Tier 1: Feature Coverage - Optical Pipeline & Shaders", () => {
 
   // F4: Mip-Pyramid Bloom Pipeline
   describe("F4: Mip-Pyramid Bloom Pipeline", () => {
+    // These are pipeline contract tests, not GPU pixel/visual acceptance tests.
+    const createRenderer = () => {
+      let target: WebGLRenderTarget | null = null;
+      const draws: Array<{ material: ShaderMaterial; strength: number | undefined }> = [];
+      const renderer = {
+        autoClear: true,
+        getRenderTarget: () => target,
+        setRenderTarget: (next: WebGLRenderTarget | null) => { target = next; },
+        render: (quad: { material: ShaderMaterial }) => {
+          draws.push({ material: quad.material, strength: quad.material.uniforms.strength?.value });
+        },
+      } as unknown as WebGLRenderer;
+      return { renderer, draws };
+    };
     it("initializes BloomPyramidPass with specified mip levels and resolution scaling", () => {
       const pass = new BloomPyramidPass({
         levels: 6,
@@ -216,9 +231,12 @@ describe("Tier 1: Feature Coverage - Optical Pipeline & Shaders", () => {
       });
 
       expect(pass.strength).toBe(0.55);
-      expect(pass.flare).toBe(0);
-      expect(pass.flareCenter.x).toBe(0.5);
-      expect(pass.flareCenter.y).toBe(0.5);
+      expect(pass.threshold).toBe(0.6);
+      expect(pass.knee).toBe(0.35);
+      pass.setSize(1440, 900);
+      expect(pass.downMips).toHaveLength(6);
+      expect(pass.upMips).toHaveLength(5);
+      expect([pass.downMips[0].width, pass.downMips[0].height]).toEqual([720, 450]);
       pass.dispose();
     });
 
@@ -243,31 +261,64 @@ describe("Tier 1: Feature Coverage - Optical Pipeline & Shaders", () => {
       expect(sum).toBe(16); // Energy conservation: sum/16 = 1.0
     });
 
-    it("models heart optical accent flare ignition curve", () => {
-      // T_flare = clamp((u - 0.55) / 0.40, 0, 1), I_flare = T^2(3 - 2T) * 0.8
-      const flareIntensity = (uIntro: number) => {
-        const T = Math.max(0, Math.min(1, (uIntro - 0.55) / 0.4));
-        return T * T * (3 - 2 * T) * 0.8;
-      };
-
-      expect(flareIntensity(0.5)).toBe(0.0); // Before ignition
-      expect(flareIntensity(0.55)).toBe(0.0);
-      expect(flareIntensity(0.75)).toBeCloseTo(0.4, 2); // Half-way
-      expect(flareIntensity(0.95)).toBeCloseTo(0.8, 2); // Settled peak
-      expect(flareIntensity(1.0)).toBeCloseTo(0.8, 2);
+    it("composites source-driven bloom energy without synthetic flare or halo overlays", () => {
+      const pass = new BloomPyramidPass({ strength: 0.72 });
+      const { renderer, draws } = createRenderer();
+      const read = new WebGLRenderTarget(800, 600);
+      const write = new WebGLRenderTarget(800, 600);
+      pass.setSize(800, 600);
+      pass.render(renderer, write, read);
+      const composite = draws.at(-1)!.material;
+      expect(Object.keys(composite.uniforms).sort()).toEqual(["bloom", "scene", "strength"]);
+      expect(composite.uniforms.scene.value).toBe(read.texture);
+      expect(composite.uniforms.bloom.value).toBe(pass.upMips[0].texture);
+      expect(draws.at(-1)!.strength).toBe(0.72);
+      expect(composite.fragmentShader).toMatch(/base\.rgb\s*\+\s*texture2D\(bloom,\s*vUv\)\.rgb\s*\*\s*strength/);
+      expect(composite.fragmentShader).toContain("base.a");
+      expect(composite.fragmentShader).not.toMatch(/flare|halo|uAspect|uCenter/i);
+      pass.dispose();
+      read.dispose();
+      write.dispose();
     });
 
-    it("cleanly updates flare center and strength parameters without allocations", () => {
+    it("updates bloom controls and bypasses at zero strength without reallocating targets", () => {
       const pass = new BloomPyramidPass();
-      pass.flareCenter.set(0.62, 0.48);
-      pass.strength = 0.72;
-      pass.flare = 0.85;
-
-      expect(pass.flareCenter.x).toBe(0.62);
-      expect(pass.flareCenter.y).toBe(0.48);
-      expect(pass.strength).toBe(0.72);
-      expect(pass.flare).toBe(0.85);
+      const { renderer, draws } = createRenderer();
+      const read = new WebGLRenderTarget(800, 600);
+      const write = new WebGLRenderTarget(800, 600);
+      pass.setSize(800, 600);
+      const down = [...pass.downMips];
+      const up = [...pass.upMips];
+      const disposal = [...down, ...up].map(target => vi.spyOn(target, "dispose"));
+      for (const strength of [0.72, 0, 0.35, 1.1, 0]) {
+        pass.strength = strength;
+        pass.threshold = 0.8;
+        pass.knee = 0.2;
+        pass.radius = 0.6;
+        pass.setSize(800, 600);
+        const before = draws.length;
+        pass.render(renderer, write, read);
+        expect(pass.threshold).toBe(0.8);
+        expect(pass.knee).toBe(0.2);
+        expect(pass.radius).toBe(0.6);
+        down.forEach((target, i) => expect(pass.downMips[i]).toBe(target));
+        up.forEach((target, i) => expect(pass.upMips[i]).toBe(target));
+        if (strength === 0) {
+          expect(draws.length - before).toBe(1);
+          const copy = draws.at(-1)!.material;
+          expect(Object.keys(copy.uniforms)).toEqual(["scene"]);
+          expect(copy.uniforms.scene.value).toBe(read.texture);
+          expect(copy.fragmentShader).toMatch(/gl_FragColor\s*=\s*texture2D\(scene,\s*vUv\)/);
+        } else {
+          expect(draws.length - before).toBe(12);
+          expect(draws.at(-1)!.strength).toBe(strength);
+        }
+      }
+      disposal.forEach(spy => expect(spy).not.toHaveBeenCalled());
       pass.dispose();
+      disposal.forEach(spy => expect(spy).toHaveBeenCalledTimes(1));
+      read.dispose();
+      write.dispose();
     });
   });
 

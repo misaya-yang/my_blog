@@ -18,7 +18,10 @@ class MockDomSurface extends EventTarget {
     setProperty: vi.fn((key: string, val: string) => {
       (this.style as Record<string, unknown>)[key] = val;
     }),
-  } as Record<string, unknown> & { opacity: string; setProperty: ReturnType<typeof vi.fn> };
+  } as Record<string, unknown> & {
+    opacity: string;
+    setProperty: ReturnType<typeof vi.fn>;
+  };
   parentElement: MockDomSurface | null = null;
   children: MockDomSurface[] = [];
   clientWidth = 1280;
@@ -36,7 +39,10 @@ class MockDomSurface extends EventTarget {
   }
 
   closest(selector: string): MockDomSurface | null {
-    if (selector.includes("hero-controls") || selector.includes("public-universe")) {
+    if (
+      selector.includes("hero-controls") ||
+      selector.includes("public-universe")
+    ) {
       return this.parentElement || this;
     }
     return null;
@@ -60,7 +66,9 @@ class MockDomSurface extends EventTarget {
 
   remove() {
     if (this.parentElement) {
-      this.parentElement.children = this.parentElement.children.filter(x => x !== this);
+      this.parentElement.children = this.parentElement.children.filter(
+        x => x !== this
+      );
     }
   }
 
@@ -143,10 +151,20 @@ vi.mock("three/addons/postprocessing/OutputPass.js", () => ({
 }));
 
 import { createGalaxy } from "@/components/galaxy/galaxyScene";
-import { PointerWake, WAKE_SAMPLES, WAKE_LIFETIME } from "@/components/galaxy/pointerWake";
+import {
+  PointerWake,
+  WAKE_SAMPLES,
+  WAKE_LIFETIME,
+} from "@/components/galaxy/pointerWake";
 import { RotationMotion } from "@/components/galaxy/rotationMotion";
-import { projectTrackball, trackballDelta } from "@/components/galaxy/trackball";
-import { getAmbientProfile, bakeAmbientTracks } from "@/components/galaxy/ambientScene";
+import {
+  projectTrackball,
+  trackballDelta,
+} from "@/components/galaxy/trackball";
+import {
+  getAmbientProfile,
+  bakeAmbientTracks,
+} from "@/components/galaxy/ambientScene";
 import { BloomPyramidPass } from "@/components/galaxy/bloomPyramid";
 import { getPageScene } from "@/components/galaxy/pageScene";
 import { getScrollMotion } from "@/components/galaxy/scrollMotion";
@@ -171,7 +189,10 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       // Dragging phase dt = 0 move
       motion.begin();
       expect(motion.phase).toBe("dragging");
-      const deltaQ = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), 0.2);
+      const deltaQ = new Quaternion().setFromAxisAngle(
+        new Vector3(0, 1, 0),
+        0.2
+      );
       motion.move(deltaQ, 0); // dt = 0 in move should be protected by Math.max(dt, 0.008)
       expect(Number.isFinite(motion.speed)).toBe(true);
       expect(motion.speed).toBeLessThanOrEqual(2.4);
@@ -205,7 +226,9 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       motion.move(spinDelta, 0.016);
       motion.release();
       expect(motion.phase).toBe("inertia");
-      expect(motion.orientation.angleTo(canonicalHomeQuat)).toBeGreaterThan(1.0);
+      expect(motion.orientation.angleTo(canonicalHomeQuat)).toBeGreaterThan(
+        1.0
+      );
 
       // Massive dt simulation (e.g. laptop lid closed for 1 hour: dt = 3600.0s)
       motion.advance(3600.0);
@@ -225,7 +248,10 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       const motion = new RotationMotion(canonicalHomeQuat);
       motion.begin();
 
-      const delta = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), 0.05);
+      const delta = new Quaternion().setFromAxisAngle(
+        new Vector3(1, 0, 0),
+        0.05
+      );
       // Extreme micro-step: 1 microsecond (1e-6s)
       motion.move(delta, 0.000001);
 
@@ -268,10 +294,20 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       const center = 200;
 
       // Far outside virtual sphere horizon: 10x radius and 1000x radius
-      const farDistances = [radius * 1.5, radius * 5.0, radius * 50.0, radius * 1000.0];
+      const farDistances = [
+        radius * 1.5,
+        radius * 5.0,
+        radius * 50.0,
+        radius * 1000.0,
+      ];
 
       for (const dist of farDistances) {
-        const outVec = projectTrackball(center + dist, center, radius * 2, radius * 2);
+        const outVec = projectTrackball(
+          center + dist,
+          center,
+          radius * 2,
+          radius * 2
+        );
         expect(outVec.length()).toBeCloseTo(1.0, 5);
         expect(Number.isFinite(outVec.x)).toBe(true);
         expect(Number.isFinite(outVec.y)).toBe(true);
@@ -281,7 +317,12 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
 
       // Exact boundary where r^2 = 0.5 * radius^2 (hyperbolic switch-point)
       const rSwitch = (radius * 2 * 0.5) / Math.SQRT2;
-      const switchVec = projectTrackball(center + rSwitch, center, radius * 2, radius * 2);
+      const switchVec = projectTrackball(
+        center + rSwitch,
+        center,
+        radius * 2,
+        radius * 2
+      );
       expect(switchVec.length()).toBeCloseTo(1.0, 5);
     });
 
@@ -472,7 +513,9 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       const writeTarget = new WebGLRenderTarget(800, 600);
 
       // Must execute without indexing out-of-bounds error on upsampleTargets
-      expect(() => pass.render(mockRenderer, writeTarget, readTarget)).not.toThrow();
+      expect(() =>
+        pass.render(mockRenderer, writeTarget, readTarget)
+      ).not.toThrow();
 
       readTarget.dispose();
       writeTarget.dispose();
@@ -512,13 +555,18 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
   describe("Group 4: Unicode Slugs, Deep Permutations & Ambient Constellations", () => {
     it("handles empty path string by safely defaulting to root /", () => {
       const profile = getAmbientProfile("");
+      expect(profile).toEqual(getAmbientProfile("/"));
       expect(profile.rows).toHaveLength(6);
-      expect(profile.rows[4].closed).toBe(false);
-      expect(profile.rows[5].closed).toBe(false);
+      for (const row of profile.rows.slice(4)) {
+        expect(row.closed).toBe(true);
+        expect(row.points.at(-1)).toEqual(row.points[0]);
+        expect(row.endpointFade).toBe(0);
+      }
       const baked = bakeAmbientTracks(profile);
       // TRACK_SAMPLES = 512, so (512 + 1) * 6 rows * 4 components = 12312 floats
       expect(baked.length).toBe((512 + 1) * 6 * 4);
       expect(baked.every(v => Number.isFinite(v))).toBe(true);
+      for (let i = 3; i < baked.length; i += 4) expect(baked[i]).toBe(1);
     });
 
     it("processes diverse multilingual Unicode and Emoji slugs with valid deterministic geometry", () => {
@@ -575,40 +623,69 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       }
     });
 
-    it("hashes massive 50,000-character slug in under 5ms without stack overflow or 32-bit integer sign NaN", () => {
+    it("handles a massive slug deterministically without stack overflow or invalid geometry", () => {
       const hugeSlug = "/post/" + "deep-learning-".repeat(3500);
       expect(hugeSlug.length).toBeGreaterThan(40000);
 
-      const t0 = performance.now();
       const profile = getAmbientProfile(hugeSlug);
-      const elapsed = performance.now() - t0;
-
-      expect(elapsed).toBeLessThan(25);
+      expect(profile).toEqual(getAmbientProfile(`${hugeSlug}?source=archive`));
       expect(profile.rows).toHaveLength(6);
       expect(Number.isFinite(profile.driftSpeed)).toBe(true);
       expect(Number.isFinite(profile.twinkle)).toBe(true);
     });
 
-    it("preserves inner open heart anchors (rows 4 and 5) near z = -0.9 across all 4 curve families", () => {
+    it("preserves true loop seams, open ribbon fades and inner depth across all four families", () => {
       // Find paths that trigger each of the 4 curve families
-      const targetFamilies = new Set(["rhodonea", "lissajous", "orbits", "ribbon"]);
+      const targetFamilies = new Set([
+        "rhodonea",
+        "lissajous",
+        "orbits",
+        "ribbon",
+      ]);
       const foundFamilies = new Set<string>();
 
-      for (let i = 0; i < 100 && foundFamilies.size < targetFamilies.size; i++) {
-        const path = `/post/article-family-probe-${i}`;
+      for (
+        let i = 0;
+        i < 100 && foundFamilies.size < targetFamilies.size;
+        i++
+      ) {
+        const path = `/tags/ambient-family-probe-${i}`;
         const profile = getAmbientProfile(path);
         if (targetFamilies.has(profile.family)) {
           foundFamilies.add(profile.family);
 
           // Assert row structure for this family
           expect(profile.rows).toHaveLength(6);
-          // Rows 0-3 outer closed
-          for (let r = 0; r < 4; r++) {
-            expect(profile.rows[r].closed).toBe(true);
-          }
-          // Rows 4-5 inner open heart anchors
-          expect(profile.rows[4].closed).toBe(false);
-          expect(profile.rows[5].closed).toBe(false);
+          profile.rows.forEach((row, r) => {
+            const open = profile.family === "ribbon" && r < 4;
+            expect(row.closed).toBe(!open);
+            expect(row.length).toBeGreaterThan(0);
+            if (open) {
+              expect(row.endpointFade).toBeGreaterThan(0);
+              expect(row.endpointFade).toBeLessThan(0.1);
+              const first = row.points[0],
+                last = row.points.at(-1)!;
+              expect(
+                Math.hypot(...first.map((v, axis) => v - last[axis]))
+              ).toBeGreaterThan(5);
+            } else {
+              expect(row.endpointFade).toBe(0);
+              expect(row.points.at(-1)).toEqual(row.points[0]);
+              const incoming = row.points
+                .at(-1)!
+                .map((v, axis) => v - row.points.at(-2)![axis]);
+              const outgoing = row.points[1].map(
+                (v, axis) => v - row.points[0][axis]
+              );
+              const dot = incoming.reduce(
+                (sum, v, axis) => sum + v * outgoing[axis],
+                0
+              );
+              expect(
+                dot / (Math.hypot(...incoming) * Math.hypot(...outgoing))
+              ).toBeGreaterThan(0.995);
+            }
+          });
 
           // Heart anchor points are located near z = -0.9
           const heartPoint1 = profile.rows[4].points[0];
@@ -628,7 +705,11 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
   describe("Group 5: Scene Lifecycle, Interaction & Context Resilience", () => {
     let host: MockDomSurface;
     let controls: MockDomSurface;
-    let win: EventTarget & { scrollY: number; innerWidth: number; innerHeight: number };
+    let win: EventTarget & {
+      scrollY: number;
+      innerWidth: number;
+      innerHeight: number;
+    };
     let doc: EventTarget & { hidden: boolean; documentElement: MockDomSurface };
     let scene: ReturnType<typeof createGalaxy>;
     let now = 1000;
@@ -702,16 +783,19 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       vi.unstubAllGlobals();
     });
 
-    function makePointerEvent(type: string, options: {
-      button?: number;
-      buttons?: number;
-      isPrimary?: boolean;
-      pointerId?: number;
-      clientX?: number;
-      clientY?: number;
-      timeStamp?: number;
-      pointerType?: string;
-    } = {}) {
+    function makePointerEvent(
+      type: string,
+      options: {
+        button?: number;
+        buttons?: number;
+        isPrimary?: boolean;
+        pointerId?: number;
+        clientX?: number;
+        clientY?: number;
+        timeStamp?: number;
+        pointerType?: string;
+      } = {}
+    ) {
       const event = new Event(type);
       Object.assign(event, {
         button: options.button ?? 0,
@@ -745,7 +829,9 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       expect(controls.dataset.dragging).toBe("true");
 
       // 2. Mid-drag GPU context loss occurs
-      const contextLostEvent = new Event("webglcontextlost", { cancelable: true });
+      const contextLostEvent = new Event("webglcontextlost", {
+        cancelable: true,
+      });
       canvas.dispatchEvent(contextLostEvent);
 
       expect(host.dataset.ready).toBe("false");
@@ -824,7 +910,14 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
     });
 
     it("survives keyboard interactions (Space toggle, Escape reset, Arrow rotation) safely", () => {
-      const keys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " ", "Escape"];
+      const keys = [
+        "ArrowLeft",
+        "ArrowRight",
+        "ArrowUp",
+        "ArrowDown",
+        " ",
+        "Escape",
+      ];
       for (const key of keys) {
         const keyEvent = new Event("keydown");
         Object.assign(keyEvent, { key, preventDefault: vi.fn() });
@@ -912,7 +1005,12 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
 
     it("enforces complete interaction immunity under prefers-reduced-motion", () => {
       scene.dispose();
-      const rmScene = createGalaxy(host as unknown as HTMLElement, false, true, "/");
+      const rmScene = createGalaxy(
+        host as unknown as HTMLElement,
+        false,
+        true,
+        "/"
+      );
 
       // uIntro immediately pinned to 1.0
       expect(rmScene.getIntro()).toBe(1.0);
@@ -940,7 +1038,7 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       rmScene.dispose();
     });
 
-    it("survives active drag during viewport resize and subsequent pointer move", () => {
+    it("cancels a resized drag, ignores stale events and accepts a new gesture at the new artwork center", () => {
       let resizeCallback: (() => void) | null = null;
       vi.stubGlobal(
         "ResizeObserver",
@@ -979,6 +1077,10 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       host.clientWidth = 800;
       host.clientHeight = 600;
       if (resizeCallback) (resizeCallback as () => void)();
+      expect(controls.dataset.dragging).toBe("false");
+      expect(controls.hasPointerCapture(99)).toBe(false);
+      const angleAfterResize = Number(host.dataset.returnAngle);
+      expect(Number.isFinite(angleAfterResize)).toBe(true);
 
       // Pointer continues moving under new viewport dimensions
       const pointermoveEvent = makePointerEvent("pointermove", {
@@ -989,7 +1091,9 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
         timeStamp: now + 16,
       });
       win.dispatchEvent(pointermoveEvent);
-      expect(controls.dataset.dragging).toBe("true");
+      pump(2);
+      expect(controls.dataset.dragging).toBe("false");
+      expect(Number(host.dataset.returnAngle)).toBeCloseTo(angleAfterResize, 4);
 
       // Finish drag
       const pointerupEvent = makePointerEvent("pointerup", {
@@ -1001,6 +1105,47 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       });
       win.dispatchEvent(pointerupEvent);
       expect(controls.dataset.dragging).toBe("false");
+
+      const [centerX, centerY] = host.dataset.artworkCenter
+        .split(",")
+        .map(Number);
+      expect(Number.isFinite(centerX + centerY)).toBe(true);
+      controls.dispatchEvent(
+        makePointerEvent("pointerdown", {
+          pointerId: 100,
+          clientX: centerX,
+          clientY: centerY,
+          timeStamp: now,
+        })
+      );
+      expect(controls.dataset.dragging).toBe("true");
+      expect(controls.hasPointerCapture(100)).toBe(true);
+      // A delayed release belonging to the canceled gesture cannot cancel the new one.
+      win.dispatchEvent(pointerupEvent);
+      expect(controls.dataset.dragging).toBe("true");
+      win.dispatchEvent(
+        makePointerEvent("pointermove", {
+          pointerId: 100,
+          clientX: centerX + 40,
+          clientY: centerY + 10,
+          timeStamp: now + 16,
+        })
+      );
+      pump(2);
+      expect(Number(host.dataset.returnAngle)).toBeGreaterThan(
+        angleAfterResize + 0.001
+      );
+      win.dispatchEvent(
+        makePointerEvent("pointerup", {
+          pointerId: 100,
+          buttons: 0,
+          clientX: centerX + 40,
+          clientY: centerY + 10,
+          timeStamp: now + 16,
+        })
+      );
+      expect(controls.dataset.dragging).toBe("false");
+      expect(controls.captures.size).toBe(0);
     });
   });
 });

@@ -1,16 +1,34 @@
 import { TRACK_SAMPLES, PETAL_TRACKS } from "./roseTracks";
+import { CatmullRomCurve3, Vector3 } from "three";
+import {
+  createArticleConstellation,
+  type ArticleConstellationMotif,
+} from "./articleConstellations";
 
 export const AMBIENT_ROWS = PETAL_TRACKS + 2;
+export const AMBIENT_ENDPOINT_FADE = 0.035;
+
+type AmbientPoint = [number, number, number];
+type Contour = { points: AmbientPoint[]; closed: boolean };
+
+export type AmbientTrack = Contour & {
+  /** World-space arc length; use this to derive a constant-distance flow rate. */
+  length: number;
+  /** Fraction of the open path reserved for fading at each endpoint. */
+  endpointFade: number;
+};
 
 export type AmbientProfile = {
-  family: "rhodonea" | "lissajous" | "orbits" | "ribbon";
+  family: "rhodonea" | "lissajous" | "orbits" | "ribbon" | "constellation";
+  /** Present only on article routes; independent of query/hash parameters. */
+  motif?: ArticleConstellationMotif;
   driftX: number;
   driftY: number;
   driftSpeed: number;
   twinkle: number;
   glow: number;
-  /** Sampled contours, one row per rose track (4 outer closed + 2 inner open). */
-  rows: Array<{ points: Array<[number, number, number]>; closed: boolean }>;
+  /** Arc-length samples, with topology independent of the corresponding rose row. */
+  rows: AmbientTrack[];
 };
 
 /** Deterministic PRNG so one article always wears the same sky. */
@@ -38,11 +56,39 @@ const lerp = ([a, b]: Range, t: number) => a + (b - a) * t;
 
 /**
  * A seeded ambient constellation for everything that is not the home rose.
- * Four outer closed contours carry the figure; two open inner strokes keep
- * a small motif near the heart so the lvy script never loses its anchor.
+ * Four outer contours carry the figure; two closed inner motifs remain near
+ * the heart. Ribbons are open paths, not loops with a hidden cross-screen seam.
  */
 export function getAmbientProfile(path: string): AmbientProfile {
   const random = mulberry32(hashPath(path, 0x9e3779b9));
+  if (/^\/post\/[^/]+\/?$/.test(path.split(/[?#]/)[0])) {
+    const figure = createArticleConstellation(random);
+    const rows = figure.rows.map(points => {
+      const curve = new CatmullRomCurve3(
+        points.map(point => new Vector3(...point)),
+        false,
+        "centripetal"
+      );
+      const scratch = new Vector3();
+      return {
+        closed: false,
+        points: contour(
+          t => curve.getPoint(t, scratch).toArray() as AmbientPoint,
+          false
+        ),
+      };
+    });
+    return {
+      family: "constellation",
+      motif: figure.motif,
+      driftX: lerp([-0.035, 0.035], random()),
+      driftY: lerp([-0.025, 0.025], random()),
+      driftSpeed: lerp([0.025, 0.05], random()),
+      twinkle: lerp([0.8, 1.15], random()),
+      glow: 0.5,
+      rows: describeContours(rows),
+    };
+  }
   const families: AmbientProfile["family"][] = [
     "rhodonea",
     "lissajous",
@@ -50,7 +96,7 @@ export function getAmbientProfile(path: string): AmbientProfile {
     "ribbon",
   ];
   const family = families[Math.floor(random() * families.length)];
-  const outer: AmbientProfile["rows"] = [];
+  const outer: Contour[] = [];
   const scale = lerp([2.6, 3.3], random());
   const twist = lerp([-0.7, 0.7], random());
 
@@ -65,7 +111,10 @@ export function getAmbientProfile(path: string): AmbientProfile {
         closed: true,
         points: contour(t => {
           const angle = t * Math.PI * 2;
-          const r = radius * Math.abs(Math.cos(k * (angle + phase)) * 0.92 + 0.08);
+          // A rounded minimum avoids the zero-radius cusp of abs(cos(...)),
+          // which otherwise reverses a particle within one texture interval.
+          const wave = Math.cos(k * (angle + phase)) * 0.92 + 0.08;
+          const r = (radius * Math.hypot(wave, 0.1)) / Math.hypot(1, 0.1);
           return [
             r * Math.cos(angle + twist * row),
             r * Math.sin(angle + twist * row),
@@ -123,25 +172,26 @@ export function getAmbientProfile(path: string): AmbientProfile {
       const amplitude = lerp([0.5, 1.1], random()) * (1 - row * 0.12);
       const offset = (band - 1) * 0.7;
       outer.push({
-        closed: true,
+        closed: false,
         points: contour(t => {
           const x = (t - 0.5) * scale * 2.6;
           const envelope = Math.cos((t - 0.5) * Math.PI);
           return [
             x,
-            (Math.sin(x * frequency + twist * 3 + band) * amplitude
-              + offset) * envelope,
+            (Math.sin(x * frequency + twist * 3 + band) * amplitude + offset) *
+              envelope,
             Math.sin(x * 0.8 + band * 2) * 0.35,
           ];
-        }),
+        }, false),
       });
     }
   }
 
-  // Two small open strokes near the heart keep an inner motif anchored.
+  // These parametric motifs return to their start with the same tangent.
+  // Their topology must not inherit the home signature's open-stroke flag.
   const innerKind = random();
-  const inner: AmbientProfile["rows"] = [0, 1].map(index => ({
-    closed: false,
+  const inner: Contour[] = [0, 1].map(index => ({
+    closed: true,
     points: contour(t => {
       const angle = t * Math.PI * 2;
       if (innerKind < 0.5) {
@@ -163,26 +213,93 @@ export function getAmbientProfile(path: string): AmbientProfile {
     driftSpeed: lerp([0.05, 0.14], random()),
     twinkle: lerp([0.8, 1.35], random()),
     glow: lerp([0.35, 1], random()),
-    rows: [...outer, ...inner],
+    rows: describeContours([...outer, ...inner]),
   };
 }
 
-function contour(sample: (t: number) => [number, number, number]) {
-  const points: Array<[number, number, number]> = [];
-  for (let i = 0; i <= TRACK_SAMPLES; i++)
-    points.push(sample(i / TRACK_SAMPLES));
+function describeContours(rows: Contour[]): AmbientTrack[] {
+  return rows.map(row => ({
+    ...row,
+    length: row.points
+      .slice(1)
+      .reduce(
+        (sum, point, index) => sum + distance(point, row.points[index]),
+        0
+      ),
+    endpointFade: row.closed ? 0 : AMBIENT_ENDPOINT_FADE,
+  }));
+}
+
+function distance(a: AmbientPoint, b: AmbientPoint) {
+  return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+}
+
+/** Integrate the curve densely, then invert arc length into evenly spaced texels. */
+function contour(sample: (t: number) => AmbientPoint, closed = true) {
+  const subdivisions = TRACK_SAMPLES * 16;
+  let source = Array.from({ length: subdivisions + 1 }, (_, i) =>
+    sample(i / subdivisions)
+  );
+  if (closed) {
+    // Put the texture seam on a gentle part of the curve, not at a petal tip.
+    // The identity of the loop is unchanged; only its phase origin moves.
+    const stride = subdivisions / TRACK_SAMPLES;
+    let seam = 0,
+      bestAlignment = -Infinity;
+    for (let i = 0; i < subdivisions; i += stride) {
+      const previous = source[(i - stride + subdivisions) % subdivisions];
+      const center = source[i];
+      const next = source[(i + stride) % subdivisions];
+      const incoming = center.map((value, axis) => value - previous[axis]);
+      const outgoing = next.map((value, axis) => value - center[axis]);
+      const magnitude = Math.hypot(...incoming) * Math.hypot(...outgoing);
+      const alignment =
+        magnitude > 0
+          ? incoming.reduce(
+              (sum, value, axis) => sum + value * outgoing[axis],
+              0
+            ) / magnitude
+          : -Infinity;
+      if (alignment > bestAlignment) {
+        bestAlignment = alignment;
+        seam = i;
+      }
+    }
+    source = Array.from(
+      { length: subdivisions + 1 },
+      (_, i) => source[(i + seam) % subdivisions]
+    );
+  }
+  const cumulative = new Float64Array(subdivisions + 1);
+  for (let i = 1; i <= subdivisions; i++)
+    cumulative[i] = cumulative[i - 1] + distance(source[i], source[i - 1]);
+  const total = cumulative[subdivisions];
+  const points: AmbientPoint[] = [[...source[0]]];
+  let segment = 1;
+  for (let i = 1; i < TRACK_SAMPLES; i++) {
+    const target = (i / TRACK_SAMPLES) * total;
+    while (segment < subdivisions && cumulative[segment] < target) segment++;
+    const span = cumulative[segment] - cumulative[segment - 1];
+    const fraction = span > 0 ? (target - cumulative[segment - 1]) / span : 0;
+    const a = source[segment - 1],
+      b = source[segment];
+    points.push([
+      a[0] + (b[0] - a[0]) * fraction,
+      a[1] + (b[1] - a[1]) * fraction,
+      a[2] + (b[2] - a[2]) * fraction,
+    ]);
+  }
+  points.push([...source[subdivisions]]);
   return points;
 }
 
-/** Same layout as roseTracks.bakeTracks: (rows × samples+1) × rgba float. */
+/** RGBA = xyz + ribbon width. Topology and endpoint fading belong to rows, not alpha. */
 export function bakeAmbientTracks(profile: AmbientProfile) {
-  const data = new Float32Array(
-    (TRACK_SAMPLES + 1) * profile.rows.length * 4
-  );
+  const data = new Float32Array((TRACK_SAMPLES + 1) * profile.rows.length * 4);
   profile.rows.forEach((row, rowIndex) => {
     row.points.forEach((point, i) => {
       const offset = (rowIndex * (TRACK_SAMPLES + 1) + i) * 4;
-      data.set([point[0], point[1], point[2], row.closed ? 1 : 0], offset);
+      data.set([point[0], point[1], point[2], 1], offset);
     });
   });
   return data;

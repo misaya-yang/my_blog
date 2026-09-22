@@ -4,7 +4,6 @@ import {
   BufferGeometry,
   Color,
   Quaternion,
-  Euler,
   Vector3,
   Group,
   InstancedBufferAttribute,
@@ -35,7 +34,9 @@ import {
   sampleTrack,
 } from "./roseTracks";
 import { RotationMotion } from "./rotationMotion";
-import { PointerWake, WAKE_SAMPLES, WAKE_LIFETIME } from "./pointerWake";
+import { ParticleField } from "./particleField";
+import { sampleParticleBases } from "./sampleParticleBase";
+import { calculateConstellationLayout } from "./constellationLayout";
 import { createPhaseSampler, ribbonWidth } from "./particleDistribution";
 import { bakeAmbientTracks, getAmbientProfile } from "./ambientScene";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
@@ -45,6 +46,7 @@ import { BloomPyramidPass } from "./bloomPyramid";
 import { projectTrackball, trackballDelta } from "./trackball";
 import { getPageScene } from "./pageScene";
 import { getScrollMotion, type MotionState } from "./scrollMotion";
+import { RenderQuality } from "./renderQuality";
 
 /**
  * Calculates dust particle brightness according to cubic power-law distribution.
@@ -100,7 +102,7 @@ export function evaluateIntroConvergence(
   }
   const seen = Math.min(1, Math.max(0, (uIntro - iseed.z * 0.14) / 0.22));
   const delay = iseed.x * 0.22 + iseed.y * 0.08;
-  const rawT = Math.min(1, Math.max(0, (uIntro - delay - 0.10) / 0.55));
+  const rawT = Math.min(1, Math.max(0, (uIntro - delay - 0.1) / 0.55));
   const t = rawT >= 1.0 - 1e-5 ? 1.0 : rawT;
   if (t >= 1.0) {
     return {
@@ -130,7 +132,7 @@ export function createGalaxy(
   reducedMotion = false,
   page = "/"
 ) {
-  let mobile = host.clientWidth < 640;
+  let mobile = host.clientWidth < 900;
   const coarsePointer =
     typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches;
   const renderer = new WebGLRenderer({
@@ -157,7 +159,7 @@ export function createGalaxy(
   const camera = new PerspectiveCamera(42, 1, 0.1, 40);
   camera.position.z = 10.4;
   const group = new Group();
-  group.rotation.set(0.28, -0.5, -0.4);
+  group.rotation.copy(RotationMotion.homeEuler);
   scene.add(group);
   // Dust and luminous stars have independent geometry and optical profiles.
   // Billboard stars keep a broad halo without relying on hardware point-size limits.
@@ -195,13 +197,23 @@ export function createGalaxy(
   );
   ambientTexture.minFilter = ambientTexture.magFilter = NearestFilter;
   ambientTexture.needsUpdate = true;
+  const ambientFromData = new Float32Array(trackData.length);
+  const ambientFromTexture = new DataTexture(
+    ambientFromData,
+    TRACK_SAMPLES + 1,
+    tracks.length,
+    RGBAFormat,
+    FloatType
+  );
+  ambientFromTexture.minFilter = ambientFromTexture.magFilter = NearestFilter;
+  ambientFromTexture.needsUpdate = true;
   const flows = new Float32Array(count * 4);
   const colors = new Float32Array(count * 3);
   const dayColors = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
   const brights = new Float32Array(count);
   const starCount = 300;
-  const heartStarCount = 24;
+  const heartStarCount = 12;
   const starFlows = new Float32Array(starCount * 4);
   const starPositions = new Float32Array(starCount * 3);
   const starColors = new Float32Array(starCount * 3);
@@ -218,7 +230,7 @@ export function createGalaxy(
   );
   // Day inks must hold their own against near-white paper: deeper and more
   // chromatic than the night palette, since day cannot lean on additive glow.
-  const dayPalette = ["#14508f", "#0e6b7a", "#a8541c", "#4a5fa5"].map(
+  const dayPalette = ["#235fa8", "#3185ac", "#a8793f", "#455d86"].map(
     value => new Color(value)
   );
   const petalLength = tracks
@@ -267,27 +279,32 @@ export function createGalaxy(
     // Power-law brightness: a few luminous motes carry the eye, the rest stay dim.
     // Colour follows brightness (bright = white or warm, dim = blue) instead of a
     // repeating modulo pattern that imposed a rhythm along every stream.
-    const bright = calculateDustBrightness(random());
-    brights[i] = bright;
-    const color =
-      bright > 1.35
-        ? random() < 0.55
-          ? 1
-          : 2
-        : random() < 0.62
-          ? 0
-          : 3;
-    palette[color].toArray(colors, i * 3);
-    dayPalette[color].toArray(dayColors, i * 3);
-    sizes[i] =
+    const bright =
       particle.orbit[0] >= PETAL_TRACKS
         ? 1.65
-        : (i % 4 === 0 ? 2.1 + random() * 1.1 : 1.2 + random() * 0.7) *
-          (0.78 + 0.5 * Math.min(1, bright / 2));
+        : calculateDustBrightness(random());
+    brights[i] = bright;
+    const color =
+      bright > 1.35 ? (random() < 0.55 ? 1 : 2) : random() < 0.62 ? 0 : 3;
+    palette[color].toArray(colors, i * 3);
+    dayPalette[color === 2 && i % 5 !== 0 ? 0 : color].toArray(
+      dayColors,
+      i * 3
+    );
+    sizes[i] =
+      particle.orbit[0] >= PETAL_TRACKS
+        ? 1.35
+        : bright > 1.0
+          ? 1.4 + random() * 0.9
+          : 0.65 + random() * 0.65;
   }
   for (let i = 0; i < starCount; i++) {
     const heart = i < heartStarCount;
-    const particle = sample(i, true, heart ? PETAL_TRACKS + (i % 2) : undefined);
+    const particle = sample(
+      i,
+      true,
+      heart ? PETAL_TRACKS + (i % 2) : undefined
+    );
     starPositions.set(particle.point, i * 3);
     starFlows.set(particle.orbit, i * 4);
     // Size is the visible core diameter in CSS pixels, independent of halo.
@@ -296,10 +313,13 @@ export function createGalaxy(
     const color =
       bright > 1.6 ? (random() < 0.5 ? 1 : 2) : random() < 0.7 ? 0 : 3;
     palette[color].toArray(starColors, i * 3);
-    dayPalette[color].toArray(dayStarColors, i * 3);
+    dayPalette[color === 2 && i % 5 !== 0 ? 0 : color].toArray(
+      dayStarColors,
+      i * 3
+    );
     starSizes[i] = heart
-      ? 2.8 + random() * 0.8
-      : 1.7 + Math.pow((bright - 0.4) / 2.6, 1.1) * 2.3;
+      ? 2.5 + random() * 0.7
+      : 1.6 + Math.pow((bright - 0.4) / 2.6, 0.65) * 3.0;
   }
   const geometry = new BufferGeometry();
   geometry.setAttribute("position", new BufferAttribute(positions, 3));
@@ -309,15 +329,21 @@ export function createGalaxy(
   geometry.setAttribute("aSize", new BufferAttribute(sizes, 1));
   geometry.setAttribute("aBright", new BufferAttribute(brights, 1));
   const controls = host.parentElement!;
-  const pointerWake = new PointerWake();
+
   const deformation = `
     uniform float uTime; uniform float uLight; uniform float uIntro;
-    uniform vec2 uMomentum; uniform float uScatterRadius;
+    uniform float uScatterRadius;
     attribute vec4 aOrbit;
     uniform sampler2D uTracks;
     uniform float uTrackRows;
     uniform sampler2D uAmbientTracks;
+    uniform sampler2D uAmbientFromTracks;
+    uniform vec4 uAmbientMeta[6]; uniform vec4 uAmbientFromMeta[6];
+    uniform float uAmbientMorph;
+    uniform sampler2D uNavigationFrom; uniform float uNavigationProgress;
     uniform float uAmbientBlend;
+    uniform float uConstellation;
+    uniform vec4 uConstellationLayout[2];
     uniform vec3 uAmbientDrift;
     uniform float uAmbientTwinkle;
     vec4 trackPoint(float phase) {
@@ -328,12 +354,22 @@ export function createGalaxy(
       return mix(a,b,fract(sampleIndex));
     }
     // Same layout as uTracks, carrying the per-article constellation instead.
-    vec4 ambientPoint(float phase) {
+    vec4 ambientLookup(sampler2D paths, float phase) {
       float sampleIndex = clamp(phase,0.0,1.0)*512.0;
       float row = (aOrbit.x+0.5)/uTrackRows;
-      vec4 a = texture2D(uAmbientTracks,vec2((floor(sampleIndex)+0.5)/513.0,row));
-      vec4 b = texture2D(uAmbientTracks,vec2((min(floor(sampleIndex)+1.0,512.0)+0.5)/513.0,row));
+      vec4 a = texture2D(paths,vec2((floor(sampleIndex)+0.5)/513.0,row));
+      vec4 b = texture2D(paths,vec2((min(floor(sampleIndex)+1.0,512.0)+0.5)/513.0,row));
       return mix(a,b,fract(sampleIndex));
+    }
+    vec4 ambientPoint(float age, out float visibility) {
+      int row = int(aOrbit.x);
+      vec4 oldMeta = uAmbientFromMeta[row], newMeta = uAmbientMeta[row];
+      float oldPhase = fract(aOrbit.y+(uTime-age)*0.24/max(oldMeta.y,0.1));
+      float newPhase = fract(aOrbit.y+(uTime-age)*0.24/max(newMeta.y,0.1));
+      float oldFade = oldMeta.x>0.5 ? 1.0 : smoothstep(0.0,oldMeta.z,oldPhase)*(1.0-smoothstep(1.0-oldMeta.z,1.0,oldPhase));
+      float newFade = newMeta.x>0.5 ? 1.0 : smoothstep(0.0,newMeta.z,newPhase)*(1.0-smoothstep(1.0-newMeta.z,1.0,newPhase));
+      visibility = mix(oldFade,newFade,uAmbientMorph);
+      return mix(ambientLookup(uAmbientFromTracks,oldPhase),ambientLookup(uAmbientTracks,newPhase),uAmbientMorph);
     }
     float flowPhase(float age) { return fract(aOrbit.y+(uTime-age)*aOrbit.z); }
     float flowFade(vec3 p) {
@@ -353,40 +389,6 @@ export function createGalaxy(
     uniform vec2 uPointer;
     uniform float uHover;
     uniform float uAspect;
-    uniform vec4 uWakeSegments[${WAKE_SAMPLES}];
-    uniform vec4 uWakeImpulses[${WAKE_SAMPLES}];
-    uniform float uWakeTime; uniform float uWakeRadius;
-    uniform float uWakeActive;
-    vec2 wakeOffset(vec2 point, float historyAge, vec3 seed) {
-      if (uWakeActive < 0.5) return vec2(0.0);
-      vec2 offset = vec2(0.0); float weight = 0.0;
-      for (int i=0;i<${WAKE_SAMPLES};i++) {
-        vec4 impulse = uWakeImpulses[i];
-        float age = uWakeTime-historyAge-impulse.z;
-        if (impulse.w < 0.5 || age < 0.0 || age >= ${WAKE_LIFETIME}) continue;
-        vec4 segment = uWakeSegments[i]; vec2 travel = segment.zw-segment.xy;
-        float along = clamp(dot(point-segment.xy,travel)/max(dot(travel,travel),0.000001),0.0,1.0);
-        vec2 distance = point-mix(segment.xy,segment.zw,along);
-        float spatial = exp(-dot(distance,distance)/(uWakeRadius*uWakeRadius)*2.0);
-        // Per-particle inertia, with honest physics: every particle is pushed by
-        // impulse/mass, and light ones stop fast while heavy ones drift on. The
-        // differential response shreds the patch into individual motions instead
-        // of one slow coherent smear across the rose.
-        float mass = 0.45 + seed.x*seed.x*1.6;
-        float fade = (1.0-exp(-age*18.0))*exp(-age*(0.8+seed.z*0.45)/mass)
-          *(1.0-smoothstep(0.7,${WAKE_LIFETIME},age));
-        float influence = spatial*fade;
-        vec2 direction = normalize(impulse.xy+vec2(0.00001));
-        vec2 lateral = vec2(-direction.y,direction.x);
-        vec2 outward = normalize(distance + vec2(cos(seed.x*6.283),sin(seed.x*6.283))*0.008);
-        float force = min(length(impulse.xy), 0.05);
-        vec2 scattering = impulse.xy*((0.5+seed.x*0.8)/mass)
-          + lateral*(seed.y-0.5)*force*2.0
-          + outward*force*(0.12+seed.z*0.45);
-        offset += scattering*influence; weight += influence;
-      }
-      return offset/max(1.0,weight);
-    }
     float cursorLight(vec4 view) {
       vec4 projected = projectionMatrix * view;
       vec2 delta = (projected.xy / projected.w - uPointer) * vec2(uAspect,1.0);
@@ -395,11 +397,9 @@ export function createGalaxy(
     // Starfall convergence: a viewport-wide scattered field fades in first,
     // then each star departs on a staggered schedule and is captured along a
     // curved arc around the heart, easing into place with a soft snap.
-    float gIntroT = 1.0;
-    float gTravelT = 1.0;
-    float gAmbientT = 0.0;
-    vec3 applyIntro(vec3 p, vec3 original) {
-      if (uIntro >= 1.0) { gIntroT = 1.0; gTravelT = 1.0; return p; }
+    struct ParticleSample { vec4 view; float intro; float travel; float ambient; float flow; };
+    vec3 applyIntro(vec3 p, vec3 original, inout ParticleSample result) {
+      if (uIntro >= 1.0) { result.intro = 1.0; result.travel = 1.0; return p; }
       vec3 iseed = fract(sin(vec3(
         dot(original.xy, vec2(12.9898, 78.233)),
         dot(original.xy, vec2(39.346, 11.135)),
@@ -423,19 +423,20 @@ export function createGalaxy(
         local = mix(local, sin(local*1.5707963), 0.5);
       }
       float fieldFade = seen*seen*(3.0-2.0*seen) * rim;
-      gIntroT = mix(fieldFade, 1.0, local);
+      result.intro = mix(fieldFade, 1.0, local);
       float arc = sin(local*3.14159265) * (0.5 + iseed.z*0.35);
       float c = cos(arc), s = sin(arc);
       vec3 orbiting = vec3(
         scattered.x*c - scattered.y*s,
         scattered.x*s + scattered.y*c,
         scattered.z);
-      gTravelT = local;
+      result.travel = local;
       return mix(orbiting, p, local);
     }
-    vec4 particleView(vec3 original, float age) {
+    ParticleSample evaluateParticle(vec3 original, float age) {
+      ParticleSample result; result.intro=1.0; result.travel=1.0; result.flow=flowFade(original);
       mat4 particleMatrix = modelViewMatrix;
-      gAmbientT = uAmbientBlend;
+      result.ambient = uAmbientBlend;
       float historicalSplit = uSplit;
       float radius = length(original);
       float scroll = mix(uScrollPhase,uPreviousScrollPhase,min(age*1.6,1.0));
@@ -447,11 +448,13 @@ export function createGalaxy(
       float across = aOrbit.w*trackSample.w;
       p.xy += vec2(-tangent2.y,tangent2.x)*across;
       p.z += aOrbit.x < ${PETAL_TRACKS}.0 ? sin(aOrbit.y*109.0)*abs(across)*1.5 : 0.0;
-      p = applyIntro(p, original);
+      p = applyIntro(p, original, result);
       // The per-article constellation: off the rose tracks, onto seeded
       // contours with a slow drift, morphed only where the rose is not the subject.
       if (uAmbientBlend > 0.001) {
-        vec4 ambient = ambientPoint(phase);
+        float ambientVisibility;
+        vec4 ambient = ambientPoint(age,ambientVisibility);
+        result.flow = mix(result.flow,ambientVisibility,uAmbientBlend);
         vec2 wander = vec2(
           sin(uTime*0.31 + original.y*2.3 + aOrbit.y*6.283),
           cos(uTime*0.23 + original.x*1.9 + aOrbit.y*4.1)) * 0.07;
@@ -469,7 +472,7 @@ export function createGalaxy(
         // Keep the handwritten strokes readable while their recessed anchor follows the flower.
         vec4 heart = particleMatrix * vec4(0.0,0.0,-1.42,1.0);
         float scale = length(particleMatrix[0].xyz);
-        view = heart + vec4(p.xy*scale,0.0,0.0);
+        view = mix(heart + vec4(p.xy*scale,0.0,0.0),view,uAmbientBlend);
       }
       vec3 seed = fract(sin(vec3(dot(original,vec3(12.9898,78.233,37.719)), dot(original,vec3(39.346,11.135,83.155)), dot(original,vec3(73.156,52.235,9.151)))) * 43758.5453);
       float split = historicalSplit;
@@ -486,39 +489,66 @@ export function createGalaxy(
       // Wherever the constellation takes over, the dispersal stands down.
       float splitWeight = blend * (1.0 - uAmbientBlend);
       view.xyz = mix(view.xyz,dispersedView.xyz,splitWeight) + bend*sin(splitWeight*3.14159)*1.1;
-      vec4 projected = projectionMatrix * view;
-      vec2 delta = projected.xy / projected.w - mix(uPointer, uPreviousPointer, min(age * 0.65, 1.0));
-      delta.x *= uAspect;
-      float influence = exp(-dot(delta, delta) * 24.0) * uHover;
-      vec2 travel = (uPointer-uPreviousPointer) * vec2(uAspect,1.0);
-      travel *= min(1.0, 0.055 / max(length(travel), 0.0001));
-      vec2 wakeDelta = delta + travel*0.45;
-      float wake = exp(-dot(wakeDelta,wakeDelta)*30.0)*uHover;
-      // A continuous lens: zero displacement at its center, no repulsion hole.
-      // Momentum adds a tight directional carry: particles inherit pointer
-      // velocity in a small patch and coast, like a hand brushing one cluster.
-      float momentumSpatial = exp(-dot(delta,delta)*110.0)*uHover;
-      vec2 carry = uMomentum*momentumSpatial*(0.3+seed.y*0.35);
-      vec2 offset = delta*influence*0.06 + travel*wake*0.2 + carry + vec2(-delta.y,delta.x)*wake*uEnergy*0.06;
-      view.xy += offset / vec2(uAspect,1.0) * (-view.z) / projectionMatrix[1][1];
-      vec2 localWake = wakeOffset(projected.xy/projected.w*vec2(uAspect,1.0),age,seed);
-      float wakeScale = aOrbit.x >= ${PETAL_TRACKS}.0 ? 0.25 : 1.0;
-      view.xy += localWake * wakeScale * (-view.z) / projectionMatrix[1][1];
-      view.z += influence*0.045;
-      return view;
+      // Reading constellations occupy two stable banks outside the text column.
+      // Track identity picks the bank, so crossing its own center never teleports.
+      float bank = mod(aOrbit.x,2.0)<0.5 ? -1.0 : 1.0;
+      if (uConstellation > 0.5) {
+        // Preserve each figure's proportions in CSS pixels. Reading motifs do
+        // not inherit the rose's tilt or get squeezed into a vertical stripe.
+        vec4 constellationBox = uConstellationLayout[bank < 0.0 ? 0 : 1];
+        vec2 projected = constellationBox.xy + p.xy*constellationBox.zw;
+        vec2 target = projected*(-view.z)/vec2(projectionMatrix[0][0],projectionMatrix[1][1]);
+        view.xy = mix(view.xy,target,uAmbientBlend);
+        float id = floor(clamp(aOrbit.y,0.0,1.0)*65536.0);
+        float retained = mod(id*37.0+floor(aOrbit.x)*17.0,100.0)<24.0 ? 1.0 : 0.0;
+        result.flow *= mix(1.0,retained,uAmbientBlend);
+      } else {
+        view.x = mix(view.x,bank*0.82*(-view.z)/projectionMatrix[0][0]+view.x*0.13,uAmbientBlend);
+      }
+      if (uNavigationProgress < 1.0) {
+        vec4 previous=texture2D(uNavigationFrom,aFieldUV);
+        view.xyz=mix(previous.xyz,view.xyz,uNavigationProgress);
+      }
+      result.view = view;
+      return result;
+    }
+    vec4 particleView(vec3 original, float age) { return evaluateParticle(original,age).view; }
+  `;
+  const renderDeformation = `
+    attribute vec4 aOrbit; attribute vec2 aParticleUV;
+    uniform sampler2D uParticleCurrent; uniform sampler2D uParticleHistory;
+    uniform float uHistoryHead; uniform float uHistoryCount;
+    uniform float uTime; uniform float uLight; uniform float uIntro;
+    uniform float uAmbientBlend; uniform float uAmbientTwinkle;
+    uniform float uEnergy; uniform float uDisperse;
+    struct ParticleSample { vec4 view; float intro; float travel; float ambient; float flow; };
+    ParticleSample evaluateParticle(vec3 original, float age) {
+      vec4 value=texture2D(uParticleCurrent,aParticleUV);
+      ParticleSample result;
+      result.view=vec4(value.xyz,1.0); result.intro=value.w;
+      result.travel=1.0; result.ambient=uAmbientBlend; result.flow=1.0;
+      return result;
+    }
+    float flowFade(vec3 original) { return 1.0; }
+    float cursorLight(vec4 view) { return 0.0; }
+    vec4 historyPoint(float frameAge) {
+      float bounded=clamp(frameAge,0.0,max(0.0,uHistoryCount-1.0));
+      float slotA=mod(uHistoryHead-floor(bounded)+12.0,12.0);
+      float slotB=mod(slotA-1.0+12.0,12.0);
+      vec4 a=texture2D(uParticleHistory,vec2(aParticleUV.x,(aParticleUV.y+slotA)/12.0));
+      vec4 b=texture2D(uParticleHistory,vec2(aParticleUV.x,(aParticleUV.y+slotB)/12.0));
+      return mix(a,b,fract(bounded));
     }
   `;
   const uniforms = {
-    uWakeSegments: { value: pointerWake.segments },
-    uWakeImpulses: { value: pointerWake.impulses },
-    uWakeTime: { value: performance.now() / 1000 },
-    uWakeRadius: { value: 0.2 },
-    uWakeActive: { value: 0 },
+    uParticleCurrent: { value: null as import("three").Texture | null },
+    uParticleHistory: { value: null as import("three").Texture | null },
+    uHistoryHead: { value: 0 },
+    uHistoryCount: { value: 0 },
     uMobile: { value: mobile && coarsePointer ? 1 : 0 },
     uTracks: { value: trackTexture },
     uTrackRows: { value: tracks.length },
-    uPoseHistory: { value: Array.from({ length: 16 }, () => new Matrix4()) },
-    uStateHistory: { value: Array.from({ length: 16 }, () => new Vector4()) },
+
     uCanvasSize: { value: new Vector2(1, 1) },
     uCopyBounds: { value: new Vector4(-2, -2, -1, -1) },
     uCopyOpacity: { value: 1 },
@@ -543,10 +573,22 @@ export function createGalaxy(
     uDisperse: { value: 0 },
     uPixelRatio: { value: renderer.getPixelRatio() },
     uIntro: { value: reducedMotion ? 1 : 0 },
-    uMomentum: { value: new Vector2() },
+
     uScatterRadius: { value: 11 },
     uAmbientTracks: { value: ambientTexture },
+    uAmbientFromTracks: { value: ambientFromTexture },
+    uAmbientMeta: {
+      value: Array.from({ length: 6 }, () => new Vector4(1, 10, 0, 0)),
+    },
+    uAmbientFromMeta: {
+      value: Array.from({ length: 6 }, () => new Vector4(1, 10, 0, 0)),
+    },
+    uAmbientMorph: { value: 1 },
+    uNavigationFrom: { value: null as import("three").Texture | null },
+    uNavigationProgress: { value: 1 },
     uAmbientBlend: { value: 0 },
+    uConstellation: { value: 0 },
+    uConstellationLayout: { value: [new Vector4(), new Vector4()] },
     uAmbientDrift: { value: new Vector3() },
     uAmbientTwinkle: { value: 1 },
     uAmbientGlow: { value: 1 },
@@ -556,8 +598,25 @@ export function createGalaxy(
   // uploaded into the ambient texture; everything downstream stays on the GPU.
   const applyAmbient = (path: string) => {
     const profile = getAmbientProfile(path);
+    uniforms.uConstellation.value = /^\/post\/[^/?#]+/.test(path) ? 1 : 0;
+    const blend = uniforms.uAmbientMorph.value;
+    for (let i = 0; i < ambientData.length; i++)
+      ambientFromData[i] += (ambientData[i] - ambientFromData[i]) * blend;
+    uniforms.uAmbientFromMeta.value.forEach((meta, i) =>
+      meta.lerp(uniforms.uAmbientMeta.value[i], blend)
+    );
     ambientData.set(bakeAmbientTracks(profile));
+    profile.rows.forEach((row, i) =>
+      uniforms.uAmbientMeta.value[i].set(
+        row.closed ? 1 : 0,
+        row.length,
+        row.endpointFade,
+        0
+      )
+    );
     ambientTexture.needsUpdate = true;
+    ambientFromTexture.needsUpdate = true;
+    uniforms.uAmbientMorph.value = 0;
     uniforms.uAmbientDrift.value.set(
       profile.driftX,
       profile.driftY,
@@ -568,6 +627,11 @@ export function createGalaxy(
     ambientTarget = getPageScene(path).mode === "home" ? 0 : 1;
   };
   applyAmbient(page);
+  ambientFromData.set(ambientData);
+  uniforms.uAmbientFromMeta.value.forEach((meta, i) =>
+    meta.copy(uniforms.uAmbientMeta.value[i])
+  );
+  uniforms.uAmbientMorph.value = 1;
   const atmosphereGeometry = new PlaneGeometry(2, 2);
   const atmosphereMaterial = new ShaderMaterial({
     uniforms,
@@ -628,15 +692,20 @@ export function createGalaxy(
     depthWrite: false,
     vertexColors: true,
     blending: light ? NormalBlending : AdditiveBlending,
-    vertexShader: `uniform float uTime; uniform float uPixelRatio; uniform float uScrollPhase;
+    vertexShader: `uniform float uTime; uniform float uPixelRatio; uniform float uScrollPhase; uniform vec2 uCanvasSize;
       attribute float aSize; varying vec3 vColor; varying float vTwinkle;
       void main() {
         vColor = color;
         float phase = dot(position,vec3(2.7,4.3,1.2));
-        vTwinkle = 0.74+0.26*sin(uTime*0.38+phase);
+        float seed = fract(sin(phase*3.17)*43758.5453);
+        float pulse = 0.5+0.5*sin(uTime*(0.60+seed*0.55)+phase);
+        vTwinkle = 0.38+0.62*pulse*pulse;
         vec3 p = position;
-        p.xy += vec2(sin(uTime*0.023+phase+uScrollPhase*0.11),cos(uTime*0.019+phase+uScrollPhase*0.13))*0.25;
         vec4 view = modelViewMatrix*vec4(p,1.0);
+        vec2 driftPixels = vec2(
+          sin(uTime*(0.22+seed*0.15)+phase+uScrollPhase*0.11),
+          cos(uTime*(0.18+seed*0.12)+phase*1.31+uScrollPhase*0.13))*(2.0+seed*2.0);
+        view.xy += driftPixels * 2.0 * (-view.z) / (projectionMatrix[1][1]*uCanvasSize.y/uPixelRatio);
         gl_Position = projectionMatrix*view;
         gl_PointSize = clamp(aSize*uPixelRatio*10.0/-view.z,3.0,30.0);
       }`,
@@ -648,7 +717,8 @@ export function createGalaxy(
         float glow = exp(-r*r*14.0)*mix(0.10,0.0,uLight);
         float warm = smoothstep(0.05,0.45,vColor.r-vColor.b);
         vec3 day = mix(vec3(0.18,0.34,0.56),vec3(0.51,0.36,0.21),warm);
-        gl_FragColor = vec4(mix(vColor,day,uLight),(core+glow)*vTwinkle*mix(0.7,0.90,uLight));
+        float sparkle = mix(vTwinkle,0.70+vTwinkle*0.30,uLight);
+        gl_FragColor = vec4(mix(vColor,day,uLight),(core+glow)*sparkle*mix(0.88,0.90,uLight));
         #include <colorspace_fragment>
       }`,
   });
@@ -661,30 +731,35 @@ export function createGalaxy(
     vertexColors: true,
     blending: light ? NormalBlending : AdditiveBlending,
     uniforms,
-    vertexShader: `${deformation}
+    vertexShader: `${renderDeformation}
       attribute float aSize; attribute vec3 aDayColor; attribute float aBright;
       uniform float uPixelRatio;
       varying vec3 vColor; varying float vFlow; varying float vBright; varying float vIntro; varying float vAmbient;
       void main() {
-        vFlow = flowFade(position);
+        ParticleSample particle = evaluateParticle(position,0.0);
+        vFlow = particle.flow;
         vColor = mix(color, aDayColor, uLight);
         vBright = aBright;
         // The scattered field belongs to the stars and the brightest motes only;
         // dim dust materializes as it seats into the rose, like the reference sky.
         float brightBias = smoothstep(1.85, 2.0, aBright);
-        float seatGate = smoothstep(0.25, 0.9, gTravelT);
-        float introVis = gIntroT * mix(seatGate, 1.0, brightBias);
-        vIntro = smoothstep(0.0, 0.16, introVis);
-        vAmbient = gAmbientT;
-        vec4 view = particleView(position, 0.0);
+        float seatGate = smoothstep(0.25, 0.9, particle.travel);
+        float introVis = particle.intro * mix(seatGate, 1.0, brightBias);
+        vIntro = particle.intro;
+        vAmbient = particle.ambient;
+        vec4 view = particle.view;
         gl_Position = projectionMatrix * view;
-        gl_PointSize = aSize * uPixelRatio * clamp(10.0/-view.z,0.85,1.25) * mix(1.3,1.55,uLight) * mix(0.4, 1.0, sqrt(introVis))
-          * mix(1.0, mix(1.0, 0.85, uLight), gAmbientT)
+        gl_PointSize = aSize * uPixelRatio * clamp(10.0/-view.z,0.85,1.15) * mix(1.0,1.45,uLight) * mix(0.4, 1.0, sqrt(introVis))
+          * mix(1.0, mix(1.0, 0.85, uLight), particle.ambient)
           * mix(0.55, 1.0, max(seatGate, brightBias));
       }`,
     fragmentShader: `varying vec3 vColor; varying float vFlow; varying float vBright; varying float vIntro; varying float vAmbient; uniform float uDisperse; uniform float uLight;
       void main() {
         float d = length(gl_PointCoord - 0.5) * 2.0;
+        if(uLight>0.5 && vBright>1.1) {
+          vec2 facet=(gl_PointCoord-0.5)*2.0;
+          d=max(abs(facet.x)*0.7+abs(facet.y)*0.75,abs(facet.y));
+        }
         if (d > 1.0) discard;
         // The constellation must survive both blendings. Night adds light, so
         // density becomes glow and the brightest motes roll to white; day stacks
@@ -695,11 +770,12 @@ export function createGalaxy(
         vec3 nightInk = mix(vColor, vec3(1.0), highlight) * (1.0 + vBright * 0.22);
         vec3 dayInk = mix(vColor, vColor * vec3(0.58, 0.55, 0.50), highlight)
           * (1.0 - vBright * 0.08);
-        float ambientAlpha = mix(1.0, mix(0.62, 0.56 + min(vBright, 2.0) * 0.18, uLight), vAmbient);
+        float ambientAlpha = mix(1.0, mix(0.55,0.65,uLight), vAmbient);
+        float energy = mix(0.38,0.88,smoothstep(0.35,2.0,vBright));
         gl_FragColor = vec4(
           mix(nightInk, dayInk, uLight),
           (1.0 - smoothstep(0.85-fwidth(d), 0.85+fwidth(d), d))
-            * mix(0.94,1.0,uLight) * vFlow * (1.0 - uDisperse * 0.25) * vIntro
+            * mix(energy,0.5+energy*0.4,uLight) * vFlow * (1.0 - uDisperse * 0.25) * vIntro
             * ambientAlpha
         );
         #include <colorspace_fragment>
@@ -750,33 +826,35 @@ export function createGalaxy(
     depthWrite: false,
     blending: light ? NormalBlending : AdditiveBlending,
     uniforms,
-    vertexShader: `${deformation}
+    vertexShader: `${renderDeformation}
       attribute vec3 aCenter; attribute vec3 aColor; attribute vec3 aDayColor; attribute float aSize; attribute float aBright;
       uniform vec2 uCanvasSize; uniform float uPixelRatio; uniform float uMobile;
-      varying vec2 vUv; varying vec3 vColor; varying float vBrightness; varying float vProminence; varying float vLens; varying float vCoreRadius; varying float vForeshorten; varying float vIntro;
+      varying vec2 vUv; varying vec3 vColor; varying float vBrightness; varying float vProminence; varying float vLens; varying float vCoreRadius; varying float vForeshorten; varying float vIntro; varying float vCrystalSeed;
       void main() {
         vUv = position.xy * 2.0;
+        vCrystalSeed = fract(sin(dot(aCenter.xy,vec2(12.9,78.2)))*43758.5);
         vColor = mix(aColor,aDayColor,uLight);
         vBrightness = (0.82 + 0.18*sin(uTime*0.42*uAmbientTwinkle+length(aCenter.xy)*1.15))*flowFade(aCenter)*mix(0.7, 1.5, aBright / 3.0);
         // Diffraction spikes belong to the few brightest stars only.
         vProminence = smoothstep(2.2,3.0,aBright);
-        vec4 center = particleView(aCenter, 0.0);
+        ParticleSample particle = evaluateParticle(aCenter,0.0);
+        vec4 center = particle.view;
         vLens = cursorLight(center);
-        vIntro = smoothstep(0.0, 0.16, gIntroT);
-        vec3 travel = center.xyz-particleView(aCenter,0.04).xyz;
-        vForeshorten = 0.35+0.65*clamp(length(travel.xy)/max(length(travel),0.00001),0.0,1.0);
+        vIntro = particle.intro;
+        vec3 travel = center.xyz-historyPoint(1.0).xyz;
+        vForeshorten = mix(1.0,0.55+0.45*clamp(length(travel.xy)/max(length(travel),0.00001),0.0,1.0),step(2.0,uHistoryCount));
         // Bound the luminous core in screen pixels independently from its halo.
         // Traveling stars stay slim; halos and glints bloom once they seat.
         float depth = clamp(10.0 / -center.z,0.7,1.3);
-        float diameter = (10.0 + aSize*5.0)*depth*mix(1.0,0.75,uMobile)*mix(0.45, 1.0, sqrt(gIntroT))
-          * mix(0.55, 1.0, smoothstep(0.2, 0.85, gTravelT));
+        float diameter = mix(10.0 + aSize*5.0, 3.0+aSize*1.8, uLight)*depth*mix(1.0,0.75,uMobile)*mix(0.45, 1.0, sqrt(particle.intro))
+          * mix(0.55, 1.0, smoothstep(0.2, 0.85, particle.travel));
         float corePixels = aSize*0.7*depth*mix(mix(1.0,0.72,uMobile),1.30,uLight);
         vCoreRadius = corePixels / (diameter*0.5);
         float worldSize = diameter * 2.0 * (-center.z) / (projectionMatrix[1][1] * uCanvasSize.y / uPixelRatio);
         center.xy += position.xy * worldSize;
         gl_Position = projectionMatrix * center;
       }`,
-    fragmentShader: `varying vec2 vUv; varying vec3 vColor; varying float vBrightness; varying float vProminence; varying float vLens; varying float vCoreRadius; varying float vForeshorten; varying float vIntro;
+    fragmentShader: `varying vec2 vUv; varying vec3 vColor; varying float vBrightness; varying float vProminence; varying float vLens; varying float vCoreRadius; varying float vForeshorten; varying float vIntro; varying float vCrystalSeed;
       uniform float uDisperse; uniform float uLight;
       void main() {
         float r = length(vUv);
@@ -786,12 +864,22 @@ export function createGalaxy(
         float halo = exp(-r*r*9.0);
         float glint = (exp(-abs(vUv.x)*90.0)*exp(-abs(vUv.y)*12.0)
           + exp(-abs(vUv.y)*90.0)*exp(-abs(vUv.x)*12.0))*vProminence;
-        float night = core + corona*0.23 + halo*0.035 + glint*(0.03 + vProminence*0.14);
+        float night = core + corona*0.14 + halo*0.02 + glint*(0.025 + vProminence*0.12);
         // Day cannot bloom, so the halo becomes a watercolor aura: the star's
         // own ink bleeding softly into the paper around a solid dark core.
-        float day = core + corona*0.20 + halo*0.085 + glint*(0.08 + vProminence*0.12);
-        vec3 emission = mix(vColor,vec3(1.0),core*vProminence*0.7)*(1.0+core*(0.4+vProminence*2.2));
-        gl_FragColor = vec4(mix(emission,vColor,uLight),mix(night,day,uLight)*(vBrightness+vLens*0.15)*vForeshorten*(1.0-uDisperse*0.25)*vIntro);
+        float angle = vCrystalSeed*6.283;
+        vec2 crystal = mat2(cos(angle),-sin(angle),sin(angle),cos(angle))*vUv;
+        crystal.x *= mix(0.72,1.25,vCrystalSeed);
+        float facetDistance = max(abs(crystal.y),abs(crystal.x)*0.72+abs(crystal.y)*0.56);
+        float edgeWidth = max(fwidth(facetDistance),0.025);
+        float day = (1.0-smoothstep(0.58-edgeWidth,0.58+edgeWidth,facetDistance))*0.92;
+        float facet = smoothstep(-0.06,0.06,crystal.x+crystal.y*0.38);
+        float rim = smoothstep(0.40,0.58,facetDistance);
+        vec3 crystalInk = mix(vColor*0.68,mix(vColor,vec3(0.35,0.68,0.83),0.28),facet);
+        crystalInk = mix(crystalInk,vColor*0.6,rim*0.6);
+        float whiteCore = smoothstep(0.75,1.4,vBrightness);
+        vec3 emission = mix(vColor,vec3(1.0),core*(0.35+whiteCore*0.45))*(1.0+core*(1.0+whiteCore*3.0));
+        gl_FragColor = vec4(mix(emission,crystalInk,uLight),mix(night,day,uLight)*(vBrightness+vLens*0.15)*vForeshorten*(1.0-uDisperse*0.25)*vIntro);
         #include <colorspace_fragment>
       }`,
   });
@@ -799,61 +887,6 @@ export function createGalaxy(
   stars.frustumCulled = false;
   stars.renderOrder = 3;
   group.add(stars);
-  // A soft luminous heart behind the lvy script: the brightest region of the
-  // composition and the primary feed for the bloom pyramid, igniting as the
-  // blossom reveal completes. The star layer split is gone — bloom is now
-  // extracted from the scene itself.
-  const heartGeometry = new BufferGeometry();
-  heartGeometry.setAttribute(
-    "position",
-    new BufferAttribute(
-      new Float32Array([
-        -1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0,
-      ]),
-      3
-    )
-  );
-  heartGeometry.setAttribute(
-    "uv",
-    new BufferAttribute(new Float32Array([0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1]), 2)
-  );
-  const heartMaterial = new ShaderMaterial({
-    transparent: true,
-    depthWrite: false,
-    blending: light ? NormalBlending : AdditiveBlending,
-    uniforms,
-    vertexShader: `uniform float uIntro; uniform vec2 uCanvasSize; uniform float uPixelRatio; uniform float uLight;
-      varying vec2 vUv;
-      void main() {
-        vUv = uv * 2.0 - 1.0;
-        float reveal = smoothstep(0.5, 0.9, uIntro);
-        vec4 center = modelViewMatrix * vec4(0.0, 0.0, -1.42, 1.0);
-        float diameter = mix(0.25, 2.4, reveal)
-          * (-center.z) / (projectionMatrix[1][1] * uCanvasSize.y / uPixelRatio);
-        center.xy += position.xy * diameter * 0.5;
-        gl_Position = projectionMatrix * center;
-      }`,
-    fragmentShader: `uniform float uIntro; uniform float uAmbientGlow; uniform float uAmbientBlend;
-      varying vec2 vUv;
-      void main() {
-        float r = length(vUv);
-        if (r > 1.0) discard;
-        float glow = exp(-r*r*7.5)*1.2 + exp(-r*r*2.4)*0.28 + exp(-r*r*0.85)*0.07;
-        float reveal = smoothstep(0.5, 0.9, uIntro);
-        // The heart belongs to the assembled rose; it fades as the bloom
-        // disperses, then returns at the article's seeded presence.
-        // uLight and uSplit arrive through the shared readableArea preamble.
-        float presence = (1.0 - uSplit * 0.7) * mix(1.0, uAmbientGlow, uAmbientBlend)
-          * mix(1.0, 0.5, uLight * uAmbientBlend);
-        vec3 tint = mix(vec3(1.0, 0.96, 0.88), vec3(0.35, 0.32, 0.28), uLight);
-        gl_FragColor = vec4(tint * glow, glow * reveal * presence * mix(0.42, 0.32, uLight));
-        #include <colorspace_fragment>
-      }`,
-  });
-  const heartGlow = new Mesh(heartGeometry, heartMaterial);
-  heartGlow.frustumCulled = false;
-  heartGlow.renderOrder = 1.5;
-  group.add(heartGlow);
   const trailGeometry = new InstancedBufferGeometry();
   const trailSegments = 12;
   const trailVertices = [],
@@ -883,38 +916,26 @@ export function createGalaxy(
     new InstancedBufferAttribute(starFlows, 4)
   );
   trailGeometry.instanceCount = starCount;
-  // Only trail vertices need the historical transform array.
-  const trailDeformation =
-    "uniform mat4 uPoseHistory[16]; uniform vec4 uStateHistory[16];\n" +
-    deformation
-      .replace(
-        "mat4 particleMatrix = modelViewMatrix;",
-        `float hi = clamp(age*30.0,0.0,15.0);
-       int h = int(floor(hi)); int j = min(h+1,15);
-       vec4 state = mix(uStateHistory[h],uStateHistory[j],fract(hi));
-       mat4 particleMatrix = uPoseHistory[h]*(1.0-fract(hi))+uPoseHistory[j]*fract(hi);
-       age = max(0.0,uTime-state.x);`
-      )
-      .replace(
-        "float historicalSplit = uSplit;",
-        "float historicalSplit = state.y;"
-      );
   const trailMaterial = new ShaderMaterial({
     transparent: true,
     depthWrite: false,
     blending: light ? NormalBlending : AdditiveBlending,
     uniforms,
-    vertexShader: `${trailDeformation}
+    vertexShader: `${renderDeformation}
       attribute vec3 aCenter; attribute vec3 aColor;
       varying float vAge; varying float vEdge; varying vec3 vColor; varying float vMotion; varying float vIntroTrail;
       void main() {
         vAge = position.x; vEdge = position.y; vColor = aColor;
-        float age = vAge * mix(0.12,0.32,uEnergy);
-        vec4 center = particleView(aCenter, age);
-        vec4 next = particleView(aCenter, min(age + 0.033, 0.5));
-        // Trails belong to the settled, living rose; during the starfall they
-        // read as artificial meteor streaks, so travel keeps them heavily dimmed.
-        vIntroTrail = smoothstep(0.0, 0.2, gIntroT) * mix(0.3, 1.0, gTravelT);
+        vec4 current=texture2D(uParticleCurrent,aParticleUV);
+        float frameAge=vAge*mix(4.0,10.0,uEnergy);
+        vec4 historical=historyPoint(frameAge);
+        vec4 center=vec4(mix(current.xyz,historical.xyz,min(frameAge,1.0)),1.0);
+        vec4 nextHistory=historyPoint(frameAge+1.0);
+        vec4 next=vec4(nextHistory.xyz,1.0);
+        vec4 screenA=projectionMatrix*center,screenB=projectionMatrix*next;
+        float segmentLength=length(screenA.xy/screenA.w-screenB.xy/screenB.w);
+        vIntroTrail=min(current.w,min(historical.w,nextHistory.w))*smoothstep(0.5,1.0,uIntro)
+          *step(2.0,uHistoryCount)*(1.0-smoothstep(0.05,0.12,segmentLength));
         vMotion = clamp((length(next.xy-center.xy)-0.018)*12.0,0.0,1.0);
         vec2 tangent = normalize(next.xy - center.xy + vec2(0.00001));
         center.xy += vec2(-tangent.y, tangent.x) * position.y * (0.003+uEnergy*0.008+vMotion*0.008) * (1.0 - vAge);
@@ -939,7 +960,6 @@ export function createGalaxy(
     starMaterial,
     trailMaterial,
     distantMaterial,
-    heartMaterial,
   ]) {
     // Mask pixels, not billboard vertices: large near stars otherwise interpolate
     // an unmasked corner across text even when their center is inside the reader.
@@ -954,14 +974,14 @@ export function createGalaxy(
         vec2 p = gl_FragCoord.xy / uCanvasSize;
         float x = smoothstep(uCopyBounds.x-0.05,uCopyBounds.x,p.x) * (1.0-smoothstep(uCopyBounds.z,uCopyBounds.z+0.08,p.x));
         float y = smoothstep(uCopyBounds.y-0.04,uCopyBounds.y,p.y) * (1.0-smoothstep(uCopyBounds.w,uCopyBounds.w+0.04,p.y));
-        float edge = mix(mix(0.40,0.72,uLight),mix(0.85,1.0,uLight),smoothstep(0.44,0.90,abs(p.x-0.5)*2.0));
+        float edge = mix(mix(0.12,0.16,uLight),mix(0.85,0.9,uLight),smoothstep(0.44,0.90,abs(p.x-0.5)*2.0));
         float openBand = smoothstep(uGatherZone.x,uGatherZone.x+0.06,p.y) * (1.0-smoothstep(uGatherZone.y-0.06,uGatherZone.y,p.y));
         float quiet = 1.0;
         for (int i=0;i<4;i++) {
           vec4 b = uQuietBoxes[i];
-          float qx = smoothstep(b.x-0.04,b.x+0.02,p.x)*(1.0-smoothstep(b.z-0.02,b.z+0.04,p.x));
-          float qy = smoothstep(b.y-0.025,b.y+0.02,p.y)*(1.0-smoothstep(b.w-0.02,b.w+0.025,p.y));
-          quiet *= 1.0-qx*qy*mix(0.70,0.38,uLight);
+          float qx = smoothstep(b.x-0.05,b.x-0.01,p.x)*(1.0-smoothstep(b.z+0.01,b.z+0.05,p.x));
+          float qy = smoothstep(b.y-0.03,b.y-0.005,p.y)*(1.0-smoothstep(b.w+0.005,b.w+0.03,p.y));
+          quiet *= 1.0-qx*qy*0.95;
         }
         return quiet * (1.0-x*y*0.96*uCopyOpacity) * mix(1.0,max(edge,openBand*smoothstep(0.34,0.48,p.x)),uReading);
       }
@@ -976,7 +996,7 @@ export function createGalaxy(
 
   material.fragmentShader = material.fragmentShader.replace(
     "float d = length(gl_PointCoord",
-    "if (fract(sin(vSeed)*43758.5453) < max(uSplit*(1.0-vAmbient), vAmbient*uLight*0.30)) discard;\n        float d = length(gl_PointCoord"
+    "if (fract(sin(vSeed)*43758.5453) > mix(1.0,0.38,uReading)*mix(1.0,0.65,vAmbient)*readableArea()) discard;\n        float d = length(gl_PointCoord"
   );
   material.vertexShader = material.vertexShader
     .replace(
@@ -984,13 +1004,44 @@ export function createGalaxy(
       "varying float vSeed; varying vec3 vColor;"
     )
     .replace(
-      "vFlow = flowFade(position);",
-      "vSeed = dot(position,vec3(12.3,8.1,3.7)); vFlow = flowFade(position);"
+      "vFlow = particle.flow;",
+      "vSeed = dot(position,vec3(12.3,8.1,3.7)); vFlow = particle.flow;"
     );
   material.fragmentShader = "varying float vSeed;\n" + material.fragmentShader;
 
+  const totalParticles = count + starCount;
+  const fieldPositions = new Float32Array(totalParticles * 3);
+  const fieldOrbits = new Float32Array(totalParticles * 4);
+  const fieldBrights = new Float32Array(totalParticles);
+  fieldPositions.set(positions);
+  fieldPositions.set(starPositions, count * 3);
+  fieldOrbits.set(flows);
+  fieldOrbits.set(starFlows, count * 4);
+  fieldBrights.set(brights);
+  fieldBrights.set(starBrights, count);
+  const particleUV = (start: number, n: number) => {
+    const uv = new Float32Array(n * 2);
+    for (let i = 0; i < n; i++) {
+      const id = start + i;
+      uv[i * 2] = ((id % 128) + 0.5) / 128;
+      uv[i * 2 + 1] = (Math.floor(id / 128) + 0.5) / 64;
+    }
+    return uv;
+  };
+  geometry.setAttribute(
+    "aParticleUV",
+    new BufferAttribute(particleUV(0, count), 2)
+  );
+  starGeometry.setAttribute(
+    "aParticleUV",
+    new InstancedBufferAttribute(particleUV(count, starCount), 2)
+  );
+  trailGeometry.setAttribute(
+    "aParticleUV",
+    new InstancedBufferAttribute(particleUV(count, starCount), 2)
+  );
   // Particle draw ranges and instance counts initialized immediately for mobile
-  if (mobile) {
+  if (mobile && coarsePointer) {
     geometry.setDrawRange(0, 2800);
     starGeometry.instanceCount = coarsePointer ? 128 : 200;
     trailGeometry.instanceCount = coarsePointer ? 128 : 200;
@@ -1023,12 +1074,7 @@ export function createGalaxy(
     hover = 0,
     targetHover = 0;
   let intro = reducedMotion ? 1 : 0;
-  const rotation = new RotationMotion(
-    // Projection-balanced home pose: the grid-searched orientation keeps the
-    // rose's projected mass even across left/right halves (50/50) instead of
-    // dumping 71% of the figure on the left of the heart.
-    RotationMotion.defaultHomeQuaternion()
-  );
+  const rotation = new RotationMotion(RotationMotion.defaultHomeQuaternion());
   const orientation = rotation.orientation;
   const initialOrientation = rotation.home;
   const angularAxis = new Vector3(0, 1, 0);
@@ -1042,10 +1088,17 @@ export function createGalaxy(
   const pointer = new Vector2(4, 4);
   const pointerTarget = new Vector2(4, 4);
   const previousPointer = new Vector2(4, 4);
-  const momentumTarget = new Vector2();
-  const velocityPointer = new Vector2(4, 4);
-  const pointerVelocity = new Vector2();
+  const brush = {
+    from: new Vector2(),
+    to: new Vector2(),
+    velocity: new Vector2(),
+    active: false,
+  };
+  const brushPrevious = new Vector2();
   let lastPointerStamp = 0;
+  const dragCenter = new Vector3();
+  let dragRadius = 100;
+  let field: ParticleField | undefined;
   let pageScene = getPageScene(page);
   let hero: HTMLElement | null = null,
     stage: HTMLElement | null = null,
@@ -1065,13 +1118,13 @@ export function createGalaxy(
   let gather = 0;
   let scrollProgress = pageScene.mode === "home" ? 0 : 1;
   let lastFlowSample = 0;
-  let historyClock = 0,
-    historyReady = false;
   const frameIntervals: number[] = [];
   let statsAt = 0;
   const viewPose = new Matrix4();
   const artworkCenter = new Vector3();
   const heartWorld = new Vector3();
+  const pivotOffset = new Vector3();
+  const rotatedPivot = new Vector3();
   let artworkRadius = 100;
 
   // Cached layout state to eliminate forced synchronous reflows in paint() (BUG-05)
@@ -1124,6 +1177,38 @@ export function createGalaxy(
     bounds.width = b.width;
     bounds.height = b.height;
 
+    if (uniforms.uConstellation.value > 0.5) {
+      const columns = Array.from(
+        document.querySelectorAll(
+          ".public-universe :is(.paper-reader-main,.paper-toc-rail)"
+        )
+      )
+        .map(node => node.getBoundingClientRect())
+        .filter(rect => rect.width > 0);
+      const leftGutter = columns.length
+        ? Math.max(
+            0,
+            Math.min(...columns.map(rect => rect.left)) - bounds.left - 12
+          )
+        : bounds.width * 0.15;
+      const rightGutter = columns.length
+        ? Math.max(
+            0,
+            bounds.right - Math.max(...columns.map(rect => rect.right)) - 12
+          )
+        : bounds.width * 0.15;
+      const layout = calculateConstellationLayout({
+        width: bounds.width,
+        height: bounds.height,
+        leftGutter,
+        rightGutter,
+        seedPhase: pageScene.phase / (Math.PI * 2),
+      });
+      uniforms.uConstellationLayout.value.forEach((value, side) =>
+        value.copy(layout[side])
+      );
+    }
+
     stageHeight = stage?.clientHeight || bounds.height;
 
     if (hero?.isConnected) {
@@ -1167,7 +1252,7 @@ export function createGalaxy(
     if (!quietNodes.length || quietNodes.some(node => !node.isConnected)) {
       quietNodes = Array.from(
         document.querySelectorAll(
-          ".public-universe :is(.paper-reader-main,.paper-toc-rail,.search-results-surface,.archive-timeline,.observatory-featured,.observatory-notes,.track-article-ledger,.track-path-section,.page-hero,.taxonomy-notes-surface,.taxonomy-side-panel,.about-focus-ledger,.about-links-rail)"
+          ".public-universe :is(.paper-reader-main,.paper-toc-rail,.public-search-form,.search-results-surface,.archive-timeline,.observatory-featured,.observatory-notes,.track-article-ledger,.track-path-section,.page-hero,.taxonomy-notes-surface,.taxonomy-side-panel,.about-focus-ledger,.about-links-rail)"
         )
       );
     }
@@ -1201,8 +1286,24 @@ export function createGalaxy(
       1 - (targetTop - bounds.top) / bounds.height
     );
   }
+  field = new ParticleField(renderer, {
+    forceCPU:
+      import.meta.env.DEV &&
+      typeof window.location?.search === "string" &&
+      new URLSearchParams(window.location.search).get("particle-renderer") ===
+        "cpu",
+    positions: fieldPositions,
+    orbits: fieldOrbits,
+    brights: fieldBrights,
+    dustCount: count,
+    deformation,
+    uniforms,
+  });
+  const cpuBase = new Float32Array(128 * 64 * 4);
+  const cpuMetaFrom = new Float32Array(24),
+    cpuMetaTo = new Float32Array(24);
   function paint(dt = 0.016) {
-    const smoothing = 1 - Math.exp(-dt * 9);
+    const smoothing = paused || reducedMotion ? 1 : 1 - Math.exp(-dt * 9);
     // Bounded scroll energy affects trails; only reversible layout progress owns shape.
     const flowTarget = reducedMotion
       ? 0
@@ -1231,24 +1332,23 @@ export function createGalaxy(
           ? 0
           : Math.min(
               1,
-              Math.max(
-                0,
-                (68 - heroTop) / (travel > 20 ? travel : stageHeight)
-              )
+              Math.max(0, (68 - heroTop) / (travel > 20 ? travel : stageHeight))
             );
-    scrollProgress += (progress - scrollProgress) * (1 - Math.exp(-dt * 14));
+    scrollProgress +=
+      (progress - scrollProgress) *
+      (paused || reducedMotion ? 1 : 1 - Math.exp(-dt * 14));
     const distance =
       Math.abs(
-        targetTop +
-          targetHeight / 2 -
-          (bounds.top + bounds.height / 2)
+        targetTop + targetHeight / 2 - (bounds.top + bounds.height / 2)
       ) / bounds.height;
     const proximity =
       reducedMotion || mobile
         ? 0
         : Math.max(0, Math.min(1, (0.75 - distance) / 0.5));
     const gatherGoal = proximity * proximity * (3 - 2 * proximity);
-    gather += (gatherGoal - gather) * (1 - Math.exp(-dt * 14));
+    gather +=
+      (gatherGoal - gather) *
+      (paused || reducedMotion ? 1 : 1 - Math.exp(-dt * 14));
     const motion = getScrollMotion(scrollProgress, gather, motionScratch);
     const split = pageScene.mode === "author" ? 0.45 : motion.split;
     uniforms.uSplit.value = split;
@@ -1267,7 +1367,10 @@ export function createGalaxy(
       0.98;
     if (stage && Math.abs(motion.copyOpacity - lastCopyOpacity) > 0.005) {
       lastCopyOpacity = motion.copyOpacity;
-      stage.style.setProperty("--hero-copy-opacity", String(motion.copyOpacity));
+      stage.style.setProperty(
+        "--hero-copy-opacity",
+        String(motion.copyOpacity)
+      );
     }
     if (stage && Math.abs(motion.copyY - lastCopyY) > 0.2) {
       lastCopyY = motion.copyY;
@@ -1282,13 +1385,6 @@ export function createGalaxy(
     if (copy && copy.inert !== copyHidden) copy.inert = copyHidden;
     if (foot && foot.inert !== copyHidden) foot.inert = copyHidden;
     uniforms.uTime.value = elapsed;
-    if (!paused) uniforms.uWakeTime.value = performance.now() / 1000;
-    uniforms.uWakeRadius.value =
-      (2 * Math.min(48, Math.max(28, bounds.height * 0.042))) / bounds.height;
-    const activeWake = pointerWake.activeCount(uniforms.uWakeTime.value);
-    uniforms.uWakeActive.value = activeWake > 0 ? 1 : 0;
-    if (import.meta.env.DEV)
-      host.dataset.wakeSegments = String(activeWake);
     hover +=
       (targetHover - hover) *
       (1 - Math.exp(-dt * (targetHover > hover ? 10 : 3.5)));
@@ -1298,16 +1394,12 @@ export function createGalaxy(
     previousPointer.lerp(pointer, 1 - Math.exp(-dt * 2.2));
     uniforms.uPreviousPointer.value.copy(previousPointer);
     uniforms.uEnergy.value +=
-      (Math.min(
-        1,
-        rotation.speed / 3 + flowSpeed * 0.65
-      ) -
+      (Math.min(1, rotation.speed / 3 + flowSpeed * 0.65) -
         uniforms.uEnergy.value) *
       smoothing;
     // Pointer speed is deliberately NOT energy: global trail response to a
     // flick made the whole rose streak. Trails only follow real particle motion.
-    momentumTarget.multiplyScalar(Math.exp(-dt * 2.0));
-    uniforms.uMomentum.value.lerp(momentumTarget, 1 - Math.exp(-dt * 7));
+
     if (!paused) rotation.advance(dt);
     host.dataset.interaction = rotation.phase;
     group.quaternion.copy(orientation);
@@ -1355,6 +1447,12 @@ export function createGalaxy(
         worldHeight *
         (1 - splitBlend)
       : 0;
+    group.position.z = 0;
+    pivotOffset.set(0, 0, -1.42).applyQuaternion(initialOrientation);
+    rotatedPivot.set(0, 0, -1.42).applyQuaternion(orientation);
+    group.position.add(
+      pivotOffset.sub(rotatedPivot).multiplyScalar(group.scale.x)
+    );
     camera.updateMatrixWorld();
     group.updateMatrixWorld();
     viewPose.multiplyMatrices(camera.matrixWorldInverse, group.matrixWorld);
@@ -1377,7 +1475,16 @@ export function createGalaxy(
     // Crossfade the constellation in whenever navigation leaves the home stage.
     uniforms.uAmbientBlend.value +=
       (ambientTarget - uniforms.uAmbientBlend.value) *
-      (1 - Math.exp(-dt * 5));
+      (paused || reducedMotion ? 1 : 1 - Math.exp(-dt * 5));
+    uniforms.uAmbientMorph.value = Math.min(
+      1,
+      uniforms.uAmbientMorph.value + (paused || reducedMotion ? 1 : dt / 0.8)
+    );
+    uniforms.uNavigationProgress.value = Math.min(
+      1,
+      uniforms.uNavigationProgress.value +
+        (paused || reducedMotion ? 1 : dt / 0.8)
+    );
     if (import.meta.env.DEV) {
       host.dataset.returnAngle = orientation
         .angleTo(initialOrientation)
@@ -1387,39 +1494,80 @@ export function createGalaxy(
       host.dataset.elapsed = elapsed.toFixed(3);
       host.dataset.intro = intro.toFixed(3);
     }
-    historyClock += dt;
-    if (!historyReady) {
-      uniforms.uPoseHistory.value.forEach(matrix => matrix.copy(viewPose));
-      uniforms.uStateHistory.value.forEach(state =>
-        state.set(elapsed, split, 0, 0)
-      );
-      historyReady = true;
-    } else if (historyClock >= 1 / 30) {
-      for (let i = 15; i > 0; i--) {
-        uniforms.uPoseHistory.value[i].copy(uniforms.uPoseHistory.value[i - 1]);
-        uniforms.uStateHistory.value[i].copy(
-          uniforms.uStateHistory.value[i - 1]
-        );
-      }
-      historyClock %= 1 / 30;
-    }
-    uniforms.uPoseHistory.value[0].copy(viewPose);
-    uniforms.uStateHistory.value[0].set(elapsed, split, 0, 0);
     uniforms.uCanvasSize.value.set(
       bounds.width * renderer.getPixelRatio(),
       bounds.height * renderer.getPixelRatio()
     );
     bloomPass.strength = light ? 0 : mobile ? 0.42 : 0.55;
-    // The heart flare is a hero beat: it only plays on the home stage.
-    const flareT = Math.min(1, Math.max(0, (intro - 0.55) / 0.4));
-    bloomPass.flare =
-      light || pageScene.mode !== "home"
-        ? 0
-        : flareT * flareT * (3 - 2 * flareT) * 0.8;
-    bloomPass.flareCenter.set(
-      artworkCenter.x / bounds.width,
-      1 - artworkCenter.y / bounds.height
-    );
+    if (field) {
+      // Integrate the whole stroke since the last frame, not just the last
+      // pointer event; coalesced or sparse mouse events must carry equal energy.
+      if (brush.active)
+        brush.velocity
+          .subVectors(brush.to, brush.from)
+          .divideScalar(Math.max(dt, 1 / 240));
+      if (field.needsCPUBase) {
+        uniforms.uAmbientMeta.value.forEach((v, i) =>
+          v.toArray(cpuMetaTo, i * 4)
+        );
+        uniforms.uAmbientFromMeta.value.forEach((v, i) =>
+          v.toArray(cpuMetaFrom, i * 4)
+        );
+        sampleParticleBases(
+          {
+            positions: fieldPositions,
+            orbits: fieldOrbits,
+            brights: fieldBrights,
+            dustCount: count,
+            tracks: trackData,
+            ambientFrom: ambientFromData,
+            ambientTo: ambientData,
+            ambientMetaFrom: cpuMetaFrom,
+            ambientMetaTo: cpuMetaTo,
+            ambientMorph: uniforms.uAmbientMorph.value,
+            ambientBlend: uniforms.uAmbientBlend.value,
+            time: elapsed,
+            intro,
+            scatterRadius: uniforms.uScatterRadius.value,
+            viewMatrix: viewPose,
+            split,
+            disperse: uniforms.uDisperse.value,
+            pagePose: uniforms.uPagePose.value,
+            sideX: uniforms.uSideX.value,
+            aspect: camera.aspect,
+            ambientDrift: uniforms.uAmbientDrift.value,
+            constellationLayout:
+              uniforms.uConstellation.value > 0.5
+                ? (uniforms.uConstellationLayout.value as [Vector4, Vector4])
+                : undefined,
+            navigationFrom: uniforms.uNavigationFrom.value?.image?.data as
+              | Float32Array
+              | undefined,
+            navigationProgress: uniforms.uNavigationProgress.value,
+          },
+          cpuBase
+        );
+      }
+      field.update({
+        matrixWorld: group.matrixWorld,
+        camera,
+        dt: paused ? 0 : dt,
+        pointer: brush,
+        width: bounds.width,
+        height: bounds.height,
+        paused,
+        basePositions: field.needsCPUBase ? cpuBase : undefined,
+      });
+      uniforms.uParticleCurrent.value = field.textures.current;
+      uniforms.uParticleHistory.value = field.textures.history;
+      uniforms.uHistoryHead.value = field.historyHead;
+      uniforms.uHistoryCount.value = field.historyCount;
+      if (import.meta.env.DEV) {
+        host.dataset.motionBackend = field.needsCPUBase ? "cpu" : "gpu";
+        host.dataset.inputActive = String(brush.active);
+      }
+      brush.active = false;
+    }
     renderer.toneMapping = light ? NoToneMapping : ACESFilmicToneMapping;
     composer.render(dt);
     if (import.meta.env.DEV) {
@@ -1437,7 +1585,7 @@ export function createGalaxy(
     }
   }
   let slowFrameCount = 0;
-  let governorTier = 0;
+  const quality = new RenderQuality();
   function tick(now: number) {
     frame = 0;
     if (disposed || !visible || document.hidden || lost || paused) return;
@@ -1447,17 +1595,7 @@ export function createGalaxy(
         slowFrameCount++;
         if (slowFrameCount >= 45) {
           slowFrameCount = 0;
-          if (governorTier === 0) {
-            governorTier = 1;
-            renderer.setPixelRatio(Math.min(renderer.getPixelRatio(), 1.0));
-            trailGeometry.instanceCount = Math.floor(
-              trailGeometry.instanceCount * 0.5
-            );
-          } else if (governorTier === 1) {
-            governorTier = 2;
-            bloomPass.enabled = false;
-            trailGeometry.instanceCount = 0;
-          }
+          if (quality.degrade()) applyQuality();
         }
       } else if (delta < 20 && slowFrameCount > 0) {
         slowFrameCount--;
@@ -1486,11 +1624,18 @@ export function createGalaxy(
     }
     frame = requestAnimationFrame(tick);
   }
+  function cancelInput() {
+    finishDrag(true);
+    lastPointerStamp = 0;
+    brush.active = false;
+    brush.velocity.set(0, 0);
+    targetHover = hover = 0;
+    field?.resetMotion();
+  }
   function sync() {
     cancelAnimationFrame(frame);
     frame = 0;
-    historyReady = false;
-    pointerWake.clear();
+    cancelInput();
     lastTime = performance.now();
     const running =
       !disposed && visible && !document.hidden && !lost && !paused;
@@ -1504,44 +1649,43 @@ export function createGalaxy(
       paint();
     });
   };
-  const resize = new ResizeObserver(() => {
-    updateLayoutRects();
-    const width = bounds.width;
-    const height = bounds.height;
-    if (!width || !height || lost) return;
-    mobile = width < 640;
-    renderer.setPixelRatio(
-      Math.min(devicePixelRatio, mobile && coarsePointer ? 1.25 : 1.5)
-    );
+  function applyQuality() {
+    const width = bounds.width,
+      height = bounds.height;
+    const visibleStars = mobile && coarsePointer ? 128 : starCount;
+    const profile = quality.apply({
+      devicePixelRatio,
+      mobile,
+      coarsePointer,
+      light,
+      starCount: visibleStars,
+    });
+    renderer.setPixelRatio(profile.dpr);
+    renderer.setSize(width, height);
+    composer.setPixelRatio(profile.dpr);
+    composer.setSize(width, height);
+    uniforms.uPixelRatio.value = profile.dpr;
+    uniforms.uCanvasSize.value.set(width * profile.dpr, height * profile.dpr);
     uniforms.uMobile.value = mobile && coarsePointer ? 1 : 0;
-    frameIntervals.length = 0;
-    uniforms.uPixelRatio.value = renderer.getPixelRatio();
-    uniforms.uCanvasSize.value.set(
-      width * renderer.getPixelRatio(),
-      height * renderer.getPixelRatio()
-    );
     uniforms.uAspect.value = width / height;
-    geometry.setDrawRange(0, mobile ? 2800 : count);
-    starGeometry.instanceCount = mobile
-      ? coarsePointer
-        ? 128
-        : 200
-      : starCount;
-    trailGeometry.instanceCount = mobile
-      ? coarsePointer
-        ? 128
-        : 200
-      : starCount;
+    geometry.setDrawRange(0, mobile && coarsePointer ? 2800 : count);
+    starGeometry.instanceCount = visibleStars;
+    trailGeometry.instanceCount = profile.trailCount;
     distantGeometry.setDrawRange(
       0,
       mobile ? (coarsePointer ? 60 : 90) : distantCount
     );
-    renderer.setSize(width, height);
-    composer.setPixelRatio(renderer.getPixelRatio());
-    composer.setSize(width, height);
-    bloomPass.setSize(width, height);
-    historyReady = false;
-    pointerWake.clear();
+    bloomPass.enabled = profile.bloomEnabled;
+    host.dataset.quality = String(profile.tier);
+  }
+  const resize = new ResizeObserver(() => {
+    cancelInput();
+    updateLayoutRects();
+    const width = bounds.width;
+    const height = bounds.height;
+    if (!width || !height || lost) return;
+    mobile = width < 900;
+    applyQuality();
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     paint();
@@ -1553,6 +1697,23 @@ export function createGalaxy(
     sync();
   });
   intersection.observe(host);
+  let layoutFrame = 0;
+  const contentObserver =
+    typeof MutationObserver === "undefined"
+      ? null
+      : new MutationObserver(() => {
+          if (layoutFrame || disposed) return;
+          layoutFrame = requestAnimationFrame(() => {
+            layoutFrame = 0;
+            if (disposed) return;
+            quietNodes = [];
+            updateLayoutRects();
+            requestPaint();
+          });
+        });
+  const contentRoot = document.getElementById?.("root");
+  if (contentRoot)
+    contentObserver?.observe(contentRoot, { childList: true, subtree: true });
   const move = (event: PointerEvent) => {
     if (reducedMotion) return;
     // Recover even if pointerup was lost outside the browser/capture surface.
@@ -1566,48 +1727,34 @@ export function createGalaxy(
       ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
       1 - ((event.clientY - bounds.top) / bounds.height) * 2
     );
-    // Track stroke velocity so the wake carries momentum, not just proximity.
     const stamp = event.timeStamp / 1000;
-    if (lastPointerStamp > 0 && stamp > lastPointerStamp) {
-      const moveDt = Math.max(1 / 240, stamp - lastPointerStamp);
-      pointerVelocity.set(
-        (pointerTarget.x - velocityPointer.x) / moveDt,
-        (pointerTarget.y - velocityPointer.y) / moveDt
-      );
-      const speed = pointerVelocity.length();
-      if (speed > 1.6) pointerVelocity.multiplyScalar(1.6 / speed);
-      momentumTarget.lerp(pointerVelocity, 0.4);
-    }
-    velocityPointer.copy(pointerTarget);
-    lastPointerStamp = stamp;
-    if (hover < 0.01) {
-      pointer.copy(pointerTarget);
-      previousPointer.copy(pointerTarget);
-    }
-    targetHover = 1;
-    // The wake belongs to hover and swipe. While pressed, the drag owns the
-    // pointer: the rose rotates as one coherent mass instead of taking wake
-    // hits that shred it locally on the smallest gesture.
-    if (
+    const px = event.clientX - bounds.left,
+      py = event.clientY - bounds.top;
+    const gap = stamp - lastPointerStamp;
+    const eligible =
       !paused &&
-      event.buttons === 0 &&
       pageScene.mode === "home" &&
-      uniforms.uSplit.value < 0.85
-    ) {
-      pointerWake.push(
-        event.clientX - bounds.left,
-        event.clientY - bounds.top,
-        performance.now() / 1000,
-        bounds.width,
-        bounds.height
+      uniforms.uSplit.value < 0.85 &&
+      (event.buttons === 0 || (dragging && event.pointerId === activePointer));
+    if (eligible && lastPointerStamp > 0 && gap > 0 && gap < 0.4) {
+      if (!brush.active) brush.from.copy(brushPrevious);
+      brush.to.set(px, py);
+      brush.velocity.set(
+        (px - brushPrevious.x) / Math.max(gap, 1 / 240),
+        (py - brushPrevious.y) / Math.max(gap, 1 / 240)
       );
-    } else pointerWake.release();
+      brush.active = true;
+    }
+    brushPrevious.set(px, py);
+    lastPointerStamp = stamp;
+    if (hover < 0.01) pointer.copy(pointerTarget);
+    targetHover = eligible ? 1 : 0;
     if (dragging && event.pointerId === activePointer) {
       projectTrackball(
-        event.clientX - bounds.left - artworkCenter.x + artworkRadius,
-        event.clientY - bounds.top - artworkCenter.y + artworkRadius,
-        artworkRadius * 2,
-        artworkRadius * 2,
+        event.clientX - bounds.left - dragCenter.x + dragRadius,
+        event.clientY - bounds.top - dragCenter.y + dragRadius,
+        dragRadius * 2,
+        dragRadius * 2,
         nextDragPoint
       );
       trackballDelta(dragPoint, nextDragPoint, deltaRotation);
@@ -1632,14 +1779,16 @@ export function createGalaxy(
     )
       return;
     updateLayoutRects();
-    pointerWake.release();
+    dragCenter.copy(artworkCenter);
+    dragRadius = artworkRadius;
+    lastPointerStamp = 0;
     dragging = true;
     activePointer = event.pointerId;
     projectTrackball(
-      event.clientX - bounds.left - artworkCenter.x + artworkRadius,
-      event.clientY - bounds.top - artworkCenter.y + artworkRadius,
-      artworkRadius * 2,
-      artworkRadius * 2,
+      event.clientX - bounds.left - dragCenter.x + dragRadius,
+      event.clientY - bounds.top - dragCenter.y + dragRadius,
+      dragRadius * 2,
+      dragRadius * 2,
       dragPoint
     );
     lastMoveTime = event.timeStamp;
@@ -1648,25 +1797,24 @@ export function createGalaxy(
     controls.dataset.dragging = "true";
     move(event);
   };
-  const finishDrag = (cancelled = false) => {
+  function finishDrag(cancelled = false) {
     if (!dragging) return;
     const pointerId = activePointer;
     dragging = false;
     activePointer = -1;
-    pointerWake.release();
+    lastPointerStamp = 0;
     rotation.release(cancelled);
     controls.dataset.dragging = "false";
     if (controls.hasPointerCapture(pointerId))
       controls.releasePointerCapture(pointerId);
-  };
+  }
   const up = (event: PointerEvent) => {
     if (event.pointerId !== activePointer) return;
     finishDrag(event.type !== "pointerup");
     if (event.pointerType !== "mouse") targetHover = 0;
   };
   const leave = () => {
-    pointerWake.release();
-    finishDrag(true);
+    cancelInput();
     targetHover = 0;
     requestPaint();
   };
@@ -1689,7 +1837,7 @@ export function createGalaxy(
       sync();
     } else if (event.key === "Escape") {
       rotation.reset();
-      historyReady = false;
+      field?.resetHistory();
     } else {
       angularAxis.set(
         event.key === "ArrowUp" || event.key === "ArrowDown" ? 1 : 0,
@@ -1705,7 +1853,7 @@ export function createGalaxy(
         .normalize();
       rotation.phase = "returning";
       rotation.speed = 0;
-      historyReady = false;
+      field?.resetHistory();
     }
     requestPaint();
   };
@@ -1736,7 +1884,9 @@ export function createGalaxy(
   };
   const contextRestored = () => {
     lost = false;
-    historyReady = false;
+    uniforms.uNavigationProgress.value = 1;
+    uniforms.uNavigationFrom.value = null;
+    field?.resetHistory();
     host.dataset.ready = "true";
 
     // 1. Mark all textures for GPU re-upload
@@ -1748,46 +1898,54 @@ export function createGalaxy(
     starMaterial.needsUpdate = true;
     trailMaterial.needsUpdate = true;
     distantMaterial.needsUpdate = true;
-    heartMaterial.needsUpdate = true;
     atmosphereMaterial.needsUpdate = true;
 
     // 3. Mark all geometry attributes dirty for VBO re-upload
     geometry.attributes.position.needsUpdate = true;
-    if (geometry.attributes.aOrbit) geometry.attributes.aOrbit.needsUpdate = true;
+    if (geometry.attributes.aOrbit)
+      geometry.attributes.aOrbit.needsUpdate = true;
     if (geometry.attributes.color) geometry.attributes.color.needsUpdate = true;
-    if (geometry.attributes.aDayColor) geometry.attributes.aDayColor.needsUpdate = true;
+    if (geometry.attributes.aDayColor)
+      geometry.attributes.aDayColor.needsUpdate = true;
     if (geometry.attributes.aSize) geometry.attributes.aSize.needsUpdate = true;
-    if (geometry.attributes.aBright) geometry.attributes.aBright.needsUpdate = true;
+    if (geometry.attributes.aBright)
+      geometry.attributes.aBright.needsUpdate = true;
 
     starGeometry.attributes.position.needsUpdate = true;
-    if (starGeometry.attributes.aOrbit) starGeometry.attributes.aOrbit.needsUpdate = true;
-    if (starGeometry.attributes.color) starGeometry.attributes.color.needsUpdate = true;
-    if (starGeometry.attributes.aDayColor) starGeometry.attributes.aDayColor.needsUpdate = true;
-    if (starGeometry.attributes.aSize) starGeometry.attributes.aSize.needsUpdate = true;
-    if (starGeometry.attributes.aBright) starGeometry.attributes.aBright.needsUpdate = true;
+    if (starGeometry.attributes.aOrbit)
+      starGeometry.attributes.aOrbit.needsUpdate = true;
+    if (starGeometry.attributes.color)
+      starGeometry.attributes.color.needsUpdate = true;
+    if (starGeometry.attributes.aDayColor)
+      starGeometry.attributes.aDayColor.needsUpdate = true;
+    if (starGeometry.attributes.aSize)
+      starGeometry.attributes.aSize.needsUpdate = true;
+    if (starGeometry.attributes.aBright)
+      starGeometry.attributes.aBright.needsUpdate = true;
 
     trailGeometry.attributes.position.needsUpdate = true;
-    if (trailGeometry.attributes.aCenter) trailGeometry.attributes.aCenter.needsUpdate = true;
-    if (trailGeometry.attributes.aColor) trailGeometry.attributes.aColor.needsUpdate = true;
+    if (trailGeometry.attributes.aCenter)
+      trailGeometry.attributes.aCenter.needsUpdate = true;
+    if (trailGeometry.attributes.aColor)
+      trailGeometry.attributes.aColor.needsUpdate = true;
 
     distantGeometry.attributes.position.needsUpdate = true;
-    if (distantGeometry.attributes.color) distantGeometry.attributes.color.needsUpdate = true;
-    if (distantGeometry.attributes.aSize) distantGeometry.attributes.aSize.needsUpdate = true;
-
-    heartGeometry.attributes.position.needsUpdate = true;
-    if (heartGeometry.attributes.uv) heartGeometry.attributes.uv.needsUpdate = true;
+    if (distantGeometry.attributes.color)
+      distantGeometry.attributes.color.needsUpdate = true;
+    if (distantGeometry.attributes.aSize)
+      distantGeometry.attributes.aSize.needsUpdate = true;
 
     atmosphereGeometry.attributes.position.needsUpdate = true;
-    if (atmosphereGeometry.attributes.uv) atmosphereGeometry.attributes.uv.needsUpdate = true;
+    if (atmosphereGeometry.attributes.uv)
+      atmosphereGeometry.attributes.uv.needsUpdate = true;
 
     // 4. Rebuild render targets for EffectComposer and BloomPyramidPass
     const width = Math.max(1, bounds.width);
     const height = Math.max(1, bounds.height);
     composer.setSize(width, height);
-    bloomPass.setSize(width, height);
 
     // 5. Clear pointer wake & layout
-    pointerWake.clear();
+    cancelInput();
     updateLayoutRects();
     paint();
     sync();
@@ -1816,13 +1974,17 @@ export function createGalaxy(
   }
   return {
     setPage(path: string) {
-      pointerWake.clear();
+      if (field) {
+        uniforms.uNavigationFrom.value = field.freezeBase();
+        uniforms.uNavigationProgress.value = 0;
+      }
+      cancelInput();
       finishDrag(true);
       rotation.reset();
-      historyReady = false;
+      field?.resetHistory();
       // BUG-07: Preserve intro = 1.0 on page navigation when already settled or under reducedMotion.
       // This guarantees smooth ambient constellation cross-fading without re-scattering particles.
-      intro = reducedMotion || intro >= 1.0 ? 1 : 0;
+      intro = 1;
       uniforms.uIntro.value = intro;
       if (import.meta.env.DEV) {
         host.dataset.intro = intro.toFixed(3);
@@ -1846,28 +2008,28 @@ export function createGalaxy(
     },
     setTheme(isLight: boolean) {
       light = isLight;
-      bloomPass.enabled = !isLight;
+      applyQuality();
       bloomPass.strength = isLight ? 0 : mobile ? 0.42 : 0.55;
-      geometry.setDrawRange(0, mobile ? 2800 : count);
+      geometry.setDrawRange(0, mobile && coarsePointer ? 2800 : count);
       uniforms.uLight.value = isLight ? 1 : 0;
       material.blending =
         starMaterial.blending =
         trailMaterial.blending =
         distantMaterial.blending =
-        heartMaterial.blending =
           isLight ? NormalBlending : AdditiveBlending;
       material.needsUpdate =
         starMaterial.needsUpdate =
         trailMaterial.needsUpdate =
         distantMaterial.needsUpdate =
-        heartMaterial.needsUpdate =
           true;
       requestPaint();
     },
     setPaused(value: boolean) {
       paused = reducedMotion || value;
-      if (paused) finishDrag(true);
-      historyReady = false;
+      if (paused && elapsed < 0.03) {
+        intro = 1;
+        uniforms.uIntro.value = 1;
+      }
       sync();
       requestPaint();
     },
@@ -1879,6 +2041,8 @@ export function createGalaxy(
       sync();
       resize.disconnect();
       intersection.disconnect();
+      contentObserver?.disconnect();
+      cancelAnimationFrame(layoutFrame);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onWindowResize);
       document.removeEventListener("visibilitychange", sync);
@@ -1897,6 +2061,8 @@ export function createGalaxy(
       );
       trackTexture.dispose();
       ambientTexture.dispose();
+      ambientFromTexture.dispose();
+      field?.dispose();
       bloomPass.dispose();
       outputPass.dispose();
       composer.dispose();
@@ -1910,8 +2076,6 @@ export function createGalaxy(
       trailMaterial.dispose();
       distantGeometry.dispose();
       distantMaterial.dispose();
-      heartGeometry.dispose();
-      heartMaterial.dispose();
       if (typeof window !== "undefined") {
         delete (window as unknown as Record<string, unknown>).__galaxyIntro;
       }

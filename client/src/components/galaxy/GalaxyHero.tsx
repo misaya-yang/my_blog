@@ -58,6 +58,7 @@ export function GalaxyHero() {
               pageRef.current
             );
             scene.current.setPaused(pausedRef.current);
+            hideFallback();
           } catch {
             showFallback();
           }
@@ -137,6 +138,14 @@ export function GalaxyHero() {
           <img
             className="galaxy-poster"
             src={needsFallback ? "/images/rose-lvy-source.png" : undefined}
+            style={
+              needsFallback && theme === "light"
+                ? {
+                    filter: "invert(1) hue-rotate(180deg)",
+                    mixBlendMode: "multiply",
+                  }
+                : undefined
+            }
             width="837"
             height="600"
             alt=""

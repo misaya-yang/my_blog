@@ -78,27 +78,12 @@ const UPSAMPLE = /* glsl */ `
 const COMPOSITE = /* glsl */ `
   uniform sampler2D scene;
   uniform sampler2D bloom;
-  uniform vec2 texelSize;
   uniform float strength;
-  uniform vec2 uFlareCenter;
-  uniform float uFlare;
-  uniform float uAspect;
   varying vec2 vUv;
   void main() {
     vec4 base = texture2D(scene, vUv);
-    // One restrained optical accent anchored on the luminous heart: a soft halo
-    // and a single horizontal anamorphic streak, ignited by the intro timeline.
-    vec2 delta = vUv - uFlareCenter;
-    delta.x *= uAspect;
-    float distanceToHeart = length(delta);
-    float halo = exp(-distanceToHeart * distanceToHeart * 420.0) * 0.15
-      + exp(-distanceToHeart * 10.0) * 0.04;
-    float streak = exp(-abs(delta.y) * 240.0)
-      * exp(-abs(delta.x) * 6.5)
-      * (1.0 - smoothstep(0.34, 0.5, abs(delta.x))) * 0.085;
-    vec3 optics = vec3(0.96, 0.96, 1.0) * (halo + streak) * uFlare;
     gl_FragColor = vec4(
-      base.rgb + texture2D(bloom, vUv).rgb * strength + optics,
+      base.rgb + texture2D(bloom, vUv).rgb * strength,
       base.a
     );
   }
@@ -128,11 +113,11 @@ export type BloomPyramidOptions = {
  */
 export class BloomPyramidPass extends Pass {
   strength: number;
-  flare = 0;
-  flareCenter = new Vector2(0.5, 0.5);
 
   private levels: number;
   private resolutionScale: number;
+  private physicalWidth = 0;
+  private physicalHeight = 0;
   private downsampleTargets: WebGLRenderTarget[] = [];
   private upsampleTargets: WebGLRenderTarget[] = [];
   private fullscreenQuad: FullScreenQuad;
@@ -188,11 +173,7 @@ export class BloomPyramidPass extends Pass {
       uniforms: {
         scene: { value: null },
         bloom: { value: null },
-        texelSize: { value: new Vector2() },
         strength: { value: this.strength },
-        uFlareCenter: { value: this.flareCenter },
-        uFlare: { value: 0 },
-        uAspect: { value: 1 },
       },
       vertexShader: QUAD_VERTEX,
       fragmentShader: COMPOSITE,
@@ -247,7 +228,13 @@ export class BloomPyramidPass extends Pass {
     return this.downsampleTargets;
   }
 
+  /** Receives physical pixels from EffectComposer; apply the bloom scale once. */
   setSize(width: number, height: number) {
+    width = Math.max(1, Math.floor(width));
+    height = Math.max(1, Math.floor(height));
+    if (width === this.physicalWidth && height === this.physicalHeight) return;
+    this.physicalWidth = width;
+    this.physicalHeight = height;
     for (const mip of this.downsampleTargets) mip.dispose();
     for (const mip of this.upsampleTargets) mip.dispose();
     this.downsampleTargets = [];
@@ -299,7 +286,7 @@ export class BloomPyramidPass extends Pass {
       // Light theme keeps no bloom; a single blit forwards the scene untouched.
       this.copyMaterial.uniforms.scene.value = readBuffer.texture;
       this.fullscreenQuad.material = this.copyMaterial;
-      renderer.setRenderTarget(writeBuffer);
+      renderer.setRenderTarget(this.renderToScreen ? null : writeBuffer);
       this.fullscreenQuad.render(renderer);
       renderer.autoClear = previousAutoClear;
       renderer.setRenderTarget(previousTarget);
@@ -342,7 +329,8 @@ export class BloomPyramidPass extends Pass {
       const outputTarget = this.upsampleTargets[i];
 
       this.upsampleMaterial.uniforms.inputBuffer.value = inputTarget.texture;
-      this.upsampleMaterial.uniforms.supportBuffer.value = supportTarget.texture;
+      this.upsampleMaterial.uniforms.supportBuffer.value =
+        supportTarget.texture;
       this.upsampleMaterial.uniforms.texelSize.value.set(
         1 / inputTarget.width,
         1 / inputTarget.height
@@ -360,12 +348,8 @@ export class BloomPyramidPass extends Pass {
     this.compositeMaterial.uniforms.scene.value = readBuffer.texture;
     this.compositeMaterial.uniforms.bloom.value = bloomTexture;
     this.compositeMaterial.uniforms.strength.value = this.strength;
-    this.compositeMaterial.uniforms.uFlare.value = this.flare;
-    this.compositeMaterial.uniforms.uFlareCenter.value = this.flareCenter;
-    this.compositeMaterial.uniforms.uAspect.value =
-      readBuffer.width / readBuffer.height;
     this.fullscreenQuad.material = this.compositeMaterial;
-    renderer.setRenderTarget(writeBuffer);
+    renderer.setRenderTarget(this.renderToScreen ? null : writeBuffer);
     this.fullscreenQuad.render(renderer);
 
     renderer.autoClear = previousAutoClear;
@@ -377,6 +361,8 @@ export class BloomPyramidPass extends Pass {
     for (const mip of this.upsampleTargets) mip.dispose();
     this.downsampleTargets = [];
     this.upsampleTargets = [];
+    this.physicalWidth = 0;
+    this.physicalHeight = 0;
     this.thresholdMaterial.dispose();
     this.downsampleMaterial.dispose();
     this.upsampleMaterial.dispose();

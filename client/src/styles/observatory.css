@@ -1403,13 +1403,20 @@
 .observatory-paper-picker > p {
   margin-bottom: 12px;
 }
+.observatory-paper-choice {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 8px;
+}
 .observatory-paper-picker button {
   display: grid;
-  grid-template-columns: 24px 1fr 16px;
+  grid-template-columns: 24px minmax(0, 1fr);
   align-items: center;
   gap: 12px;
+  min-width: 0;
   width: 100%;
-  padding: 16px 18px;
+  padding: 14px 18px;
   border-bottom: 0;
   border-radius: 10px;
   text-align: left;
@@ -1431,6 +1438,23 @@
 }
 .observatory-paper-picker button:hover {
   color: var(--observatory-ink);
+}
+.observatory-paper-open {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  color: var(--observatory-muted);
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .observatory-paper-open:hover {
+    color: var(--observatory-ink);
+    background: var(--reader-row-hover);
+  }
 }
 .observatory-directions {
   min-height: 430px;
@@ -1534,7 +1558,7 @@
   border-top: 0;
 }
 .observatory-home .observatory-featured {
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
   gap: 0;
   padding: 0;
   margin-block: 16px 0;
@@ -1597,7 +1621,7 @@
 .observatory-home .observatory-paper-picker {
   padding: 26px 20px;
   border: 0;
-  border-left: 1px solid var(--observatory-line);
+  border-right: 1px solid var(--observatory-line);
   border-radius: 0;
   background: transparent;
 }
@@ -1606,11 +1630,11 @@
   font-size: 12px;
 }
 .observatory-home .observatory-paper-picker button {
-  padding-block: 15px;
+  padding-block: 14px;
   font-size: 14px;
   border-bottom: 0;
 }
-.observatory-home .observatory-paper-picker button + button {
+.observatory-home .observatory-paper-choice + .observatory-paper-choice {
   margin-top: 3px;
 }
 .observatory-home .observatory-paper-picker button[aria-pressed="true"] {
@@ -1691,7 +1715,7 @@
     inset-inline: 28px;
   }
   .observatory-home .observatory-featured {
-    grid-template-columns: 1.1fr 1fr;
+    grid-template-columns: 1fr 1.1fr;
   }
   .observatory-home .observatory-paper-preview {
     padding: 24px;
@@ -1742,8 +1766,8 @@
   }
   .observatory-home .observatory-paper-picker {
     padding: 18px 10px;
-    border-left: 0;
-    border-top: 1px solid var(--observatory-line);
+    border-right: 0;
+    border-bottom: 1px solid var(--observatory-line);
   }
   .observatory-home .observatory-paper-picker button {
     padding-block: 14px;
@@ -1797,7 +1821,16 @@
     margin-inline: 0 !important;
   }
 }
-@media (min-width: 640px) and (max-width: 850px) {
+@media (min-width: 640px) and (max-width: 899px) {
+  .observatory-home .observatory-hero-scroll .observatory-hero {
+    min-height: 900px;
+    height: max(900px, calc(100svh - 64px));
+  }
+  .observatory-home .observatory-hero-copy {
+    left: 28px;
+    width: calc(100% - 56px);
+    bottom: 100px;
+  }
   .observatory-home .observatory-featured {
     grid-template-columns: 1fr;
   }
@@ -1808,13 +1841,13 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4px 12px;
-    border-left: 0;
-    border-top: 1px solid var(--observatory-line);
+    border-right: 0;
+    border-bottom: 1px solid var(--observatory-line);
   }
   .observatory-home .observatory-paper-picker > p {
     grid-column: 1 / -1;
   }
-  .observatory-home .observatory-paper-picker button + button {
+  .observatory-home .observatory-paper-choice + .observatory-paper-choice {
     margin-top: 0;
   }
 }

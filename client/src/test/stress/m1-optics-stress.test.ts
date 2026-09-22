@@ -321,6 +321,10 @@ describe("Milestone 1 Empirical Stress Test", () => {
     const createFeedbackAuditRenderer = () => {
       let currentTarget: WebGLRenderTarget | null = null;
       let renderCallCount = 0;
+      const samplingSteps: Array<{
+        input: WebGLRenderTarget["texture"];
+        texelSize: Vector2;
+      }> = [];
       const feedbackViolations: Array<{
         passIndex: number;
         target: WebGLRenderTarget | null;
@@ -338,6 +342,11 @@ describe("Milestone 1 Empirical Stress Test", () => {
           const quadMesh = scene?.children?.[0] ?? scene;
           const mat = (quadMesh?.material ?? {}) as ShaderMaterial;
           const targetTex = currentTarget?.texture;
+          if (mat.uniforms?.inputBuffer && mat.uniforms?.texelSize)
+            samplingSteps.push({
+              input: mat.uniforms.inputBuffer.value,
+              texelSize: mat.uniforms.texelSize.value.clone(),
+            });
 
           if (targetTex && mat.uniforms) {
             // Check for WebGL feedback loop: active render target texture bound as input uniform
@@ -377,6 +386,7 @@ describe("Milestone 1 Empirical Stress Test", () => {
         renderer,
         getFeedbackViolations: () => feedbackViolations,
         getRenderCallCount: () => renderCallCount,
+        getSamplingSteps: () => samplingSteps,
       };
     };
 
@@ -454,6 +464,7 @@ describe("Milestone 1 Empirical Stress Test", () => {
 
       // Render 100 frames (representing 100 animation frames at 60fps)
       for (let frame = 0; frame < 100; frame++) {
+        pass.setSize(WIDTH, HEIGHT);
         pass.render(renderer, writeBuffer, readBuffer);
 
         // Target references must never change
@@ -484,28 +495,42 @@ describe("Milestone 1 Empirical Stress Test", () => {
       }
     });
 
-    it("verifies aspect ratio parameter calculation across all viewports", () => {
-      const pass = new BloomPyramidPass();
+    it("keeps target aspect and filter texel steps correct across all viewports", () => {
+      const pass = new BloomPyramidPass({ levels: 6, resolutionScale: 0.5 });
 
       for (const vp of VIEWPORT_TEST_MATRIX) {
         pass.setSize(vp.width, vp.height);
-        const expectedAspect = vp.width / vp.height;
-
-        const { renderer } = createFeedbackAuditRenderer();
+        const { renderer, getSamplingSteps } = createFeedbackAuditRenderer();
         const readBuffer = new WebGLRenderTarget(vp.width, vp.height);
         const writeBuffer = new WebGLRenderTarget(vp.width, vp.height);
+        let expectedWidth = Math.max(1, Math.floor(vp.width * 0.5));
+        let expectedHeight = Math.max(1, Math.floor(vp.height * 0.5));
+        for (let level = 0; level < pass.downMips.length; level++) {
+          const down = pass.downMips[level];
+          expect([down.width, down.height]).toEqual([expectedWidth, expectedHeight]);
+          if (pass.upMips[level])
+            expect([pass.upMips[level].width, pass.upMips[level].height])
+              .toEqual([down.width, down.height]);
+          expectedWidth = Math.max(1, Math.floor(expectedWidth / 2));
+          expectedHeight = Math.max(1, Math.floor(expectedHeight / 2));
+        }
 
         pass.render(renderer, writeBuffer, readBuffer);
-
-        // Access internal composite material uniform
-        const compMat = (pass as any).compositeMaterial as ShaderMaterial;
-        expect(compMat.uniforms.uAspect.value).toBeCloseTo(expectedAspect, 5);
-        expect(Number.isFinite(compMat.uniforms.uAspect.value)).toBe(true);
-
+        // The blur is defined in source texels, so target dimensions carry the
+        // aspect ratio. It needs no screen-space flare/aspect correction.
+        const targets = [readBuffer, ...pass.downMips, ...pass.upMips];
+        expect(getSamplingSteps()).toHaveLength(11);
+        for (const step of getSamplingSteps()) {
+          const source = targets.find(target => target.texture === step.input);
+          expect(source).toBeDefined();
+          expect(step.texelSize.x).toBeCloseTo(1 / source!.width, 12);
+          expect(step.texelSize.y).toBeCloseTo(1 / source!.height, 12);
+          expect(step.texelSize.y / step.texelSize.x)
+            .toBeCloseTo(source!.width / source!.height, 10);
+        }
         readBuffer.dispose();
         writeBuffer.dispose();
       }
-
       pass.dispose();
     });
 

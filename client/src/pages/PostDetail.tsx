@@ -401,7 +401,7 @@ function MobileToc({
   if (headings.length === 0) return null;
 
   return (
-    <details className="mobile-toc-shell glass-dock mb-7 rounded-lg p-4 lg:hidden">
+    <details className="mobile-toc-shell mb-7 rounded-lg p-4 lg:hidden">
       <summary className="cursor-pointer text-sm font-semibold text-foreground">
         {t("post.toc")}
       </summary>

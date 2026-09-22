@@ -173,6 +173,53 @@ export default function Home() {
               ) : featured ? (
                 <>
                   <div
+                    className="observatory-paper-picker"
+                    aria-label={
+                      zh ? "切换文章预览" : "Choose an article preview"
+                    }
+                  >
+                    <p className="observatory-label">
+                      {zh ? "选择文章" : "Choose a note"}
+                    </p>
+                    {featuredPosts.map((post, index) => (
+                      <div className="observatory-paper-choice" key={post.slug}>
+                        <button
+                          type="button"
+                          aria-pressed={featured.slug === post.slug}
+                          aria-controls="recent-note-preview"
+                          onFocus={() => setSelectedNote(index)}
+                          onClick={() => {
+                            setSelectedNote(index);
+                            if (matchMedia("(max-width: 899px)").matches) {
+                              requestAnimationFrame(() =>
+                                previewRef.current?.scrollIntoView({
+                                  block: "start",
+                                  behavior: matchMedia(
+                                    "(prefers-reduced-motion: reduce)"
+                                  ).matches
+                                    ? "auto"
+                                    : "smooth",
+                                })
+                              );
+                            }
+                          }}
+                        >
+                          <span className="observatory-paper-number">
+                            {String(index + 1).padStart(2, "0")}
+                          </span>
+                          <span {...langAttr(post.title)}>{post.title}</span>
+                        </button>
+                        <Link
+                          className="observatory-paper-open"
+                          href={`/post/${post.slug}`}
+                          aria-label={`${zh ? "阅读文章" : "Read article"}: ${post.title}`}
+                        >
+                          <ArrowUpRight size={16} aria-hidden="true" />
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                  <div
                     id="recent-note-preview"
                     className="observatory-paper-preview"
                     ref={previewRef}
@@ -225,54 +272,6 @@ export default function Home() {
                       {t("home.readMore")}
                       <ArrowUpRight size={18} />
                     </Link>
-                  </div>
-                  <div
-                    className="observatory-paper-picker"
-                    aria-label={
-                      zh ? "切换文章预览" : "Choose an article preview"
-                    }
-                  >
-                    <p className="observatory-label">
-                      {zh ? "选择文章" : "Choose a note"}
-                    </p>
-                    {featuredPosts.map((post, index) => (
-                      <button
-                        type="button"
-                        key={post.slug}
-                        aria-pressed={featured.slug === post.slug}
-                        aria-controls="recent-note-preview"
-                        onPointerEnter={event => {
-                          if (
-                            event.pointerType === "mouse" &&
-                            matchMedia("(hover: hover) and (pointer: fine)")
-                              .matches
-                          )
-                            setSelectedNote(index);
-                        }}
-                        onFocus={() => setSelectedNote(index)}
-                        onClick={() => {
-                          setSelectedNote(index);
-                          if (matchMedia("(max-width: 850px)").matches) {
-                            requestAnimationFrame(() =>
-                              previewRef.current?.scrollIntoView({
-                                block: "start",
-                                behavior: matchMedia(
-                                  "(prefers-reduced-motion: reduce)"
-                                ).matches
-                                  ? "auto"
-                                  : "smooth",
-                              })
-                            );
-                          }
-                        }}
-                      >
-                        <span className="observatory-paper-number">
-                          {String(index + 1).padStart(2, "0")}
-                        </span>
-                        <span {...langAttr(post.title)}>{post.title}</span>
-                        <ArrowUpRight size={16} aria-hidden="true" />
-                      </button>
-                    ))}
                   </div>
                 </>
               ) : (
