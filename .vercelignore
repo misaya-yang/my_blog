@@ -1,0 +1,30 @@
+# Build from source; local outputs and credentials must not be uploaded.
+.git
+.vercel
+node_modules
+.pnpm-store
+.env*
+dist
+build
+coverage
+*.log
+*.tsbuildinfo
+
+# Local agent/runtime files and browser evidence are not application assets.
+.agents
+.codex
+.claude
+.cache
+.audit
+.playwright-mcp
+.manus-logs
+playwright-report
+test-results
+test-resources
+tmp
+temp
+logs
+docs
+/wpu-*
+/webdeb-*
+/i18n-plan.md
