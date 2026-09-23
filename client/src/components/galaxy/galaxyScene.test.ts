@@ -330,7 +330,7 @@ describe("scene inputs, layout, quality and lifetime", () => {
     expect(current.some(value => value !== 0)).toBe(true);
   });
 
-  it("moves local particles during hover without rotating the rose, then clears on pause and navigation", () => {
+  it("parts local particles during hover without rotating the rose, then clears on pause and navigation", () => {
     pump(200);
     sweep();
     expect(host.dataset.inputActive).toBe("true");
@@ -338,8 +338,9 @@ describe("scene inputs, layout, quality and lifetime", () => {
     expect(Number(host.dataset.returnAngle)).toBe(0);
     expect(displacement()).toBeGreaterThan(0.00001);
     pump();
-    expect(host.dataset.inputActive).toBe("false");
-    expect(displacement()).toBeGreaterThan(0); // inertia persists after input ends
+    // A resting cursor keeps the particles parted around it.
+    expect(host.dataset.inputActive).toBe("true");
+    expect(displacement()).toBeGreaterThan(0);
     scene.setPaused(true);
     pump();
     expect(host.dataset.inputActive).toBe("false");

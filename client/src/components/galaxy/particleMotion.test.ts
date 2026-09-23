@@ -100,165 +100,143 @@ afterEach(() => {
 });
 
 describe("persistent particle motion CPU behavior", () => {
-  it("moves only nearby visible particles and preserves identity-specific inertia", () => {
+  // base() projects (0, 0, -10) to the canvas centre (640, 400).
+  const at = (options: ParticleMotionStep, x: number, y: number) => {
+    options.pointer!.to = { x, y };
+    options.pointer!.from = { x, y };
+    options.pointer!.velocity = { x: 0, y: 0 };
+    return options;
+  };
+  const settle = (
+    motion: ParticleMotion,
+    options: ParticleMotionStep,
+    seconds: number,
+    hz = 60
+  ) => {
+    for (let i = 0; i < Math.round(seconds * hz); i++)
+      motion.step(1 / hz, options);
+  };
+
+  it("parts nearby visible particles radially away from a resting cursor", () => {
     const motion = cpu(4);
-    const options = base();
+    const options = at(base(), 610, 400);
     options.basePositions = new Float32Array([
       0, 0, -10, 1, 0, 0, -10, 1, 20, 0, -10, 1, 0, 0, -10, 0,
     ]);
-    for (let i = 0; i < 30; i++) motion.step(1 / 60, options);
-    expect(positionPx(motion)[0]).toBeGreaterThan(10);
+    settle(motion, options, 1.5);
+    // 30 px right of the cursor: pushed further right, not up or down.
+    expect(positionPx(motion)[0]).toBeGreaterThan(20);
+    expect(Math.abs(positionPx(motion)[1])).toBeLessThan(0.01);
+    // Stable identities: a coincident particle parts by a different amount.
     expect(positionPx(motion, 800, 1)[0]).not.toBeCloseTo(
       positionPx(motion)[0],
       1
     );
+    // Far outside the radius, and invisible particles, stay put.
     expect(positionPx(motion, 800, 2)).toEqual([0, -0]);
     expect(positionPx(motion, 800, 3)).toEqual([0, -0]);
+    const mirrored = cpu();
+    settle(mirrored, at(base(), 670, 400), 1.5);
+    expect(positionPx(mirrored)[0]).toBeLessThan(-20);
   });
 
-  it("separates coincident particles sideways by stable identity within the flow cone", () => {
-    const motion = cpu(16);
-    const options = base();
-    options.basePositions = new Float32Array(16 * 4);
-    for (let i = 0; i < 16; i++)
-      options.basePositions.set([0, 0, -10, 1], i * 4);
-    const sweep = () => {
-      for (let i = 0; i < 12; i++) motion.step(1 / 60, options);
-    };
-    sweep();
-    const firstOffset = data(motion, "offset").slice();
-    const firstVelocity = data(motion, "velocity").slice();
-    const ratios = Array.from({ length: 16 }, (_, index) => {
-      const i = index * 4;
-      expect(firstVelocity[i]).toBeGreaterThan(0);
-      return firstVelocity[i + 1] / firstVelocity[i];
+  it("pushes harder near the cursor and fades to nothing at the radius", () => {
+    const offsets = [20, 60, 110, 149].map(distance => {
+      const motion = cpu();
+      settle(motion, at(base(), 640 - distance, 400), 1.5);
+      return positionPx(motion)[0];
     });
-    expect(Math.min(...ratios)).toBeLessThan(-0.1);
-    expect(Math.max(...ratios)).toBeGreaterThan(0.1);
-    expect(ratios.every(ratio => Math.abs(ratio) <= 0.25)).toBe(true);
-    motion.reset();
-    sweep();
-    expect(data(motion, "offset")).toEqual(firstOffset);
-    expect(data(motion, "velocity")).toEqual(firstVelocity);
+    for (let i = 1; i < offsets.length; i++)
+      expect(offsets[i]).toBeLessThan(offsets[i - 1]);
+    expect(offsets[3]).toBeLessThan(0.05);
+    // The parting map stays monotonic: nearer particles never overtake.
+    const radii = [20, 60, 110].map((distance, i) => distance + offsets[i]);
+    expect(radii[1]).toBeGreaterThan(radii[0]);
+    expect(radii[2]).toBeGreaterThan(radii[1]);
   });
 
-  it("pushes opposite flanks outward without generating force for a stationary cursor", () => {
-    const options = base();
+  it("opens without overshoot and flows back when the cursor leaves", () => {
     const motion = cpu();
-    options.basePositions![1] = 0.4;
-    motion.step(1 / 60, options);
-    const upper = data(motion, "velocity")[1] / data(motion, "velocity")[0];
-    motion.reset();
-    options.basePositions![1] = -0.4;
-    motion.step(1 / 60, options);
-    const lower = data(motion, "velocity")[1] / data(motion, "velocity")[0];
-    expect(upper).toBeGreaterThan(lower);
-    motion.reset();
-    options.pointer!.velocity = { x: 0, y: 0 };
-    for (let i = 0; i < 60; i++) motion.step(1 / 60, options);
-    expect(data(motion, "offset").some(Boolean)).toBe(false);
-    expect(data(motion, "velocity").some(Boolean)).toBe(false);
-  });
-
-  it("uses the same CSS radius and force for both directions and aspect ratios", () => {
-    const results: number[] = [];
-    for (const [width, height] of [
-      [1280, 800],
-      [390, 844],
-      [768, 768],
-    ]) {
-      for (const vertical of [false, true]) {
-        const motion = cpu();
-        const options = base(width, height);
-        if (vertical) {
-          options.pointer = {
-            from: { x: width / 2, y: height / 2 - 40 },
-            to: { x: width / 2, y: height / 2 + 40 },
-            velocity: { x: 0, y: 400 },
-            active: true,
-          };
-        }
-        for (let i = 0; i < 12; i++) motion.step(1 / 60, options);
-        results.push(positionPx(motion, height)[vertical ? 1 : 0]);
-      }
-    }
-    expect(Math.max(...results) - Math.min(...results)).toBeLessThan(0.00002);
-  });
-
-  it("coasts after a brief sweep, then returns without oscillating", () => {
-    const motion = cpu();
-    const options = base();
-    motion.step(1 / 30, options);
-    const released = positionPx(motion)[0];
-    options.pointer!.active = false;
-    const recovery: number[] = [];
-    for (let i = 0; i < 240; i++) {
+    const options = at(base(), 610, 400);
+    const opening: number[] = [];
+    for (let i = 0; i < 120; i++) {
       motion.step(1 / 60, options);
-      recovery.push(positionPx(motion)[0]);
+      opening.push(positionPx(motion)[0]);
     }
-    expect(recovery[0]).toBeGreaterThan(released);
-    const peak = recovery.indexOf(Math.max(...recovery));
-    expect(peak).toBeGreaterThan(0);
-    expect(recovery.every(value => value >= 0)).toBe(true);
-    expect(
-      recovery.slice(peak + 1).every((value, i) => value <= recovery[peak + i])
-    ).toBe(true);
-    expect(recovery[119]).toBeLessThan(0.1);
-    expect(recovery[239]).toBeLessThan(0.001);
+    const final = opening[opening.length - 1];
+    expect(Math.max(...opening)).toBeLessThanOrEqual(final + 1e-6);
+    expect(opening.every((v, i) => i === 0 || v >= opening[i - 1] - 1e-9)).toBe(
+      true
+    );
+    options.pointer!.active = false;
+    const closing: number[] = [];
+    for (let i = 0; i < 150; i++) {
+      motion.step(1 / 60, options);
+      closing.push(positionPx(motion)[0]);
+    }
+    expect(closing.every(value => value >= -1e-6)).toBe(true);
+    expect(closing[closing.length - 1]).toBeLessThan(0.05);
+    expect(motion.presence).toBeLessThan(0.01);
   });
 
-  it("agrees at 30, 60 and 120 Hz during a one-second sweep and recovery", () => {
+  it("agrees at 30, 60 and 120 Hz while opening and closing", () => {
     const results = [30, 60, 120].map(hz => {
       const motion = cpu();
-      const options = base();
-      for (let i = 0; i < hz; i++) motion.step(1 / hz, options);
-      const swept = positionPx(motion);
+      const options = at(base(), 610, 390);
+      settle(motion, options, 0.5, hz);
+      const opened = positionPx(motion);
       options.pointer!.active = false;
-      for (let i = 0; i < hz; i++) motion.step(1 / hz, options);
-      return [...swept, ...positionPx(motion)];
+      settle(motion, options, 0.5, hz);
+      return [...opened, ...positionPx(motion)];
     });
-    for (const axis of [0, 1]) {
+    for (let axis = 0; axis < 4; axis++)
       expect(
         Math.max(...results.map(r => r[axis])) -
           Math.min(...results.map(r => r[axis]))
-      ).toBeLessThan(0.3);
-      expect(
-        Math.max(...results.map(r => r[axis + 2])) -
-          Math.min(...results.map(r => r[axis + 2]))
-      ).toBeLessThan(0.05);
-    }
+      ).toBeLessThan(0.6);
   });
 
-  it("holds continuous long sweeps without queue overwrite, then reverses smoothly", () => {
-    const motion = cpu();
-    const options = base();
-    const positions: number[] = [];
-    for (let i = 0; i < 360; i++) {
-      motion.step(1 / 60, options);
-      positions.push(positionPx(motion)[0]);
-    }
-    expect(positions[359]).toBeGreaterThan(30);
-    expect(
-      Math.max(
-        ...positions.slice(60).map((p, i) => Math.abs(p - positions[59 + i]))
-      )
-    ).toBeLessThan(0.2);
-    options.pointer!.velocity.x = -400;
-    const previous = positions[359];
-    motion.step(1 / 60, options);
-    expect(Math.abs(positionPx(motion)[0] - previous)).toBeLessThan(2);
-    for (let i = 0; i < 120; i++) motion.step(1 / 60, options);
-    expect(positionPx(motion)[0]).toBeLessThan(-20);
+  it("adds a bounded wake along the cursor's travel", () => {
+    const still = cpu();
+    settle(still, at(base(), 640, 430), 1);
+    const moving = cpu();
+    const options = at(base(), 640, 430);
+    options.pointer!.velocity = { x: 600, y: 0 };
+    settle(moving, options, 1);
+    // Directly above the cursor: the wake carries it along +x.
+    expect(Math.abs(positionPx(still)[0])).toBeLessThan(0.01);
+    expect(positionPx(moving)[0]).toBeGreaterThan(3);
+    const fast = cpu();
+    options.pointer!.velocity = { x: 1e6, y: 0 };
+    settle(fast, options, 1);
+    expect(positionPx(fast)[0]).toBeLessThan(40);
+  });
+
+  it("spreads coincident particles under the cursor in stable directions", () => {
+    const run = () => {
+      const motion = cpu(16);
+      const options = at(base(), 640, 400);
+      options.basePositions = new Float32Array(16 * 4);
+      for (let i = 0; i < 16; i++)
+        options.basePositions.set([0, 0, -10, 1], i * 4);
+      settle(motion, options, 1);
+      return Array.from({ length: 16 }, (_, i) => positionPx(motion, 800, i));
+    };
+    const first = run();
+    const angles = first.map(([x, y]) => Math.atan2(y, x));
+    expect(new Set(angles.map(a => a.toFixed(2))).size).toBe(16);
+    first.forEach(([x, y]) => expect(Math.hypot(x, y)).toBeGreaterThan(40));
+    expect(run()).toEqual(first);
   });
 
   it("limits displacement, ignores invalid time, and clears both states on reset", () => {
     const motion = cpu();
-    const options = base();
+    const options = at(base(), 630, 400);
     options.maxDisplacementPx = 18;
-    options.pointer!.velocity.x = 100000;
+    options.strength = 400;
     for (let i = 0; i < 120; i++) {
       motion.step(1 / 60, options);
-      expect(Math.abs(positionPx(motion)[0])).toBeLessThanOrEqual(18.00001);
+      expect(Math.hypot(...positionPx(motion))).toBeLessThanOrEqual(18.00001);
     }
     const before = data(motion, "offset").slice();
     motion.step(0, options);
@@ -268,6 +246,7 @@ describe("persistent particle motion CPU behavior", () => {
     motion.reset();
     expect(data(motion, "offset").some(Boolean)).toBe(false);
     expect(data(motion, "velocity").some(Boolean)).toBe(false);
+    expect(motion.presence).toBe(0);
     motion.step(1 / 60, {
       ...options,
       pointer: undefined,
@@ -276,13 +255,12 @@ describe("persistent particle motion CPU behavior", () => {
     expect(positionPx(motion)).toEqual([0, -0]);
   });
 
-  it("requires CPU base positions only while applying a pointer force", () => {
-    const motion = cpu();
+  it("requires CPU base positions only while the field is open", () => {
     const options = base();
     delete options.basePositions;
-    expect(() => motion.step(1 / 60, options)).toThrow("basePositions");
+    expect(() => cpu().step(1 / 60, options)).toThrow("basePositions");
     options.pointer!.active = false;
-    expect(() => motion.step(1 / 60, options)).not.toThrow();
+    expect(() => cpu().step(1 / 60, options)).not.toThrow();
   });
 
   it("rejects counts outside the fixed texture capacity", () => {

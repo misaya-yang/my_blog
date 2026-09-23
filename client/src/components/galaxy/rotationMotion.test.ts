@@ -47,22 +47,33 @@ describe("drag, coast and return", () => {
     expect(Math.max(...angles) - Math.min(...angles)).toBeLessThan(0.005);
   });
 
-  it("rubber-bands the tilt so the rose never turns edge-on", () => {
-    expect(limitTilt(0.2)).toBe(0.2);
-    expect(limitTilt(0.5)).toBeLessThan(0.5);
-    expect(limitTilt(10)).toBeLessThanOrEqual(0.56);
-    for (const angle of [0.1, 0.3, 0.45, 0.55])
+  it("spins freely about the rose axis but only leans slightly, never into a bowl", () => {
+    expect(limitTilt(0.05)).toBe(0.05);
+    expect(limitTilt(0.15)).toBeLessThan(0.15);
+    expect(limitTilt(10)).toBeLessThanOrEqual(0.19);
+    for (const angle of [0.05, 0.1, 0.15, 0.18])
       expect(limitTilt(unlimitTilt(angle))).toBeCloseTo(angle, 6);
+    const home = RotationMotion.defaultHomeQuaternion();
+    const axis = new Vector3(0, 0, 1).applyQuaternion(home);
+    const spin = new RotationMotion(home);
+    spin.begin();
+    for (let i = 0; i < 10; i++)
+      spin.move(new Quaternion().setFromAxisAngle(axis, 0.2), 1 / 60);
+    expect(spin.orientation.angleTo(home)).toBeCloseTo(2, 5);
+    expect(
+      new Vector3(0, 0, 1).applyQuaternion(spin.orientation).angleTo(axis)
+    ).toBeLessThan(1e-6);
     const motion = new RotationMotion(new Quaternion());
     motion.begin();
     for (let i = 0; i < 20; i++) motion.move(delta, 1 / 60);
-    expect(motion.orientation.angleTo(motion.home)).toBeLessThanOrEqual(0.5601);
+    // delta turns about Y, a pure lean for the untilted home pose.
+    expect(motion.orientation.angleTo(motion.home)).toBeLessThanOrEqual(0.1901);
     // Picking the limited pose up again does not make it jump.
     motion.release(true);
     const held = motion.orientation.clone();
     motion.begin();
     motion.move(new Quaternion(), 1 / 60);
-    expect(motion.orientation.angleTo(held)).toBeLessThan(1e-6);
+    expect(motion.orientation.angleTo(held)).toBeLessThan(2e-4);
   });
 
   it("uses one canonical home orientation for initial pose and recovery", () => {

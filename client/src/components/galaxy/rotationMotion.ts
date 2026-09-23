@@ -2,11 +2,19 @@ import { Euler, Quaternion, Vector3 } from "three";
 
 export type RotationPhase = "idle" | "dragging" | "inertia" | "returning";
 
-/** Tilt away from home that follows the hand one to one. */
-const FREE_TILT = 0.28;
-/** Asymptotic limit: the rose never turns far enough to read as a flat ring. */
-const MAX_TILT = 0.56;
-const tmp = new Quaternion();
+/**
+ * The rose spins freely about its own axis, like a record under the hand,
+ * but only leans a little away from facing the viewer: a cupped flower seen
+ * from the side reads as a bowl. Lean follows the hand one to one up to
+ * FREE_TILT, then eases toward MAX_TILT.
+ */
+const FREE_TILT = 0.08;
+const MAX_TILT = 0.19;
+const relative = new Quaternion();
+const twist = new Quaternion();
+const swing = new Quaternion();
+const identity = new Quaternion();
+const roseAxis = new Vector3();
 
 /** Rubber band: linear up to FREE_TILT, then eases toward MAX_TILT. */
 export function limitTilt(angle: number) {
@@ -46,24 +54,43 @@ export class RotationMotion {
     this.raw = home.clone();
   }
 
+  /**
+   * Splits `source` into a twist about the rose's home axis and a swing
+   * away from it, maps the swing angle, and writes the recomposed pose.
+   */
+  private remapSwing(
+    source: Quaternion,
+    map: (angle: number) => number,
+    out: Quaternion
+  ) {
+    relative.copy(source).multiply(twist.copy(this.home).invert());
+    roseAxis.set(0, 0, 1).applyQuaternion(this.home);
+    const along =
+      relative.x * roseAxis.x +
+      relative.y * roseAxis.y +
+      relative.z * roseAxis.z;
+    twist.set(
+      roseAxis.x * along,
+      roseAxis.y * along,
+      roseAxis.z * along,
+      relative.w
+    );
+    if (twist.lengthSq() < 1e-12) twist.identity();
+    else twist.normalize();
+    swing.copy(relative).multiply(identity.copy(twist).invert());
+    identity.identity();
+    const angle = 2 * Math.acos(Math.min(1, Math.abs(swing.w)));
+    if (angle > 1e-6) swing.copy(identity.slerp(swing, map(angle) / angle));
+    out.copy(swing).multiply(twist).multiply(this.home).normalize();
+  }
+
   /** Raw pose whose limited image is the current orientation. */
   private unlimit() {
-    const angle = this.home.angleTo(this.orientation);
-    if (angle < 1e-6) this.raw.copy(this.orientation);
-    else
-      this.raw
-        .copy(this.home)
-        .slerp(this.orientation, unlimitTilt(angle) / angle);
+    this.remapSwing(this.orientation, unlimitTilt, this.raw);
   }
 
   private limit(source: Quaternion) {
-    const angle = this.home.angleTo(source);
-    if (angle < 1e-6) {
-      this.orientation.copy(source);
-      return;
-    }
-    tmp.copy(this.home).slerp(source, limitTilt(angle) / angle);
-    this.orientation.copy(tmp);
+    this.remapSwing(source, limitTilt, this.orientation);
   }
 
   /**

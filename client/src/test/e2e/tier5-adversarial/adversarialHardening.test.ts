@@ -227,8 +227,8 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       const motion = new RotationMotion(canonicalHomeQuat);
       motion.begin();
 
-      // Drag galaxy far away from canonical pose; the tilt limit holds it
-      // just short of the maximum instead of letting it turn edge-on.
+      // Drag galaxy far away from canonical pose: the spin about the rose
+      // axis is kept, while the lean away from the viewer stays limited.
       const spinDelta = new Quaternion().setFromAxisAngle(
         new Vector3(0.577, 0.577, 0.577).normalize(),
         2.5
@@ -237,11 +237,14 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       motion.release();
       expect(motion.phase).toBe("inertia");
       expect(motion.orientation.angleTo(canonicalHomeQuat)).toBeGreaterThan(
-        0.5
+        0.3
       );
-      expect(motion.orientation.angleTo(canonicalHomeQuat)).toBeLessThan(
-        0.56
-      );
+      const roseAxis = new Vector3(0, 0, 1).applyQuaternion(canonicalHomeQuat);
+      expect(
+        new Vector3(0, 0, 1)
+          .applyQuaternion(motion.orientation)
+          .angleTo(roseAxis)
+      ).toBeLessThanOrEqual(0.1901);
 
       // Massive dt simulation (e.g. laptop lid closed for 1 hour: dt = 3600.0s)
       motion.advance(3600.0);

@@ -196,6 +196,8 @@ export function createHazeMaterialSource() {
     vertexShader: /* glsl */ `
       uniform float uPixelRatio; uniform float uLight; uniform float uNebula;
       uniform float uTime;
+      uniform vec2 uCanvasSize; uniform vec2 uPartCursor;
+      uniform float uPartPresence; uniform float uParting; uniform float uPartRadius;
       attribute vec3 aDayColor; attribute float aSize; attribute float aAlpha;
       varying vec3 vColor; varying float vAlpha;
       void main() {
@@ -206,6 +208,16 @@ export function createHazeMaterialSource() {
         p.xy += vec2(sin(uTime * 0.11 + seed * 6.283), cos(uTime * 0.09 + seed * 4.1)) * 0.02;
         vec4 view = modelViewMatrix * vec4(p, 1.0);
         gl_Position = projectionMatrix * view;
+        // The cursor parts the haze with the same field as the dust, so the
+        // opening stays clean instead of filling with static motes.
+        if (uPartPresence > 0.001 && gl_Position.w > 0.0) {
+          vec2 screen = (gl_Position.xy / gl_Position.w * 0.5 + 0.5) * uCanvasSize;
+          vec2 delta = screen - uPartCursor;
+          float d = length(delta);
+          float q = 1.0 - clamp(d / uPartRadius, 0.0, 1.0);
+          if (d > 0.5) screen += delta / d * uParting * q * q * uPartPresence;
+          gl_Position.xy = (screen / uCanvasSize * 2.0 - 1.0) * gl_Position.w;
+        }
         float size = aSize * uPixelRatio * clamp(10.0 / -view.z, 0.8, 1.25);
         // Sub-pixel motes keep a two-pixel footprint and give up alpha by
         // area instead, so they shimmer smoothly rather than flicker.

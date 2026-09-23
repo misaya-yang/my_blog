@@ -182,6 +182,11 @@ export class ParticleField {
     this.fallbackReason = reason;
   }
 
+  /** Eased cursor presence of the parting field, 0..1. */
+  get presence(): number {
+    return this.motion.presence;
+  }
+
   get textures(): { base: Texture; current: Texture; history: Texture } {
     return {
       base: this.baseTarget?.texture ?? this.cpuBase,

@@ -22,10 +22,12 @@ describe("Milestone 2: Interaction Physics (F8, F9, F10, F11)", () => {
         width: 1280,
         height: 800,
         basePositions: new Float32Array([0, 0, -10, 1, 20, 0, -10, 1]),
+        // A resting cursor 30 px left of particle 0, which sits at the
+        // canvas centre; particle 1 is far outside the parting radius.
         pointer: {
-          from: { x: 600, y: 400 },
-          to: { x: 680, y: 400 },
-          velocity: { x: 400, y: 0 },
+          from: { x: 610, y: 400 },
+          to: { x: 610, y: 400 },
+          velocity: { x: 0, y: 0 },
           active: true,
         },
       };
@@ -34,7 +36,7 @@ describe("Milestone 2: Interaction Physics (F8, F9, F10, F11)", () => {
       return { motion, step, offsets };
     };
 
-    it("applies an actual force only to particles near the swept region", () => {
+    it("parts only the particles near the cursor", () => {
       const { motion, step, offsets } = setup();
       try {
         for (let i = 0; i < 30; i++) motion.step(1 / 60, step);
@@ -46,7 +48,7 @@ describe("Milestone 2: Interaction Physics (F8, F9, F10, F11)", () => {
       }
     });
 
-    it("keeps a long sweep continuous and returns to its orbit after release", () => {
+    it("holds the parting steady while hovering and returns after the cursor leaves", () => {
       const { motion, step, offsets } = setup();
       try {
         const positions: number[] = [];

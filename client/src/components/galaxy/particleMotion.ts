@@ -6,7 +6,6 @@ import {
   NearestFilter,
   RGBAFormat,
   Vector2,
-  Vector4,
   type Texture,
   type WebGLRenderer,
 } from "three";
@@ -21,11 +20,13 @@ export const PARTICLE_MOTION_CAPACITY =
   PARTICLE_MOTION_WIDTH * PARTICLE_MOTION_HEIGHT;
 
 export interface ParticleMotionPointer {
-  /** CSS pixels relative to the rendered canvas, with +Y pointing down. */
+  /** Kept for callers that track the last stroke; the field uses `to`. */
   from: { x: number; y: number };
+  /** Cursor in CSS pixels relative to the rendered canvas, +Y down. */
   to: { x: number; y: number };
-  /** CSS pixels per second. Passing zero must stop applying force. */
+  /** Cursor velocity in CSS pixels per second. */
   velocity: { x: number; y: number };
+  /** True while the cursor hovers the scene; the field eases in and out. */
   active: boolean;
 }
 
@@ -38,31 +39,41 @@ export interface ParticleMotionStep {
   width: number;
   height: number;
   pointer?: ParticleMotionPointer;
+  /** Radius of influence around the cursor, CSS pixels. */
   radiusPx?: number;
+  /** How far the cursor parts particles at its centre, CSS pixels. */
   strength?: number;
   maxDisplacementPx?: number;
 }
 
-const DEFAULT_RADIUS = 96;
-const DEFAULT_STRENGTH = 0.5;
-const DEFAULT_MAX_DISPLACEMENT = 72;
-const MAX_POINTER_SPEED = 1800;
-// Shared coefficients keep CPU fallback and GPU flow within the same 25% cone.
-const LATERAL_SEED_GAIN = 0.15;
-const LATERAL_OUTWARD_GAIN = 0.1;
+/** Parting field defaults, CSS pixels; haze and gas reuse them. */
+export const PARTING_RADIUS_PX = 150;
+export const PARTING_PX = 62;
+const DEFAULT_RADIUS = PARTING_RADIUS_PX;
+const DEFAULT_PARTING = PARTING_PX;
+const DEFAULT_MAX_DISPLACEMENT = 90;
+const MAX_POINTER_SPEED = 2400;
+/** Share of cursor velocity carried as a wake, in seconds of travel. */
+const WAKE_GAIN = 0.05;
+const WAKE_LIMIT = 36;
+const PRESENCE_RATE = 7;
 
-// A cascade of two first-order systems has real, negative poles: velocity
-// relaxes towards the pointer flow and offset relaxes towards its moving orbit.
-// The exact solution avoids explicit-Euler jitter and oscillating springs.
+// A parting field: every particle near the cursor has a target offset that
+// pushes it radially out of a soft disc (monotonic, so neighbours never cross
+// and the rim stays clean) plus a short wake along the cursor's travel. Each
+// particle follows its target on a critically damped spring whose stiffness
+// depends on a stable per-particle mass, so the rim ripples organically and
+// everything settles back without overshoot. The spring is integrated
+// exactly, so 30, 60 and 120 Hz agree.
 const COMPUTE_SHARED = /* glsl */ `
   uniform sampler2D uBase;
   uniform mat4 uProjection;
   uniform vec2 uViewport;
-  uniform vec4 uPointerSegment;
-  uniform vec2 uPointerVelocity;
-  uniform float uPointerActive;
+  uniform vec2 uCursor;
+  uniform vec2 uCursorVelocity;
+  uniform float uPresence;
   uniform float uRadius;
-  uniform float uStrength;
+  uniform float uParting;
   uniform float uMaxDisplacement;
   uniform float uDt;
   uniform float uCount;
@@ -78,40 +89,35 @@ const COMPUTE_SHARED = /* glsl */ `
     vec2 offset = texture2D(textureOffset, uv).xy;
     vec2 velocity = texture2D(textureVelocity, uv).xy;
     vec4 base = texture2D(uBase, uv);
-    // This integer permutation is identical in GLSL and JS and does not depend
-    // on theme, random resampling or the current time.
     float mass = 0.75 + mod(index * 17.0 + 13.0, 97.0) / 96.0 * 0.75;
-    float dragRate = 6.8 / mass;
-    float returnRate = 3.0 / mass;
-    vec2 targetVelocity = vec2(0.0);
+    float omega = 9.0 / sqrt(mass);
+    vec2 target = vec2(0.0);
     vec4 projected = uProjection * vec4(base.xyz, 1.0);
-    if (uPointerActive > 0.5 && base.a > 0.0 && projected.w > 0.0) {
-      vec2 point = (projected.xy / projected.w * vec2(1.0, -1.0) + 1.0)
-        * 0.5 * uViewport + offset * vec2(1.0, -1.0) * uViewport.y * 0.5;
-      vec2 segment = uPointerSegment.zw - uPointerSegment.xy;
-      float along = clamp(dot(point - uPointerSegment.xy, segment)
-        / max(dot(segment, segment), 0.0001), 0.0, 1.0);
-      vec2 delta = point - (uPointerSegment.xy + segment * along);
-      float radiusSq = dot(delta, delta) / (uRadius * uRadius);
-      float weight = exp(-2.0 * radiusSq) * (1.0 - smoothstep(1.0, 4.0, radiusSq));
-      float speed = length(uPointerVelocity);
-      vec2 normal = vec2(-uPointerVelocity.y, uPointerVelocity.x) / max(speed, 0.0001);
-      float seed = mod(index * 37.0 + 19.0, 101.0) / 50.0 - 1.0;
-      float outward = clamp(dot(delta, normal) / uRadius, -1.0, 1.0);
-      float lateral = seed * ${LATERAL_SEED_GAIN} + outward * ${LATERAL_OUTWARD_GAIN};
-      vec2 flow = uPointerVelocity + normal * speed * lateral;
-      targetVelocity = flow * vec2(1.0, -1.0) * (2.0 / uViewport.y)
-        * uStrength * weight * clamp(base.a, 0.0, 1.0) / mass;
+    if (uPresence > 0.001 && base.a > 0.0 && projected.w > 0.0) {
+      vec2 point = (projected.xy / projected.w * vec2(1.0, -1.0) + 1.0) * 0.5 * uViewport;
+      vec2 delta = point - uCursor;
+      float distance = length(delta);
+      float angle = mod(index * 2.39996, 6.2831853);
+      vec2 direction = distance > 0.5 ? delta / distance : vec2(cos(angle), sin(angle));
+      float reach = clamp(distance / uRadius, 0.0, 1.0);
+      float falloff = (1.0 - reach) * (1.0 - reach);
+      float jitter = 0.82 + mod(index * 37.0 + 19.0, 101.0) / 100.0 * 0.36;
+      vec2 wake = uCursorVelocity * ${WAKE_GAIN.toFixed(3)};
+      float wakeLength = length(wake);
+      if (wakeLength > ${WAKE_LIMIT.toFixed(1)}) wake *= ${WAKE_LIMIT.toFixed(1)} / wakeLength;
+      vec2 px = direction * uParting * falloff * jitter + wake * falloff * falloff;
+      target = px * vec2(1.0, -1.0) * (2.0 / uViewport.y)
+        * uPresence * clamp(base.a, 0.0, 1.0);
     }
-    float dragDecay = exp(-dragRate * uDt);
-    float returnDecay = exp(-returnRate * uDt);
-    nextVelocity = targetVelocity + (velocity - targetVelocity) * dragDecay;
-    nextOffset = offset * returnDecay + targetVelocity * (1.0 - returnDecay) / returnRate
-      + (velocity - targetVelocity) * (returnDecay - dragDecay) / (dragRate - returnRate);
+    vec2 error = offset - target;
+    float decay = exp(-omega * uDt);
+    vec2 slope = velocity + omega * error;
+    nextOffset = target + (error + slope * uDt) * decay;
+    nextVelocity = (velocity - omega * slope * uDt) * decay;
     float limit = uMaxDisplacement * 2.0 / uViewport.y;
-    float distance = length(nextOffset);
-    if (distance > limit) {
-      vec2 normal = nextOffset / distance;
+    float length2 = length(nextOffset);
+    if (length2 > limit) {
+      vec2 normal = nextOffset / length2;
       nextOffset = normal * limit;
       nextVelocity -= normal * max(dot(nextVelocity, normal), 0.0);
     }
@@ -172,11 +178,11 @@ export class ParticleMotion {
     uBase: { value: null as Texture | null },
     uProjection: { value: new Matrix4() },
     uViewport: { value: new Vector2() },
-    uPointerSegment: { value: new Vector4() },
-    uPointerVelocity: { value: new Vector2() },
-    uPointerActive: { value: 0 },
+    uCursor: { value: new Vector2() },
+    uCursorVelocity: { value: new Vector2() },
+    uPresence: { value: 0 },
     uRadius: { value: DEFAULT_RADIUS },
-    uStrength: { value: DEFAULT_STRENGTH },
+    uParting: { value: DEFAULT_PARTING },
     uMaxDisplacement: { value: DEFAULT_MAX_DISPLACEMENT },
     uDt: { value: 0 },
     uCount: { value: 0 },
@@ -272,6 +278,11 @@ export class ParticleMotion {
     };
   }
 
+  /** Eased cursor presence, 0..1: the field opens and closes smoothly. */
+  get presence() {
+    return this.uniforms.uPresence.value;
+  }
+
   step(dt: number, options: ParticleMotionStep) {
     if (this.disposed || !Number.isFinite(dt) || dt <= 0) return;
     if (options.width <= 0 || options.height <= 0) return;
@@ -281,23 +292,23 @@ export class ParticleMotion {
     u.uProjection.value.copy(options.projectionMatrix);
     u.uViewport.value.set(options.width, options.height);
     u.uRadius.value = Math.max(1, options.radiusPx ?? DEFAULT_RADIUS);
-    u.uStrength.value = Math.max(0, options.strength ?? DEFAULT_STRENGTH);
+    u.uParting.value = Math.max(0, options.strength ?? DEFAULT_PARTING);
     u.uMaxDisplacement.value = Math.max(
       0,
       options.maxDisplacementPx ?? DEFAULT_MAX_DISPLACEMENT
     );
     const pointer = options.pointer;
-    u.uPointerActive.value = pointer?.active ? 1 : 0;
-    if (pointer?.active) {
-      u.uPointerSegment.value.set(
-        pointer.from.x,
-        pointer.from.y,
-        pointer.to.x,
-        pointer.to.y
-      );
-      u.uPointerVelocity.value.set(pointer.velocity.x, pointer.velocity.y);
-      u.uPointerVelocity.value.clampLength(0, MAX_POINTER_SPEED);
-    } else u.uPointerVelocity.value.set(0, 0);
+    const goal = pointer?.active ? 1 : 0;
+    u.uPresence.value +=
+      (goal - u.uPresence.value) * (1 - Math.exp(-u.uDt.value * PRESENCE_RATE));
+    if (u.uPresence.value < 0.001 && !goal) u.uPresence.value = 0;
+    if (pointer) {
+      u.uCursor.value.set(pointer.to.x, pointer.to.y);
+      u.uCursorVelocity.value
+        .set(pointer.velocity.x, pointer.velocity.y)
+        .clampLength(0, MAX_POINTER_SPEED);
+    }
+    if (!pointer?.active) u.uCursorVelocity.value.set(0, 0);
     if (this.gpu) {
       if (!options.baseTexture)
         throw new Error("GPU particle motion requires baseTexture");
@@ -307,7 +318,7 @@ export class ParticleMotion {
 
   private stepCPU(base?: Float32Array) {
     const u = this.uniforms;
-    const active = u.uPointerActive.value > 0;
+    const active = u.uPresence.value > 0.001;
     if (active && (!base || base.length < this.count * 4))
       throw new Error("CPU particle motion requires count × 4 basePositions");
     const offset = this.cpuOffset.image.data as Float32Array;
@@ -316,25 +327,23 @@ export class ParticleMotion {
     const width = u.uViewport.value.x;
     const height = u.uViewport.value.y;
     const dt = u.uDt.value;
-    const fromX = u.uPointerSegment.value.x;
-    const fromY = u.uPointerSegment.value.y;
-    const segmentX = u.uPointerSegment.value.z - fromX;
-    const segmentY = u.uPointerSegment.value.w - fromY;
-    const segmentLengthSq = Math.max(
-      segmentX * segmentX + segmentY * segmentY,
-      0.0001
-    );
-    const radiusSq = u.uRadius.value * u.uRadius.value;
+    const cursorX = u.uCursor.value.x;
+    const cursorY = u.uCursor.value.y;
+    const radius = u.uRadius.value;
+    const parting = u.uParting.value;
+    const presence = u.uPresence.value;
     const limit = (u.uMaxDisplacement.value * 2) / height;
-    const pointerSpeed = u.uPointerVelocity.value.length();
-    const normalX =
-      -u.uPointerVelocity.value.y / Math.max(pointerSpeed, 0.0001);
-    const normalY = u.uPointerVelocity.value.x / Math.max(pointerSpeed, 0.0001);
+    let wakeX = u.uCursorVelocity.value.x * WAKE_GAIN;
+    let wakeY = u.uCursorVelocity.value.y * WAKE_GAIN;
+    const wakeLength = Math.hypot(wakeX, wakeY);
+    if (wakeLength > WAKE_LIMIT) {
+      wakeX *= WAKE_LIMIT / wakeLength;
+      wakeY *= WAKE_LIMIT / wakeLength;
+    }
     for (let index = 0; index < this.count; index++) {
       const i = index * 4;
       const mass = 0.75 + (((index * 17 + 13) % 97) / 96) * 0.75;
-      const dragRate = 6.8 / mass;
-      const returnRate = 3 / mass;
+      const omega = 9 / Math.sqrt(mass);
       let targetX = 0;
       let targetY = 0;
       if (active && base && base[i + 3] > 0) {
@@ -345,60 +354,33 @@ export class ParticleMotion {
         if (w > 0) {
           const projectedX = (m[0] * x + m[4] * y + m[8] * z + m[12]) / w;
           const projectedY = (m[1] * x + m[5] * y + m[9] * z + m[13]) / w;
-          const pointX = ((projectedX + 1) * width + offset[i] * height) * 0.5;
-          const pointY =
-            ((1 - projectedY) * height - offset[i + 1] * height) * 0.5;
-          const along = Math.max(
-            0,
-            Math.min(
-              1,
-              ((pointX - fromX) * segmentX + (pointY - fromY) * segmentY) /
-                segmentLengthSq
-            )
-          );
-          const dx = pointX - (fromX + segmentX * along);
-          const dy = pointY - (fromY + segmentY * along);
-          const distanceSq = (dx * dx + dy * dy) / radiusSq;
-          const edge = Math.max(0, Math.min(1, (distanceSq - 1) / 3));
-          const weight =
-            Math.exp(-2 * distanceSq) * (1 - edge * edge * (3 - 2 * edge));
-          const gain =
-            ((2 / height) *
-              u.uStrength.value *
-              weight *
-              Math.min(1, base[i + 3])) /
-            mass;
-          // The seed separates coincident particles; signed distance gently
-          // pushes either flank away from the stroke, without random bursts.
-          const seed = ((index * 37 + 19) % 101) / 50 - 1;
-          const outward = Math.max(
-            -1,
-            Math.min(1, (dx * normalX + dy * normalY) / u.uRadius.value)
-          );
-          const lateral =
-            seed * LATERAL_SEED_GAIN + outward * LATERAL_OUTWARD_GAIN;
+          const dx = (projectedX + 1) * 0.5 * width - cursorX;
+          const dy = (1 - projectedY) * 0.5 * height - cursorY;
+          const distance = Math.hypot(dx, dy);
+          const angle = (index * 2.39996) % (Math.PI * 2);
+          const dirX = distance > 0.5 ? dx / distance : Math.cos(angle);
+          const dirY = distance > 0.5 ? dy / distance : Math.sin(angle);
+          const reach = Math.min(1, distance / radius);
+          const falloff = (1 - reach) * (1 - reach);
+          const jitter = 0.82 + (((index * 37 + 19) % 101) / 100) * 0.36;
+          const gain = (2 / height) * presence * Math.min(1, base[i + 3]);
           targetX =
-            (u.uPointerVelocity.value.x + normalX * pointerSpeed * lateral) *
+            (dirX * parting * falloff * jitter + wakeX * falloff * falloff) *
             gain;
           targetY =
-            -(u.uPointerVelocity.value.y + normalY * pointerSpeed * lateral) *
+            -(dirY * parting * falloff * jitter + wakeY * falloff * falloff) *
             gain;
         }
       }
-      const dragDecay = Math.exp(-dragRate * dt);
-      const returnDecay = Math.exp(-returnRate * dt);
-      const targetGain = (1 - returnDecay) / returnRate;
-      const velocityGain = (returnDecay - dragDecay) / (dragRate - returnRate);
-      let nextX =
-        offset[i] * returnDecay +
-        targetX * targetGain +
-        (velocity[i] - targetX) * velocityGain;
-      let nextY =
-        offset[i + 1] * returnDecay +
-        targetY * targetGain +
-        (velocity[i + 1] - targetY) * velocityGain;
-      let nextVelocityX = targetX + (velocity[i] - targetX) * dragDecay;
-      let nextVelocityY = targetY + (velocity[i + 1] - targetY) * dragDecay;
+      const decay = Math.exp(-omega * dt);
+      const errorX = offset[i] - targetX;
+      const errorY = offset[i + 1] - targetY;
+      const slopeX = velocity[i] + omega * errorX;
+      const slopeY = velocity[i + 1] + omega * errorY;
+      let nextX = targetX + (errorX + slopeX * dt) * decay;
+      let nextY = targetY + (errorY + slopeY * dt) * decay;
+      let nextVelocityX = (velocity[i] - omega * slopeX * dt) * decay;
+      let nextVelocityY = (velocity[i + 1] - omega * slopeY * dt) * decay;
       const distance = Math.hypot(nextX, nextY);
       if (distance > limit) {
         const normalX = nextX / distance;
@@ -423,8 +405,8 @@ export class ParticleMotion {
 
   reset() {
     if (this.disposed) return;
-    this.uniforms.uPointerActive.value = 0;
-    this.uniforms.uPointerVelocity.value.set(0, 0);
+    this.uniforms.uPresence.value = 0;
+    this.uniforms.uCursorVelocity.value.set(0, 0);
     if (this.gpu && this.offsetVariable && this.velocityVariable) {
       // Clearing only the current target resurrects old displacement on the
       // next swap. Both variables' two targets must be cleared.

@@ -32,6 +32,7 @@ import {
 } from "./roseTracks";
 import { RotationMotion } from "./rotationMotion";
 import { ParticleField } from "./particleField";
+import { PARTING_PX, PARTING_RADIUS_PX } from "./particleMotion";
 import { sampleParticleBases } from "./sampleParticleBase";
 import { calculateConstellationLayout } from "./constellationLayout";
 import { createPhaseSampler, ribbonWidth } from "./particleDistribution";
@@ -244,11 +245,21 @@ export function createGalaxy(
   const palette = ["#9ad8ff", "#e3f3ff", "#ffb878", "#b5d4ff"].map(
     value => new Color(value)
   );
-  // Day inks are one family, like a single pen on paper: indigo in a few
-  // values plus a rare muted sepia. Mixed saturated hues read as stains.
-  const dayPalette = ["#1f3a6b", "#2c4670", "#7a5a3c", "#35486a"].map(
+  // Day is line art, not inverted light: one pen family on paper. Outer
+  // petals are drawn in indigo, darkening toward an iron-gall black at the
+  // heart; the signature is the darkest line, and a rare sepia touch stands
+  // in for the warm stars.
+  const layerInks = ["#2b4577", "#253a63", "#252f4c", "#221f2e"].map(
     value => new Color(value)
   );
+  const signatureInk = new Color("#11151f");
+  const sepiaInk = new Color("#7a5a3c");
+  const dayInk = (trackId: number, color: number, i: number) =>
+    trackId >= PETAL_TRACKS
+      ? signatureInk
+      : color === 2 && i % 5 === 0
+        ? sepiaInk
+        : layerInks[trackId];
   const petalLength = tracks
     .slice(0, PETAL_TRACKS)
     .reduce((sum, track) => sum + track.length, 0);
@@ -303,10 +314,7 @@ export function createGalaxy(
     const color =
       bright > 1.35 ? (random() < 0.55 ? 1 : 2) : random() < 0.62 ? 0 : 3;
     palette[color].toArray(colors, i * 3);
-    dayPalette[color === 2 && i % 5 !== 0 ? 0 : color].toArray(
-      dayColors,
-      i * 3
-    );
+    dayInk(particle.orbit[0], color, i).toArray(dayColors, i * 3);
     sizes[i] =
       particle.orbit[0] >= PETAL_TRACKS
         ? 1.35
@@ -329,10 +337,7 @@ export function createGalaxy(
     const color =
       bright > 1.6 ? (random() < 0.5 ? 1 : 2) : random() < 0.7 ? 0 : 3;
     palette[color].toArray(starColors, i * 3);
-    dayPalette[color === 2 && i % 5 !== 0 ? 0 : color].toArray(
-      dayStarColors,
-      i * 3
-    );
+    dayInk(particle.orbit[0], color, i).toArray(dayStarColors, i * 3);
     starSizes[i] = heart
       ? 2.5 + random() * 0.7
       : 1.6 + Math.pow((bright - 0.4) / 2.6, 0.65) * 3.0;
@@ -566,6 +571,10 @@ export function createGalaxy(
     uTrackRows: { value: tracks.length },
 
     uCanvasSize: { value: new Vector2(1, 1) },
+    uPartCursor: { value: new Vector2() },
+    uPartPresence: { value: 0 },
+    uParting: { value: PARTING_PX },
+    uPartRadius: { value: PARTING_RADIUS_PX },
     uCopyBounds: { value: new Vector4(-2, -2, -1, -1) },
     uCopyOpacity: { value: 1 },
     uQuietBoxes: {
@@ -724,9 +733,13 @@ export function createGalaxy(
       attribute float aSize; attribute vec3 aDayColor; attribute float aBright;
       uniform float uPixelRatio; uniform float uFocus;
       varying vec3 vColor; varying float vFlow; varying float vBright; varying float vIntro; varying float vAmbient;
-      varying float vDefocus; varying float vCoverage;
+      varying float vDefocus; varying float vCoverage; varying float vLine;
       void main() {
         ParticleSample particle = evaluateParticle(position,0.0);
+        // Day draws the petals as pen lines: motes on the ridge carry the ink,
+        // the drifting ones fade to a light stipple. The signature is a line.
+        bool signatureMote = aOrbit.x >= ${PETAL_TRACKS}.0;
+        vLine = signatureMote ? 1.0 : 1.0 - smoothstep(0.035, 0.14, abs(aOrbit.w));
         vFlow = particle.flow;
         vColor = mix(color, aDayColor, uLight);
         vBright = aBright;
@@ -750,12 +763,13 @@ export function createGalaxy(
         gl_PointSize *= 1.0 + vDefocus * 1.4;
         // Dark one-pixel sprites show as squares on white. Day motes keep a
         // round two-pixel footprint and give up ink by area instead.
+        if (signatureMote) gl_PointSize *= mix(1.0, 1.3, uLight);
         float footprint = max(gl_PointSize, mix(gl_PointSize, 2.4, uLight));
         vCoverage = (gl_PointSize * gl_PointSize) / (footprint * footprint);
         gl_PointSize = footprint;
       }`,
     fragmentShader: `varying vec3 vColor; varying float vFlow; varying float vBright; varying float vIntro; varying float vAmbient; uniform float uDisperse; uniform float uLight;
-      varying float vDefocus; varying float vCoverage;
+      varying float vDefocus; varying float vCoverage; varying float vLine;
       void main() {
         float d = length(gl_PointCoord - 0.5) * 2.0;
         if (d > 1.0) discard;
@@ -777,6 +791,7 @@ export function createGalaxy(
           mix(disc, softDot, uLight)
             * energy * vFlow * (1.0 - uDisperse * 0.25) * vIntro
             * ambientAlpha * vCoverage / (grow * grow * 0.7 + 0.3)
+            * mix(1.0, mix(0.22, 1.15, vLine), uLight)
         );
         #include <colorspace_fragment>
       }`,
@@ -846,9 +861,10 @@ export function createGalaxy(
     vertexShader: `${renderDeformation}
       attribute vec3 aCenter; attribute vec3 aColor; attribute vec3 aDayColor; attribute float aSize; attribute float aBright;
       uniform vec2 uCanvasSize; uniform float uPixelRatio; uniform float uMobile;
-      varying vec2 vUv; varying vec3 vColor; varying float vBrightness; varying float vProminence; varying float vLens; varying float vCoreRadius; varying float vForeshorten; varying float vIntro; varying float vCrystalSeed;
+      varying vec2 vUv; varying vec3 vColor; varying float vBrightness; varying float vProminence; varying float vLens; varying float vCoreRadius; varying float vForeshorten; varying float vIntro; varying float vCrystalSeed; varying float vPixelUv; varying float vOnScript;
       void main() {
         vUv = position.xy * 2.0;
+        vOnScript = step(${PETAL_TRACKS}.0 - 0.5, aOrbit.x);
         vCrystalSeed = fract(sin(dot(aCenter.xy,vec2(12.9,78.2)))*43758.5);
         vColor = mix(aColor,aDayColor,uLight);
         vBrightness = (0.82 + 0.18*sin(uTime*0.42*uAmbientTwinkle+length(aCenter.xy)*1.15))*flowFade(aCenter)*mix(0.7, 1.5, aBright / 3.0);
@@ -863,15 +879,16 @@ export function createGalaxy(
         // Bound the luminous core in screen pixels independently from its halo.
         // Traveling stars stay slim; halos and glints bloom once they seat.
         float depth = clamp(10.0 / -center.z,0.7,1.3);
-        float diameter = mix(10.0 + aSize*5.0, 3.0+aSize*1.8, uLight)*depth*mix(1.0,0.75,uMobile)*mix(0.45, 1.0, sqrt(particle.intro))
+        float diameter = mix(10.0 + aSize*5.0, (3.0+aSize*1.8)*(1.0+1.8*smoothstep(1.4,2.4,aBright)), uLight)*depth*mix(1.0,0.75,uMobile)*mix(0.45, 1.0, sqrt(particle.intro))
           * mix(0.55, 1.0, smoothstep(0.2, 0.85, particle.travel));
         float corePixels = aSize*0.7*depth*mix(mix(1.0,0.72,uMobile),1.1,uLight);
         vCoreRadius = corePixels / (diameter*0.5);
+        vPixelUv = 2.0 / max(diameter, 1.0);
         float worldSize = diameter * 2.0 * (-center.z) / (projectionMatrix[1][1] * uCanvasSize.y / uPixelRatio);
         center.xy += position.xy * worldSize;
         gl_Position = projectionMatrix * center;
       }`,
-    fragmentShader: `varying vec2 vUv; varying vec3 vColor; varying float vBrightness; varying float vProminence; varying float vLens; varying float vCoreRadius; varying float vForeshorten; varying float vIntro; varying float vCrystalSeed;
+    fragmentShader: `varying vec2 vUv; varying vec3 vColor; varying float vBrightness; varying float vProminence; varying float vLens; varying float vCoreRadius; varying float vForeshorten; varying float vIntro; varying float vCrystalSeed; varying float vPixelUv; varying float vOnScript;
       uniform float uDisperse; uniform float uLight;
       void main() {
         float r = length(vUv);
@@ -886,8 +903,14 @@ export function createGalaxy(
         float profile = core + (corona*0.14 + halo*0.02)*lift + glint*(0.025 + vProminence*0.12);
         float whiteCore = smoothstep(0.75,1.4,vBrightness);
         vec3 emission = mix(vColor,vec3(1.0),core*(0.35+whiteCore*0.45))*(1.0+core*(1.0+whiteCore*3.0));
-        // Day: a crisp ink dot; only bright stars keep a faint wash around it.
-        float dayProfile = (core*1.1 + corona*0.07*lift) * mix(0.5, 1.0, lift);
+        // Day: an engraved star-chart mark. A crisp ink dot, and for the bright
+        // stars a fine four-point cross drawn with a hairline, not a glow.
+        // Widths are in pixels so the dot edge and the hairline stay sharp.
+        float dotEdge = 1.0 - smoothstep(vCoreRadius*0.75 - vPixelUv*0.6, vCoreRadius*0.75 + vPixelUv*0.6, r);
+        float taper = 1.0 - smoothstep(0.15, 1.0, r);
+        float hair = (2.0 - smoothstep(0.0, vPixelUv*0.9, abs(vUv.x)) - smoothstep(0.0, vPixelUv*0.9, abs(vUv.y)))
+          * taper * taper * lift * (1.0 - vOnScript);
+        float dayProfile = (dotEdge*1.25 + hair*0.7) * mix(0.55, 1.0, lift);
         gl_FragColor = lightOutput(
           emission,
           vColor,
@@ -1139,8 +1162,11 @@ export function createGalaxy(
     velocity: new Vector2(),
     active: false,
   };
-  const brushPrevious = new Vector2();
-  let lastPointerStamp = 0;
+  const brushStep = new Vector2();
+  let dragAngle = 0;
+  const twistAxis = new Vector3();
+  const twistRotation = new Quaternion();
+  const noRotation = new Quaternion();
   const dragCenter = new Vector3();
   let dragRadius = 100;
   let field: ParticleField | undefined;
@@ -1585,12 +1611,15 @@ export function createGalaxy(
     );
     bloomPass.strength = bloomStrength();
     if (field) {
-      // Integrate the whole stroke since the last frame, not just the last
-      // pointer event; coalesced or sparse mouse events must carry equal energy.
-      if (brush.active)
-        brush.velocity
+      // Cursor travel since the last frame drives the wake; a resting cursor
+      // keeps its parted disc but no longer drags anything along.
+      brush.velocity.lerp(
+        brushStep
           .subVectors(brush.to, brush.from)
-          .divideScalar(Math.max(dt, 1 / 240));
+          .divideScalar(Math.max(dt, 1 / 240)),
+        1 - Math.exp(-dt * 18)
+      );
+      brush.from.copy(brush.to);
       if (field.needsCPUBase) {
         uniforms.uAmbientMeta.value.forEach((v, i) =>
           v.toArray(cpuMetaTo, i * 4)
@@ -1650,8 +1679,24 @@ export function createGalaxy(
       if (import.meta.env.DEV) {
         host.dataset.motionBackend = field.needsCPUBase ? "cpu" : "gpu";
         host.dataset.inputActive = String(brush.active);
+        host.dataset.presence = field.presence.toFixed(2);
       }
-      brush.active = false;
+      // Haze (in the scene) and gas (in the composite) part with the dust.
+      const ratio = renderer.getPixelRatio();
+      uniforms.uPartPresence.value = field.presence;
+      uniforms.uPartCursor.value.set(
+        brush.to.x * ratio,
+        (bounds.height - brush.to.y) * ratio
+      );
+      uniforms.uParting.value = PARTING_PX * ratio;
+      uniforms.uPartRadius.value = PARTING_RADIUS_PX * ratio;
+      compositePass.setParting(
+        uniforms.uPartCursor.value.x,
+        uniforms.uPartCursor.value.y,
+        field.presence,
+        uniforms.uParting.value,
+        uniforms.uPartRadius.value
+      );
     }
     // The nebula belongs to the assembled rose: it condenses at the end of the
     // intro and thins out as the rose disperses or yields to a constellation.
@@ -1734,7 +1779,6 @@ export function createGalaxy(
   }
   function cancelInput() {
     finishDrag(true);
-    lastPointerStamp = 0;
     brush.active = false;
     brush.velocity.set(0, 0);
     targetHover = hover = 0;
@@ -1844,39 +1888,49 @@ export function createGalaxy(
       ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
       1 - ((event.clientY - bounds.top) / bounds.height) * 2
     );
-    const stamp = event.timeStamp / 1000;
     const px = event.clientX - bounds.left,
       py = event.clientY - bounds.top;
-    const gap = stamp - lastPointerStamp;
     const eligible =
       !paused &&
       pageScene.mode === "home" &&
       uniforms.uSplit.value < 0.85 &&
-      // While dragging the hand turns the rose; a wake on top would smear it.
+      // While dragging the hand turns the rose; the parting field closes.
       event.buttons === 0 &&
       !dragging;
-    if (eligible && lastPointerStamp > 0 && gap > 0 && gap < 0.4) {
-      if (!brush.active) brush.from.copy(brushPrevious);
+    // The cursor parts the particles around it for as long as it hovers.
+    if (eligible) {
+      if (!brush.active) brush.from.set(px, py);
       brush.to.set(px, py);
-      brush.velocity.set(
-        (px - brushPrevious.x) / Math.max(gap, 1 / 240),
-        (py - brushPrevious.y) / Math.max(gap, 1 / 240)
-      );
-      brush.active = true;
     }
-    brushPrevious.set(px, py);
-    lastPointerStamp = stamp;
+    brush.active = eligible;
     if (hover < 0.01) pointer.copy(pointerTarget);
     targetHover = eligible ? 1 : 0;
     if (dragging && event.pointerId === activePointer) {
+      // Circling the heart spins the rose about its own axis, like turning a
+      // record; the trackball only adds a slight lean toward the hand.
+      const rx = px - dragCenter.x,
+        ry = py - dragCenter.y;
+      const angle = Math.atan2(ry, rx);
+      let turn = angle - dragAngle;
+      if (turn > Math.PI) turn -= Math.PI * 2;
+      if (turn < -Math.PI) turn += Math.PI * 2;
+      dragAngle = angle;
+      turn *= smoothstep01(
+        (Math.hypot(rx, ry) / Math.max(dragRadius, 1) - 0.1) / 0.3
+      );
+      twistAxis.set(0, 0, 1).applyQuaternion(orientation);
+      twistRotation.setFromAxisAngle(twistAxis, -turn);
       projectTrackball(
-        event.clientX - bounds.left - dragCenter.x + dragRadius,
-        event.clientY - bounds.top - dragCenter.y + dragRadius,
+        rx + dragRadius,
+        ry + dragRadius,
         dragRadius * 2,
         dragRadius * 2,
         nextDragPoint
       );
       trackballDelta(dragPoint, nextDragPoint, deltaRotation);
+      deltaRotation.copy(
+        twistRotation.multiply(noRotation.identity().slerp(deltaRotation, 0.35))
+      );
       rotation.move(deltaRotation, (event.timeStamp - lastMoveTime) / 1000);
       dragPoint.copy(nextDragPoint);
       lastMoveTime = event.timeStamp;
@@ -1901,7 +1955,11 @@ export function createGalaxy(
     updateLayoutRects();
     dragCenter.copy(artworkCenter);
     dragRadius = artworkRadius;
-    lastPointerStamp = 0;
+    dragAngle = Math.atan2(
+      event.clientY - bounds.top - dragCenter.y,
+      event.clientX - bounds.left - dragCenter.x
+    );
+    brush.active = false;
     dragging = true;
     activePointer = event.pointerId;
     projectTrackball(
@@ -1922,7 +1980,6 @@ export function createGalaxy(
     const pointerId = activePointer;
     dragging = false;
     activePointer = -1;
-    lastPointerStamp = 0;
     rotation.release(cancelled);
     controls.dataset.dragging = "false";
     if (controls.hasPointerCapture(pointerId))
@@ -1933,8 +1990,10 @@ export function createGalaxy(
     finishDrag(event.type !== "pointerup");
     if (event.pointerType !== "mouse") targetHover = 0;
   };
+  // Leaving lets the parted particles flow back instead of snapping home.
   const leave = () => {
-    cancelInput();
+    finishDrag(true);
+    brush.active = false;
     targetHover = 0;
     requestPaint();
   };
@@ -1960,20 +2019,22 @@ export function createGalaxy(
       rotation.reset();
       field?.resetHistory();
     } else {
-      angularAxis.set(
-        event.key === "ArrowUp" || event.key === "ArrowDown" ? 1 : 0,
-        event.key === "ArrowLeft" || event.key === "ArrowRight" ? 1 : 0,
-        0
-      );
+      // Left/right turn the rose on its axis; up/down lean it, within the
+      // same limit as a drag.
+      const spin = event.key === "ArrowLeft" || event.key === "ArrowRight";
+      if (spin) angularAxis.set(0, 0, 1).applyQuaternion(orientation);
+      else angularAxis.set(1, 0, 0);
       const direction =
-        event.key === "ArrowUp" || event.key === "ArrowLeft" ? -1 : 1;
-      orientation
-        .premultiply(
-          increment.setFromAxisAngle(angularAxis, (direction * Math.PI) / 12)
-        )
-        .normalize();
-      rotation.phase = "returning";
-      rotation.speed = 0;
+        event.key === "ArrowUp" || event.key === "ArrowRight" ? -1 : 1;
+      rotation.begin();
+      rotation.move(
+        increment.setFromAxisAngle(
+          angularAxis,
+          (direction * Math.PI) / (spin ? 12 : 24)
+        ),
+        1 / 60
+      );
+      rotation.release(true);
       field?.resetHistory();
     }
     requestPaint();

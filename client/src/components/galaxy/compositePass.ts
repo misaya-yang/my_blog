@@ -37,6 +37,10 @@ const COMPOSITE_FRAGMENT = /* glsl */ `
   uniform float uVignette;
   uniform float uTime;
   uniform vec2 uResolution;
+  uniform vec2 uPartCursor;
+  uniform float uPartPresence;
+  uniform float uParting;
+  uniform float uPartRadius;
   varying vec2 vUv;
 
   // Stephen Hill's ACES fit, as three.js ships it for ACESFilmicToneMapping.
@@ -94,11 +98,31 @@ const COMPOSITE_FRAGMENT = /* glsl */ `
       step(vec3(0.0031308), linear));
   }
 
+  // Inverse of the particles' parting map r -> r + h(1 - r/R)^2, so the gas
+  // opens around the cursor together with the dust and stars.
+  vec2 partedUv(out float opening) {
+    opening = 1.0;
+    if (uPartPresence < 0.001) return vUv;
+    vec2 delta = gl_FragCoord.xy - uPartCursor;
+    float d = length(delta);
+    if (d >= uPartRadius) return vUv;
+    float h = uParting * uPartPresence;
+    float r = d;
+    for (int i = 0; i < 3; i++) {
+      float q = 1.0 - clamp(r / uPartRadius, 0.0, 1.0);
+      r = max(0.0, d - h * q * q);
+    }
+    opening = mix(0.55, 1.0, smoothstep(0.2, 1.0, d / max(h, 1.0)));
+    return (uPartCursor + delta / max(d, 0.001) * r) / uResolution;
+  }
+
   void main() {
     vec3 accumulated = texture2D(tDiffuse, vUv).rgb;
     vec3 bloom = texture2D(tBloom, vUv).rgb * uBloomStrength;
     vec2 centered = (vUv - 0.5) * vec2(uResolution.x / uResolution.y, 1.0);
-    vec3 gas = texture2D(tNebula, vUv).rgb * uNebulaStrength;
+    float opening;
+    vec2 gasUv = partedUv(opening);
+    vec3 gas = texture2D(tNebula, gasUv).rgb * uNebulaStrength * opening;
     if (max(gas.r, max(gas.g, gas.b)) > 0.0005) {
       float structure = nebulaStructure(centered * 2.4);
       // Filaments brighten, lanes nearly empty; energy stays about constant.
@@ -168,6 +192,10 @@ export class CompositePass extends Pass {
         uVignette: { value: 0.5 },
         uTime: { value: 0 },
         uResolution: { value: new Vector2(1, 1) },
+        uPartCursor: { value: new Vector2() },
+        uPartPresence: { value: 0 },
+        uParting: { value: 0 },
+        uPartRadius: { value: 1 },
       },
       vertexShader: QUAD_VERTEX,
       fragmentShader: COMPOSITE_FRAGMENT,
@@ -190,6 +218,21 @@ export class CompositePass extends Pass {
     uniforms.uInkBleed.value = settings.inkBleed ?? 0.35;
     uniforms.uNebulaStrength.value = settings.nebulaStrength ?? 1;
     uniforms.uVignette.value = settings.light ? 0 : (settings.vignette ?? 0.5);
+  }
+
+  /** Cursor parting field in physical pixels, origin bottom-left. */
+  setParting(
+    x: number,
+    y: number,
+    presence: number,
+    parting: number,
+    radius: number
+  ) {
+    const uniforms = this.material.uniforms;
+    uniforms.uPartCursor.value.set(x, y);
+    uniforms.uPartPresence.value = presence;
+    uniforms.uParting.value = parting;
+    uniforms.uPartRadius.value = Math.max(1, radius);
   }
 
   set time(value: number) {
