@@ -88,6 +88,21 @@ vi.mock("three", async importOriginal => {
         return this.ratio;
       }
       setClearColor() {}
+      target: unknown = null;
+      clearAlpha = 0;
+      getRenderTarget() {
+        return this.target;
+      }
+      setRenderTarget(target: unknown) {
+        this.target = target;
+      }
+      getClearAlpha() {
+        return this.clearAlpha;
+      }
+      setClearAlpha(value: number) {
+        this.clearAlpha = value;
+      }
+      clear() {}
       setSize(width: number, height: number) {
         this.width = width;
         this.height = height;
@@ -128,11 +143,6 @@ vi.mock("three/addons/postprocessing/EffectComposer.js", () => ({
 vi.mock("three/addons/postprocessing/RenderPass.js", () => ({
   RenderPass: class {
     constructor(readonly scene: Scene) {}
-  },
-}));
-vi.mock("three/addons/postprocessing/OutputPass.js", () => ({
-  OutputPass: class {
-    dispose() {}
   },
 }));
 
@@ -894,7 +904,8 @@ describe("optics: power-law star brightness & diffraction prominence", () => {
     expect(calculateStarBrightness(0.0, false)).toBeCloseTo(0.4, 3);
     expect(calculateStarBrightness(1.0, false)).toBeCloseTo(3.0, 3);
     const mid = calculateStarBrightness(0.5, false);
-    expect(mid).toBeCloseTo(0.8288, 2);
+    // Steep x^4.5 curve: the median star stays dim.
+    expect(mid).toBeCloseTo(0.515, 2);
 
     // Clustered heart stars: [2.00, 2.60]
     expect(calculateStarBrightness(0.0, true)).toBeCloseTo(2.0, 3);

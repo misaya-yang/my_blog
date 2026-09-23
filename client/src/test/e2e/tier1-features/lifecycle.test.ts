@@ -74,6 +74,15 @@ vi.mock("three", async importOriginal => {
         return this.ratio;
       }
       setClearColor() {}
+      getRenderTarget() {
+        return null;
+      }
+      setRenderTarget() {}
+      getClearAlpha() {
+        return 0;
+      }
+      setClearAlpha() {}
+      clear() {}
       setSize() {}
       render() {}
       dispose() {}

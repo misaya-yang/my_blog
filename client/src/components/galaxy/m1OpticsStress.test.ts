@@ -56,8 +56,8 @@ describe("M1 Empirical Challenge: Optical Properties & Bloom Pipeline", () => {
         prev = b;
       }
 
-      // Median test (r = 0.5): 0.4 + 2.6 * (0.5)^2.6 = 0.8288
-      expect(calculateStarBrightness(0.5, false)).toBeCloseTo(0.8288, 3);
+      // Median test (r = 0.5): 0.4 + 2.6 * (0.5)^4.5 = 0.5149
+      expect(calculateStarBrightness(0.5, false)).toBeCloseTo(0.5149, 3);
     });
 
     it("evaluates heart star distribution: 2.00 + 0.60 * r in [2.00, 2.60]", () => {

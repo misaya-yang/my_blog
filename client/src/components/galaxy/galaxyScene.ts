@@ -44,27 +44,40 @@ import { projectTrackball, trackballDelta } from "./trackball";
 import { getPageScene } from "./pageScene";
 import { getScrollMotion, type MotionState } from "./scrollMotion";
 import { RenderQuality } from "./renderQuality";
+import {
+  NebulaGasLayer,
+  bakeNebulaGas,
+  bakeNebulaHaze,
+  createHazeMaterialSource,
+  createHazePoints,
+} from "./nebulaGas";
 
-/**
- * Calculates dust particle brightness according to cubic power-law distribution.
- * Range: [0.35, 2.00]
- */
+function smoothstep01(x: number) {
+  const t = Math.min(1, Math.max(0, x));
+  return t * t * (3 - 2 * t);
+}
+
 // Page backgrounds the opaque canvas renders onto; keep in sync with
 // --observatory-bg in styles/observatory.css.
 const NIGHT_SKY = new Color("#0b0c0e");
 const DAY_PAPER = new Color("#f8fafc");
 
+/**
+ * Calculates dust particle brightness according to cubic power-law distribution.
+ * Range: [0.35, 2.00]
+ */
 export function calculateDustBrightness(rand: number): number {
   return 0.35 + Math.pow(rand, 3) * 1.65;
 }
 
 /**
- * Calculates star brightness according to power-law distribution (x^2.6).
+ * Calculates star brightness according to a steep power law (x^4.5): only a
+ * few dozen stars carry halos and spikes, the rest read as fine grain.
  * Standard range: [0.40, 3.00]
  * Clustered heart stars range: [2.00, 2.60]
  */
 export function calculateStarBrightness(rand: number, isHeart = false): number {
-  return isHeart ? 2.0 + rand * 0.6 : 0.4 + Math.pow(rand, 2.6) * 2.6;
+  return isHeart ? 2.0 + rand * 0.6 : 0.4 + Math.pow(rand, 4.5) * 2.6;
 }
 
 /**
@@ -595,6 +608,8 @@ export function createGalaxy(
     uAmbientTwinkle: { value: 1 },
     uAmbientGlow: { value: 1 },
     uInkWeight: { value: 1 },
+    uNebula: { value: 0 },
+    uFocus: { value: 10 },
   };
   let ambientTarget = 0;
   // One bake per navigation: six contour rows sampled on the CPU (microseconds),
@@ -706,8 +721,9 @@ export function createGalaxy(
     uniforms,
     vertexShader: `${renderDeformation}
       attribute float aSize; attribute vec3 aDayColor; attribute float aBright;
-      uniform float uPixelRatio;
+      uniform float uPixelRatio; uniform float uFocus;
       varying vec3 vColor; varying float vFlow; varying float vBright; varying float vIntro; varying float vAmbient;
+      varying float vDefocus;
       void main() {
         ParticleSample particle = evaluateParticle(position,0.0);
         vFlow = particle.flow;
@@ -725,11 +741,18 @@ export function createGalaxy(
         gl_PointSize = aSize * uPixelRatio * clamp(10.0/-view.z,0.85,1.15) * mix(1.0,1.45,uLight) * mix(0.4, 1.0, sqrt(introVis))
           * mix(1.0, mix(1.0, 0.85, uLight), particle.ambient)
           * mix(0.55, 1.0, max(seatGate, brightBias));
+        // Cheap depth of field: motes away from the rose's focal depth grow
+        // into soft discs and give up brightness roughly by area.
+        vDefocus = smoothstep(0.9, 3.2, abs(-view.z - uFocus)) * (1.0 - particle.ambient);
+        gl_PointSize *= 1.0 + vDefocus * 1.4;
       }`,
     fragmentShader: `varying vec3 vColor; varying float vFlow; varying float vBright; varying float vIntro; varying float vAmbient; uniform float uDisperse; uniform float uLight;
+      varying float vDefocus;
       void main() {
         float d = length(gl_PointCoord - 0.5) * 2.0;
         if (d > 1.0) discard;
+        float blurEdge = vDefocus * 0.75;
+        float grow = 1.0 + vDefocus * 1.4;
         // Night emits light, so the brightest motes roll toward white. Day
         // deposits the same mote's ink; its density comes from the alpha.
         float highlight = smoothstep(1.7, 2.2, vBright) * 0.6;
@@ -739,9 +762,9 @@ export function createGalaxy(
         gl_FragColor = lightOutput(
           emission,
           vColor,
-          (1.0 - smoothstep(0.85-fwidth(d), 0.85+fwidth(d), d))
+          (1.0 - smoothstep(0.85-fwidth(d)-blurEdge, 0.85+fwidth(d), d))
             * energy * vFlow * (1.0 - uDisperse * 0.25) * vIntro
-            * ambientAlpha
+            * ambientAlpha / (grow * grow * 0.7 + 0.3)
         );
         #include <colorspace_fragment>
       }`,
@@ -750,6 +773,20 @@ export function createGalaxy(
   dust.frustumCulled = false;
   dust.renderOrder = 1;
   group.add(dust);
+  // Volumetric mass around the streams: sub-pixel haze in the main pass and
+  // quarter-resolution gas composited later.
+  const hazeCount = 8000;
+  const hazeMaterial = new ShaderMaterial({
+    uniforms,
+    transparent: true,
+    depthWrite: false,
+    vertexColors: true,
+    blending: AdditiveBlending,
+    ...createHazeMaterialSource(),
+  });
+  const haze = createHazePoints(bakeNebulaHaze(tracks, hazeCount), hazeMaterial);
+  group.add(haze);
+  const nebulaGas = new NebulaGasLayer(bakeNebulaGas(tracks, 600));
   const starGeometry = new InstancedBufferGeometry();
   starGeometry.setAttribute(
     "position",
@@ -829,11 +866,13 @@ export function createGalaxy(
         float halo = exp(-r*r*9.0);
         float glint = (exp(-abs(vUv.x)*90.0)*exp(-abs(vUv.y)*12.0)
           + exp(-abs(vUv.y)*90.0)*exp(-abs(vUv.x)*12.0))*vProminence;
-        float profile = core + corona*0.14 + halo*0.02 + glint*(0.025 + vProminence*0.12);
+        // Only genuinely bright stars carry a corona; the rest are fine grain.
+        float lift = smoothstep(0.85, 1.35, vBrightness);
+        float profile = core + (corona*0.14 + halo*0.02)*lift + glint*(0.025 + vProminence*0.12);
         float whiteCore = smoothstep(0.75,1.4,vBrightness);
         vec3 emission = mix(vColor,vec3(1.0),core*(0.35+whiteCore*0.45))*(1.0+core*(1.0+whiteCore*3.0));
         // Day: the same profile deposits ink, a dense core inside a soft aura.
-        float dayProfile = core*1.05 + corona*0.3 + halo*0.05;
+        float dayProfile = (core*1.05 + corona*0.3 + halo*0.05) * mix(0.45, 1.0, lift);
         gl_FragColor = lightOutput(
           emission,
           vColor,
@@ -914,6 +953,7 @@ export function createGalaxy(
   // Reserve contrast around the real text bounds while keeping a single continuous scene.
   for (const opticalMaterial of [
     material,
+    hazeMaterial,
     starMaterial,
     trailMaterial,
     distantMaterial,
@@ -1027,6 +1067,7 @@ export function createGalaxy(
   composer.addPass(new RenderPass(scene, camera));
   composer.addPass(bloomPass);
   composer.addPass(compositePass);
+  compositePass.nebulaTexture = nebulaGas.target.texture;
   function bloomStrength() {
     // Day reuses the pyramid as a faint ink bleed around dense strokes.
     return light ? 1 : mobile ? 0.42 : 0.55;
@@ -1037,8 +1078,10 @@ export function createGalaxy(
       background: light ? DAY_PAPER : NIGHT_SKY,
       bloomStrength: bloomStrength(),
       inkDensity: 1,
-      inkBleed: 0.3,
+      inkBleed: 0.18,
       vignette: 0.5,
+      // Hundreds of splats overlap; these bring the summed veil to a haze.
+      nebulaStrength: (light ? 0.026 : 0.015) * (mobile ? 0.75 : 1),
     };
   }
 
@@ -1436,7 +1479,9 @@ export function createGalaxy(
     viewPose.multiplyMatrices(camera.matrixWorldInverse, group.matrixWorld);
     // The luminous lvy heart, not the group origin, anchors the flare and the
     // trackball pivot; in screen space the two differ only by depth.
-    heartWorld.set(0, 0, -1.42).applyMatrix4(group.matrixWorld).project(camera);
+    heartWorld.set(0, 0, -1.42).applyMatrix4(group.matrixWorld);
+    uniforms.uFocus.value = camera.position.z - heartWorld.z;
+    heartWorld.project(camera);
     artworkCenter.set(
       ((heartWorld.x + 1) * bounds.width) / 2,
       ((1 - heartWorld.y) * bounds.height) / 2,
@@ -1546,6 +1591,18 @@ export function createGalaxy(
       }
       brush.active = false;
     }
+    // The nebula belongs to the assembled rose: it condenses at the end of the
+    // intro and thins out as the rose disperses or yields to a constellation.
+    const introGate = Math.min(1, Math.max(0, (intro - 0.55) / 0.45));
+    uniforms.uNebula.value =
+      introGate * introGate * (3 - 2 * introGate) *
+      (1 - uniforms.uAmbientBlend.value) *
+      (1 - smoothstep01((uniforms.uSplit.value - 0.05) / 0.6));
+    nebulaGas.render(renderer, camera, group.matrixWorld, {
+      light,
+      opacity: uniforms.uNebula.value,
+      time: elapsed,
+    });
     compositePass.bloomTexture = bloomPass.enabled ? bloomPass.output : null;
     compositePass.time = elapsed;
     composer.render(dt);
@@ -1652,11 +1709,17 @@ export function createGalaxy(
     renderer.setSize(width, height);
     composer.setPixelRatio(profile.dpr);
     composer.setSize(width, height);
+    nebulaGas.setSize(width * profile.dpr, height * profile.dpr);
+    compositePass.apply(themeSettings());
     uniforms.uPixelRatio.value = profile.dpr;
     uniforms.uCanvasSize.value.set(width * profile.dpr, height * profile.dpr);
     uniforms.uMobile.value = mobile && coarsePointer ? 1 : 0;
     uniforms.uAspect.value = width / height;
     geometry.setDrawRange(0, mobile && coarsePointer ? 2800 : count);
+    haze.geometry.setDrawRange(
+      0,
+      mobile && coarsePointer ? Math.floor(hazeCount * 0.4) : hazeCount
+    );
     starGeometry.instanceCount = visibleStars;
     trailGeometry.instanceCount = profile.trailCount;
     distantGeometry.setDrawRange(
@@ -1959,6 +2022,13 @@ export function createGalaxy(
         paint(0.016);
       },
     };
+    // Live uniform access for look development (DEV builds only).
+    (window as unknown as Record<string, unknown>).__galaxyTune = {
+      scene: uniforms,
+      composite: compositePass.material.uniforms,
+      gas: nebulaGas.material.uniforms,
+      paint: () => paint(0.016),
+    };
   }
   return {
     setPage(path: string) {
@@ -2047,6 +2117,9 @@ export function createGalaxy(
       bloomPass.dispose();
       compositePass.dispose();
       composer.dispose();
+      nebulaGas.dispose();
+      haze.geometry.dispose();
+      hazeMaterial.dispose();
       geometry.dispose();
       material.dispose();
       starGeometry.dispose();
@@ -2057,6 +2130,7 @@ export function createGalaxy(
       distantMaterial.dispose();
       if (typeof window !== "undefined") {
         delete (window as unknown as Record<string, unknown>).__galaxyIntro;
+        delete (window as unknown as Record<string, unknown>).__galaxyTune;
       }
       renderer.dispose();
       renderer.forceContextLoss();
