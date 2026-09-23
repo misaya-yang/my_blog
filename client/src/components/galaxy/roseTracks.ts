@@ -13,9 +13,13 @@ export type RoseTrack = {
 /**
  * One layer of petals around the heart. The outline is a circle whose radius
  * swells into `petals` rounded lobes and pinches into a soft notch where two
- * petals overlap, the way the source drawing reads. Depth is a cupped bowl:
- * outer layers rise toward the viewer and each petal's tip lifts a little
- * more than its notches, so the rose keeps its volume when it turns.
+ * petals overlap, the way the source drawing reads.
+ *
+ * Depth follows the reference galaxy rather than a flower cup: the rose is a
+ * drawing in a plane, and each layer weaves gently in front of and behind
+ * that plane, alternating in sign from layer to layer. Turned, the layers
+ * separate and cross like the arms of a galaxy seen at an angle; nothing
+ * curves the whole rose one way, so no view of it reads as a bowl.
  */
 export type PetalLayer = {
   radius: number;
@@ -27,10 +31,23 @@ export type PetalLayer = {
   /** Small offset of the layer centre; nested petals are never concentric. */
   cx: number;
   cy: number;
+  /** Signed amplitude of the layer's weave out of the plane. */
+  depth: number;
+  /** Angle where the weave crosses the plane, in radians. */
+  weave: number;
 };
 
 export const PETAL_LAYERS: readonly PetalLayer[] = [
-  { radius: 2.95, petals: 5, offset: 0.35, lobe: 0.15, cx: 0, cy: 0.02 },
+  {
+    radius: 2.95,
+    petals: 5,
+    offset: 0.35,
+    lobe: 0.15,
+    cx: 0,
+    cy: 0.02,
+    depth: 0.62,
+    weave: 0.4,
+  },
   {
     radius: 2.2,
     petals: 5,
@@ -38,11 +55,32 @@ export const PETAL_LAYERS: readonly PetalLayer[] = [
     lobe: 0.14,
     cx: -0.04,
     cy: 0.05,
+    depth: -0.5,
+    weave: 2.3,
   },
-  { radius: 1.55, petals: 4, offset: 0.9, lobe: 0.12, cx: 0.05, cy: 0.02 },
-  { radius: 1.08, petals: 3, offset: 2.1, lobe: 0.09, cx: 0.0, cy: -0.03 },
+  {
+    radius: 1.55,
+    petals: 4,
+    offset: 0.9,
+    lobe: 0.12,
+    cx: 0.05,
+    cy: 0.02,
+    depth: 0.42,
+    weave: 4.1,
+  },
+  {
+    radius: 1.08,
+    petals: 3,
+    offset: 2.1,
+    lobe: 0.09,
+    cx: 0.0,
+    cy: -0.03,
+    depth: -0.3,
+    weave: 5.6,
+  },
 ];
-const OUTER_RADIUS = PETAL_LAYERS[0].radius;
+/** The heart, where the signature sits, is the rose's centre and pivot. */
+export const HEART_Z = 0;
 /** Horizontal shear that reduces the signature's italic lean. */
 const SIGNATURE_UPRIGHT = 0.24;
 const CONTOUR_POINTS = 120;
@@ -59,8 +97,13 @@ export function petalContour(layer: PetalLayer, points = CONTOUR_POINTS) {
     const r = layer.radius * (1 - layer.lobe + layer.lobe * lobe * 1.4);
     const x = layer.cx + Math.cos(angle) * r;
     const y = layer.cy + Math.sin(angle) * r;
-    const reach = Math.hypot(x, y) / OUTER_RADIUS;
-    const z = -1.05 + Math.pow(reach, 1.7) * 1.5 + (lobe - 0.6) * 0.3 * reach;
+    // A long, slow weave with a gentler second harmonic, so a layer is
+    // never simply a tilted ring; petal tips lift a touch off their notches.
+    const z =
+      layer.depth *
+        (0.8 * Math.sin(angle - layer.weave) +
+          0.35 * Math.sin(2 * (angle - layer.weave) + 1.1)) +
+      (lobe - 0.6) * 0.12;
     return new Vector3(x, y, z);
   });
 }
@@ -127,7 +170,7 @@ export function createRoseTracks(): RoseTrack[] {
           new Vector3(
             (x - 635) * 0.006 - (655 - y) * 0.006 * SIGNATURE_UPRIGHT,
             (655 - y) * 0.006,
-            -1.42
+            HEART_Z
           )
       ),
       false,

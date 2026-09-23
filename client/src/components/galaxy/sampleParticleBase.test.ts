@@ -10,6 +10,7 @@ import {
   createRoseTracks,
   sampleTrack,
   TRACK_SAMPLES,
+  HEART_Z,
 } from "./roseTracks";
 import {
   samplePackedTrack,
@@ -118,7 +119,7 @@ describe("CPU base-particle fallback", () => {
       .setPosition(2, -1, -10);
     const home = sampleParticleBases({ ...input, viewMatrix: view });
     const stroke = sampleTrack(rose[4], 0.3125);
-    const heart = new Vector3(0, 0, -1.42).applyMatrix4(view);
+    const heart = new Vector3(0, 0, HEART_Z).applyMatrix4(view);
     expect(home[0]).toBeCloseTo(heart.x + stroke.x * 1.5, 4);
     expect(home[1]).toBeCloseTo(heart.y + stroke.y * 1.5, 4);
     expect(home[2]).toBeCloseTo(heart.z, 4);

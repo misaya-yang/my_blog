@@ -57,7 +57,12 @@ describe("projected rose fit", () => {
       top: 90,
       bottom: height * 0.86 - 40,
     };
-    const fit = fitRose(pts, { width, height, fov: 42, distance: 10.4 }, rect);
+    const fit = fitRose(
+      pts,
+      { width, height, fov: 42, distance: 10.4 },
+      rect,
+      1.2
+    );
     const box = projectedBox(pts, fit, width, height);
     expect(box.left).toBeGreaterThanOrEqual(rect.left - 1);
     expect(box.right).toBeLessThanOrEqual(rect.right + 1);

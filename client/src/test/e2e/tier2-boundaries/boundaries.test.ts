@@ -191,14 +191,12 @@ describe("Tier 2: Boundary & Corner Cases", () => {
       const homeQuat = new Quaternion().setFromEuler(new Euler(0.28, -0.5, -0.4));
       const motion = new RotationMotion(homeQuat);
       motion.begin();
-
-      const delta = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), 0.01);
+      motion.turn(0, 0.01);
       // Micro dt = 0.001s
-      motion.move(delta, 0.001);
-
-      // Protected by Math.max(dt, 0.008) in rotationMotion.ts:29
-      expect(motion.speed).toBeLessThanOrEqual(2.4);
+      motion.advance(0.001);
       expect(Number.isFinite(motion.speed)).toBe(true);
+      expect(motion.speed).toBeLessThan(0.2);
+      expect(motion.orientation.length()).toBeCloseTo(1, 6);
     });
   });
 });

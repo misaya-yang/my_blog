@@ -1,36 +1,33 @@
-import { Euler, Quaternion, Vector3 } from "three";
+import { Euler, Quaternion, Vector2 } from "three";
+import { PETAL_TRACKS } from "./roseTracks";
 
-export type RotationPhase = "idle" | "dragging" | "inertia" | "returning";
+export type RotationPhase = "idle" | "dragging" | "returning";
+
+/** The rose follows the hand quickly, and eases home more slowly. */
+const FOLLOW_RATE = 14;
+const RETURN_RATE = 5.5;
+/** How much slower the outer petal layers follow than the heart. */
+const LAYER_LAG = 0.68;
+/** Turns stay bounded, however long the hand keeps going. */
+const LIMIT = 4 * Math.PI;
+const SETTLED = 1e-3;
+
+const clampTurn = (value: number) =>
+  Number.isFinite(value) ? Math.min(LIMIT, Math.max(-LIMIT, value)) : 0;
+const euler = new Euler(0, 0, 0, "XYZ");
+const inverse = new Quaternion();
+
+type Layer = { spin: Vector2; lag: number };
 
 /**
- * The rose spins freely about its own axis, like a record under the hand,
- * but only leans a little away from facing the viewer: a cupped flower seen
- * from the side reads as a bowl. Lean follows the hand one to one up to
- * FREE_TILT, then eases toward MAX_TILT.
+ * Drag turns the rose freely in 3D, right over if the hand keeps going:
+ * horizontal travel turns it about the vertical axis, vertical travel tips
+ * it over. The hand sets a target turn; the heart follows it closely and each
+ * petal layer follows a little later the further out it lies, so the layers
+ * fan apart while the rose turns and gather again when it stops, like
+ * something soft rather than a rigid plate. Let go, the rose turns back to
+ * face the reader, every layer on its own delay.
  */
-const FREE_TILT = 0.08;
-const MAX_TILT = 0.19;
-const relative = new Quaternion();
-const twist = new Quaternion();
-const swing = new Quaternion();
-const identity = new Quaternion();
-const roseAxis = new Vector3();
-
-/** Rubber band: linear up to FREE_TILT, then eases toward MAX_TILT. */
-export function limitTilt(angle: number) {
-  if (angle <= FREE_TILT) return angle;
-  const span = MAX_TILT - FREE_TILT;
-  return FREE_TILT + span * Math.tanh((angle - FREE_TILT) / span);
-}
-
-/** Inverse of limitTilt, so a limited pose can be picked up again in place. */
-export function unlimitTilt(angle: number) {
-  if (angle <= FREE_TILT) return angle;
-  const span = MAX_TILT - FREE_TILT;
-  const t = Math.min(0.999, (angle - FREE_TILT) / span);
-  return FREE_TILT + span * Math.atanh(t);
-}
-
 export class RotationMotion {
   /** Front-facing curled petals keep the negative spaces and recessed script readable. */
   static readonly homeEuler = new Euler(0.34, -0.12, 0, "XYZ");
@@ -40,135 +37,134 @@ export class RotationMotion {
     return new Quaternion().setFromEuler(RotationMotion.homeEuler);
   }
 
+  /** The heart's pose: the whole rose turns with it. */
   readonly orientation: Quaternion;
-  /** Unlimited pose under the hand; orientation is its rubber-banded image. */
-  private readonly raw: Quaternion;
-  readonly axis = new Vector3(0, 1, 0);
+  /** Where the hand has turned the rose: x tips it, y turns it sideways. */
+  readonly target = new Vector2();
+  /** The heart's current turn, easing toward the target. */
+  readonly spin = new Vector2();
+  /** Petal layers, outermost first; the outer ones follow later. */
+  readonly layers: Layer[] = Array.from({ length: PETAL_TRACKS }, (_, row) => ({
+    spin: new Vector2(),
+    lag: 0.18 + 0.17 * (PETAL_TRACKS - row),
+  }));
   phase: RotationPhase = "idle";
+  /** Angular speed of the heart, rad/s. */
   speed = 0;
-  private age = 0;
-  private increment = new Quaternion();
+  private returnDelay = 0;
 
   constructor(readonly home: Quaternion) {
     this.orientation = home.clone();
-    this.raw = home.clone();
   }
 
-  /**
-   * Splits `source` into a twist about the rose's home axis and a swing
-   * away from it, maps the swing angle, and writes the recomposed pose.
-   */
-  private remapSwing(
-    source: Quaternion,
-    map: (angle: number) => number,
-    out: Quaternion
-  ) {
-    relative.copy(source).multiply(twist.copy(this.home).invert());
-    roseAxis.set(0, 0, 1).applyQuaternion(this.home);
-    const along =
-      relative.x * roseAxis.x +
-      relative.y * roseAxis.y +
-      relative.z * roseAxis.z;
-    twist.set(
-      roseAxis.x * along,
-      roseAxis.y * along,
-      roseAxis.z * along,
-      relative.w
-    );
-    if (twist.lengthSq() < 1e-12) twist.identity();
-    else twist.normalize();
-    swing.copy(relative).multiply(identity.copy(twist).invert());
-    identity.identity();
-    const angle = 2 * Math.acos(Math.min(1, Math.abs(swing.w)));
-    if (angle > 1e-6) swing.copy(identity.slerp(swing, map(angle) / angle));
-    out.copy(swing).multiply(twist).multiply(this.home).normalize();
-  }
-
-  /** Raw pose whose limited image is the current orientation. */
-  private unlimit() {
-    this.remapSwing(this.orientation, unlimitTilt, this.raw);
-  }
-
-  private limit(source: Quaternion) {
-    this.remapSwing(source, limitTilt, this.orientation);
-  }
-
-  /**
-   * Applies an incremental drag displacement in screen/surface space.
-   * Converts deltaX and deltaY into an incremental rotation quaternion.
-   */
-  applyDrag(deltaX: number, deltaY: number, sensitivity = 0.005) {
-    if (this.phase !== "dragging") return;
-    const distance = Math.hypot(deltaX, deltaY);
-    if (distance < 0.0001) return;
-    const angle = distance * sensitivity;
-    const axis = new Vector3(-deltaY, deltaX, 0).normalize();
-    const deltaQ = new Quaternion().setFromAxisAngle(axis, angle);
-    this.move(deltaQ, 0.016);
-  }
-
-  /** Advances simulation by dt and returns the updated orientation. */
-  step(dt: number): Quaternion {
-    this.advance(dt);
-    return this.orientation;
-  }
-
+  /** Takes hold of the rose where it is, target and all. */
   begin() {
     this.phase = "dragging";
-    this.unlimit();
-    this.speed = 0;
-    this.age = 0;
+    this.returnDelay = 0;
   }
 
-  move(delta: Quaternion, dt: number) {
-    if (this.phase !== "dragging") return;
-    this.raw.premultiply(delta).normalize();
-    this.limit(this.raw);
-    const angle = 2 * Math.acos(Math.min(1, Math.abs(delta.w)));
-    if (angle > 0.00001) {
-      this.axis.set(delta.x, delta.y, delta.z).normalize();
-      this.speed = Math.min(2.4, angle / Math.max(dt, 0.008));
-    } else this.speed = 0;
+  /** Turns the target by a screen-space drag, in pixels (y down). */
+  drag(deltaX: number, deltaY: number, radiansPerPixel = 0.005) {
+    this.turn(deltaY * radiansPerPixel, deltaX * radiansPerPixel);
   }
 
-  release(cancelled = false) {
+  /** Turns the target by x (tip) and y (sideways) radians. */
+  turn(x: number, y: number) {
     if (this.phase !== "dragging") return;
-    if (cancelled) this.speed = 0;
-    this.phase = this.speed > 0.01 ? "inertia" : "returning";
-    this.age = 0;
+    this.target.set(
+      clampTurn(this.target.x + x),
+      clampTurn(this.target.y + y)
+    );
+  }
+
+  /**
+   * Lets go: after `delay` seconds the rose turns back to face the reader.
+   * A cancelled gesture returns at once.
+   */
+  release(delay = 0) {
+    if (this.phase !== "dragging") return;
+    this.phase = "returning";
+    this.unwind();
+    this.returnDelay = Math.max(0, delay);
+    if (this.returnDelay === 0) this.target.set(0, 0);
+  }
+
+  /**
+   * A whole turn about either axis is the same pose, so drop whole turns
+   * before heading home: the rose takes the short way back instead of
+   * unwinding every turn the hand gave it.
+   */
+  private unwind() {
+    const turnsX = Math.round(this.spin.x / (2 * Math.PI)) * 2 * Math.PI;
+    const turnsY = Math.round(this.spin.y / (2 * Math.PI)) * 2 * Math.PI;
+    if (turnsX === 0 && turnsY === 0) return;
+    this.target.x -= turnsX;
+    this.target.y -= turnsY;
+    this.spin.x -= turnsX;
+    this.spin.y -= turnsY;
+    for (const layer of this.layers) {
+      layer.spin.x -= turnsX;
+      layer.spin.y -= turnsY;
+    }
   }
 
   reset() {
+    this.target.set(0, 0);
+    this.spin.set(0, 0);
+    for (const layer of this.layers) layer.spin.set(0, 0);
     this.orientation.copy(this.home);
-    this.raw.copy(this.home);
     this.speed = 0;
-    this.age = 0;
+    this.returnDelay = 0;
     this.phase = "idle";
   }
 
+  /** Pose of one petal layer; any other row turns with the heart. */
+  layerOrientation(row: number, out = new Quaternion()) {
+    const layer = this.layers[row];
+    return layer
+      ? RotationMotion.pose(layer.spin, this.home, out)
+      : out.copy(this.orientation);
+  }
+
+  /**
+   * One petal layer's turn relative to the heart, in the rose's own frame:
+   * applied to the layer's points before the heart's pose, it gives the
+   * layer's own pose.
+   */
+  layerTwist(row: number, out = new Quaternion()) {
+    this.layerOrientation(row, out);
+    return out.premultiply(inverse.copy(this.orientation).invert());
+  }
+
+  private static pose(spin: Vector2, home: Quaternion, out: Quaternion) {
+    euler.set(spin.x, spin.y, 0);
+    return out.setFromEuler(euler).multiply(home);
+  }
+
   advance(dt: number) {
-    if (this.phase === "idle" || this.phase === "dragging") return;
-    this.age += dt;
-    if (this.phase === "inertia") {
-      // Exact exponential integration gives the same coast at 30/60/120 Hz.
-      // A short glide carries the flick, still inside the tilt limit.
-      this.increment.setFromAxisAngle(
-        this.axis,
-        (this.speed * (1 - Math.exp(-dt * 6))) / 6
-      );
-      this.unlimit();
-      this.raw.premultiply(this.increment).normalize();
-      this.limit(this.raw);
-      this.speed *= Math.exp(-dt * 6);
-      // Home attraction runs through the coast so the settle reads as one
-      // continuous motion instead of a coast that suddenly snaps back.
-      this.orientation.slerp(this.home, 1 - Math.exp(-dt * 1.6));
-      if (this.speed < 0.05) this.phase = "returning";
-    } else {
-      // Ease home with a ~0.3s time constant: calm, but whole again in ~2s.
-      this.orientation.slerp(this.home, 1 - Math.exp(-dt * 3.2));
+    if (this.phase === "idle" || !(dt > 0)) {
       this.speed = 0;
-      if (this.orientation.angleTo(this.home) < 0.002) this.reset();
+      return;
     }
+    if (this.phase === "returning" && this.returnDelay > 0) {
+      this.returnDelay -= dt;
+      if (this.returnDelay <= 0) this.target.set(0, 0);
+    }
+    const rate = this.phase === "returning" ? RETURN_RATE : FOLLOW_RATE;
+    const beforeX = this.spin.x,
+      beforeY = this.spin.y;
+    this.spin.lerp(this.target, 1 - Math.exp(-rate * dt));
+    this.speed = Math.hypot(this.spin.x - beforeX, this.spin.y - beforeY) / dt;
+    let settled =
+      this.returnDelay <= 0 && this.spin.distanceTo(this.target) < SETTLED;
+    for (const layer of this.layers) {
+      layer.spin.lerp(
+        this.target,
+        1 - Math.exp(-(rate / (1 + layer.lag * LAYER_LAG * 2.5)) * dt)
+      );
+      if (layer.spin.distanceTo(this.target) >= SETTLED) settled = false;
+    }
+    RotationMotion.pose(this.spin, this.home, this.orientation);
+    if (this.phase === "returning" && settled) this.reset();
   }
 }

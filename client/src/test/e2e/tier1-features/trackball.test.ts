@@ -43,85 +43,52 @@ describe("Tier 1: Feature Coverage - 3D Trackball Drag & Canonical Home Pose (F9
     expect(pRim.length()).toBeCloseTo(1.0, 4);
   });
 
-  it("updates orientation coherently during active drag and caps angular speed at 2.4 rad/s", () => {
+  it("turns the target with the drag and eases the rose after it", () => {
     const motion = new RotationMotion(homeQuat);
     motion.begin();
     expect(motion.phase).toBe("dragging");
 
-    // Apply incremental drag rotation around Y axis
-    const dragDelta = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), 0.1);
-    motion.move(dragDelta, 0.016);
-
-    expect(motion.orientation.angleTo(homeQuat)).toBeGreaterThan(0.05);
-    expect(motion.speed).toBeGreaterThan(0);
-    expect(motion.speed).toBeLessThanOrEqual(2.4);
-
-    // Ultra-fast flick with huge delta
-    const largeDelta = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), 1.5);
-    motion.move(largeDelta, 0.016);
-    expect(motion.speed).toBe(2.4); // Hard cap at 2.4 rad/s
+    motion.drag(40, 0);
+    expect(motion.target.y).toBeCloseTo(0.2, 6);
+    // The visible pose follows over the next frames, not in one jump.
+    motion.advance(0.016);
+    const first = motion.orientation.angleTo(homeQuat);
+    expect(first).toBeGreaterThan(0.02);
+    expect(first).toBeLessThan(0.2);
+    for (let i = 0; i < 60; i++) motion.advance(0.016);
+    expect(motion.orientation.angleTo(homeQuat)).toBeCloseTo(0.2, 3);
+    expect(Number.isFinite(motion.speed)).toBe(true);
   });
 
-  it("decays coasting speed exponentially with damping factor gamma = 6.0", () => {
+  it("returns home on release with no coast in the drag direction", () => {
     const motion = new RotationMotion(homeQuat);
     motion.begin();
-    const dragDelta = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), 0.05);
-    motion.move(dragDelta, 0.016);
-    const initialSpeed = motion.speed;
-
+    motion.turn(0, 0.5);
+    for (let i = 0; i < 30; i++) motion.advance(0.016);
+    const held = motion.spin.y;
     motion.release();
-    expect(motion.phase).toBe("inertia");
-
-    // Advance 0.25s: speed should decay by exp(-6 * 0.25) = exp(-1.5) = 0.2231
-    motion.advance(0.25);
-    expect(motion.speed).toBeCloseTo(initialSpeed * Math.exp(-1.5), 2);
-  });
-
-  it("transitions from inertia coast to returning phase when speed drops below 0.05 rad/s", () => {
-    const motion = new RotationMotion(homeQuat);
-    motion.begin();
-    const dragDelta = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), 0.02);
-    motion.move(dragDelta, 0.016);
-
-    motion.release();
-    expect(motion.phase).toBe("inertia");
-
-    // Advance until phase transitions to "returning"
-    while (motion.phase === "inertia") {
-      motion.advance(0.1);
-    }
-
     expect(motion.phase).toBe("returning");
-    expect(motion.speed).toBeLessThan(0.05);
-
-    // Next step in returning phase zeroes speed
-    motion.advance(0.1);
-    expect(motion.speed).toBe(0);
+    motion.advance(0.016);
+    expect(motion.spin.y).toBeLessThan(held);
   });
 
-  it("snaps cleanly to canonical home pose when angular error falls below 0.002 rad", () => {
+  it("snaps cleanly to canonical home pose once every layer has settled", () => {
     const motion = new RotationMotion(homeQuat);
     motion.begin();
-    const tinyDelta = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), 0.001);
-    motion.move(tinyDelta, 0.2); // Low speed: 0.001 / 0.2 = 0.005 <= 0.01
+    motion.turn(0, 0.0005);
     motion.release();
-
-    // Low speed triggers immediate "returning" phase
     expect(motion.phase).toBe("returning");
-
-    // Advance until snapped
     motion.advance(0.016);
     expect(motion.phase).toBe("idle");
     expect(motion.orientation.angleTo(homeQuat)).toBeCloseTo(0, 5);
   });
 
-
   it("maintains consistent settle dynamics across 30Hz, 60Hz, and 120Hz display refresh rates", () => {
     const simulateSettle = (dt: number) => {
       const motion = new RotationMotion(homeQuat);
       motion.begin();
-      const delta = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), 0.2);
-      motion.move(delta, 0.016);
+      motion.turn(0, 0.8);
+      for (let t = 0; t < 0.5; t += dt) motion.advance(dt);
       motion.release();
 
       let elapsed = 0;
@@ -136,9 +103,9 @@ describe("Tier 1: Feature Coverage - 3D Trackball Drag & Canonical Home Pose (F9
     const settleTime60 = simulateSettle(1 / 60);
     const settleTime120 = simulateSettle(1 / 120);
 
-    // All should settle in about two seconds: calm, not lingering.
-    expect(settleTime30).toBeGreaterThan(1.5);
-    expect(settleTime30).toBeLessThan(3);
+    // Home again in about three seconds: calm, not lingering.
+    expect(settleTime30).toBeGreaterThan(2);
+    expect(settleTime30).toBeLessThan(4);
     expect(settleTime60).toBeCloseTo(settleTime30, 0);
     expect(settleTime120).toBeCloseTo(settleTime60, 0);
   });

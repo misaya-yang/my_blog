@@ -1,111 +1,148 @@
 import { describe, expect, it } from "vitest";
-import { Quaternion, Vector3 } from "three";
-import { limitTilt, RotationMotion, unlimitTilt } from "./rotationMotion";
+import { Euler, Quaternion, Vector3 } from "three";
+import { RotationMotion } from "./rotationMotion";
+import { PETAL_TRACKS } from "./roseTracks";
 
-describe("drag, coast and return", () => {
-  const delta = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), 1);
-  it("stops consuming motion on release and returns home after a soft settle", () => {
-    const motion = new RotationMotion(new Quaternion());
+const run = (motion: RotationMotion, seconds: number, hz = 60) => {
+  for (let i = 0; i < Math.round(seconds * hz); i++) motion.advance(1 / hz);
+};
+
+describe("drag, follow and return", () => {
+  it("turns freely in 3D, right over onto its back", () => {
+    const home = RotationMotion.defaultHomeQuaternion();
+    const motion = new RotationMotion(home);
     motion.begin();
-    motion.move(delta, 0.1);
-    motion.release();
-    const released = motion.orientation.clone();
-    motion.move(delta, 0.1);
-    expect(motion.orientation.angleTo(released)).toBe(0);
-    expect(motion.phase).toBe("inertia");
-    // The gesture lingers briefly: still visibly displaced after a quarter
-    // second, whole again within ~3s.
-    for (let i = 0; i < 15; i++) motion.advance(1 / 60);
-    expect(motion.orientation.angleTo(motion.home)).toBeGreaterThan(0.05);
-    for (let i = 15; i < 180; i++) motion.advance(1 / 60);
-    expect(motion.orientation.angleTo(motion.home)).toBeLessThan(0.003);
+    motion.drag((Math.PI / 0.005) * 1, 0);
+    run(motion, 1.5);
+    expect(motion.orientation.angleTo(home)).toBeCloseTo(Math.PI, 2);
+    // Keep going and it turns right round, bounded at two full turns.
+    motion.drag(1e6, -1e6);
+    expect(motion.target.x).toBeCloseTo(-4 * Math.PI, 6);
+    expect(motion.target.y).toBeCloseTo(4 * Math.PI, 6);
+    expect(motion.phase).toBe("dragging");
   });
-  it("re-grabbing interrupts return without snapping; cancellation removes coast", () => {
+
+  it("maps sideways travel to a turn about the vertical, vertical travel to a tip", () => {
+    const home = new Quaternion();
+    const motion = new RotationMotion(home);
+    motion.begin();
+    motion.drag(100, 0);
+    run(motion, 1);
+    const front = new Vector3(0, 0, 1).applyQuaternion(motion.orientation);
+    expect(front.x).toBeGreaterThan(0.4);
+    expect(Math.abs(front.y)).toBeLessThan(1e-6);
+    motion.reset();
+    motion.begin();
+    motion.drag(0, 100);
+    run(motion, 1);
+    const tipped = new Vector3(0, 0, 1).applyQuaternion(motion.orientation);
+    expect(tipped.y).toBeLessThan(-0.4);
+    expect(Math.abs(tipped.x)).toBeLessThan(1e-6);
+  });
+
+  it("eases toward the hand: the heart first, each outer layer a little later", () => {
     const motion = new RotationMotion(new Quaternion());
     motion.begin();
-    motion.move(delta, 0.1);
+    motion.turn(0, 1);
+    motion.advance(1 / 60);
+    expect(motion.spin.y).toBeGreaterThan(0.1);
+    expect(motion.spin.y).toBeLessThan(0.3);
+    run(motion, 0.1);
+    const spins = motion.layers.map(layer => layer.spin.y);
+    expect(spins).toHaveLength(PETAL_TRACKS);
+    for (let row = 1; row < spins.length; row++)
+      expect(spins[row]).toBeGreaterThan(spins[row - 1]);
+    expect(motion.spin.y).toBeGreaterThan(spins[spins.length - 1]);
+    // Each layer's twist is its pose relative to the heart.
+    const twist = motion.layerTwist(0);
+    const composed = motion.orientation.clone().multiply(twist);
+    expect(composed.angleTo(motion.layerOrientation(0))).toBeLessThan(1e-6);
+    run(motion, 1.5);
+    for (const layer of motion.layers)
+      expect(layer.spin.y).toBeCloseTo(1, 2);
+    expect(motion.layerTwist(0).angleTo(new Quaternion())).toBeLessThan(0.01);
+  });
+
+  it("lets go and turns back to face the reader, with no fling", () => {
+    const motion = new RotationMotion(new Quaternion());
+    motion.begin();
+    motion.turn(0.4, 1.5);
+    run(motion, 0.5);
     motion.release();
-    motion.advance(0.2);
+    expect(motion.phase).toBe("returning");
+    const released = motion.orientation.angleTo(motion.home);
+    motion.turn(1, 1);
+    expect(motion.target.length()).toBe(0);
+    motion.advance(1 / 60);
+    // Heads straight home rather than carrying on in the drag direction.
+    expect(motion.orientation.angleTo(motion.home)).toBeLessThan(released);
+    run(motion, 4);
+    expect(motion.phase).toBe("idle");
+    expect(motion.orientation.angleTo(motion.home)).toBe(0);
+  });
+
+  it("holds a key turn for a moment before returning", () => {
+    const motion = new RotationMotion(new Quaternion());
+    motion.begin();
+    motion.turn(0, 0.3);
+    motion.release(1.4);
+    run(motion, 1);
+    expect(motion.spin.y).toBeCloseTo(0.3, 2);
+    run(motion, 3);
+    expect(motion.phase).toBe("idle");
+  });
+
+  it("re-grabbing mid-return takes the rose where it is", () => {
+    const motion = new RotationMotion(new Quaternion());
+    motion.begin();
+    motion.turn(0, 1);
+    run(motion, 1);
+    motion.release();
+    run(motion, 0.1);
     const pose = motion.orientation.clone();
     motion.begin();
-    motion.advance(1 / 60);
-    expect(motion.orientation.toArray()).toEqual(pose.toArray());
-    motion.move(delta, 0.1);
-    motion.release(true);
-    expect(motion.phase).toBe("returning");
-    expect(motion.speed).toBe(0);
-  });
-  it("has comparable recovery at 30, 60 and 120 Hz", () => {
-    const angles = [30, 60, 120].map(hz => {
-      const motion = new RotationMotion(new Quaternion());
-      motion.begin();
-      motion.move(delta, 0.1);
-      motion.release();
-      for (let i = 0; i < hz; i++) motion.advance(1 / hz);
-      return motion.orientation.angleTo(motion.home);
-    });
-    expect(Math.max(...angles) - Math.min(...angles)).toBeLessThan(0.005);
+    expect(motion.orientation.angleTo(pose)).toBe(0);
+    motion.turn(0, 0.2);
+    run(motion, 1);
+    expect(motion.spin.y).toBeCloseTo(0.2, 3);
   });
 
-  it("spins freely about the rose axis but only leans slightly, never into a bowl", () => {
-    expect(limitTilt(0.05)).toBe(0.05);
-    expect(limitTilt(0.15)).toBeLessThan(0.15);
-    expect(limitTilt(10)).toBeLessThanOrEqual(0.19);
-    for (const angle of [0.05, 0.1, 0.15, 0.18])
-      expect(limitTilt(unlimitTilt(angle))).toBeCloseTo(angle, 6);
-    const home = RotationMotion.defaultHomeQuaternion();
-    const axis = new Vector3(0, 0, 1).applyQuaternion(home);
-    const spin = new RotationMotion(home);
-    spin.begin();
-    for (let i = 0; i < 10; i++)
-      spin.move(new Quaternion().setFromAxisAngle(axis, 0.2), 1 / 60);
-    expect(spin.orientation.angleTo(home)).toBeCloseTo(2, 5);
-    expect(
-      new Vector3(0, 0, 1).applyQuaternion(spin.orientation).angleTo(axis)
-    ).toBeLessThan(1e-6);
-    const motion = new RotationMotion(new Quaternion());
-    motion.begin();
-    for (let i = 0; i < 20; i++) motion.move(delta, 1 / 60);
-    // delta turns about Y, a pure lean for the untilted home pose.
-    expect(motion.orientation.angleTo(motion.home)).toBeLessThanOrEqual(0.1901);
-    // Picking the limited pose up again does not make it jump.
-    motion.release(true);
-    const held = motion.orientation.clone();
-    motion.begin();
-    motion.move(new Quaternion(), 1 / 60);
-    expect(motion.orientation.angleTo(held)).toBeLessThan(2e-4);
+  it("moves alike at 30, 60 and 120 Hz", () => {
+    const poses = [30, 60, 120].map(hz => {
+      const motion = new RotationMotion(new Quaternion());
+      motion.begin();
+      motion.turn(0.3, 1.2);
+      run(motion, 0.4, hz);
+      motion.release();
+      run(motion, 0.3, hz);
+      return motion.layerOrientation(0);
+    });
+    expect(poses[0].angleTo(poses[2])).toBeLessThan(1e-6);
+    expect(poses[1].angleTo(poses[2])).toBeLessThan(1e-6);
   });
 
   it("uses one canonical home orientation for initial pose and recovery", () => {
     expect(RotationMotion.homeEuler.order).toBe("XYZ");
-
     const quat = RotationMotion.defaultHomeQuaternion();
     const expectedQuat = new Quaternion().setFromEuler(
-      RotationMotion.homeEuler
+      new Euler().copy(RotationMotion.homeEuler)
     );
     expect(quat.angleTo(expectedQuat)).toBeCloseTo(0, 5);
-
     const motion = new RotationMotion(quat);
     expect(motion.orientation.angleTo(expectedQuat)).toBeCloseTo(0, 5);
   });
 
-  it("applies incremental drag displacement via applyDrag and advances via step", () => {
+  it("ignores non-finite input and zero or negative time steps", () => {
     const motion = new RotationMotion(RotationMotion.defaultHomeQuaternion());
     motion.begin();
-
-    // applyDrag when dragging
-    motion.applyDrag(50, 0);
-    expect(motion.speed).toBeGreaterThan(0);
-    expect(motion.orientation.angleTo(motion.home)).toBeGreaterThan(0.01);
-
-    // applyDrag when not dragging is ignored
-    motion.release();
-    const releasedAngle = motion.orientation.angleTo(motion.home);
-    motion.applyDrag(50, 0);
-    expect(motion.orientation.angleTo(motion.home)).toBe(releasedAngle);
-
-    // step(dt) advances the simulation and returns the orientation
-    const nextQuat = motion.step(1 / 60);
-    expect(nextQuat).toBe(motion.orientation);
+    motion.turn(Number.NaN, Number.POSITIVE_INFINITY);
+    motion.advance(0);
+    motion.advance(-1);
+    expect(motion.speed).toBe(0);
+    expect(motion.orientation.angleTo(motion.home)).toBe(0);
+    motion.turn(0.5, 0);
+    motion.advance(60);
+    expect(Number.isFinite(motion.speed)).toBe(true);
+    expect(motion.spin.x).toBeCloseTo(0.5, 6);
   });
 });

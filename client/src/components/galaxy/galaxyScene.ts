@@ -11,6 +11,7 @@ import {
   Mesh,
   Matrix4,
   DataTexture,
+  Euler,
   FloatType,
   RGBAFormat,
   NearestFilter,
@@ -29,6 +30,7 @@ import {
   TRACK_SAMPLES,
   PETAL_TRACKS,
   sampleTrack,
+  HEART_Z,
 } from "./roseTracks";
 import { RotationMotion } from "./rotationMotion";
 import { ParticleField } from "./particleField";
@@ -41,7 +43,6 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { CompositePass } from "./compositePass";
 import { BloomPyramidPass } from "./bloomPyramid";
-import { projectTrackball, trackballDelta } from "./trackball";
 import { getPageScene } from "./pageScene";
 import { getScrollMotion, type MotionState } from "./scrollMotion";
 import { RenderQuality } from "./renderQuality";
@@ -53,6 +54,17 @@ import {
   createHazeMaterialSource,
   createHazePoints,
 } from "./nebulaGas";
+
+/**
+ * Turn, in radians, for a drag the length of the rose's radius: dragging
+ * across the whole flower turns it a little past halfway round.
+ */
+const DRAG_TURN = 1.9;
+/** Arrow keys turn the rose a step, hold it a moment, then let it return. */
+const KEY_TURN = Math.PI / 10;
+const KEY_HOLD = 1.4;
+/** The bloom's outer petals sit back from the heart; let the fit reach them. */
+const ROSE_MAX_SCALE = 1.2;
 
 function smoothstep01(x: number) {
   const t = Math.min(1, Math.max(0, x));
@@ -180,7 +192,8 @@ export function createGalaxy(
   scene.add(group);
   // Dust and luminous stars have independent geometry and optical profiles.
   // Billboard stars keep a broad halo without relying on hardware point-size limits.
-  const count = 4600;
+  // Dense enough that the petal lines stay continuous seen edge-on.
+  const count = 6400;
   const positions = new Float32Array(count * 3);
   const tracks = createRoseTracks();
   const phaseSamplers = tracks.map((_, i) => createPhaseSampler(i));
@@ -355,6 +368,8 @@ export function createGalaxy(
     uniform float uTime; uniform float uLight; uniform float uIntro;
     uniform float uScatterRadius;
     attribute vec4 aOrbit;
+    uniform float uFacing;
+    uniform vec4 uLayerTwist[${PETAL_TRACKS}];
     uniform sampler2D uTracks;
     uniform float uTrackRows;
     uniform sampler2D uAmbientTracks;
@@ -393,6 +408,15 @@ export function createGalaxy(
       return mix(ambientLookup(uAmbientFromTracks,oldPhase),ambientLookup(uAmbientTracks,newPhase),uAmbientMorph);
     }
     float flowPhase(float age) { return fract(aOrbit.y+(uTime-age)*aOrbit.z); }
+    // Each petal layer's own turn relative to the heart: while the rose
+    // turns, the outer layers follow a little later than the inner ones.
+    vec3 layerTwist(vec3 p) {
+      if (aOrbit.x >= ${PETAL_TRACKS}.0) return p;
+      float row = floor(aOrbit.x + 0.5);
+      vec4 q = row < 0.5 ? uLayerTwist[0] : row < 1.5 ? uLayerTwist[1]
+        : row < 2.5 ? uLayerTwist[2] : uLayerTwist[3];
+      return p + 2.0 * cross(q.xyz, cross(q.xyz, p) + q.w * p);
+    }
     float flowFade(vec3 p) {
       if (aOrbit.x < ${PETAL_TRACKS}.0) return 1.0;
       float f = flowPhase(0.0);
@@ -469,6 +493,7 @@ export function createGalaxy(
       float across = aOrbit.w*trackSample.w;
       p.xy += vec2(-tangent2.y,tangent2.x)*across;
       p.z += aOrbit.x < ${PETAL_TRACKS}.0 ? sin(aOrbit.y*109.0)*abs(across)*1.5 : 0.0;
+      p = layerTwist(p);
       p = applyIntro(p, original, result);
       // The per-article constellation: off the rose tracks, onto seeded
       // contours with a slow drift, morphed only where the rose is not the subject.
@@ -490,10 +515,16 @@ export function createGalaxy(
       p += radial * burst * (0.35 + radius * 0.65) + tangent * burst * 0.45;
       vec4 view = particleMatrix * vec4(p, 1.0);
       if (aOrbit.x >= ${PETAL_TRACKS}.0) {
-        // Keep the handwritten strokes readable while their recessed anchor follows the flower.
-        vec4 heart = particleMatrix * vec4(0.0,0.0,-1.42,1.0);
+        // Facing the reader, the handwriting stands upright on its anchor in
+        // the heart; turned away, it turns with the flower like the petals.
+        vec4 heart = particleMatrix * vec4(0.0,0.0,${HEART_Z.toFixed(3)},1.0);
         float scale = length(particleMatrix[0].xyz);
-        view = mix(heart + vec4(p.xy*scale,0.0,0.0),view,uAmbientBlend);
+        float rigid = max(uAmbientBlend,1.0-uFacing);
+        view = mix(heart + vec4(p.xy*scale,0.0,0.0),view,rigid);
+        // Seen edge-on the strokes would pile into one dense smear: they fade
+        // as the handwriting's plane turns away from the reader.
+        float edgeOn = abs(particleMatrix[2].z) / max(scale, 0.0001);
+        result.flow *= mix(1.0, smoothstep(0.12, 0.45, edgeOn), rigid*(1.0-uAmbientBlend));
       }
       vec3 seed = fract(sin(vec3(dot(original,vec3(12.9898,78.233,37.719)), dot(original,vec3(39.346,11.135,83.155)), dot(original,vec3(73.156,52.235,9.151)))) * 43758.5453);
       float split = historicalSplit;
@@ -587,6 +618,10 @@ export function createGalaxy(
     uScrollPhase: { value: 0 },
     uPreviousScrollPhase: { value: 0 },
     uSideX: { value: 0 },
+    uFacing: { value: 1 },
+    uLayerTwist: {
+      value: Array.from({ length: PETAL_TRACKS }, () => new Vector4(0, 0, 0, 1)),
+    },
     uTime: { value: 0 },
     uPagePose: { value: new Vector3() },
     uPreviousPointer: { value: new Vector2(4, 4) },
@@ -1145,14 +1180,12 @@ export function createGalaxy(
         .toArray(fitPoints, (row * 48 + i) * 3);
   const homeFit: RoseFit = { scale: 1, x: 0, y: 0 };
   let homeFitKey = "";
-  const angularAxis = new Vector3(0, 1, 0);
-  const increment = new Quaternion();
   let dragging = false,
     activePointer = -1,
     lastMoveTime = 0;
-  const dragPoint = new Vector3();
-  const nextDragPoint = new Vector3();
-  const deltaRotation = new Quaternion();
+  const dragLast = new Vector2();
+  const layerTwist = new Quaternion();
+  const layerTwistData = new Float32Array(PETAL_TRACKS * 4);
   const pointer = new Vector2(4, 4);
   const pointerTarget = new Vector2(4, 4);
   const previousPointer = new Vector2(4, 4);
@@ -1163,12 +1196,12 @@ export function createGalaxy(
     active: false,
   };
   const brushStep = new Vector2();
-  let dragAngle = 0;
-  const twistAxis = new Vector3();
-  const twistRotation = new Quaternion();
-  const noRotation = new Quaternion();
-  const dragCenter = new Vector3();
   let dragRadius = 100;
+  // At rest the rose sways a few degrees on its own, so its depth shows
+  // before anyone touches it. The sway fades out under the hand.
+  let sway = 0;
+  const swayEuler = new Euler(0, 0, 0, "YXZ");
+  const pose = initialOrientation.clone();
   let field: ParticleField | undefined;
   let pageScene = getPageScene(page);
   let hero: HTMLElement | null = null,
@@ -1483,7 +1516,37 @@ export function createGalaxy(
 
     if (!paused) rotation.advance(dt);
     host.dataset.interaction = rotation.phase;
-    group.quaternion.copy(orientation);
+    const swayTarget = rotation.phase === "idle" && !reducedMotion ? 1 : 0;
+    sway +=
+      (swayTarget - sway) *
+      (paused ? 0 : 1 - Math.exp(-dt * (swayTarget > sway ? 0.8 : 4)));
+    swayEuler.set(
+      0.04 * Math.sin(elapsed * 0.31) * sway,
+      0.1 * Math.sin(elapsed * 0.23) * sway,
+      0
+    );
+    pose.setFromEuler(swayEuler).multiply(orientation);
+    group.quaternion.copy(pose);
+    for (let row = 0; row < PETAL_TRACKS; row++) {
+      rotation.layerTwist(row, layerTwist);
+      (uniforms.uLayerTwist.value[row] as Vector4).set(
+        layerTwist.x,
+        layerTwist.y,
+        layerTwist.z,
+        layerTwist.w
+      );
+      layerTwist.toArray(layerTwistData, row * 4);
+    }
+    // Edge-on, the gas thins so its splats don't pile into a bright slab.
+    const facingView = Math.abs(
+      1 - 2 * (pose.x * pose.x + pose.y * pose.y)
+    );
+    compositePass.nebulaVisibility =
+      0.3 + 0.7 * smoothstep01((facingView - 0.15) / 0.55);
+    // Facing the reader, the signature stands upright; turned well away,
+    // it turns with the flower.
+    uniforms.uFacing.value =
+      1 - smoothstep01((pose.angleTo(initialOrientation) - 0.3) / 0.5);
     // Ambient flow follows local strokes; user input owns the 3D orientation.
     const splitBlend = uniforms.uSplit.value;
     const worldHeight =
@@ -1521,7 +1584,7 @@ export function createGalaxy(
           top: fitTop,
           bottom: fitBottom,
         },
-        1,
+        ROSE_MAX_SCALE,
         homeFit
       );
     }
@@ -1557,8 +1620,8 @@ export function createGalaxy(
           (scrollProgress * stageHeight * 0.85 * worldHeight) / bounds.height) *
         homeComposition;
     group.position.z = 0;
-    pivotOffset.set(0, 0, -1.42).applyQuaternion(initialOrientation);
-    rotatedPivot.set(0, 0, -1.42).applyQuaternion(orientation);
+    pivotOffset.set(0, 0, HEART_Z).applyQuaternion(initialOrientation);
+    rotatedPivot.set(0, 0, HEART_Z).applyQuaternion(pose);
     group.position.add(
       pivotOffset.sub(rotatedPivot).multiplyScalar(group.scale.x)
     );
@@ -1567,7 +1630,7 @@ export function createGalaxy(
     viewPose.multiplyMatrices(camera.matrixWorldInverse, group.matrixWorld);
     // The luminous lvy heart, not the group origin, anchors the flare and the
     // trackball pivot; in screen space the two differ only by depth.
-    heartWorld.set(0, 0, -1.42).applyMatrix4(group.matrixWorld);
+    heartWorld.set(0, 0, HEART_Z).applyMatrix4(group.matrixWorld);
     uniforms.uFocus.value = camera.position.z - heartWorld.z;
     heartWorld.project(camera);
     artworkCenter.set(
@@ -1632,6 +1695,8 @@ export function createGalaxy(
             positions: fieldPositions,
             orbits: fieldOrbits,
             brights: fieldBrights,
+            facing: uniforms.uFacing.value,
+            layerTwists: layerTwistData,
             dustCount: count,
             tracks: trackData,
             ambientFrom: ambientFromData,
@@ -1778,7 +1843,7 @@ export function createGalaxy(
     frame = requestAnimationFrame(tick);
   }
   function cancelInput() {
-    finishDrag(true);
+    finishDrag();
     brush.active = false;
     brush.velocity.set(0, 0);
     targetHover = hover = 0;
@@ -1906,33 +1971,14 @@ export function createGalaxy(
     if (hover < 0.01) pointer.copy(pointerTarget);
     targetHover = eligible ? 1 : 0;
     if (dragging && event.pointerId === activePointer) {
-      // Circling the heart spins the rose about its own axis, like turning a
-      // record; the trackball only adds a slight lean toward the hand.
-      const rx = px - dragCenter.x,
-        ry = py - dragCenter.y;
-      const angle = Math.atan2(ry, rx);
-      let turn = angle - dragAngle;
-      if (turn > Math.PI) turn -= Math.PI * 2;
-      if (turn < -Math.PI) turn += Math.PI * 2;
-      dragAngle = angle;
-      turn *= smoothstep01(
-        (Math.hypot(rx, ry) / Math.max(dragRadius, 1) - 0.1) / 0.3
+      // Sideways travel turns the rose about the vertical axis, vertical
+      // travel tips it over; keep going and it turns right round.
+      rotation.drag(
+        px - dragLast.x,
+        py - dragLast.y,
+        DRAG_TURN / Math.max(dragRadius, 120)
       );
-      twistAxis.set(0, 0, 1).applyQuaternion(orientation);
-      twistRotation.setFromAxisAngle(twistAxis, -turn);
-      projectTrackball(
-        rx + dragRadius,
-        ry + dragRadius,
-        dragRadius * 2,
-        dragRadius * 2,
-        nextDragPoint
-      );
-      trackballDelta(dragPoint, nextDragPoint, deltaRotation);
-      deltaRotation.copy(
-        twistRotation.multiply(noRotation.identity().slerp(deltaRotation, 0.35))
-      );
-      rotation.move(deltaRotation, (event.timeStamp - lastMoveTime) / 1000);
-      dragPoint.copy(nextDragPoint);
+      dragLast.set(px, py);
       lastMoveTime = event.timeStamp;
     }
     requestPaint();
@@ -1953,46 +1999,36 @@ export function createGalaxy(
     )
       return;
     updateLayoutRects();
-    dragCenter.copy(artworkCenter);
     dragRadius = artworkRadius;
-    dragAngle = Math.atan2(
-      event.clientY - bounds.top - dragCenter.y,
-      event.clientX - bounds.left - dragCenter.x
-    );
+    dragLast.set(event.clientX - bounds.left, event.clientY - bounds.top);
     brush.active = false;
     dragging = true;
     activePointer = event.pointerId;
-    projectTrackball(
-      event.clientX - bounds.left - dragCenter.x + dragRadius,
-      event.clientY - bounds.top - dragCenter.y + dragRadius,
-      dragRadius * 2,
-      dragRadius * 2,
-      dragPoint
-    );
     lastMoveTime = event.timeStamp;
     rotation.begin();
     controls.setPointerCapture(event.pointerId);
     controls.dataset.dragging = "true";
     move(event);
   };
-  function finishDrag(cancelled = false) {
+  function finishDrag() {
     if (!dragging) return;
     const pointerId = activePointer;
     dragging = false;
     activePointer = -1;
-    rotation.release(cancelled);
+    // Let go, or cancelled, the rose turns back to face the reader.
+    rotation.release();
     controls.dataset.dragging = "false";
     if (controls.hasPointerCapture(pointerId))
       controls.releasePointerCapture(pointerId);
   }
   const up = (event: PointerEvent) => {
     if (event.pointerId !== activePointer) return;
-    finishDrag(event.type !== "pointerup");
+    finishDrag();
     if (event.pointerType !== "mouse") targetHover = 0;
   };
   // Leaving lets the parted particles flow back instead of snapping home.
   const leave = () => {
-    finishDrag(true);
+    finishDrag();
     brush.active = false;
     targetHover = 0;
     requestPaint();
@@ -2019,23 +2055,16 @@ export function createGalaxy(
       rotation.reset();
       field?.resetHistory();
     } else {
-      // Left/right turn the rose on its axis; up/down lean it, within the
-      // same limit as a drag.
-      const spin = event.key === "ArrowLeft" || event.key === "ArrowRight";
-      if (spin) angularAxis.set(0, 0, 1).applyQuaternion(orientation);
-      else angularAxis.set(1, 0, 0);
+      // Arrows turn the rose a step as a drag in that direction would.
+      const sideways = event.key === "ArrowLeft" || event.key === "ArrowRight";
       const direction =
-        event.key === "ArrowUp" || event.key === "ArrowRight" ? -1 : 1;
+        event.key === "ArrowUp" || event.key === "ArrowLeft" ? -1 : 1;
       rotation.begin();
-      rotation.move(
-        increment.setFromAxisAngle(
-          angularAxis,
-          (direction * Math.PI) / (spin ? 12 : 24)
-        ),
-        1 / 60
+      rotation.turn(
+        sideways ? 0 : direction * KEY_TURN,
+        sideways ? direction * KEY_TURN : 0
       );
-      rotation.release(true);
-      field?.resetHistory();
+      rotation.release(KEY_HOLD);
     }
     requestPaint();
   };
@@ -2163,7 +2192,7 @@ export function createGalaxy(
         uniforms.uNavigationProgress.value = 0;
       }
       cancelInput();
-      finishDrag(true);
+      finishDrag();
       rotation.reset();
       field?.resetHistory();
       // BUG-07: Preserve intro = 1.0 on page navigation when already settled or under reducedMotion.

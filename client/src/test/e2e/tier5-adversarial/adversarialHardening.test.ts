@@ -195,31 +195,22 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       expect(motion.speed).toBe(0);
       expect(motion.phase).toBe("idle");
 
-      // Dragging phase dt = 0 move
+      // Dragging phase dt = 0
       motion.begin();
       expect(motion.phase).toBe("dragging");
-      const deltaQ = new Quaternion().setFromAxisAngle(
-        new Vector3(0, 1, 0),
-        0.2
-      );
-      motion.move(deltaQ, 0); // dt = 0 in move should be protected by Math.max(dt, 0.008)
+      motion.turn(0, 0.2);
+      motion.advance(0);
       expect(Number.isFinite(motion.speed)).toBe(true);
-      expect(motion.speed).toBeLessThanOrEqual(2.4);
       expect(motion.orientation.length()).toBeCloseTo(1.0, 6);
-
-      // Inertia phase dt = 0
-      motion.release();
-      expect(motion.phase).toBe("inertia");
+      motion.advance(0.016);
       const orientationBefore = motion.orientation.clone();
+
+      // Returning phase dt = 0
+      motion.release();
+      expect(motion.phase).toBe("returning");
       motion.advance(0);
       expect(motion.orientation.length()).toBeCloseTo(1.0, 6);
       expect(motion.orientation.angleTo(orientationBefore)).toBeCloseTo(0, 6);
-
-      // Returning phase dt = 0
-      motion.reset();
-      motion.phase = "returning";
-      motion.advance(0);
-      expect(motion.orientation.length()).toBeCloseTo(1.0, 6);
       expect(Number.isNaN(motion.orientation.x)).toBe(false);
     });
 
@@ -227,52 +218,31 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       const motion = new RotationMotion(canonicalHomeQuat);
       motion.begin();
 
-      // Drag galaxy far away from canonical pose: the spin about the rose
-      // axis is kept, while the lean away from the viewer stays limited.
-      const spinDelta = new Quaternion().setFromAxisAngle(
-        new Vector3(0.577, 0.577, 0.577).normalize(),
-        2.5
-      );
-      motion.move(spinDelta, 0.016);
-      motion.release();
-      expect(motion.phase).toBe("inertia");
+      // Drag the rose far away from its canonical pose, onto its back.
+      motion.turn(2.5, 2.5);
+      motion.advance(0.5);
       expect(motion.orientation.angleTo(canonicalHomeQuat)).toBeGreaterThan(
         0.3
       );
-      const roseAxis = new Vector3(0, 0, 1).applyQuaternion(canonicalHomeQuat);
-      expect(
-        new Vector3(0, 0, 1)
-          .applyQuaternion(motion.orientation)
-          .angleTo(roseAxis)
-      ).toBeLessThanOrEqual(0.1901);
+      motion.release();
+      expect(motion.phase).toBe("returning");
 
       // Massive dt simulation (e.g. laptop lid closed for 1 hour: dt = 3600.0s)
       motion.advance(3600.0);
-
-      // Single massive step dampens inertia speed to 0 and snaps into returning
-      expect(motion.speed).toBeCloseTo(0, 5);
-      expect(motion.phase).toBe("returning");
-
-      // Next step settles to idle
-      motion.advance(1.0);
       expect(motion.phase).toBe("idle");
-      expect(motion.orientation.angleTo(canonicalHomeQuat)).toBeLessThan(0.002);
+      expect(motion.speed).toBe(0);
+      expect(motion.orientation.angleTo(canonicalHomeQuat)).toBeLessThan(1e-6);
       expect(Number.isFinite(motion.orientation.x)).toBe(true);
     });
 
     it("prevents angular velocity explosion under ultra-high polling rate micro-dt (dt = 1e-6s)", () => {
       const motion = new RotationMotion(canonicalHomeQuat);
       motion.begin();
-
-      const delta = new Quaternion().setFromAxisAngle(
-        new Vector3(1, 0, 0),
-        0.05
-      );
+      motion.turn(0.05, 0);
       // Extreme micro-step: 1 microsecond (1e-6s)
-      motion.move(delta, 0.000001);
-
-      // Clamped to 2.4 rad/s ceiling via Math.max(dt, 0.008)
-      expect(motion.speed).toBeLessThanOrEqual(2.4);
+      motion.advance(0.000001);
+      // The speed is the heart's actual rate of turn, bounded by the follow rate.
+      expect(motion.speed).toBeLessThanOrEqual(0.05 * 14 + 1e-6);
       expect(Number.isFinite(motion.speed)).toBe(true);
       expect(Number.isNaN(motion.speed)).toBe(false);
     });
@@ -281,22 +251,18 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       const motion = new RotationMotion(canonicalHomeQuat);
       motion.begin();
 
-      const axes = [
-        new Vector3(1, 0, 0),
-        new Vector3(0, 1, 0),
-        new Vector3(0, 0, 1),
-        new Vector3(1, 1, 0).normalize(),
-        new Vector3(0, 1, 1).normalize(),
-        new Vector3(1, 0, 1).normalize(),
-      ];
-
-      // Perform 100 high-angle orthogonal and compound rotations
+      // Perform 100 high-angle compound turns, well past the turn limit.
       for (let i = 0; i < 100; i++) {
-        const axis = axes[i % axes.length];
-        const angle = ((i + 1) * Math.PI) / 6; // up to full spins
-        const rotQ = new Quaternion().setFromAxisAngle(axis, angle);
-        motion.move(rotQ, 0.016);
-
+        const angle = ((i + 1) * Math.PI) / 6;
+        motion.turn(i % 2 ? angle : -angle * 0.5, i % 3 ? angle : 0);
+        motion.advance(0.016);
+        for (let row = 0; row < motion.layers.length; row++) {
+          const layer = motion.layerOrientation(row);
+          expect(layer.length()).toBeCloseTo(1.0, 5);
+          expect(motion.layerTwist(row).length()).toBeCloseTo(1.0, 5);
+        }
+        expect(Math.abs(motion.target.x)).toBeLessThanOrEqual(4 * Math.PI);
+        expect(Math.abs(motion.target.y)).toBeLessThanOrEqual(4 * Math.PI);
         expect(motion.orientation.length()).toBeCloseTo(1.0, 5);
         expect(Number.isFinite(motion.orientation.x)).toBe(true);
         expect(Number.isFinite(motion.orientation.y)).toBe(true);
@@ -304,7 +270,6 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
         expect(Number.isFinite(motion.orientation.w)).toBe(true);
       }
     });
-
     it("handles trackball hyperbolic continuation far outside virtual radius without NaN or zero division", () => {
       const radius = 150;
       const center = 200;
@@ -342,24 +307,21 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       expect(switchVec.length()).toBeCloseTo(1.0, 5);
     });
 
-    it("selects shortest geodesic path when orientation is antipodal to canonical home pose", () => {
+    it("turns home the short way from a full turn away, without a spin back", () => {
       const motion = new RotationMotion(canonicalHomeQuat);
-      // Flip home quaternion by 180 degrees (antipodal orientation: q = -q_home)
-      motion.orientation.set(
-        -canonicalHomeQuat.x,
-        -canonicalHomeQuat.y,
-        -canonicalHomeQuat.z,
-        -canonicalHomeQuat.w
-      );
-
-      // In returning phase, slerp should detect antipodal equivalent without flipping or jumping
-      motion.phase = "returning";
-      motion.advance(0.016);
-
+      motion.begin();
+      // A whole turn sideways is the home pose again.
+      motion.turn(0, 2 * Math.PI);
+      for (let i = 0; i < 180; i++) motion.advance(1 / 60);
+      expect(motion.orientation.angleTo(canonicalHomeQuat)).toBeLessThan(0.01);
+      motion.release();
+      // Released, it settles where it is rather than unwinding the turn.
+      for (let i = 0; i < 30; i++) {
+        motion.advance(1 / 60);
+        expect(motion.orientation.angleTo(canonicalHomeQuat)).toBeLessThan(0.01);
+      }
       expect(Number.isFinite(motion.orientation.x)).toBe(true);
       expect(motion.orientation.length()).toBeCloseTo(1.0, 5);
-      // Slerp to equivalent orientation should register distance as 0
-      expect(motion.orientation.angleTo(canonicalHomeQuat)).toBeLessThan(0.01);
     });
   });
 

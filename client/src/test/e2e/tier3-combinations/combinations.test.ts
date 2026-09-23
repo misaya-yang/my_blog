@@ -1,12 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { Euler, Quaternion, Vector3 } from "three";
+import { Euler, Quaternion } from "three";
 import { RotationMotion } from "@/components/galaxy/rotationMotion";
 import { PointerWake } from "@/components/galaxy/pointerWake";
 import { getAmbientProfile } from "@/components/galaxy/ambientScene";
 import { getPageScene } from "@/components/galaxy/pageScene";
 import { getScrollMotion } from "@/components/galaxy/scrollMotion";
 import { BloomPyramidPass } from "@/components/galaxy/bloomPyramid";
-import { projectTrackball } from "@/components/galaxy/trackball";
 
 describe("Tier 3: Cross-Feature Combinations", () => {
   const homeEuler = new Euler(0.28, -0.5, -0.4, "XYZ");
@@ -35,10 +34,8 @@ describe("Tier 3: Cross-Feature Combinations", () => {
       }
 
       // 3. User moves pointer while dragging (buttons === 1)
-      const p1 = projectTrackball(450, 300, width, height);
-      const p2 = projectTrackball(550, 300, width, height);
-      const delta = new Quaternion().setFromUnitVectors(p1, p2);
-      motion.move(delta, 0.016);
+      motion.drag(100, 0);
+      for (let i = 0; i < 10; i++) motion.advance(0.016);
 
       // Drag rotates the group coherently
       expect(motion.orientation.angleTo(homeQuat)).toBeGreaterThan(0.05);
@@ -52,7 +49,7 @@ describe("Tier 3: Cross-Feature Combinations", () => {
 
       // 4. Pointerup releases drag
       motion.release();
-      expect(motion.phase).toBe("inertia");
+      expect(motion.phase).toBe("returning");
 
       // Wake can resume once released
       wake.push(550, 300, 1.3, width, height);
@@ -68,8 +65,8 @@ describe("Tier 3: Cross-Feature Combinations", () => {
       motion.begin();
 
       // Apply drag rotation
-      const delta = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), 0.3);
-      motion.move(delta, 0.016);
+      motion.turn(0, 0.3);
+      motion.advance(0.016);
 
       // Concurrent window scroll event occurs (progress advances from 0.0 to 0.4)
       const scrollProgress = 0.4;
@@ -147,16 +144,15 @@ describe("Tier 3: Cross-Feature Combinations", () => {
       motion.begin();
 
       // Drag with high speed
-      const delta = new Quaternion().setFromAxisAngle(new Vector3(1, 1, 0).normalize(), 0.5);
-      motion.move(delta, 0.016);
+      motion.turn(0.35, 0.35);
+      motion.advance(0.016);
       expect(motion.speed).toBeGreaterThan(1.0);
 
-      // Window blur occurs -> finishDrag(true, cancelled=true)
-      motion.release(true);
-      expect(motion.speed).toBe(0);
+      // Window blur occurs -> finishDrag, which lets the rose go home
+      motion.release();
       expect(motion.phase).toBe("returning");
 
-      // Advance return slerp
+      // Advance the return
       for (let step = 0; step < 60; step++) {
         motion.advance(0.016);
       }
@@ -167,14 +163,14 @@ describe("Tier 3: Cross-Feature Combinations", () => {
   });
 
   // Combination 6: Resize during trackball coast
-  describe("Combination 6: Viewport Resize During Inertia Coast", () => {
-    it("preserves rotation momentum and canonical settle trajectory during viewport resize", () => {
+  describe("Combination 6: Viewport Resize During The Return Home", () => {
+    it("keeps the return trajectory and canonical settle during viewport resize", () => {
       const motion = new RotationMotion(homeQuat);
       motion.begin();
-      const delta = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), 0.1);
-      motion.move(delta, 0.016);
+      motion.turn(0, 0.6);
+      for (let i = 0; i < 20; i++) motion.advance(0.016);
       motion.release();
-      expect(motion.phase).toBe("inertia");
+      expect(motion.phase).toBe("returning");
 
       // Viewport resize occurs mid-coast
       let viewportWidth = 1920;
@@ -184,9 +180,9 @@ describe("Tier 3: Cross-Feature Combinations", () => {
       viewportWidth = 1280;
       viewportHeight = 800;
 
-      // Advance coasting motion
+      // Advance the return
       motion.advance(0.2);
-      expect(motion.phase).toBe("inertia");
+      expect(motion.phase).toBe("returning");
       expect(motion.speed).toBeGreaterThan(0);
 
       // Advance until settled

@@ -1,5 +1,5 @@
 import type { Matrix4, Vector3 } from "three";
-import { PETAL_TRACKS, TRACK_SAMPLES } from "./roseTracks";
+import { HEART_Z, PETAL_TRACKS, TRACK_SAMPLES } from "./roseTracks";
 import {
   retainConstellationParticle,
   type ConstellationLayout,
@@ -53,6 +53,10 @@ export interface ParticleBaseOptions {
   ambientDrift: Vector3;
   /** Article motifs: two NDC centers/scales, replacing narrow side-bank compression. */
   constellationLayout?: ConstellationLayout;
+  /** 1 while the rose faces the reader: the signature then stands upright. */
+  facing?: number;
+  /** Per petal layer, its turn relative to the heart as a quaternion (xyzw). */
+  layerTwists?: Float32Array;
   /** Brightness by particle index; missing values use the ordinary dust tier. */
   brights?: Float32Array;
   /** Dust occupies the first N slots; the remaining slots are luminous stars. */
@@ -113,8 +117,10 @@ export function sampleParticleBases(
     ambientDrift,
     constellationLayout,
     brights,
+    layerTwists,
     navigationFrom,
   } = options;
+  const upright = 1 - clamp(options.facing ?? 1);
   const count = positions.length / 3;
   if (
     !Number.isInteger(count) ||
@@ -132,9 +138,10 @@ export function sampleParticleBases(
   const navigationProgress = clamp(options.navigationProgress ?? 1);
   const e = viewMatrix.elements;
   const scale = Math.hypot(e[0], e[1], e[2]);
-  const heartX = e[12] - e[8] * 1.42;
-  const heartY = e[13] - e[9] * 1.42;
-  const heartZ = e[14] - e[10] * 1.42;
+  const heartX = e[12] + e[8] * HEART_Z;
+  const heartY = e[13] + e[9] * HEART_Z;
+  const heartZ = e[14] + e[10] * HEART_Z;
+  const edgeOn = Math.abs(e[10]) / Math.max(scale, 0.0001);
   const cp = Math.cos(pagePose.x),
     sp = Math.sin(pagePose.x);
   // Four scratch vectors per call, rather than temporary vectors per particle.
@@ -174,6 +181,20 @@ export function sampleParticleBases(
     let z =
       sampled[2] +
       (signature ? 0 : Math.sin(originPhase * 109) * Math.abs(across) * 1.5);
+    if (!signature && layerTwists) {
+      // v + 2 q×(q×v + w v), as layerTwist() in the particle shader.
+      const q = Math.floor(row + 0.5) * 4;
+      const qx = layerTwists[q],
+        qy = layerTwists[q + 1],
+        qz = layerTwists[q + 2],
+        qw = layerTwists[q + 3];
+      const cx = qy * z - qz * y + qw * x,
+        cy = qz * x - qx * z + qw * y,
+        cz = qx * y - qy * x + qw * z;
+      x += 2 * (qy * cz - qz * cy);
+      y += 2 * (qz * cx - qx * cz);
+      z += 2 * (qx * cy - qy * cx);
+    }
     let introVisibility = 1,
       travel = 1;
 
@@ -260,9 +281,15 @@ export function sampleParticleBases(
     let vy = e[1] * x + e[5] * y + e[9] * z + e[13];
     let vz = e[2] * x + e[6] * y + e[10] * z + e[14];
     if (signature) {
-      vx = mix(heartX + x * scale, vx, ambientBlend);
-      vy = mix(heartY + y * scale, vy, ambientBlend);
-      vz = mix(heartZ, vz, ambientBlend);
+      const rigid = Math.max(ambientBlend, upright);
+      vx = mix(heartX + x * scale, vx, rigid);
+      vy = mix(heartY + y * scale, vy, rigid);
+      vz = mix(heartZ, vz, rigid);
+      flow *= mix(
+        1,
+        smoothstep(0.12, 0.45, edgeOn),
+        rigid * (1 - ambientBlend)
+      );
     }
 
     if (split > 0 && ambientBlend < 1) {

@@ -170,6 +170,12 @@ export class CompositePass extends Pass {
   bloomStrength = 0;
   /** Quarter-resolution gas layer; null draws without nebulosity. */
   nebulaTexture: Texture | null = null;
+  /**
+   * Scales the gas: its soft splats would pile into a bright slab where the
+   * rose is seen edge-on, so the scene thins it as the rose turns away.
+   */
+  nebulaVisibility = 1;
+  private nebulaStrength = 1;
   private readonly quad: FullScreenQuad;
   private readonly blackTexture: Texture;
 
@@ -216,7 +222,7 @@ export class CompositePass extends Pass {
     uniforms.uExposure.value = settings.exposure ?? 1;
     uniforms.uInkDensity.value = settings.inkDensity ?? 1;
     uniforms.uInkBleed.value = settings.inkBleed ?? 0.35;
-    uniforms.uNebulaStrength.value = settings.nebulaStrength ?? 1;
+    this.nebulaStrength = settings.nebulaStrength ?? 1;
     uniforms.uVignette.value = settings.light ? 0 : (settings.vignette ?? 0.5);
   }
 
@@ -256,6 +262,8 @@ export class CompositePass extends Pass {
     uniforms.tBloom.value = this.bloomTexture ?? this.blackTexture;
     uniforms.uBloomStrength.value = this.bloomTexture ? this.bloomStrength : 0;
     uniforms.tNebula.value = this.nebulaTexture ?? this.blackTexture;
+    uniforms.uNebulaStrength.value =
+      this.nebulaStrength * this.nebulaVisibility;
     renderer.setRenderTarget(this.renderToScreen ? null : writeBuffer);
     this.quad.render(renderer);
   }

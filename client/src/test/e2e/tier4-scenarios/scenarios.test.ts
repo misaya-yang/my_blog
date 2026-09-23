@@ -237,28 +237,16 @@ describe("Tier 4: CPU application subsystem scenarios", () => {
       motion.begin();
       expect(motion.phase).toBe("dragging");
 
-      const pStart = projectTrackball(
-        mobileWidth / 2,
-        mobileHeight / 2,
-        mobileWidth,
-        mobileHeight
-      );
-      const pDrag = projectTrackball(
-        mobileWidth / 2 + 80,
-        mobileHeight / 2 + 50,
-        mobileWidth,
-        mobileHeight
-      );
-      const dragDelta = new Quaternion().setFromUnitVectors(pStart, pDrag);
-
-      motion.move(dragDelta, 0.033); // 30fps mobile tick (~33ms)
+      // An 80x50px touch drag across a 390px-wide rose.
+      motion.drag(80, 50, 1.9 / (mobileWidth * 0.45));
+      for (let i = 0; i < 10; i++) motion.advance(0.033); // 30fps mobile tick
       expect(motion.orientation.angleTo(canonicalHomeQuat)).toBeGreaterThan(
         0.1
       );
 
-      // Release into coast
+      // Lifting the finger sends the rose home
       motion.release();
-      expect(motion.phase).toBe("inertia");
+      expect(motion.phase).toBe("returning");
 
       // Advance at 30fps (dt = 0.033s) until settled
       let elapsed = 0;

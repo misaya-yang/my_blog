@@ -100,10 +100,7 @@ describe("Milestone 2: Interaction Physics (F8, F9, F10, F11)", () => {
         q.angleTo(new Quaternion().setFromEuler(RotationMotion.homeEuler))
       ).toBeCloseTo(0, 5);
       motion.begin();
-      motion.move(
-        new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), 0.6),
-        0.1
-      );
+      motion.turn(0.6, 0);
       motion.release();
       for (let i = 0; i < 360; i++) motion.advance(1 / 60);
       expect(motion.phase).toBe("idle");
@@ -112,61 +109,45 @@ describe("Milestone 2: Interaction Physics (F8, F9, F10, F11)", () => {
       expect(motion.orientation.angleTo(q)).toBeCloseTo(0, 5);
     });
 
-    it("verifies coherent rigid-body drag and capped angular velocity (2.4 rad/s)", () => {
+    it("follows the hand with the outer petal layers trailing the heart", () => {
       const motion = new RotationMotion(RotationMotion.defaultHomeQuaternion());
       motion.begin();
       expect(motion.phase).toBe("dragging");
-
-      // Apply moderate drag
-      const moderateDelta = new Quaternion().setFromAxisAngle(
-        new Vector3(0, 1, 0),
-        0.03
-      );
-      motion.move(moderateDelta, 0.016);
-      expect(motion.speed).toBeCloseTo(0.03 / 0.016, 1);
-      expect(motion.speed).toBeLessThan(2.4);
-
-      // Apply extreme flick
-      const extremeDelta = new Quaternion().setFromAxisAngle(
-        new Vector3(0, 1, 0),
-        0.8
-      );
-      motion.move(extremeDelta, 0.016);
-      expect(motion.speed).toBe(2.4); // Capped at 2.4 rad/s
+      motion.drag(100, 0);
+      expect(motion.target.y).toBeCloseTo(0.5, 6);
+      motion.advance(0.1);
+      const heart = motion.spin.y;
+      const outer = motion.layers[0].spin.y;
+      const inner = motion.layers[motion.layers.length - 1].spin.y;
+      expect(heart).toBeGreaterThan(inner);
+      expect(inner).toBeGreaterThan(outer);
+      expect(outer).toBeGreaterThan(0);
+      expect(Number.isFinite(motion.speed)).toBe(true);
+      for (let i = 0; i < 90; i++) motion.advance(1 / 60);
+      expect(motion.spin.y).toBeCloseTo(0.5, 3);
+      expect(motion.layers[0].spin.y).toBeCloseTo(0.5, 2);
     });
 
-    it("verifies a short coast (gamma = 6.0) and home attraction slerp upon drag release", () => {
+    it("lets go and turns back to face the reader, every layer on its own delay", () => {
       const motion = new RotationMotion(RotationMotion.defaultHomeQuaternion());
       motion.begin();
-      const delta = new Quaternion().setFromAxisAngle(
-        new Vector3(1, 0, 0),
-        0.08
-      );
-      motion.move(delta, 0.016);
-
+      motion.turn(0, 1.2);
+      for (let i = 0; i < 60; i++) motion.advance(1 / 60);
       motion.release();
-      expect(motion.phase).toBe("inertia");
-      const initialSpeed = motion.speed;
-
-      // Advance 0.25s: speed decays by exp(-6 * 0.25) = exp(-1.5) ≈ 0.2231
-      motion.advance(0.25);
-      expect(motion.speed).toBeCloseTo(initialSpeed * Math.exp(-1.5), 2);
-
-      // Coast automatically transitions to returning when speed < 0.05
-      let totalTime = 0.25;
-      while (motion.phase === "inertia" && totalTime < 5) {
-        motion.advance(0.05);
-        totalTime += 0.05;
-      }
       expect(motion.phase).toBe("returning");
-
-      // In returning phase, slerps home and snaps when angle < 0.002 rad
-      while (motion.phase === "returning" && totalTime < 8) {
-        motion.advance(0.05);
-        totalTime += 0.05;
+      expect(motion.target.length()).toBe(0);
+      for (let i = 0; i < 12; i++) motion.advance(1 / 60);
+      expect(Math.abs(motion.spin.y)).toBeLessThan(
+        Math.abs(motion.layers[0].spin.y)
+      );
+      let time = 0.2;
+      while (motion.phase === "returning" && time < 5) {
+        motion.advance(1 / 60);
+        time += 1 / 60;
       }
       expect(motion.phase).toBe("idle");
-      expect(motion.orientation.angleTo(motion.home)).toBeCloseTo(0, 5);
+      expect(time).toBeLessThan(3.5);
+      expect(motion.orientation.angleTo(motion.home)).toBe(0);
     });
 
     it("verifies trackball projection without poles or singularities", () => {

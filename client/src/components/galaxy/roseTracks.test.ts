@@ -3,6 +3,7 @@ import { Quaternion, Vector3 } from "three";
 import {
   bakeTracks,
   createRoseTracks,
+  HEART_Z,
   PETAL_LAYERS,
   petalContour,
   sampleTrack,
@@ -60,19 +61,37 @@ describe("continuous rose tracks", () => {
       tracks.slice(4).every(track => track.signature && !track.closed)
     ).toBe(true);
   });
-  it("cups the petals: outer layers rise toward the viewer above the heart", () => {
-    const depth = tracks
-      .slice(0, 4)
-      .map(
-        track =>
-          Array.from(
-            { length: 64 },
-            (_, i) => sampleTrack(track, i / 64).z
-          ).reduce((a, b) => a + b) / 64
-      );
-    for (let row = 1; row < 4; row++)
-      expect(depth[row]).toBeLessThan(depth[row - 1]);
-    expect(depth[3]).toBeGreaterThan(-1.42);
+  it("weaves each layer through the plane, alternating, with no cup to it", () => {
+    const layers = tracks.slice(0, 4).map(track =>
+      Array.from({ length: 128 }, (_, i) => sampleTrack(track, i / 128))
+    );
+    const signs = layers.map(points => {
+      const zs = points.map(p => p.z);
+      const mean = zs.reduce((a, b) => a + b) / zs.length;
+      // Each layer passes in front of and behind the plane about equally.
+      expect(Math.abs(mean)).toBeLessThan(0.08);
+      expect(Math.max(...zs)).toBeGreaterThan(0.15);
+      expect(Math.min(...zs)).toBeLessThan(-0.15);
+      return Math.sign(PETAL_LAYERS[layers.indexOf(points)].depth);
+    });
+    for (let row = 1; row < signs.length; row++)
+      expect(signs[row]).toBe(-signs[row - 1]);
+    // No bowl or dome: depth does not follow distance from the heart.
+    const all = layers.flat();
+    const radius = all.map(p => Math.hypot(p.x, p.y));
+    const meanR = radius.reduce((a, b) => a + b) / all.length;
+    const meanZ = all.reduce((a, p) => a + p.z, 0) / all.length;
+    let covariance = 0,
+      varianceR = 0,
+      varianceZ = 0;
+    all.forEach((p, i) => {
+      covariance += (radius[i] - meanR) * (p.z - meanZ);
+      varianceR += (radius[i] - meanR) ** 2;
+      varianceZ += (p.z - meanZ) ** 2;
+    });
+    expect(
+      Math.abs(covariance / Math.sqrt(varianceR * varianceZ))
+    ).toBeLessThan(0.15);
   });
   it("closes every petal with matching position and tangent, without translating the shape", () => {
     for (const track of tracks.filter(t => t.closed)) {
@@ -107,7 +126,7 @@ describe("continuous rose tracks", () => {
     }
   });
 
-  it("retains spatial separation when viewed edge-on, not a thin projected sheet", () => {
+  it("reads as a thin disc edge-on, like a galaxy, but never a flat sheet", () => {
     const points = tracks.flatMap(track =>
       Array.from({ length: 128 }, (_, i) => sampleTrack(track, i / 128))
     );
@@ -129,9 +148,8 @@ describe("continuous rose tracks", () => {
         const height =
           Math.max(...projected.map(p => p.y)) -
           Math.min(...projected.map(p => p.y));
-        expect(
-          Math.min(width, height) / Math.max(width, height)
-        ).toBeGreaterThan(0.32);
+        const ratio = Math.min(width, height) / Math.max(width, height);
+        expect(ratio).toBeGreaterThan(0.18);
       }
     }
   });
@@ -151,7 +169,7 @@ describe("continuous rose tracks", () => {
         expect(
           sampleTrack(track, 0).distanceTo(sampleTrack(track, 1))
         ).toBeGreaterThan(0.2);
-        expect(sampleTrack(track, 0.5).z).toBeCloseTo(-1.42);
+        expect(sampleTrack(track, 0.5).z).toBeCloseTo(HEART_Z);
       }
     });
   });
