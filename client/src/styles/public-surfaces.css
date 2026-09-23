@@ -796,3 +796,10 @@
     scroll-margin-top: 20px !important;
   }
 }
+
+/* The particle canvas repaints every frame, so any blur over it is re-run
+   every frame too. Public buttons keep their tinted surface without it. */
+.public-universe .glass-button {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}

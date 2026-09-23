@@ -14,10 +14,7 @@ import {
   FloatType,
   RGBAFormat,
   NearestFilter,
-  ACESFilmicToneMapping,
   NoToneMapping,
-  PlaneGeometry,
-  NormalBlending,
   Vector2,
   Vector4,
   PerspectiveCamera,
@@ -41,7 +38,7 @@ import { createPhaseSampler, ribbonWidth } from "./particleDistribution";
 import { bakeAmbientTracks, getAmbientProfile } from "./ambientScene";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
-import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { CompositePass } from "./compositePass";
 import { BloomPyramidPass } from "./bloomPyramid";
 import { projectTrackball, trackballDelta } from "./trackball";
 import { getPageScene } from "./pageScene";
@@ -52,6 +49,11 @@ import { RenderQuality } from "./renderQuality";
  * Calculates dust particle brightness according to cubic power-law distribution.
  * Range: [0.35, 2.00]
  */
+// Page backgrounds the opaque canvas renders onto; keep in sync with
+// --observatory-bg in styles/observatory.css.
+const NIGHT_SKY = new Color("#0b0c0e");
+const DAY_PAPER = new Color("#f8fafc");
+
 export function calculateDustBrightness(rand: number): number {
   return 0.35 + Math.pow(rand, 3) * 1.65;
 }
@@ -592,6 +594,7 @@ export function createGalaxy(
     uAmbientDrift: { value: new Vector3() },
     uAmbientTwinkle: { value: 1 },
     uAmbientGlow: { value: 1 },
+    uInkWeight: { value: 1 },
   };
   let ambientTarget = 0;
   // One bake per navigation: six contour rows sampled on the CPU (microseconds),
@@ -632,36 +635,6 @@ export function createGalaxy(
     meta.copy(uniforms.uAmbientMeta.value[i])
   );
   uniforms.uAmbientMorph.value = 1;
-  const atmosphereGeometry = new PlaneGeometry(2, 2);
-  const atmosphereMaterial = new ShaderMaterial({
-    uniforms,
-    depthTest: false,
-    depthWrite: false,
-    vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.999, 1.0); }`,
-    fragmentShader: `varying vec2 vUv; uniform float uLight; uniform float uTime; uniform float uAspect;
-      float noise(vec2 p) {
-        vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
-        float a = fract(sin(dot(i,vec2(127.1,311.7)))*43758.54);
-        float b = fract(sin(dot(i+vec2(1,0),vec2(127.1,311.7)))*43758.54);
-        float c = fract(sin(dot(i+vec2(0,1),vec2(127.1,311.7)))*43758.54);
-        float d = fract(sin(dot(i+vec2(1,1),vec2(127.1,311.7)))*43758.54);
-        return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);
-      }
-      void main() {
-        vec2 p = (vUv - vec2(0.58,0.55)) * vec2(uAspect,1.0);
-        float n = noise(p*4.0 + uTime*0.003)*0.55 + noise(p*11.0)*0.28 + noise(p*27.0)*0.17;
-        float mist = pow(n,2.0) * exp(-dot(p,p)*2.2);
-        float grain = fract(sin(dot(gl_FragCoord.xy + uTime*61.7, vec2(12.9898,78.233))) * 43758.5453);
-        vec3 night = vec3(0.006,0.009,0.012) + vec3(0.005,0.004,0.009)*mist + (grain-0.5)*0.0065;
-        vec3 day = vec3(0.925,0.94,0.958) + vec3(0.012,0.010,0.008)*exp(-dot(p,p)*1.4) + (grain-0.5)*0.0045;
-        gl_FragColor = vec4(mix(night,day,uLight),1.0);
-        #include <colorspace_fragment>
-      }`,
-  });
-  const atmosphere = new Mesh(atmosphereGeometry, atmosphereMaterial);
-  atmosphere.frustumCulled = false;
-  atmosphere.renderOrder = -1;
-  scene.add(atmosphere);
   // A sparse, independent distance layer continues beyond the central volume.
   const distantCount = 180;
   const distantPositions = new Float32Array(distantCount * 3);
@@ -691,7 +664,7 @@ export function createGalaxy(
     transparent: true,
     depthWrite: false,
     vertexColors: true,
-    blending: light ? NormalBlending : AdditiveBlending,
+    blending: AdditiveBlending,
     vertexShader: `uniform float uTime; uniform float uPixelRatio; uniform float uScrollPhase; uniform vec2 uCanvasSize;
       attribute float aSize; varying vec3 vColor; varying float vTwinkle;
       void main() {
@@ -718,7 +691,7 @@ export function createGalaxy(
         float warm = smoothstep(0.05,0.45,vColor.r-vColor.b);
         vec3 day = mix(vec3(0.18,0.34,0.56),vec3(0.51,0.36,0.21),warm);
         float sparkle = mix(vTwinkle,0.70+vTwinkle*0.30,uLight);
-        gl_FragColor = vec4(mix(vColor,day,uLight),(core+glow)*sparkle*mix(0.88,0.90,uLight));
+        gl_FragColor = lightOutput(vColor,day,(core+glow)*sparkle*0.88);
         #include <colorspace_fragment>
       }`,
   });
@@ -729,7 +702,7 @@ export function createGalaxy(
     transparent: true,
     depthWrite: false,
     vertexColors: true,
-    blending: light ? NormalBlending : AdditiveBlending,
+    blending: AdditiveBlending,
     uniforms,
     vertexShader: `${renderDeformation}
       attribute float aSize; attribute vec3 aDayColor; attribute float aBright;
@@ -756,26 +729,18 @@ export function createGalaxy(
     fragmentShader: `varying vec3 vColor; varying float vFlow; varying float vBright; varying float vIntro; varying float vAmbient; uniform float uDisperse; uniform float uLight;
       void main() {
         float d = length(gl_PointCoord - 0.5) * 2.0;
-        if(uLight>0.5 && vBright>1.1) {
-          vec2 facet=(gl_PointCoord-0.5)*2.0;
-          d=max(abs(facet.x)*0.7+abs(facet.y)*0.75,abs(facet.y));
-        }
         if (d > 1.0) discard;
-        // The constellation must survive both blendings. Night adds light, so
-        // density becomes glow and the brightest motes roll to white; day stacks
-        // ink, so density becomes mud and white erases itself on paper. Day
-        // keeps the figure legible through darker, more saturated anchors and
-        // near-opaque stipple cores instead of alpha or whitening.
+        // Night emits light, so the brightest motes roll toward white. Day
+        // deposits the same mote's ink; its density comes from the alpha.
         float highlight = smoothstep(1.7, 2.2, vBright) * 0.6;
-        vec3 nightInk = mix(vColor, vec3(1.0), highlight) * (1.0 + vBright * 0.22);
-        vec3 dayInk = mix(vColor, vColor * vec3(0.58, 0.55, 0.50), highlight)
-          * (1.0 - vBright * 0.08);
-        float ambientAlpha = mix(1.0, mix(0.55,0.65,uLight), vAmbient);
+        vec3 emission = mix(vColor, vec3(1.0), highlight) * (1.0 + vBright * 0.22);
+        float ambientAlpha = mix(1.0, 0.6, vAmbient);
         float energy = mix(0.38,0.88,smoothstep(0.35,2.0,vBright));
-        gl_FragColor = vec4(
-          mix(nightInk, dayInk, uLight),
+        gl_FragColor = lightOutput(
+          emission,
+          vColor,
           (1.0 - smoothstep(0.85-fwidth(d), 0.85+fwidth(d), d))
-            * mix(energy,0.5+energy*0.4,uLight) * vFlow * (1.0 - uDisperse * 0.25) * vIntro
+            * energy * vFlow * (1.0 - uDisperse * 0.25) * vIntro
             * ambientAlpha
         );
         #include <colorspace_fragment>
@@ -824,7 +789,7 @@ export function createGalaxy(
   const starMaterial = new ShaderMaterial({
     transparent: true,
     depthWrite: false,
-    blending: light ? NormalBlending : AdditiveBlending,
+    blending: AdditiveBlending,
     uniforms,
     vertexShader: `${renderDeformation}
       attribute vec3 aCenter; attribute vec3 aColor; attribute vec3 aDayColor; attribute float aSize; attribute float aBright;
@@ -864,22 +829,15 @@ export function createGalaxy(
         float halo = exp(-r*r*9.0);
         float glint = (exp(-abs(vUv.x)*90.0)*exp(-abs(vUv.y)*12.0)
           + exp(-abs(vUv.y)*90.0)*exp(-abs(vUv.x)*12.0))*vProminence;
-        float night = core + corona*0.14 + halo*0.02 + glint*(0.025 + vProminence*0.12);
-        // Day cannot bloom, so the halo becomes a watercolor aura: the star's
-        // own ink bleeding softly into the paper around a solid dark core.
-        float angle = vCrystalSeed*6.283;
-        vec2 crystal = mat2(cos(angle),-sin(angle),sin(angle),cos(angle))*vUv;
-        crystal.x *= mix(0.72,1.25,vCrystalSeed);
-        float facetDistance = max(abs(crystal.y),abs(crystal.x)*0.72+abs(crystal.y)*0.56);
-        float edgeWidth = max(fwidth(facetDistance),0.025);
-        float day = (1.0-smoothstep(0.58-edgeWidth,0.58+edgeWidth,facetDistance))*0.92;
-        float facet = smoothstep(-0.06,0.06,crystal.x+crystal.y*0.38);
-        float rim = smoothstep(0.40,0.58,facetDistance);
-        vec3 crystalInk = mix(vColor*0.68,mix(vColor,vec3(0.35,0.68,0.83),0.28),facet);
-        crystalInk = mix(crystalInk,vColor*0.6,rim*0.6);
+        float profile = core + corona*0.14 + halo*0.02 + glint*(0.025 + vProminence*0.12);
         float whiteCore = smoothstep(0.75,1.4,vBrightness);
         vec3 emission = mix(vColor,vec3(1.0),core*(0.35+whiteCore*0.45))*(1.0+core*(1.0+whiteCore*3.0));
-        gl_FragColor = vec4(mix(emission,crystalInk,uLight),mix(night,day,uLight)*(vBrightness+vLens*0.15)*vForeshorten*(1.0-uDisperse*0.25)*vIntro);
+        // Day: the same profile deposits ink, a dense core inside a soft aura.
+        float dayProfile = core*1.05 + corona*0.3 + halo*0.05;
+        gl_FragColor = lightOutput(
+          emission,
+          vColor,
+          mix(profile,dayProfile,uLight)*(vBrightness+vLens*0.15)*vForeshorten*(1.0-uDisperse*0.25)*vIntro);
         #include <colorspace_fragment>
       }`,
   });
@@ -919,7 +877,7 @@ export function createGalaxy(
   const trailMaterial = new ShaderMaterial({
     transparent: true,
     depthWrite: false,
-    blending: light ? NormalBlending : AdditiveBlending,
+    blending: AdditiveBlending,
     uniforms,
     vertexShader: `${renderDeformation}
       attribute vec3 aCenter; attribute vec3 aColor;
@@ -945,8 +903,7 @@ export function createGalaxy(
       uniform float uLight; uniform float uDisperse; uniform float uEnergy;
       void main() {
         float alpha = pow(1.0 - vAge, 1.8) * (1.0 - vEdge * vEdge) * mix(0.506,0.42,uLight) * (1.0 - uDisperse * 0.255) * vIntroTrail;
-        vec3 ink = vec3(0.12, 0.26, 0.48);
-        gl_FragColor = vec4(mix(vColor, ink, uLight), alpha*max(0.12+uEnergy*0.88,vMotion));
+        gl_FragColor = lightOutput(vColor, vec3(0.12, 0.26, 0.48), alpha*max(0.12+uEnergy*0.88,vMotion));
         #include <colorspace_fragment>
       }`,
   });
@@ -965,8 +922,15 @@ export function createGalaxy(
     // an unmasked corner across text even when their center is inside the reader.
     opticalMaterial.fragmentShader =
       `
-      uniform float uLight; uniform float uSplit;
+      uniform float uLight; uniform float uSplit; uniform float uInkWeight;
       uniform vec4 uCopyBounds; uniform float uCopyOpacity;
+      // Both themes accumulate additively. Night writes emitted light; day
+      // writes the ink's per-channel absorbance, which the composite turns
+      // into paper transmittance (Beer–Lambert).
+      vec4 lightOutput(vec3 emission, vec3 ink, float alpha) {
+        vec3 absorbance = -log(clamp(ink, vec3(0.015), vec3(0.98)));
+        return vec4(mix(emission, absorbance * uInkWeight, uLight), alpha);
+      }
       uniform vec4 uQuietBoxes[4];
       uniform float uReading; uniform vec2 uGatherZone;
       uniform vec2 uCanvasSize;
@@ -1048,21 +1012,35 @@ export function createGalaxy(
     distantGeometry.setDrawRange(0, coarsePointer ? 60 : 90);
   }
 
-  // One scene render feeds both the output and a mip-pyramid bloom extracted
-  // from the frame itself; the former star-only second pass is gone.
-  renderer.toneMapping = ACESFilmicToneMapping;
+  // One scene render feeds a mip-pyramid bloom and a single composite pass
+  // that tone maps (night) or applies ink transmittance (day) and encodes sRGB.
+  renderer.toneMapping = NoToneMapping;
   const bloomPass = new BloomPyramidPass({
     levels: mobile ? 3 : 4,
     threshold: 0.85,
     knee: 0.25,
-    strength: light ? 0 : mobile ? 0.42 : 0.55,
+    strength: bloomStrength(),
   });
-  bloomPass.enabled = !light;
+  bloomPass.pyramidOnly = true;
+  const compositePass = new CompositePass(themeSettings());
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
   composer.addPass(bloomPass);
-  const outputPass = new OutputPass();
-  composer.addPass(outputPass);
+  composer.addPass(compositePass);
+  function bloomStrength() {
+    // Day reuses the pyramid as a faint ink bleed around dense strokes.
+    return light ? 1 : mobile ? 0.42 : 0.55;
+  }
+  function themeSettings() {
+    return {
+      light,
+      background: light ? DAY_PAPER : NIGHT_SKY,
+      bloomStrength: bloomStrength(),
+      inkDensity: 1,
+      inkBleed: 0.3,
+      vignette: 0.5,
+    };
+  }
 
   let frame = 0,
     disposed = false,
@@ -1498,7 +1476,7 @@ export function createGalaxy(
       bounds.width * renderer.getPixelRatio(),
       bounds.height * renderer.getPixelRatio()
     );
-    bloomPass.strength = light ? 0 : mobile ? 0.42 : 0.55;
+    bloomPass.strength = bloomStrength();
     if (field) {
       // Integrate the whole stroke since the last frame, not just the last
       // pointer event; coalesced or sparse mouse events must carry equal energy.
@@ -1568,7 +1546,8 @@ export function createGalaxy(
       }
       brush.active = false;
     }
-    renderer.toneMapping = light ? NoToneMapping : ACESFilmicToneMapping;
+    compositePass.bloomTexture = bloomPass.enabled ? bloomPass.output : null;
+    compositePass.time = elapsed;
     composer.render(dt);
     if (import.meta.env.DEV) {
       // Surface GLSL program failures in the dataset: shader compile errors
@@ -1584,22 +1563,30 @@ export function createGalaxy(
       else delete host.dataset.shaderError;
     }
   }
-  let slowFrameCount = 0;
   const quality = new RenderQuality();
+  let lastInteraction = -Infinity;
+  const noteInteraction = () => {
+    lastInteraction = performance.now();
+  };
+  // Reading pages keep drifting, but an idle drift behind text does not need
+  // 60 fps. Input, rotation and page transitions restore the full rate.
+  function frameBudget(now: number) {
+    if (mobile && coarsePointer) return 1000 / 30;
+    if (pageScene.mode === "home") return 1000 / 60;
+    const settling =
+      intro < 1 ||
+      uniforms.uNavigationProgress.value < 1 ||
+      uniforms.uAmbientMorph.value < 1 ||
+      rotation.phase !== "idle";
+    return settling || now - lastInteraction < 1500 ? 1000 / 60 : 1000 / 30;
+  }
   function tick(now: number) {
     frame = 0;
     if (disposed || !visible || document.hidden || lost || paused) return;
     const delta = now - lastTime;
-    if (delta >= (mobile && coarsePointer ? 1000 / 30 : 1000 / 60) - 3) {
-      if (delta > 36) {
-        slowFrameCount++;
-        if (slowFrameCount >= 45) {
-          slowFrameCount = 0;
-          if (quality.degrade()) applyQuality();
-        }
-      } else if (delta < 20 && slowFrameCount > 0) {
-        slowFrameCount--;
-      }
+    const budget = frameBudget(now);
+    if (delta >= budget - 3) {
+      if (quality.observe(delta, budget, now)) applyQuality();
 
       if (import.meta.env.DEV) {
         frameIntervals.push(delta);
@@ -1658,6 +1645,7 @@ export function createGalaxy(
       mobile,
       coarsePointer,
       light,
+      reading: pageScene.mode !== "home",
       starCount: visibleStars,
     });
     renderer.setPixelRatio(profile.dpr);
@@ -1677,6 +1665,7 @@ export function createGalaxy(
     );
     bloomPass.enabled = profile.bloomEnabled;
     host.dataset.quality = String(profile.tier);
+    host.dataset.renderScale = quality.scale.toFixed(2);
   }
   const resize = new ResizeObserver(() => {
     cancelInput();
@@ -1715,6 +1704,7 @@ export function createGalaxy(
   if (contentRoot)
     contentObserver?.observe(contentRoot, { childList: true, subtree: true });
   const move = (event: PointerEvent) => {
+    noteInteraction();
     if (reducedMotion) return;
     // Recover even if pointerup was lost outside the browser/capture surface.
     if (
@@ -1765,6 +1755,7 @@ export function createGalaxy(
     requestPaint();
   };
   const down = (event: PointerEvent) => {
+    noteInteraction();
     if (reducedMotion) return;
     if (event.button !== 0 || !event.isPrimary || paused) return;
     if ((event.target as Element).closest("button,a,input,textarea,select"))
@@ -1819,6 +1810,7 @@ export function createGalaxy(
     requestPaint();
   };
   const key = (event: KeyboardEvent) => {
+    noteInteraction();
     if (reducedMotion) return;
     if (
       ![
@@ -1898,7 +1890,6 @@ export function createGalaxy(
     starMaterial.needsUpdate = true;
     trailMaterial.needsUpdate = true;
     distantMaterial.needsUpdate = true;
-    atmosphereMaterial.needsUpdate = true;
 
     // 3. Mark all geometry attributes dirty for VBO re-upload
     geometry.attributes.position.needsUpdate = true;
@@ -1935,9 +1926,6 @@ export function createGalaxy(
     if (distantGeometry.attributes.aSize)
       distantGeometry.attributes.aSize.needsUpdate = true;
 
-    atmosphereGeometry.attributes.position.needsUpdate = true;
-    if (atmosphereGeometry.attributes.uv)
-      atmosphereGeometry.attributes.uv.needsUpdate = true;
 
     // 4. Rebuild render targets for EffectComposer and BloomPyramidPass
     const width = Math.max(1, bounds.width);
@@ -2001,6 +1989,8 @@ export function createGalaxy(
       );
       host.dataset.mode = pageScene.mode;
       host.dataset.variant = pageScene.phase.toFixed(6);
+      // Reading pages use a lower resolution ceiling and no trails.
+      if (bounds.width && bounds.height && !lost) applyQuality();
       requestPaint();
     },
     getIntro() {
@@ -2009,19 +1999,10 @@ export function createGalaxy(
     setTheme(isLight: boolean) {
       light = isLight;
       applyQuality();
-      bloomPass.strength = isLight ? 0 : mobile ? 0.42 : 0.55;
+      bloomPass.strength = bloomStrength();
+      compositePass.apply(themeSettings());
       geometry.setDrawRange(0, mobile && coarsePointer ? 2800 : count);
       uniforms.uLight.value = isLight ? 1 : 0;
-      material.blending =
-        starMaterial.blending =
-        trailMaterial.blending =
-        distantMaterial.blending =
-          isLight ? NormalBlending : AdditiveBlending;
-      material.needsUpdate =
-        starMaterial.needsUpdate =
-        trailMaterial.needsUpdate =
-        distantMaterial.needsUpdate =
-          true;
       requestPaint();
     },
     setPaused(value: boolean) {
@@ -2064,10 +2045,8 @@ export function createGalaxy(
       ambientFromTexture.dispose();
       field?.dispose();
       bloomPass.dispose();
-      outputPass.dispose();
+      compositePass.dispose();
       composer.dispose();
-      atmosphereGeometry.dispose();
-      atmosphereMaterial.dispose();
       geometry.dispose();
       material.dispose();
       starGeometry.dispose();

@@ -527,22 +527,26 @@ describe("scene inputs, layout, quality and lifetime", () => {
       ]);
     };
     assertProfile(1280, 800, 1.5, true, 300);
-    pump(45, 40);
-    expect(host.dataset.quality).toBe("1");
-    assertProfile(1280, 800, 1, true, 150);
+    // Sustained overload lowers the render scale before anything else.
+    pump(40, 40);
+    expect(host.dataset.renderScale).toBe("0.85");
+    expect(host.dataset.quality).toBe("0");
+    const scaled = Math.round(1.5 * 0.85 * 100) / 100;
+    assertProfile(1280, 800, scaled, true, 300);
+    // Theme changes keep the adapted profile; day keeps bloom for ink bleed.
     scene.setTheme(true);
     pump();
-    assertProfile(1280, 800, 1, false, 150);
+    assertProfile(1280, 800, scaled, true, 300);
     host.clientWidth = 390;
     host.clientHeight = 844;
     resizeCallback();
-    assertProfile(390, 844, 1, false, 150);
+    assertProfile(390, 844, scaled, true, 300);
     scene.setTheme(false);
-    pump();
-    assertProfile(390, 844, 1, true, 150);
-    pump(45, 40);
+    // A long overload walks every scale down, then drops trails and bloom.
+    pump(600, 40);
     expect(host.dataset.quality).toBe("2");
-    assertProfile(390, 844, 1, false, 0);
+    const floor = Math.round(1.5 * 0.55 * 100) / 100;
+    assertProfile(390, 844, floor, false, 0);
     host.clientWidth = 1440;
     host.clientHeight = 900;
     resizeCallback();
@@ -550,7 +554,7 @@ describe("scene inputs, layout, quality and lifetime", () => {
     scene.setTheme(false);
     pump();
     expect(host.dataset.quality).toBe("2");
-    assertProfile(1440, 900, 1, false, 0);
+    assertProfile(1440, 900, floor, false, 0);
   });
 
   it("applies the touch-device instance budget and DPR ceiling to real scene objects", () => {

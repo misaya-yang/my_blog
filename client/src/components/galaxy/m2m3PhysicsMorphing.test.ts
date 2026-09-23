@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { DataTexture, PerspectiveCamera, Quaternion, Vector3 } from "three";
 import { RotationMotion } from "./rotationMotion";
 import { ParticleMotion, type ParticleMotionStep } from "./particleMotion";
-import { RenderQuality } from "./renderQuality";
+import { RENDER_SCALES, RenderQuality } from "./renderQuality";
 import {
   getAmbientProfile,
   bakeAmbientTracks,
@@ -283,6 +283,9 @@ describe("Milestone 3: Cross-Page Morphing & Multi-Route UI Walkthrough (F12, F1
         light: false,
         starCount: 128,
       };
+      expect(quality.apply(mobile).trailCount).toBe(128);
+      // Resolution steps come first and never touch the instance budget.
+      for (let i = 1; i < RENDER_SCALES.length; i++) quality.degrade();
       expect(quality.apply(mobile).trailCount).toBe(128);
       quality.degrade();
       expect(quality.apply(mobile).trailCount).toBe(64);

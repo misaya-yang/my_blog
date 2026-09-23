@@ -4,6 +4,7 @@ import {
   ClampToEdgeWrapping,
   NoBlending,
   ShaderMaterial,
+  Texture,
   Vector2,
   WebGLRenderTarget,
   WebGLRenderer,
@@ -113,6 +114,12 @@ export type BloomPyramidOptions = {
  */
 export class BloomPyramidPass extends Pass {
   strength: number;
+  /**
+   * When set, the pass only builds the pyramid and exposes it as `output`;
+   * a downstream pass composites it. The frame buffers are left untouched.
+   */
+  pyramidOnly = false;
+  output: Texture | null = null;
 
   private levels: number;
   private resolutionScale: number;
@@ -281,6 +288,16 @@ export class BloomPyramidPass extends Pass {
     const previousTarget = renderer.getRenderTarget();
     const previousAutoClear = renderer.autoClear;
     renderer.autoClear = false;
+    this.needsSwap = !this.pyramidOnly;
+    this.output = null;
+
+    if (
+      this.pyramidOnly &&
+      (this.strength <= 0 || this.downsampleTargets.length === 0)
+    ) {
+      renderer.autoClear = previousAutoClear;
+      return;
+    }
 
     if (this.strength <= 0 || this.downsampleTargets.length === 0) {
       // Light theme keeps no bloom; a single blit forwards the scene untouched.
@@ -344,6 +361,13 @@ export class BloomPyramidPass extends Pass {
       this.upsampleTargets.length > 0
         ? this.upsampleTargets[0].texture
         : this.downsampleTargets[0].texture;
+
+    if (this.pyramidOnly) {
+      this.output = bloomTexture;
+      renderer.autoClear = previousAutoClear;
+      renderer.setRenderTarget(previousTarget);
+      return;
+    }
 
     this.compositeMaterial.uniforms.scene.value = readBuffer.texture;
     this.compositeMaterial.uniforms.bloom.value = bloomTexture;

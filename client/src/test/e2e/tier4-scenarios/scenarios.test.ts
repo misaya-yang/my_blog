@@ -183,15 +183,15 @@ describe("Tier 4: CPU application subsystem scenarios", () => {
 
   // Scenario 4: DayInk / Night Mode Theme Switching Across Routes
   describe("Scenario 4: DayInk / Night Mode Theme Switching Across Routes", () => {
-    it("supports light-mode bloom disabling and restores the pass strength configuration", () => {
+    it("keeps bloom across theme switches, where day uses it as ink bleed", () => {
       const bloomPass = new BloomPyramidPass({ strength: 0.55 });
 
       // 1. Dark mode on Home
       expect(bloomPass.strength).toBe(0.55);
 
-      // 2. User toggles to Day mode
-      bloomPass.strength = 0.0; // Day mode suppresses bloom
-      expect(bloomPass.strength).toBe(0.0);
+      // 2. User toggles to Day mode: the pyramid now feeds the ink bleed
+      bloomPass.strength = 1;
+      expect(bloomPass.strength).toBe(1);
 
       const quality = new RenderQuality();
       const profile = {
@@ -201,7 +201,7 @@ describe("Tier 4: CPU application subsystem scenarios", () => {
         starCount: 300,
       };
       expect(quality.apply({ ...profile, light: true }).bloomEnabled).toBe(
-        false
+        true
       );
       expect(quality.apply({ ...profile, light: false }).bloomEnabled).toBe(
         true
