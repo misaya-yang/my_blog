@@ -43,6 +43,8 @@ export const PETAL_LAYERS: readonly PetalLayer[] = [
   { radius: 1.08, petals: 3, offset: 2.1, lobe: 0.09, cx: 0.0, cy: -0.03 },
 ];
 const OUTER_RADIUS = PETAL_LAYERS[0].radius;
+/** Horizontal shear that reduces the signature's italic lean. */
+const SIGNATURE_UPRIGHT = 0.24;
 const CONTOUR_POINTS = 120;
 
 export function petalContour(layer: PetalLayer, points = CONTOUR_POINTS) {
@@ -116,10 +118,17 @@ export function createRoseTracks(): RoseTrack[] {
       [744, 680],
     ],
   ];
+  // A gentle shear stands the handwriting up: the traced strokes lean far
+  // to the right, and on the tilted rose they read as falling over.
   for (const stroke of strokes)
     add(
       stroke.map(
-        ([x, y]) => new Vector3((x - 635) * 0.006, (655 - y) * 0.006, -1.42)
+        ([x, y]) =>
+          new Vector3(
+            (x - 635) * 0.006 - (655 - y) * 0.006 * SIGNATURE_UPRIGHT,
+            (655 - y) * 0.006,
+            -1.42
+          )
       ),
       false,
       true

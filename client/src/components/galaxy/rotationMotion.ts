@@ -25,7 +25,7 @@ export function unlimitTilt(angle: number) {
 
 export class RotationMotion {
   /** Front-facing curled petals keep the negative spaces and recessed script readable. */
-  static readonly homeEuler = new Euler(0.34, -0.12, -0.16, "XYZ");
+  static readonly homeEuler = new Euler(0.34, -0.12, 0, "XYZ");
 
   /** Produces the default home orientation quaternion from homeEuler. */
   static defaultHomeQuaternion(): Quaternion {

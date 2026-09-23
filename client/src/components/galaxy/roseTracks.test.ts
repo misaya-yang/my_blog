@@ -46,8 +46,16 @@ describe("continuous rose tracks", () => {
     );
     // The recessed heart leaves room for the signature.
     expect(Math.min(...radii[3])).toBeGreaterThan(0.82);
-    expect(tracks[4].length).toBeCloseTo(2.8441526812634637, 12);
-    expect(tracks[5].length).toBeCloseTo(2.750395058716414, 12);
+    expect(tracks[4].length).toBeCloseTo(2.6416496215691114, 12);
+    expect(tracks[5].length).toBeCloseTo(2.5922345567025737, 12);
+    // The "l" stands up: its lean from vertical drops from ~31° in the
+    // trace to about 20°, still handwriting rather than print.
+    const stroke = tracks[4].curve.points;
+    const low = stroke.reduce((a, b) => (b.y < a.y ? b : a));
+    const high = stroke.reduce((a, b) => (b.y > a.y ? b : a));
+    const lean = Math.atan2(high.x - low.x, high.y - low.y);
+    expect(lean).toBeLessThan((22 * Math.PI) / 180);
+    expect(lean).toBeGreaterThan((10 * Math.PI) / 180);
     expect(
       tracks.slice(4).every(track => track.signature && !track.closed)
     ).toBe(true);

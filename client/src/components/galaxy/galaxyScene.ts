@@ -244,9 +244,9 @@ export function createGalaxy(
   const palette = ["#9ad8ff", "#e3f3ff", "#ffb878", "#b5d4ff"].map(
     value => new Color(value)
   );
-  // Day inks must hold their own against near-white paper: deeper and more
-  // chromatic than the night palette, since day cannot lean on additive glow.
-  const dayPalette = ["#235fa8", "#3185ac", "#a8793f", "#455d86"].map(
+  // Day inks are one family, like a single pen on paper: indigo in a few
+  // values plus a rare muted sepia. Mixed saturated hues read as stains.
+  const dayPalette = ["#1f3a6b", "#2c4670", "#7a5a3c", "#35486a"].map(
     value => new Color(value)
   );
   const petalLength = tracks
@@ -724,7 +724,7 @@ export function createGalaxy(
       attribute float aSize; attribute vec3 aDayColor; attribute float aBright;
       uniform float uPixelRatio; uniform float uFocus;
       varying vec3 vColor; varying float vFlow; varying float vBright; varying float vIntro; varying float vAmbient;
-      varying float vDefocus;
+      varying float vDefocus; varying float vCoverage;
       void main() {
         ParticleSample particle = evaluateParticle(position,0.0);
         vFlow = particle.flow;
@@ -744,11 +744,18 @@ export function createGalaxy(
           * mix(0.55, 1.0, max(seatGate, brightBias));
         // Cheap depth of field: motes away from the rose's focal depth grow
         // into soft discs and give up brightness roughly by area.
-        vDefocus = smoothstep(0.9, 3.2, abs(-view.z - uFocus)) * (1.0 - particle.ambient);
+        // On paper, defocused ink discs read as stains: keep only a hint.
+        vDefocus = smoothstep(0.9, 3.2, abs(-view.z - uFocus)) * (1.0 - particle.ambient)
+          * mix(1.0, 0.3, uLight);
         gl_PointSize *= 1.0 + vDefocus * 1.4;
+        // Dark one-pixel sprites show as squares on white. Day motes keep a
+        // round two-pixel footprint and give up ink by area instead.
+        float footprint = max(gl_PointSize, mix(gl_PointSize, 2.4, uLight));
+        vCoverage = (gl_PointSize * gl_PointSize) / (footprint * footprint);
+        gl_PointSize = footprint;
       }`,
     fragmentShader: `varying vec3 vColor; varying float vFlow; varying float vBright; varying float vIntro; varying float vAmbient; uniform float uDisperse; uniform float uLight;
-      varying float vDefocus;
+      varying float vDefocus; varying float vCoverage;
       void main() {
         float d = length(gl_PointCoord - 0.5) * 2.0;
         if (d > 1.0) discard;
@@ -760,12 +767,16 @@ export function createGalaxy(
         vec3 emission = mix(vColor, vec3(1.0), highlight) * (1.0 + vBright * 0.22);
         float ambientAlpha = mix(1.0, 0.6, vAmbient);
         float energy = mix(0.38,0.88,smoothstep(0.35,2.0,vBright));
+        // A hard disc a couple of pixels wide rasterizes as a cross on
+        // paper; day motes use a soft Gaussian dot of the same ink mass.
+        float disc = 1.0 - smoothstep(0.85-fwidth(d)-blurEdge, 0.85+fwidth(d), d);
+        float softDot = exp(-d * d * 2.5) * 1.5;
         gl_FragColor = lightOutput(
           emission,
           vColor,
-          (1.0 - smoothstep(0.85-fwidth(d)-blurEdge, 0.85+fwidth(d), d))
+          mix(disc, softDot, uLight)
             * energy * vFlow * (1.0 - uDisperse * 0.25) * vIntro
-            * ambientAlpha / (grow * grow * 0.7 + 0.3)
+            * ambientAlpha * vCoverage / (grow * grow * 0.7 + 0.3)
         );
         #include <colorspace_fragment>
       }`,
@@ -854,7 +865,7 @@ export function createGalaxy(
         float depth = clamp(10.0 / -center.z,0.7,1.3);
         float diameter = mix(10.0 + aSize*5.0, 3.0+aSize*1.8, uLight)*depth*mix(1.0,0.75,uMobile)*mix(0.45, 1.0, sqrt(particle.intro))
           * mix(0.55, 1.0, smoothstep(0.2, 0.85, particle.travel));
-        float corePixels = aSize*0.7*depth*mix(mix(1.0,0.72,uMobile),1.30,uLight);
+        float corePixels = aSize*0.7*depth*mix(mix(1.0,0.72,uMobile),1.1,uLight);
         vCoreRadius = corePixels / (diameter*0.5);
         float worldSize = diameter * 2.0 * (-center.z) / (projectionMatrix[1][1] * uCanvasSize.y / uPixelRatio);
         center.xy += position.xy * worldSize;
@@ -875,8 +886,8 @@ export function createGalaxy(
         float profile = core + (corona*0.14 + halo*0.02)*lift + glint*(0.025 + vProminence*0.12);
         float whiteCore = smoothstep(0.75,1.4,vBrightness);
         vec3 emission = mix(vColor,vec3(1.0),core*(0.35+whiteCore*0.45))*(1.0+core*(1.0+whiteCore*3.0));
-        // Day: the same profile deposits ink, a dense core inside a soft aura.
-        float dayProfile = (core*1.05 + corona*0.3 + halo*0.05) * mix(0.45, 1.0, lift);
+        // Day: a crisp ink dot; only bright stars keep a faint wash around it.
+        float dayProfile = (core*1.1 + corona*0.07*lift) * mix(0.5, 1.0, lift);
         gl_FragColor = lightOutput(
           emission,
           vColor,
@@ -1082,10 +1093,10 @@ export function createGalaxy(
       background: light ? DAY_PAPER : NIGHT_SKY,
       bloomStrength: bloomStrength(),
       inkDensity: 1,
-      inkBleed: 0.18,
+      inkBleed: 0.06,
       vignette: 0.5,
       // Hundreds of splats overlap; these bring the summed veil to a haze.
-      nebulaStrength: (light ? 0.026 : 0.01) * (mobile ? 0.75 : 1),
+      nebulaStrength: (light ? 0.019 : 0.01) * (mobile ? 0.75 : 1),
     };
   }
 

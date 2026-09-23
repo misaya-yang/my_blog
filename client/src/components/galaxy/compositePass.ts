@@ -102,7 +102,9 @@ const COMPOSITE_FRAGMENT = /* glsl */ `
     if (max(gas.r, max(gas.g, gas.b)) > 0.0005) {
       float structure = nebulaStructure(centered * 2.4);
       // Filaments brighten, lanes nearly empty; energy stays about constant.
-      gas *= mix(0.08, 2.0, structure * structure * (1.6 - 0.6 * structure));
+      // On paper the same contrast turns blotchy, so day keeps it gentler.
+      float shaped = structure * structure * (1.6 - 0.6 * structure);
+      gas *= mix(mix(0.08, 2.0, shaped), mix(0.45, 1.45, shaped), uLight);
     }
     accumulated += gas;
     float vignette = 1.0 - uVignette * smoothstep(0.47, 1.15, length(centered));
