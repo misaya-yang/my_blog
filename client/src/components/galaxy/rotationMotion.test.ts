@@ -81,6 +81,80 @@ describe("drag, follow and return", () => {
     expect(motion.orientation.angleTo(motion.home)).toBe(0);
   });
 
+  it("glides on after a flick, slows, rests, then turns home", () => {
+    const motion = new RotationMotion(new Quaternion());
+    motion.begin();
+    // A steady sideways flick: 0.05 rad per frame, 3 rad/s.
+    for (let i = 0; i < 12; i++) {
+      motion.turn(0, 0.05);
+      motion.advance(1 / 60);
+    }
+    expect(motion.velocity.y).toBeGreaterThan(2.9);
+    expect(motion.velocity.y).toBeLessThanOrEqual(3);
+    const released = motion.target.y;
+    motion.release(0, true);
+    expect(motion.phase).toBe("gliding");
+    run(motion, 0.3);
+    // Carries on in the direction of the flick, and keeps slowing.
+    expect(motion.target.y).toBeGreaterThan(released + 0.5);
+    const early = motion.velocity.y;
+    run(motion, 0.3);
+    expect(motion.velocity.y).toBeLessThan(early);
+    // Exact glide length: v / decay, up to where it hands over to the return.
+    let farthest = motion.target.y;
+    for (let i = 0; i < 600 && motion.phase === "gliding"; i++) {
+      motion.advance(1 / 60);
+      farthest = Math.max(farthest, motion.target.y);
+    }
+    expect(farthest - released).toBeGreaterThan(1.2);
+    expect(farthest - released).toBeLessThan(3 / 2.2 + 0.01);
+    expect(motion.phase).toBe("returning");
+    // A brief rest before heading home.
+    const resting = motion.target.y;
+    run(motion, 0.2);
+    expect(motion.target.y).toBe(resting);
+    run(motion, 5);
+    expect(motion.phase).toBe("idle");
+    expect(motion.orientation.angleTo(motion.home)).toBe(0);
+  });
+
+  it("gives no glide when the hand stopped before letting go, or was cancelled", () => {
+    const motion = new RotationMotion(new Quaternion());
+    motion.begin();
+    for (let i = 0; i < 12; i++) {
+      motion.turn(0, 0.05);
+      motion.advance(1 / 60);
+    }
+    run(motion, 0.25);
+    motion.release(0, true);
+    expect(motion.phase).toBe("returning");
+    motion.begin();
+    for (let i = 0; i < 12; i++) {
+      motion.turn(0, 0.05);
+      motion.advance(1 / 60);
+    }
+    motion.release();
+    expect(motion.phase).toBe("returning");
+    expect(motion.velocity.length()).toBe(0);
+  });
+
+  it("glides the same distance at 30, 60 and 120 Hz", () => {
+    const ends = [30, 60, 120].map(hz => {
+      const motion = new RotationMotion(new Quaternion());
+      motion.begin();
+      for (let i = 0; i < hz / 5; i++) {
+        motion.turn(0, 3 / hz);
+        motion.advance(1 / hz);
+      }
+      motion.release(0, true);
+      const start = motion.target.y;
+      while (motion.phase === "gliding") motion.advance(1 / hz);
+      return motion.target.y - start;
+    });
+    expect(Math.abs(ends[0] - ends[2])).toBeLessThan(0.08);
+    expect(Math.abs(ends[1] - ends[2])).toBeLessThan(0.04);
+  });
+
   it("holds a key turn for a moment before returning", () => {
     const motion = new RotationMotion(new Quaternion());
     motion.begin();

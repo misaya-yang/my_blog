@@ -361,7 +361,8 @@ describe("scene inputs, layout, quality and lifetime", () => {
     expect(controls.dataset.dragging).toBe("false");
     expect(controls.captures.size).toBe(0);
     pointer(win, "pointermove", x + 300, 0);
-    pump(330);
+    // A flick glides on, rests, then turns home.
+    pump(480);
     expect(host.dataset.interaction).toBe("idle");
     expect(Number(host.dataset.returnAngle)).toBeLessThan(0.003);
   });
@@ -378,7 +379,9 @@ describe("scene inputs, layout, quality and lifetime", () => {
     pump();
     expect(controls.dataset.dragging).toBe("false");
     expect(host.dataset.inputActive).toBe("false");
-    pump(330);
+    // Let go mid-flick, the rose glides on before turning home.
+    expect(host.dataset.interaction).toBe("gliding");
+    pump(480);
     expect(host.dataset.interaction).toBe("idle");
     expect(Number(host.dataset.returnAngle)).toBeLessThan(0.003);
     expect(displacement()).toBeLessThan(0.001);

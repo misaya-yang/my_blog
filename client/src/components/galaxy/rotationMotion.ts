@@ -1,13 +1,25 @@
 import { Euler, Quaternion, Vector2 } from "three";
 import { PETAL_TRACKS } from "./roseTracks";
 
-export type RotationPhase = "idle" | "dragging" | "returning";
+export type RotationPhase = "idle" | "dragging" | "gliding" | "returning";
 
 /** The rose follows the hand quickly, and eases home more slowly. */
 const FOLLOW_RATE = 14;
 const RETURN_RATE = 5.5;
 /** How much slower the outer petal layers follow than the heart. */
 const LAYER_LAG = 0.68;
+/** The hand's velocity is averaged over ~50ms of frames. */
+const VELOCITY_WINDOW = 0.05;
+/**
+ * A flick glides on and slows with a ~0.45s time constant, up to about four
+ * radians further; a hand that stopped before letting go gives no glide.
+ */
+const GLIDE_DECAY = 2.2;
+const GLIDE_MAX_SPEED = 9;
+const GLIDE_MIN_SPEED = 0.3;
+const GLIDE_END_SPEED = 0.12;
+/** Once the glide has slowed, the rose rests briefly before turning home. */
+const GLIDE_REST = 0.35;
 /** Turns stay bounded, however long the hand keeps going. */
 const LIMIT = 4 * Math.PI;
 const SETTLED = 1e-3;
@@ -25,8 +37,9 @@ type Layer = { spin: Vector2; lag: number };
  * it over. The hand sets a target turn; the heart follows it closely and each
  * petal layer follows a little later the further out it lies, so the layers
  * fan apart while the rose turns and gather again when it stops, like
- * something soft rather than a rigid plate. Let go, the rose turns back to
- * face the reader, every layer on its own delay.
+ * something soft rather than a rigid plate. Let go mid-flick, it glides on
+ * and slows; then it turns back to face the reader, every layer on its own
+ * delay.
  */
 export class RotationMotion {
   /** Front-facing curled petals keep the negative spaces and recessed script readable. */
@@ -51,6 +64,9 @@ export class RotationMotion {
   phase: RotationPhase = "idle";
   /** Angular speed of the heart, rad/s. */
   speed = 0;
+  /** The hand's turn rate while dragging, then the glide's, rad/s. */
+  readonly velocity = new Vector2();
+  private readonly lastTarget = new Vector2();
   private returnDelay = 0;
 
   constructor(readonly home: Quaternion) {
@@ -61,6 +77,8 @@ export class RotationMotion {
   begin() {
     this.phase = "dragging";
     this.returnDelay = 0;
+    this.velocity.set(0, 0);
+    this.lastTarget.copy(this.target);
   }
 
   /** Turns the target by a screen-space drag, in pixels (y down). */
@@ -78,11 +96,21 @@ export class RotationMotion {
   }
 
   /**
-   * Lets go: after `delay` seconds the rose turns back to face the reader.
-   * A cancelled gesture returns at once.
+   * Lets go. With `glide`, a hand still moving sends the rose gliding on
+   * first; otherwise, after `delay` seconds, it turns back to face the reader.
    */
-  release(delay = 0) {
+  release(delay = 0, glide = false) {
     if (this.phase !== "dragging") return;
+    if (glide && this.velocity.length() > GLIDE_MIN_SPEED) {
+      this.velocity.clampLength(0, GLIDE_MAX_SPEED);
+      this.phase = "gliding";
+      return;
+    }
+    this.velocity.set(0, 0);
+    this.startReturn(delay);
+  }
+
+  private startReturn(delay: number) {
     this.phase = "returning";
     this.unwind();
     this.returnDelay = Math.max(0, delay);
@@ -114,6 +142,7 @@ export class RotationMotion {
     for (const layer of this.layers) layer.spin.set(0, 0);
     this.orientation.copy(this.home);
     this.speed = 0;
+    this.velocity.set(0, 0);
     this.returnDelay = 0;
     this.phase = "idle";
   }
@@ -145,6 +174,29 @@ export class RotationMotion {
     if (this.phase === "idle" || !(dt > 0)) {
       this.speed = 0;
       return;
+    }
+    if (this.phase === "dragging") {
+      // Averaged over a short window, so one late pointer event can't decide
+      // the glide, and a hand at rest lets its velocity fade.
+      const instantX = (this.target.x - this.lastTarget.x) / dt;
+      const instantY = (this.target.y - this.lastTarget.y) / dt;
+      const blend = 1 - Math.exp(-dt / VELOCITY_WINDOW);
+      this.velocity.x += (instantX - this.velocity.x) * blend;
+      this.velocity.y += (instantY - this.velocity.y) * blend;
+      this.lastTarget.copy(this.target);
+    } else if (this.phase === "gliding") {
+      // Exact exponential integration: the same glide at 30, 60 or 120 Hz.
+      const decay = Math.exp(-dt * GLIDE_DECAY);
+      const travel = (1 - decay) / GLIDE_DECAY;
+      this.target.set(
+        clampTurn(this.target.x + this.velocity.x * travel),
+        clampTurn(this.target.y + this.velocity.y * travel)
+      );
+      this.velocity.multiplyScalar(decay);
+      if (this.velocity.length() < GLIDE_END_SPEED) {
+        this.velocity.set(0, 0);
+        this.startReturn(GLIDE_REST);
+      }
     }
     if (this.phase === "returning" && this.returnDelay > 0) {
       this.returnDelay -= dt;

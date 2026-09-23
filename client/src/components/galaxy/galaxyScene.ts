@@ -2010,20 +2010,21 @@ export function createGalaxy(
     controls.dataset.dragging = "true";
     move(event);
   };
-  function finishDrag() {
+  function finishDrag(glide = false) {
     if (!dragging) return;
     const pointerId = activePointer;
     dragging = false;
     activePointer = -1;
-    // Let go, or cancelled, the rose turns back to face the reader.
-    rotation.release();
+    // A hand let go mid-flick sends the rose gliding on before it turns back
+    // to face the reader; a cancelled gesture goes straight home.
+    rotation.release(0, glide);
     controls.dataset.dragging = "false";
     if (controls.hasPointerCapture(pointerId))
       controls.releasePointerCapture(pointerId);
   }
   const up = (event: PointerEvent) => {
     if (event.pointerId !== activePointer) return;
-    finishDrag();
+    finishDrag(event.type === "pointerup");
     if (event.pointerType !== "mouse") targetHover = 0;
   };
   // Leaving lets the parted particles flow back instead of snapping home.
