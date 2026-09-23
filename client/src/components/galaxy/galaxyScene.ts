@@ -44,6 +44,7 @@ import { projectTrackball, trackballDelta } from "./trackball";
 import { getPageScene } from "./pageScene";
 import { getScrollMotion, type MotionState } from "./scrollMotion";
 import { RenderQuality } from "./renderQuality";
+import { fitRose, type RoseFit } from "./roseFit";
 import {
   NebulaGasLayer,
   bakeNebulaGas,
@@ -784,7 +785,10 @@ export function createGalaxy(
     blending: AdditiveBlending,
     ...createHazeMaterialSource(),
   });
-  const haze = createHazePoints(bakeNebulaHaze(tracks, hazeCount), hazeMaterial);
+  const haze = createHazePoints(
+    bakeNebulaHaze(tracks, hazeCount),
+    hazeMaterial
+  );
   group.add(haze);
   const nebulaGas = new NebulaGasLayer(bakeNebulaGas(tracks, 600));
   const starGeometry = new InstancedBufferGeometry();
@@ -1081,7 +1085,7 @@ export function createGalaxy(
       inkBleed: 0.18,
       vignette: 0.5,
       // Hundreds of splats overlap; these bring the summed veil to a haze.
-      nebulaStrength: (light ? 0.026 : 0.015) * (mobile ? 0.75 : 1),
+      nebulaStrength: (light ? 0.026 : 0.01) * (mobile ? 0.75 : 1),
     };
   }
 
@@ -1098,6 +1102,15 @@ export function createGalaxy(
   const rotation = new RotationMotion(RotationMotion.defaultHomeQuaternion());
   const orientation = rotation.orientation;
   const initialOrientation = rotation.home;
+  // Petal contours in the home orientation, for fitting the rose on screen.
+  const fitPoints = new Float32Array(PETAL_TRACKS * 48 * 3);
+  for (let row = 0; row < PETAL_TRACKS; row++)
+    for (let i = 0; i < 48; i++)
+      sampleTrack(tracks[row], i / 48)
+        .applyQuaternion(initialOrientation)
+        .toArray(fitPoints, (row * 48 + i) * 3);
+  const homeFit: RoseFit = { scale: 1, x: 0, y: 0 };
+  let homeFitKey = "";
   const angularAxis = new Vector3(0, 1, 0);
   const increment = new Quaternion();
   let dragging = false,
@@ -1161,6 +1174,9 @@ export function createGalaxy(
   let heroHeight = 0;
   let hasHero = false;
   let stageHeight = 800;
+  // Stage and foot row positions at rest (scrollY = 0), relative to the canvas.
+  let stageRestTop = 68;
+  let footRestTop = 700;
   let targetTop = -10000;
   let targetBottom = -9999;
   let targetHeight = 1;
@@ -1231,6 +1247,13 @@ export function createGalaxy(
     }
 
     stageHeight = stage?.clientHeight || bounds.height;
+    if (stage?.isConnected) {
+      stageRestTop =
+        stage.getBoundingClientRect().top + window.scrollY - bounds.top;
+      footRestTop = foot?.isConnected
+        ? foot.getBoundingClientRect().top + window.scrollY - bounds.top
+        : stageRestTop + stageHeight;
+    }
 
     if (hero?.isConnected) {
       const hr = hero.getBoundingClientRect();
@@ -1380,7 +1403,7 @@ export function createGalaxy(
     uniforms.uDisperse.value = motion.expansion * 0.1 * (1 - gather);
     uniforms.uCopyOpacity.value =
       pageScene.mode === "author" ? 1 : motion.copyOpacity;
-    camera.position.z = 10.4 - motion.approach * 0.55 + gather * 3.6;
+    camera.position.z = 10.4 - motion.approach * 0.2 + gather * 3.6;
     uniforms.uSideX.value =
       Math.tan((camera.fov * Math.PI) / 360) *
       camera.position.z *
@@ -1435,14 +1458,38 @@ export function createGalaxy(
       copyRight - bounds.left + 24
     );
     const roseRight = bounds.width - 30;
-    const roseWidth = Math.max(120, roseRight - roseLeft);
-    const homeScale = Math.min(
-      1,
-      ((roseWidth / bounds.width) * worldWidth) / 8.6,
-      worldHeight / 10.1
+    // The rose sits inside the first screen: under the header, above the
+    // foot row, and to the right of the copy, measured as projected.
+    // A margin of empty sky around it keeps the rose from crowding the page.
+    const available = Math.max(
+      160,
+      footRestTop - 16 - Math.max(stageRestTop, 68)
     );
-    const homeX =
-      ((roseLeft + roseRight) / 2 / bounds.width - 0.5) * worldWidth;
+    const fitTop = Math.max(stageRestTop, 68) + available * 0.08;
+    const fitBottom = fitTop + available * 0.84;
+    const fitKey = `${bounds.width}|${bounds.height}|${roseLeft}|${fitTop}|${fitBottom}`;
+    if (fitKey !== homeFitKey) {
+      homeFitKey = fitKey;
+      fitRose(
+        fitPoints,
+        {
+          width: bounds.width,
+          height: bounds.height,
+          fov: camera.fov,
+          distance: 10.4,
+        },
+        {
+          left: roseLeft + (roseRight - roseLeft) * 0.05,
+          right: roseRight - (roseRight - roseLeft) * 0.05,
+          top: fitTop,
+          bottom: fitBottom,
+        },
+        1,
+        homeFit
+      );
+    }
+    const homeScale = homeFit.scale;
+    const homeX = homeFit.x;
     const homeComposition = pageScene.mode === "home" ? 1 - splitBlend : 0;
     group.position.x = mobile
       ? 0
@@ -1463,11 +1510,15 @@ export function createGalaxy(
         ? mobileScale * homeComposition + splitBlend
         : homeScale * homeComposition + (1 - homeComposition)
     );
+    // On desktop the rose leaves with the hero: it rises with the scrolled
+    // distance, a touch slower than the page, while it disperses.
     group.position.y = mobile
       ? (0.5 - (96 + mobileBottom) / 2 / bounds.height) *
         worldHeight *
         (1 - splitBlend)
-      : 0;
+      : (homeFit.y +
+          (scrollProgress * stageHeight * 0.85 * worldHeight) / bounds.height) *
+        homeComposition;
     group.position.z = 0;
     pivotOffset.set(0, 0, -1.42).applyQuaternion(initialOrientation);
     rotatedPivot.set(0, 0, -1.42).applyQuaternion(orientation);
@@ -1595,7 +1646,9 @@ export function createGalaxy(
     // intro and thins out as the rose disperses or yields to a constellation.
     const introGate = Math.min(1, Math.max(0, (intro - 0.55) / 0.45));
     uniforms.uNebula.value =
-      introGate * introGate * (3 - 2 * introGate) *
+      introGate *
+      introGate *
+      (3 - 2 * introGate) *
       (1 - uniforms.uAmbientBlend.value) *
       (1 - smoothstep01((uniforms.uSplit.value - 0.05) / 0.6));
     nebulaGas.render(renderer, camera, group.matrixWorld, {
@@ -1788,7 +1841,9 @@ export function createGalaxy(
       !paused &&
       pageScene.mode === "home" &&
       uniforms.uSplit.value < 0.85 &&
-      (event.buttons === 0 || (dragging && event.pointerId === activePointer));
+      // While dragging the hand turns the rose; a wake on top would smear it.
+      event.buttons === 0 &&
+      !dragging;
     if (eligible && lastPointerStamp > 0 && gap > 0 && gap < 0.4) {
       if (!brush.active) brush.from.copy(brushPrevious);
       brush.to.set(px, py);
@@ -1988,7 +2043,6 @@ export function createGalaxy(
       distantGeometry.attributes.color.needsUpdate = true;
     if (distantGeometry.attributes.aSize)
       distantGeometry.attributes.aSize.needsUpdate = true;
-
 
     // 4. Rebuild render targets for EffectComposer and BloomPyramidPass
     const width = Math.max(1, bounds.width);

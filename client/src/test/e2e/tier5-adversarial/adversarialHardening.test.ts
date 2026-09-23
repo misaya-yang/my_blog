@@ -227,7 +227,8 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       const motion = new RotationMotion(canonicalHomeQuat);
       motion.begin();
 
-      // Drag galaxy far away from canonical pose
+      // Drag galaxy far away from canonical pose; the tilt limit holds it
+      // just short of the maximum instead of letting it turn edge-on.
       const spinDelta = new Quaternion().setFromAxisAngle(
         new Vector3(0.577, 0.577, 0.577).normalize(),
         2.5
@@ -236,7 +237,10 @@ describe("Tier 5: Adversarial Coverage Hardening Suite", () => {
       motion.release();
       expect(motion.phase).toBe("inertia");
       expect(motion.orientation.angleTo(canonicalHomeQuat)).toBeGreaterThan(
-        1.0
+        0.5
+      );
+      expect(motion.orientation.angleTo(canonicalHomeQuat)).toBeLessThan(
+        0.56
       );
 
       // Massive dt simulation (e.g. laptop lid closed for 1 hour: dt = 3600.0s)

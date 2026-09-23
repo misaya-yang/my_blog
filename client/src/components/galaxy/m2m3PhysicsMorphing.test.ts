@@ -133,7 +133,7 @@ describe("Milestone 2: Interaction Physics (F8, F9, F10, F11)", () => {
       expect(motion.speed).toBe(2.4); // Capped at 2.4 rad/s
     });
 
-    it("verifies smooth coasting damping (gamma = 3.0) and gentle attraction slerp upon drag release", () => {
+    it("verifies a short coast (gamma = 6.0) and home attraction slerp upon drag release", () => {
       const motion = new RotationMotion(RotationMotion.defaultHomeQuaternion());
       motion.begin();
       const delta = new Quaternion().setFromAxisAngle(
@@ -146,12 +146,12 @@ describe("Milestone 2: Interaction Physics (F8, F9, F10, F11)", () => {
       expect(motion.phase).toBe("inertia");
       const initialSpeed = motion.speed;
 
-      // Advance 0.5s: speed decays by exp(-3 * 0.5) = exp(-1.5) ≈ 0.2231
-      motion.advance(0.5);
+      // Advance 0.25s: speed decays by exp(-6 * 0.25) = exp(-1.5) ≈ 0.2231
+      motion.advance(0.25);
       expect(motion.speed).toBeCloseTo(initialSpeed * Math.exp(-1.5), 2);
 
       // Coast automatically transitions to returning when speed < 0.05
-      let totalTime = 0.5;
+      let totalTime = 0.25;
       while (motion.phase === "inertia" && totalTime < 5) {
         motion.advance(0.05);
         totalTime += 0.05;

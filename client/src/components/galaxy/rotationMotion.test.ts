@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { Quaternion, Vector3 } from "three";
-import { RotationMotion } from "./rotationMotion";
+import { limitTilt, RotationMotion, unlimitTilt } from "./rotationMotion";
 
 describe("drag, coast and return", () => {
   const delta = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), 1);
-  it("stops consuming motion on release and returns home after a long soft settle", () => {
+  it("stops consuming motion on release and returns home after a soft settle", () => {
     const motion = new RotationMotion(new Quaternion());
     motion.begin();
     motion.move(delta, 0.1);
@@ -13,11 +13,11 @@ describe("drag, coast and return", () => {
     motion.move(delta, 0.1);
     expect(motion.orientation.angleTo(released)).toBe(0);
     expect(motion.phase).toBe("inertia");
-    // The gesture must linger: still visibly displaced after half a second,
-    // whole again within ~4.5s.
-    for (let i = 0; i < 30; i++) motion.advance(1 / 60);
+    // The gesture lingers briefly: still visibly displaced after a quarter
+    // second, whole again within ~3s.
+    for (let i = 0; i < 15; i++) motion.advance(1 / 60);
     expect(motion.orientation.angleTo(motion.home)).toBeGreaterThan(0.05);
-    for (let i = 30; i < 270; i++) motion.advance(1 / 60);
+    for (let i = 15; i < 180; i++) motion.advance(1 / 60);
     expect(motion.orientation.angleTo(motion.home)).toBeLessThan(0.003);
   });
   it("re-grabbing interrupts return without snapping; cancellation removes coast", () => {
@@ -45,6 +45,24 @@ describe("drag, coast and return", () => {
       return motion.orientation.angleTo(motion.home);
     });
     expect(Math.max(...angles) - Math.min(...angles)).toBeLessThan(0.005);
+  });
+
+  it("rubber-bands the tilt so the rose never turns edge-on", () => {
+    expect(limitTilt(0.2)).toBe(0.2);
+    expect(limitTilt(0.5)).toBeLessThan(0.5);
+    expect(limitTilt(10)).toBeLessThanOrEqual(0.56);
+    for (const angle of [0.1, 0.3, 0.45, 0.55])
+      expect(limitTilt(unlimitTilt(angle))).toBeCloseTo(angle, 6);
+    const motion = new RotationMotion(new Quaternion());
+    motion.begin();
+    for (let i = 0; i < 20; i++) motion.move(delta, 1 / 60);
+    expect(motion.orientation.angleTo(motion.home)).toBeLessThanOrEqual(0.5601);
+    // Picking the limited pose up again does not make it jump.
+    motion.release(true);
+    const held = motion.orientation.clone();
+    motion.begin();
+    motion.move(new Quaternion(), 1 / 60);
+    expect(motion.orientation.angleTo(held)).toBeLessThan(1e-6);
   });
 
   it("uses one canonical home orientation for initial pose and recovery", () => {

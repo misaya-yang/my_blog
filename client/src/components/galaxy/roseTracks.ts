@@ -10,20 +10,60 @@ export type RoseTrack = {
   period: number;
 };
 
-/** One gentle cyclic XY pass; preserve the traced center and every depth anchor. */
-export function regularizePetalContour(points: readonly Vector3[]) {
-  return points.map((point, index) => {
-    const before = points[(index + points.length - 1) % points.length];
-    const after = points[(index + 1) % points.length];
-    return new Vector3(
-      point.x * 0.76 + (before.x + after.x) * 0.12,
-      point.y * 0.76 + (before.y + after.y) * 0.12,
-      point.z
+/**
+ * One layer of petals around the heart. The outline is a circle whose radius
+ * swells into `petals` rounded lobes and pinches into a soft notch where two
+ * petals overlap, the way the source drawing reads. Depth is a cupped bowl:
+ * outer layers rise toward the viewer and each petal's tip lifts a little
+ * more than its notches, so the rose keeps its volume when it turns.
+ */
+export type PetalLayer = {
+  radius: number;
+  petals: number;
+  /** Angle of the first notch, in radians. */
+  offset: number;
+  /** Lobe depth as a fraction of the radius. */
+  lobe: number;
+  /** Small offset of the layer centre; nested petals are never concentric. */
+  cx: number;
+  cy: number;
+};
+
+export const PETAL_LAYERS: readonly PetalLayer[] = [
+  { radius: 2.95, petals: 5, offset: 0.35, lobe: 0.15, cx: 0, cy: 0.02 },
+  {
+    radius: 2.2,
+    petals: 5,
+    offset: 0.35 + Math.PI / 5,
+    lobe: 0.14,
+    cx: -0.04,
+    cy: 0.05,
+  },
+  { radius: 1.55, petals: 4, offset: 0.9, lobe: 0.12, cx: 0.05, cy: 0.02 },
+  { radius: 1.08, petals: 3, offset: 2.1, lobe: 0.09, cx: 0.0, cy: -0.03 },
+];
+const OUTER_RADIUS = PETAL_LAYERS[0].radius;
+const CONTOUR_POINTS = 120;
+
+export function petalContour(layer: PetalLayer, points = CONTOUR_POINTS) {
+  return Array.from({ length: points }, (_, i) => {
+    const angle = (i / points) * Math.PI * 2;
+    // |sin| peaks mid-petal and reaches zero at each notch; the 0.45 power
+    // keeps the lobe broad and rounded and the notch narrow.
+    const lobe = Math.pow(
+      Math.abs(Math.sin(((angle - layer.offset) * layer.petals) / 2)),
+      0.45
     );
+    const r = layer.radius * (1 - layer.lobe + layer.lobe * lobe * 1.4);
+    const x = layer.cx + Math.cos(angle) * r;
+    const y = layer.cy + Math.sin(angle) * r;
+    const reach = Math.hypot(x, y) / OUTER_RADIUS;
+    const z = -1.05 + Math.pow(reach, 1.7) * 1.5 + (lobe - 0.6) * 0.3 * reach;
+    return new Vector3(x, y, z);
   });
 }
 
-/** Nested, offset contours traced from rose-lvy-source.png, not radial oval lobes. */
+/** Four nested petal layers around the recessed heart, then the signature. */
 export function createRoseTracks(): RoseTrack[] {
   const tracks: RoseTrack[] = [];
   const add = (points: Vector3[], closed: boolean, signature = false) => {
@@ -38,140 +78,7 @@ export function createRoseTracks(): RoseTrack[] {
       period: signature ? length / 0.14 : length / 0.24,
     });
   };
-  // Pixel coordinates retain the source's irregular, wrapping petal silhouette.
-  // Each contour encircles the recessed heart instead of returning through it.
-  const contours = [
-    [
-      [668, 72],
-      [788, 147],
-      [908, 226],
-      [925, 312],
-      [1084, 319],
-      [1171, 440],
-      [1186, 541],
-      [1200, 700],
-      [1163, 810],
-      [1085, 871],
-      [1030, 885],
-      [934, 1004],
-      [826, 1070],
-      [716, 1138],
-      [575, 1145],
-      [501, 1100],
-      [445, 1000],
-      [374, 1026],
-      [290, 1012],
-      [220, 958],
-      [129, 938],
-      [90, 862],
-      [78, 755],
-      [100, 620],
-      [181, 533],
-      [206, 484],
-      [258, 393],
-      [340, 343],
-      [306, 278],
-      [335, 208],
-      [355, 129],
-      [454, 99],
-      [575, 89],
-    ],
-    [
-      [347, 348],
-      [432, 284],
-      [486, 246],
-      [584, 239],
-      [664, 251],
-      [737, 291],
-      [792, 369],
-      [831, 443],
-      [850, 514],
-      [884, 560],
-      [946, 604],
-      [1057, 691],
-      [1070, 761],
-      [1046, 824],
-      [1028, 884],
-      [926, 891],
-      [881, 947],
-      [806, 980],
-      [695, 972],
-      [564, 943],
-      [480, 904],
-      [440, 875],
-      [366, 877],
-      [272, 875],
-      [244, 837],
-      [225, 755],
-      [250, 671],
-      [278, 574],
-      [295, 468],
-    ],
-    [
-      [438, 489],
-      [480, 441],
-      [493, 376],
-      [582, 342],
-      [645, 364],
-      [683, 342],
-      [756, 345],
-      [830, 403],
-      [891, 494],
-      [902, 566],
-      [888, 644],
-      [891, 713],
-      [865, 778],
-      [838, 835],
-      [795, 873],
-      [722, 894],
-      [639, 908],
-      [555, 892],
-      [492, 854],
-      [462, 797],
-      [421, 743],
-      [397, 714],
-      [372, 616],
-    ],
-    [
-      [618, 493],
-      [663, 508],
-      [752, 550],
-      [800, 616],
-      [802, 681],
-      [787, 744],
-      [740, 787],
-      [674, 825],
-      [602, 848],
-      [559, 824],
-      [514, 795],
-      [470, 748],
-      [451, 693],
-      [467, 628],
-      [502, 556],
-      [552, 512],
-    ],
-  ];
-  contours.forEach((contour, layer) => {
-    add(
-      regularizePetalContour(
-        contour.map(([x, y]) => {
-          const px = (x - 635) * 0.006,
-            py = (655 - y) * 0.006;
-          const angle = Math.atan2(py, px);
-          // A gentler depth relief: strong z made near-camera petals swell under
-          // perspective and the right side read overgrown.
-          return new Vector3(
-            px,
-            py,
-            -1.0 +
-              Math.pow(Math.hypot(px, py) / 3.4, 1.4) * 1.1 +
-              (0.35 + Math.hypot(px, py) * 0.25) * Math.cos(angle + layer * 1.7)
-          );
-        })
-      ),
-      true
-    );
-  });
+  for (const layer of PETAL_LAYERS) add(petalContour(layer), true);
   // Original handwritten signature, independent open strokes in the recessed heart.
   const strokes = [
     [

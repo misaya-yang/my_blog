@@ -63,6 +63,11 @@ const DAY_RAMP = ["#c9a47e", "#9fb6d6", "#6f9cc8", "#4f79ad"].map(
   value => new Color(value)
 );
 
+function smoothstep(edge0: number, edge1: number, x: number) {
+  const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
+  return t * t * (3 - 2 * t);
+}
+
 const scratch = new Color();
 function ramp(colors: Color[], t: number, out: Float32Array, offset: number) {
   const x = Math.min(0.999, Math.max(0, t)) * (colors.length - 1);
@@ -79,7 +84,7 @@ type BakeOptions = {
   /** Depth spread (sigma) in rose units. */
   depth: number;
   size: (random: () => number) => number;
-  alpha: (random: () => number, offRidge: number) => number;
+  alpha: (random: () => number, offRidge: number, radius: number) => number;
 };
 
 function bake(tracks: RoseTrack[], options: BakeOptions): NebulaSample {
@@ -126,7 +131,8 @@ function bake(tracks: RoseTrack[], options: BakeOptions): NebulaSample {
     sizes[i] = options.size(random);
     alphas[i] = options.alpha(
       random,
-      Math.min(1, Math.abs(offset) / (options.spread * 2.6))
+      Math.min(1, Math.abs(offset) / (options.spread * 2.6)),
+      radius
     );
   }
   return {
@@ -147,7 +153,12 @@ export function bakeNebulaGas(tracks: RoseTrack[], count: number) {
     depth: 0.35,
     // World-space diameters: broad veils with a few denser knots.
     size: random => 0.9 + Math.pow(random(), 1.6) * 1.9,
-    alpha: (random, off) => (0.35 + random() * 0.65) * (1 - off * 0.55),
+    // The heart thins out: every layer's veil overlaps there, and the
+    // signature has to stay readable against it.
+    alpha: (random, off, radius) =>
+      (0.35 + random() * 0.65) *
+      (1 - off * 0.55) *
+      (0.35 + 0.65 * smoothstep(0.18, 0.6, radius)),
   });
 }
 
@@ -159,7 +170,8 @@ export function bakeNebulaHaze(tracks: RoseTrack[], count: number) {
     depth: 0.22,
     // CSS-pixel diameters: sub-pixel to barely resolved.
     size: random => 0.8 + Math.pow(random(), 3) * 1.4,
-    alpha: (random, off) => (0.25 + Math.pow(random(), 2) * 0.75) * (1 - off * 0.7),
+    alpha: (random, off) =>
+      (0.25 + Math.pow(random(), 2) * 0.75) * (1 - off * 0.7),
   });
 }
 
@@ -214,7 +226,10 @@ export function createHazeMaterialSource() {
   };
 }
 
-export function createHazePoints(sample: NebulaSample, material: ShaderMaterial) {
+export function createHazePoints(
+  sample: NebulaSample,
+  material: ShaderMaterial
+) {
   const points = new Points(geometryFrom(sample), material);
   points.frustumCulled = false;
   points.renderOrder = 0.5;

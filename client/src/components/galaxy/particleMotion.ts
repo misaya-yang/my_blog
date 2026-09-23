@@ -44,7 +44,7 @@ export interface ParticleMotionStep {
 }
 
 const DEFAULT_RADIUS = 96;
-const DEFAULT_STRENGTH = 0.64;
+const DEFAULT_STRENGTH = 0.5;
 const DEFAULT_MAX_DISPLACEMENT = 72;
 const MAX_POINTER_SPEED = 1800;
 // Shared coefficients keep CPU fallback and GPU flow within the same 25% cone.

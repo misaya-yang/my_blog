@@ -62,7 +62,7 @@ describe("Tier 1: Feature Coverage - 3D Trackball Drag & Canonical Home Pose (F9
     expect(motion.speed).toBe(2.4); // Hard cap at 2.4 rad/s
   });
 
-  it("decays coasting speed exponentially with damping factor gamma = 3.0", () => {
+  it("decays coasting speed exponentially with damping factor gamma = 6.0", () => {
     const motion = new RotationMotion(homeQuat);
     motion.begin();
     const dragDelta = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), 0.05);
@@ -72,8 +72,8 @@ describe("Tier 1: Feature Coverage - 3D Trackball Drag & Canonical Home Pose (F9
     motion.release();
     expect(motion.phase).toBe("inertia");
 
-    // Advance 0.5s: speed should decay by exp(-3 * 0.5) = exp(-1.5) = 0.2231
-    motion.advance(0.5);
+    // Advance 0.25s: speed should decay by exp(-6 * 0.25) = exp(-1.5) = 0.2231
+    motion.advance(0.25);
     expect(motion.speed).toBeCloseTo(initialSpeed * Math.exp(-1.5), 2);
   });
 
@@ -136,9 +136,9 @@ describe("Tier 1: Feature Coverage - 3D Trackball Drag & Canonical Home Pose (F9
     const settleTime60 = simulateSettle(1 / 60);
     const settleTime120 = simulateSettle(1 / 120);
 
-    // All should settle around ~3.0s - 4.0s
-    expect(settleTime30).toBeGreaterThan(2.5);
-    expect(settleTime30).toBeLessThan(4.5);
+    // All should settle in about two seconds: calm, not lingering.
+    expect(settleTime30).toBeGreaterThan(1.5);
+    expect(settleTime30).toBeLessThan(3);
     expect(settleTime60).toBeCloseTo(settleTime30, 0);
     expect(settleTime120).toBeCloseTo(settleTime60, 0);
   });

@@ -365,14 +365,14 @@ describe("scene inputs, layout, quality and lifetime", () => {
     expect(Number(host.dataset.returnAngle)).toBeLessThan(0.003);
   });
 
-  it("lets a pressed drag drive local particle momentum alongside orientation", () => {
+  it("turns the rose on a pressed drag without smearing it with a wake", () => {
     pump(200);
     const x = beginDrag();
     pointer(win, "pointermove", x + 140, 1);
     pump();
-    expect(host.dataset.inputActive).toBe("true");
+    expect(host.dataset.inputActive).toBe("false");
     expect(Number(host.dataset.returnAngle)).toBeGreaterThan(0.01);
-    expect(displacement()).toBeGreaterThan(0.00001);
+    expect(displacement()).toBeLessThan(0.00001);
     pointer(win, "pointerup", x + 140, 0);
     pump();
     expect(controls.dataset.dragging).toBe("false");
