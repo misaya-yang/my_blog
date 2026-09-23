@@ -37,6 +37,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useIsMobile } from "@/hooks/useMobile";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
+import "@/styles/agent-surfaces.css";
 import {
   buildRouteContext,
   BLOG_AGENT_OPEN_EVENT,

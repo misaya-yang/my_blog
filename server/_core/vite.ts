@@ -72,6 +72,14 @@ export function serveStatic(app: Express) {
     );
   }
 
+  // Hashed build output never changes under the same URL.
+  app.use(
+    "/assets",
+    express.static(path.join(distPath, "assets"), {
+      immutable: true,
+      maxAge: "1y",
+    })
+  );
   app.use(express.static(distPath));
 
   app.use(

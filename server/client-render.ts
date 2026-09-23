@@ -10,6 +10,11 @@ import {
 import { siteConfig } from "../shared/site.js";
 import { ENV } from "./_core/env.js";
 import * as db from "./db.js";
+import {
+  buildRoutePreloadTags,
+  injectPreloadTags,
+  loadViteManifest,
+} from "./routePreload.js";
 import { getPublicSeedArticleBySlug } from "./publicSeedPosts.js";
 import { resolveSiteUrl, type SiteUrlRequest } from "./seo.js";
 
@@ -50,7 +55,15 @@ type RenderClientShellOptions = {
 type RenderedClientShell = {
   status: 200 | 404;
   html: string;
+  cacheControl: string;
 };
+
+// Public pages are identical for every reader, so the edge can answer them
+// without a function cold start. The stale window stays short so publishing
+// or hiding a post is visible within minutes.
+const PUBLIC_HTML_CACHE = "public, max-age=0, s-maxage=60, stale-while-revalidate=600";
+const DEGRADED_HTML_CACHE = "public, max-age=0, s-maxage=10";
+const PRIVATE_HTML_CACHE = "private, no-store";
 type KnownRouteMetadata = {
   title?: string;
   description?: string;
@@ -144,6 +157,9 @@ export async function renderClientShellHtml({
   const route = classifyClientRoute(pathname);
   let status: 200 | 404 = 200;
   let html = rawHtml;
+  let cacheControl = isOwnerPath(pathname)
+    ? PRIVATE_HTML_CACHE
+    : PUBLIC_HTML_CACHE;
 
   if (route.kind === "unknown") {
     status = 404;
@@ -164,6 +180,7 @@ export async function renderClientShellHtml({
     );
 
     if (snapshot.status === "unavailable") {
+      cacheControl = DEGRADED_HTML_CACHE;
       html = injectRouteMetadata(
         html,
         buildRouteMetadata(baseUrl, {
@@ -208,7 +225,17 @@ export async function renderClientShellHtml({
   const transformedHtml = transformHtml
     ? await transformHtml(urlPath, html)
     : html;
-  return { status, html: transformedHtml };
+  if (status === 404 && cacheControl === PUBLIC_HTML_CACHE)
+    cacheControl = DEGRADED_HTML_CACHE;
+  return { status, html: transformedHtml, cacheControl };
+}
+
+function isOwnerPath(pathname: string) {
+  return (
+    pathname === "/login" ||
+    pathname.startsWith("/manage") ||
+    pathname.startsWith("/write")
+  );
 }
 
 function buildKnownRouteMetadata(baseUrl: string, urlPath: string) {
@@ -314,11 +341,26 @@ export function createClientRenderMiddleware(
         urlPath: req.originalUrl,
         transformHtml: options.transformHtml,
       });
+      // Development serves source modules through Vite and has no manifest.
+      const manifest = options.transformHtml
+        ? null
+        : await loadViteManifest(
+            path.join(path.dirname(indexHtmlPath), ".vite", "manifest.json")
+          );
+      const html = injectPreloadTags(
+        rendered.html,
+        manifest
+          ? buildRoutePreloadTags(manifest, normalizePathname(req.path))
+          : ""
+      );
 
       res
         .status(rendered.status)
-        .set({ "Content-Type": "text/html; charset=utf-8" })
-        .send(rendered.html);
+        .set({
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": rendered.cacheControl,
+        })
+        .send(html);
     } catch (error) {
       next(error);
     }

@@ -181,8 +181,12 @@ export const appRouter = router({
         })
       )
       .query(async ({ input, ctx }) => {
-        const isAdmin = await verifyAdminSession(ctx.req);
-        const posts = await db.getPosts({
+        // The session only matters when unpublished posts were requested;
+        // public list requests skip that lookup entirely.
+        const isAdmin = input.includeUnpublished
+          ? await verifyAdminSession(ctx.req)
+          : false;
+        const filters = {
           ...input,
           status:
             isAdmin && input.includeUnpublished
@@ -190,16 +194,11 @@ export const appRouter = router({
               : input.status || "published",
           visibility:
             isAdmin && input.includeUnpublished ? input.visibility : "public",
-        });
-        const total = await db.getPostsCount({
-          ...input,
-          status:
-            isAdmin && input.includeUnpublished
-              ? undefined
-              : input.status || "published",
-          visibility:
-            isAdmin && input.includeUnpublished ? input.visibility : "public",
-        });
+        };
+        const [posts, total] = await Promise.all([
+          db.getPosts(filters),
+          db.getPostsCount(filters),
+        ]);
         return {
           posts: input.summaryOnly
             ? posts.map(post => ({

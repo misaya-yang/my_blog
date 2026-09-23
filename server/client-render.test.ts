@@ -115,6 +115,32 @@ describe("client shell renderability", () => {
     expect(rendered.html).not.toContain("BlogPosting");
   });
 
+  it("lets the edge cache public pages but never owner routes or degraded shells", async () => {
+    const render = (urlPath: string, loadArticle = async () => article) =>
+      renderClientShellHtml({
+        baseUrl: "https://example.com",
+        rawHtml: baseHtml,
+        urlPath,
+        articleSnapshotTimeoutMs: 1,
+        loadArticle,
+      });
+
+    expect((await render("/")).cacheControl).toContain("s-maxage=60");
+    expect((await render("/archive")).cacheControl).toContain("s-maxage=60");
+    expect((await render("/manage/agent")).cacheControl).toBe(
+      "private, no-store"
+    );
+    expect((await render("/login")).cacheControl).toBe("private, no-store");
+    expect((await render("/not-a-real-route")).cacheControl).toContain(
+      "s-maxage=10"
+    );
+    const slow = await render(
+      "/post/slow-article",
+      () => new Promise(resolve => setTimeout(() => resolve(article), 50))
+    );
+    expect(slow.cacheControl).toContain("s-maxage=10");
+  });
+
   it("injects canonical metadata into known client routes before hydration", async () => {
     const rendered = await renderClientShellHtml({
       baseUrl: "https://example.com",

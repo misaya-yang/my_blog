@@ -166,9 +166,50 @@ function getNodeModulePackageName(id: string) {
     : scopeOrName;
 }
 
+// "/" is served as a static file, so the server cannot add the lazy Home
+// chunk to it per request. Bake Home's chunks into index.html; the render
+// middleware swaps them for the right page's chunks on every other route.
+function homeRoutePreloadPlugin(): Plugin {
+  return {
+    name: "home-route-preload",
+    apply: "build",
+    transformIndexHtml: {
+      order: "post",
+      handler(html, ctx) {
+        const bundle = ctx.bundle;
+        if (!bundle) return html;
+        const chunks = Object.values(bundle).filter(
+          (item): item is Extract<typeof item, { type: "chunk" }> =>
+            item.type === "chunk"
+        );
+        const entry = chunks.find(chunk => chunk.isEntry);
+        const home = chunks.find(chunk =>
+          chunk.facadeModuleId?.endsWith("/src/pages/Home.tsx")
+        );
+        if (!entry || !home) return html;
+        const loaded = new Set([entry.fileName, ...entry.imports]);
+        const files = [home.fileName, ...home.imports].filter(
+          file => !loaded.has(file)
+        );
+        const tags = files
+          .map(
+            file =>
+              `<link rel="modulepreload" crossorigin href="/${file}" data-route-preload />`
+          )
+          .join("\n    ");
+        return html.replace("</head>", `    ${tags}\n  </head>`);
+      },
+    },
+  };
+}
+
 export function createVitePlugins({ mode = process.env.NODE_ENV || "development" }: VitePluginOptions = {}) {
   const isProduction = mode === "production" || process.env.NODE_ENV === "production";
-  const plugins: PluginOption[] = [react(), tailwindcss()];
+  const plugins: PluginOption[] = [
+    react(),
+    tailwindcss(),
+    homeRoutePreloadPlugin(),
+  ];
 
   if (!isProduction) {
     plugins.push(jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector());
@@ -194,6 +235,8 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    // The server reads this to preload each route's page chunk.
+    manifest: true,
     rollupOptions: {
       output: {
         manualChunks(id) {

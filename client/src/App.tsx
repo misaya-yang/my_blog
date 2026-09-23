@@ -1,15 +1,19 @@
-import { lazy, Suspense, useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Route, Switch, useLocation } from "wouter";
 import { ScrollRestoration } from "./components/ScrollRestoration";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider, useLanguage } from "./contexts/LanguageContext";
 import { trackPageView } from "@/lib/analytics";
-import { BlogAgentRoot } from "@/components/agent/BlogAgentRoot";
 import { GalaxyHero } from "./components/galaxy/GalaxyHero";
 import { BrandMark, SpaceBackdrop } from "@/components/ResearchShell";
 
 const Home = lazy(() => import("./pages/Home"));
+const BlogAgentRoot = lazy(() =>
+  import("@/components/agent/BlogAgentRoot").then(module => ({
+    default: module.BlogAgentRoot,
+  }))
+);
 const Toaster = lazy(() =>
   import("@/components/ui/sonner").then(module => ({ default: module.Toaster }))
 );
@@ -179,6 +183,36 @@ function RouteEffectController() {
 // - Public pages default to the canonical dark notebook but allow a manual
 //   light/dark switch without changing routes or information architecture.
 
+// The reading companion is not needed for first paint: mount it once the
+// browser is idle or the reader first interacts, whichever comes first.
+function DeferredAgent() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    if (ready) return;
+    const start = () => setReady(true);
+    const events = ["pointerdown", "keydown", "touchstart"] as const;
+    events.forEach(name =>
+      window.addEventListener(name, start, { once: true, passive: true })
+    );
+    const idle =
+      "requestIdleCallback" in window
+        ? window.requestIdleCallback(start, { timeout: 3000 })
+        : undefined;
+    const timer = idle === undefined ? setTimeout(start, 1500) : undefined;
+    return () => {
+      events.forEach(name => window.removeEventListener(name, start));
+      if (idle !== undefined) window.cancelIdleCallback(idle);
+      if (timer) clearTimeout(timer);
+    };
+  }, [ready]);
+  if (!ready) return null;
+  return (
+    <Suspense fallback={null}>
+      <BlogAgentRoot />
+    </Suspense>
+  );
+}
+
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" switchable>
@@ -191,7 +225,7 @@ function App() {
           <RouteEffectController />
           <ScrollRestoration />
           <PublicSurface />
-          <BlogAgentRoot />
+          <DeferredAgent />
         </ErrorBoundary>
       </LanguageProvider>
     </ThemeProvider>
