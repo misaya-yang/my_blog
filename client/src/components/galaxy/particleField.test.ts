@@ -4,6 +4,7 @@ import {
   DataTexture,
   Matrix4,
   PerspectiveCamera,
+  Vector2,
   Vector4,
   WebGLRenderTarget,
   type WebGLRenderer,
@@ -21,8 +22,16 @@ vi.mock("./particleMotion", async () => {
       mode = "gpu";
       fallbackReason = null;
       textures = { offset: new DataTexture(), velocity: new DataTexture() };
-      step() {}
-      reset() {}
+      presence = 0;
+      steps = 0;
+      resets = 0;
+      step(_dt: number, options: { pointer?: { active: boolean } }) {
+        this.steps++;
+        this.presence = options.pointer?.active ? 1 : 0;
+      }
+      reset() {
+        this.resets++;
+      }
       dispose() {
         this.textures.offset.dispose();
         this.textures.velocity.dispose();
@@ -214,4 +223,64 @@ describe.each([1.5, 2])("particle-field physical texels at DPR %s", dpr => {
       previous?.dispose();
     }
   );
+});
+
+describe("particle field at rest", () => {
+  const options = {
+    positions: new Float32Array([0, 0, -10]),
+    orbits: new Float32Array([0, 0, 0, 0]),
+    brights: new Float32Array([1]),
+    dustCount: 1,
+    deformation: "",
+    uniforms: {},
+  };
+  const pointer = (active: boolean) => ({
+    from: new Vector2(),
+    to: new Vector2(),
+    velocity: new Vector2(),
+    active,
+  });
+
+  it("skips the motion passes until the cursor arrives, and again once it has settled", () => {
+    const renderer = new DPRRenderer(1);
+    const field = new ParticleField(
+      renderer as unknown as WebGLRenderer,
+      options
+    );
+    const motion = (
+      field as unknown as { motion: { steps: number; resets: number } }
+    ).motion;
+    const camera = new PerspectiveCamera(40, 4 / 3, 0.1, 100);
+    const update = (active: boolean, dt = 1 / 60) =>
+      field.update({
+        matrixWorld: new Matrix4(),
+        camera,
+        dt,
+        pointer: pointer(active),
+        width: 800,
+        height: 600,
+        paused: false,
+      });
+    // Nobody has touched the field: the draws read the base pose directly.
+    update(false);
+    expect(motion.steps).toBe(0);
+    expect(field.textures.current).toBe(field.textures.base);
+    // The cursor parts the field: motion runs and the combined pose is drawn.
+    update(true);
+    expect(motion.steps).toBe(1);
+    expect(field.textures.current).not.toBe(field.textures.base);
+    // After the cursor leaves, the springs get time to close the parting...
+    for (let i = 0; i < 60; i++) update(false);
+    expect(field.textures.current).not.toBe(field.textures.base);
+    const stepsBeforeRest = motion.steps;
+    // ...then the field rests, snapping the sub-pixel remainder to zero.
+    for (let i = 0; i < 30; i++) update(false);
+    expect(field.textures.current).toBe(field.textures.base);
+    expect(motion.resets).toBe(1);
+    const stepsAtRest = motion.steps;
+    for (let i = 0; i < 30; i++) update(false);
+    expect(motion.steps).toBe(stepsAtRest);
+    expect(stepsAtRest).toBeGreaterThan(stepsBeforeRest);
+    field.dispose();
+  });
 });

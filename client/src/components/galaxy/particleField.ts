@@ -33,6 +33,15 @@ const HISTORY_INTERVAL = 1 / 30;
 const WIDTH = PARTICLE_MOTION_WIDTH;
 const HEIGHT = PARTICLE_MOTION_HEIGHT;
 const STRIDE = PARTICLE_MOTION_CAPACITY * 4;
+/**
+ * Seconds after the cursor has gone and the parting has closed before the
+ * springs count as settled. By then every offset is far below a pixel, so the
+ * motion and combine passes stop and the draws read the base pose directly.
+ */
+const SETTLE_SECONDS = 1.2;
+const scratchViewport = new Vector4();
+const scratchScissor = new Vector4();
+const scratchClearColor = new Color();
 
 export interface ParticleFieldOptions {
   forceCPU?: boolean;
@@ -101,6 +110,10 @@ export class ParticleField {
   historyCount = 0;
   private historyTime = 0;
   private disposed = false;
+  /** Seconds since the cursor last touched the field. */
+  private quiet = Infinity;
+  /** Settled: offsets are zero and the base pose is the current pose. */
+  private resting = true;
   private readonly count: number;
   private motion: ParticleMotion;
   private readonly cpuBase = dataTexture();
@@ -190,7 +203,9 @@ export class ParticleField {
   get textures(): { base: Texture; current: Texture; history: Texture } {
     return {
       base: this.baseTarget?.texture ?? this.cpuBase,
-      current: this.currentTarget?.texture ?? this.cpuCurrent,
+      current:
+        (this.resting ? this.baseTarget : this.currentTarget)?.texture ??
+        this.cpuCurrent,
       history: this.historyTarget?.texture ?? this.cpuHistory,
     };
   }
@@ -307,18 +322,28 @@ export class ParticleField {
     this.bindTarget(this.baseTarget!);
     renderer.clear();
     renderer.render(this.baseScene, options.camera);
-    if (!options.paused)
-      this.motion.step(options.dt, {
-        ...options,
-        baseTexture: this.baseTarget!.texture,
-        projectionMatrix: options.camera.projectionMatrix,
-      });
-    this.combineMaterial!.uniforms.uOffset.value = this.motion.textures.offset;
-    this.combineMaterial!.uniforms.uProjectionScale.value =
-      options.camera.projectionMatrix.elements[5];
-    this.bindTarget(this.currentTarget!);
-    this.quad!.material = this.combineMaterial!;
-    this.quad!.render(renderer);
+    const active = !!options.pointer?.active || this.motion.presence > 0;
+    if (active) this.quiet = 0;
+    else if (!options.paused) this.quiet += Math.max(0, options.dt);
+    const resting = !active && this.quiet > SETTLE_SECONDS;
+    // Snap the last sub-pixel remainder to exactly zero as the field rests.
+    if (resting && !this.resting) this.motion.reset();
+    this.resting = resting;
+    if (!resting) {
+      if (!options.paused)
+        this.motion.step(options.dt, {
+          ...options,
+          baseTexture: this.baseTarget!.texture,
+          projectionMatrix: options.camera.projectionMatrix,
+        });
+      this.combineMaterial!.uniforms.uOffset.value =
+        this.motion.textures.offset;
+      this.combineMaterial!.uniforms.uProjectionScale.value =
+        options.camera.projectionMatrix.elements[5];
+      this.bindTarget(this.currentTarget!);
+      this.quad!.material = this.combineMaterial!;
+      this.quad!.render(renderer);
+    }
     if (this.shouldRecord(options.dt, options.paused)) {
       this.bindTarget(
         this.historyTarget!,
@@ -326,6 +351,7 @@ export class ParticleField {
         HEIGHT,
         true
       );
+      this.copyMaterial!.uniforms.uSource.value = this.textures.current;
       this.quad!.material = this.copyMaterial!;
       this.quad!.render(renderer);
     }
@@ -421,6 +447,7 @@ export class ParticleField {
 
   resetMotion() {
     if (this.disposed) return;
+    this.quiet = Infinity;
     if (this.needsCPUBase) this.motion.reset();
     else this.withRendererState(() => this.motion.reset());
     this.resetHistory();
@@ -445,10 +472,10 @@ export class ParticleField {
     const previousTarget = renderer.getRenderTarget();
     const cubeFace = renderer.getActiveCubeFace();
     const mipLevel = renderer.getActiveMipmapLevel();
-    const viewport = renderer.getViewport(new Vector4());
-    const scissor = renderer.getScissor(new Vector4());
+    const viewport = renderer.getViewport(scratchViewport);
+    const scissor = renderer.getScissor(scratchScissor);
     const scissorTest = renderer.getScissorTest();
-    const clearColor = renderer.getClearColor(new Color());
+    const clearColor = renderer.getClearColor(scratchClearColor);
     const clearAlpha = renderer.getClearAlpha();
     const autoClear = renderer.autoClear;
     const xr = renderer.xr.enabled;

@@ -8,12 +8,14 @@ import {
   HalfFloatType,
   LinearFilter,
   Matrix4,
+  NoBlending,
   Points,
   Scene,
   ShaderMaterial,
   WebGLRenderTarget,
   WebGLRenderer,
 } from "three";
+import { FullScreenQuad } from "three/addons/postprocessing/Pass.js";
 import { PETAL_TRACKS, sampleTrack, type RoseTrack } from "./roseTracks";
 
 /**
@@ -21,9 +23,9 @@ import { PETAL_TRACKS, sampleTrack, type RoseTrack } from "./roseTracks";
  * petal contours as lines; a nebula needs mass around those lines. Two layers
  * supply it, both baked once on the CPU and static relative to the rose:
  *
- * - Gas: a few hundred large Gaussian splats, rendered at quarter resolution
- *   (their size makes full-resolution fill expensive and adds nothing) and
- *   broken up by domain-warped noise in the composite.
+ * - Gas: a few hundred large Gaussian splats, rendered at a quarter of the
+ *   canvas width and height (their size makes full-resolution fill expensive
+ *   and adds nothing) and broken up by domain-warped noise at that size.
  * - Haze: thousands of sub-pixel motes with a wide Gaussian falloff around
  *   each petal ridge, so the contour reads as a density gradient.
  */
@@ -250,25 +252,92 @@ export function createHazePoints(
 }
 
 /**
- * Gas splats rendered into their own quarter-resolution target. The composite
- * samples it, applies the noise structure and adds it as light (night) or
- * as a thin wash of ink (day).
+ * Domain-warped fbm gives the gas filaments and dark lanes instead of the
+ * round blobs its Gaussian splats would otherwise read as. Evaluated once per
+ * gas texel (a sixteenth of the screen), not per screen pixel: the structure
+ * is far softer than a texel, and at full resolution its 48 hashes per pixel
+ * were the most expensive thing in the frame.
+ */
+const RESOLVE_FRAGMENT = /* glsl */ `
+  uniform sampler2D tSplats;
+  uniform float uTime;
+  uniform float uAspect;
+  uniform float uLight;
+  varying vec2 vUv;
+  float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+  }
+  float valueNoise(vec2 p) {
+    vec2 i = floor(p), f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(
+      mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+      mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x),
+      f.y);
+  }
+  float fbm(vec2 p) {
+    float sum = 0.0, amplitude = 0.5;
+    for (int i = 0; i < 4; i++) {
+      sum += valueNoise(p) * amplitude;
+      p = p * 2.03 + vec2(17.1, 9.2);
+      amplitude *= 0.5;
+    }
+    return sum;
+  }
+  float nebulaStructure(vec2 p) {
+    vec2 warp = vec2(fbm(p + uTime * 0.006), fbm(p + vec2(5.2, 1.3) - uTime * 0.005));
+    float n = fbm(p * 1.6 + warp * 1.8);
+    return smoothstep(0.22, 0.78, n);
+  }
+  void main() {
+    vec3 gas = texture2D(tSplats, vUv).rgb;
+    vec2 centered = (vUv - 0.5) * vec2(uAspect, 1.0);
+    float structure = nebulaStructure(centered * 2.4);
+    // Filaments brighten, lanes nearly empty; energy stays about constant.
+    // On paper the same contrast turns blotchy, so day keeps it gentler.
+    float shaped = structure * structure * (1.6 - 0.6 * structure);
+    gas *= mix(mix(0.08, 2.0, shaped), mix(0.45, 1.45, shaped), uLight);
+    gl_FragColor = vec4(gas, 1.0);
+  }
+`;
+
+const QUAD_VERTEX = /* glsl */ `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+/** The gas renders at a quarter of the canvas width and height. */
+export const GAS_RESOLUTION = 0.25;
+
+/**
+ * Gas splats rendered into their own low-resolution target, then resolved
+ * with the noise structure at that same resolution. The composite samples the
+ * result and adds it as light (night) or as a thin wash of ink (day).
  */
 export class NebulaGasLayer {
+  /** Resolved gas: splats shaped by the noise structure. */
   readonly target: WebGLRenderTarget;
   readonly material: ShaderMaterial;
+  private readonly splats: WebGLRenderTarget;
+  private readonly resolveMaterial: ShaderMaterial;
+  private readonly quad: FullScreenQuad;
   private readonly scene = new Scene();
   private readonly anchor = new Group();
   private readonly points: Points;
 
   constructor(sample: NebulaSample) {
-    this.target = new WebGLRenderTarget(1, 1, {
+    const options = {
       type: HalfFloatType,
       depthBuffer: false,
       stencilBuffer: false,
       minFilter: LinearFilter,
       magFilter: LinearFilter,
-    });
+    } as const;
+    this.splats = new WebGLRenderTarget(1, 1, options);
+    this.target = new WebGLRenderTarget(1, 1, options);
     this.material = new ShaderMaterial({
       uniforms: {
         uLight: { value: 0 },
@@ -308,6 +377,20 @@ export class NebulaGasLayer {
           gl_FragColor = vec4(mix(vColor, absorbance, uLight) * veil * vAlpha * uNebula, 1.0);
         }`,
     });
+    this.resolveMaterial = new ShaderMaterial({
+      uniforms: {
+        tSplats: { value: this.splats.texture },
+        uTime: { value: 0 },
+        uAspect: { value: 1 },
+        uLight: { value: 0 },
+      },
+      vertexShader: QUAD_VERTEX,
+      fragmentShader: RESOLVE_FRAGMENT,
+      depthTest: false,
+      depthWrite: false,
+      blending: NoBlending,
+    });
+    this.quad = new FullScreenQuad(this.resolveMaterial);
     this.points = new Points(geometryFrom(sample), this.material);
     this.points.frustumCulled = false;
     this.anchor.matrixAutoUpdate = false;
@@ -315,41 +398,54 @@ export class NebulaGasLayer {
     this.scene.add(this.anchor);
   }
 
-  /** Physical canvas size; the layer renders at half width and height. */
+  /** Physical canvas size; the layer renders at GAS_RESOLUTION of it. */
   setSize(width: number, height: number) {
-    const w = Math.max(1, Math.floor(width / 2));
-    const h = Math.max(1, Math.floor(height / 2));
+    const w = Math.max(1, Math.floor(width * GAS_RESOLUTION));
+    const h = Math.max(1, Math.floor(height * GAS_RESOLUTION));
+    this.splats.setSize(w, h);
     this.target.setSize(w, h);
     this.material.uniforms.uViewportHeight.value = h;
+    this.resolveMaterial.uniforms.uAspect.value = width / Math.max(1, height);
   }
 
+  /**
+   * Draws and resolves the gas. Returns false when there is none to draw, so
+   * the composite can skip sampling it.
+   */
   render(
     renderer: WebGLRenderer,
     camera: Camera,
     roseMatrix: Matrix4,
     settings: { light: boolean; opacity: number; time: number }
   ) {
+    if (settings.opacity <= 0.001) return false;
     const uniforms = this.material.uniforms;
     uniforms.uLight.value = settings.light ? 1 : 0;
     uniforms.uNebula.value = settings.opacity;
     uniforms.uTime.value = settings.time;
+    this.resolveMaterial.uniforms.uTime.value = settings.time;
+    this.resolveMaterial.uniforms.uLight.value = settings.light ? 1 : 0;
     const previous = renderer.getRenderTarget();
     const clearAlpha = renderer.getClearAlpha();
-    renderer.setRenderTarget(this.target);
+    renderer.setRenderTarget(this.splats);
     renderer.setClearAlpha(0);
     renderer.clear(true, false, false);
-    if (settings.opacity > 0.001) {
-      this.anchor.matrix.copy(roseMatrix);
-      this.anchor.matrixWorldNeedsUpdate = true;
-      renderer.render(this.scene, camera);
-    }
+    this.anchor.matrix.copy(roseMatrix);
+    this.anchor.matrixWorldNeedsUpdate = true;
+    renderer.render(this.scene, camera);
+    renderer.setRenderTarget(this.target);
+    this.quad.render(renderer);
     renderer.setClearAlpha(clearAlpha);
     renderer.setRenderTarget(previous);
+    return true;
   }
 
   dispose() {
+    this.splats.dispose();
     this.target.dispose();
     this.material.dispose();
+    this.resolveMaterial.dispose();
+    this.quad.dispose();
     this.points.geometry.dispose();
   }
 }

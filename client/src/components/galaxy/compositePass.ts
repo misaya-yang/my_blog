@@ -64,33 +64,6 @@ const COMPOSITE_FRAGMENT = /* glsl */ `
     color = outputMatrix * color;
     return clamp(color, 0.0, 1.0);
   }
-  float hash(vec2 p) {
-    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
-  }
-  float valueNoise(vec2 p) {
-    vec2 i = floor(p), f = fract(p);
-    f = f * f * (3.0 - 2.0 * f);
-    return mix(
-      mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
-      mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x),
-      f.y);
-  }
-  float fbm(vec2 p) {
-    float sum = 0.0, amplitude = 0.5;
-    for (int i = 0; i < 4; i++) {
-      sum += valueNoise(p) * amplitude;
-      p = p * 2.03 + vec2(17.1, 9.2);
-      amplitude *= 0.5;
-    }
-    return sum;
-  }
-  // Domain-warped fbm gives the gas filaments and dark lanes instead of the
-  // round blobs its Gaussian splats would otherwise read as.
-  float nebulaStructure(vec2 p) {
-    vec2 warp = vec2(fbm(p + uTime * 0.006), fbm(p + vec2(5.2, 1.3) - uTime * 0.005));
-    float n = fbm(p * 1.6 + warp * 1.8);
-    return smoothstep(0.22, 0.78, n);
-  }
   vec3 srgbEncode(vec3 linear) {
     return mix(
       linear * 12.92,
@@ -122,15 +95,8 @@ const COMPOSITE_FRAGMENT = /* glsl */ `
     vec2 centered = (vUv - 0.5) * vec2(uResolution.x / uResolution.y, 1.0);
     float opening;
     vec2 gasUv = partedUv(opening);
-    vec3 gas = texture2D(tNebula, gasUv).rgb * uNebulaStrength * opening;
-    if (max(gas.r, max(gas.g, gas.b)) > 0.0005) {
-      float structure = nebulaStructure(centered * 2.4);
-      // Filaments brighten, lanes nearly empty; energy stays about constant.
-      // On paper the same contrast turns blotchy, so day keeps it gentler.
-      float shaped = structure * structure * (1.6 - 0.6 * structure);
-      gas *= mix(mix(0.08, 2.0, shaped), mix(0.45, 1.45, shaped), uLight);
-    }
-    accumulated += gas;
+    // The gas layer arrives already shaped by its noise structure.
+    accumulated += texture2D(tNebula, gasUv).rgb * uNebulaStrength * opening;
     float vignette = 1.0 - uVignette * smoothstep(0.47, 1.15, length(centered));
 
     vec3 night = uBackground + acesFilmic((accumulated + bloom) * vignette);
@@ -168,7 +134,7 @@ export class CompositePass extends Pass {
   /** Supplied by the bloom pass each frame; null draws without bloom. */
   bloomTexture: Texture | null = null;
   bloomStrength = 0;
-  /** Quarter-resolution gas layer; null draws without nebulosity. */
+  /** Low-resolution resolved gas layer; null draws without nebulosity. */
   nebulaTexture: Texture | null = null;
   /**
    * Scales the gas: its soft splats would pile into a bright slab where the

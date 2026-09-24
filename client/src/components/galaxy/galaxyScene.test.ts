@@ -535,9 +535,10 @@ describe("scene inputs, layout, quality and lifetime", () => {
       ).toEqual([width * dpr, height * dpr]);
       expect(bloom.enabled).toBe(enabled);
       expect(trailCount()).toBe(count);
+      // The bloom pyramid starts at a quarter of the canvas width and height.
       expect([bloom.downMips[0].width, bloom.downMips[0].height]).toEqual([
-        Math.floor(width * dpr * 0.5),
-        Math.floor(height * dpr * 0.5),
+        Math.floor(width * dpr * 0.25),
+        Math.floor(height * dpr * 0.25),
       ]);
     };
     assertProfile(1280, 800, 1.5, true, 300);

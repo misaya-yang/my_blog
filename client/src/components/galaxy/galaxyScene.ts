@@ -44,6 +44,7 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { CompositePass } from "./compositePass";
 import { BloomPyramidPass } from "./bloomPyramid";
 import { getPageScene } from "./pageScene";
+import { GpuProfiler } from "./gpuProfiler";
 import { getScrollMotion, type MotionState } from "./scrollMotion";
 import { RenderQuality } from "./renderQuality";
 import { fitRose, type RoseFit } from "./roseFit";
@@ -620,7 +621,10 @@ export function createGalaxy(
     uSideX: { value: 0 },
     uFacing: { value: 1 },
     uLayerTwist: {
-      value: Array.from({ length: PETAL_TRACKS }, () => new Vector4(0, 0, 0, 1)),
+      value: Array.from(
+        { length: PETAL_TRACKS },
+        () => new Vector4(0, 0, 0, 1)
+      ),
     },
     uTime: { value: 0 },
     uPagePose: { value: new Vector3() },
@@ -1128,8 +1132,11 @@ export function createGalaxy(
   // One scene render feeds a mip-pyramid bloom and a single composite pass
   // that tone maps (night) or applies ink transmittance (day) and encodes sRGB.
   renderer.toneMapping = NoToneMapping;
+  // The pyramid starts at a quarter of the canvas: the finest glow it adds
+  // is already drawn by each star's own halo, at a quarter of the cost.
   const bloomPass = new BloomPyramidPass({
-    levels: mobile ? 3 : 4,
+    levels: mobile ? 2 : 3,
+    resolutionScale: 0.25,
     threshold: 0.85,
     knee: 0.25,
     strength: bloomStrength(),
@@ -1140,7 +1147,25 @@ export function createGalaxy(
   composer.addPass(new RenderPass(scene, camera));
   composer.addPass(bloomPass);
   composer.addPass(compositePass);
-  compositePass.nebulaTexture = nebulaGas.target.texture;
+  // Development-only GPU timing per stage (EXT_disjoint_timer_query_webgl2).
+  const profiler =
+    import.meta.env.DEV && typeof renderer.getContext === "function"
+      ? new GpuProfiler(renderer.getContext() as WebGL2RenderingContext)
+      : null;
+  let paintCpuSum = 0,
+    paintCpuCount = 0;
+  if (profiler) {
+    const stages: [string, (typeof composer.passes)[number]][] = [
+      ["scene", composer.passes[0]],
+      ["bloom", bloomPass],
+      ["composite", compositePass],
+    ];
+    for (const [label, pass] of stages) {
+      const render = pass.render.bind(pass);
+      pass.render = ((...args: Parameters<typeof render>) =>
+        profiler.time(label, () => render(...args))) as typeof pass.render;
+    }
+  }
   function bloomStrength() {
     // Day reuses the pyramid as a faint ink bleed around dense strokes.
     return light ? 1 : mobile ? 0.42 : 0.55;
@@ -1417,6 +1442,7 @@ export function createGalaxy(
   const cpuMetaFrom = new Float32Array(24),
     cpuMetaTo = new Float32Array(24);
   function paint(dt = 0.016) {
+    const paintStart = profiler?.active ? performance.now() : 0;
     const smoothing = paused || reducedMotion ? 1 : 1 - Math.exp(-dt * 9);
     // Bounded scroll energy affects trails; only reversible layout progress owns shape.
     const flowTarget = reducedMotion
@@ -1538,9 +1564,7 @@ export function createGalaxy(
       layerTwist.toArray(layerTwistData, row * 4);
     }
     // Edge-on, the gas thins so its splats don't pile into a bright slab.
-    const facingView = Math.abs(
-      1 - 2 * (pose.x * pose.x + pose.y * pose.y)
-    );
+    const facingView = Math.abs(1 - 2 * (pose.x * pose.x + pose.y * pose.y));
     compositePass.nebulaVisibility =
       0.3 + 0.7 * smoothstep01((facingView - 0.15) / 0.55);
     // Facing the reader, the signature stands upright; turned well away,
@@ -1727,7 +1751,7 @@ export function createGalaxy(
           cpuBase
         );
       }
-      field.update({
+      const update = {
         matrixWorld: group.matrixWorld,
         camera,
         dt: paused ? 0 : dt,
@@ -1736,7 +1760,10 @@ export function createGalaxy(
         height: bounds.height,
         paused,
         basePositions: field.needsCPUBase ? cpuBase : undefined,
-      });
+      };
+      const particleField = field;
+      if (profiler) profiler.time("field", () => particleField.update(update));
+      else particleField.update(update);
       uniforms.uParticleCurrent.value = field.textures.current;
       uniforms.uParticleHistory.value = field.textures.history;
       uniforms.uHistoryHead.value = field.historyHead;
@@ -1772,14 +1799,22 @@ export function createGalaxy(
       (3 - 2 * introGate) *
       (1 - uniforms.uAmbientBlend.value) *
       (1 - smoothstep01((uniforms.uSplit.value - 0.05) / 0.6));
-    nebulaGas.render(renderer, camera, group.matrixWorld, {
-      light,
-      opacity: uniforms.uNebula.value,
-      time: elapsed,
-    });
+    const renderGas = () =>
+      nebulaGas.render(renderer, camera, group.matrixWorld, {
+        light,
+        opacity: uniforms.uNebula.value,
+        time: elapsed,
+      });
+    const gasDrawn = profiler ? profiler.time("gas", renderGas) : renderGas();
+    compositePass.nebulaTexture = gasDrawn ? nebulaGas.target.texture : null;
     compositePass.bloomTexture = bloomPass.enabled ? bloomPass.output : null;
     compositePass.time = elapsed;
     composer.render(dt);
+    if (profiler?.active) {
+      profiler.poll();
+      paintCpuSum += performance.now() - paintStart;
+      paintCpuCount++;
+    }
     if (import.meta.env.DEV) {
       // Surface GLSL program failures in the dataset: shader compile errors
       // only log to console otherwise, which throttled tooling never sees.
@@ -1796,28 +1831,60 @@ export function createGalaxy(
   }
   const quality = new RenderQuality();
   let lastInteraction = -Infinity;
+  let lastScroll = -Infinity;
   const noteInteraction = () => {
     lastInteraction = performance.now();
   };
-  // Reading pages keep drifting, but an idle drift behind text does not need
-  // 60 fps. Input, rotation and page transitions restore the full rate.
-  function frameBudget(now: number) {
-    if (mobile && coarsePointer) return 1000 / 30;
-    if (pageScene.mode === "home") return 1000 / 60;
-    const settling =
+  // rAF fires once per display refresh whether or not a frame is painted, so
+  // its interval is the display's own: 16.7 ms at 60 Hz, 8.3 ms at 120 Hz.
+  let displayInterval = 1000 / 60;
+  let lastRaf = 0;
+  // While something moves (the hand, a glide or return, scrolling, a
+  // transition) a high-refresh display is painted at its own rate, so the rose
+  // follows the hand as closely as the screen allows. A GPU that cannot keep
+  // that rate falls back to 60 before any resolution is given up.
+  let highRefresh = true;
+  let paceAverage = 0;
+  let paceMisses = 0;
+  function moving(now: number) {
+    return (
       intro < 1 ||
       uniforms.uNavigationProgress.value < 1 ||
       uniforms.uAmbientMorph.value < 1 ||
-      rotation.phase !== "idle";
-    return settling || now - lastInteraction < 1500 ? 1000 / 60 : 1000 / 30;
+      rotation.phase !== "idle" ||
+      now - lastInteraction < 1500 ||
+      now - lastScroll < 900 ||
+      Math.abs(ambientTarget - uniforms.uAmbientBlend.value) > 0.002
+    );
+  }
+  // Reading pages keep drifting, but an idle drift behind text does not need
+  // 60 fps. Input, rotation and page transitions restore the full rate.
+  function frameBudget(now: number) {
+    const active = moving(now);
+    if (mobile && coarsePointer) return active ? 1000 / 60 : 1000 / 30;
+    if (!active) return pageScene.mode === "home" ? 1000 / 60 : 1000 / 30;
+    return highRefresh ? Math.max(displayInterval, 1000 / 144) : 1000 / 60;
   }
   function tick(now: number) {
     frame = 0;
     if (disposed || !visible || document.hidden || lost || paused) return;
+    const refresh = now - lastRaf;
+    lastRaf = now;
+    if (refresh > 4 && refresh < 34)
+      displayInterval += (refresh - displayInterval) * 0.1;
     const delta = now - lastTime;
     const budget = frameBudget(now);
-    if (delta >= budget - 3) {
-      if (quality.observe(delta, budget, now)) applyQuality();
+    if (delta >= budget * 0.75) {
+      if (budget < 12 && delta < 250) {
+        paceAverage = paceAverage
+          ? paceAverage + (delta - paceAverage) * 0.1
+          : delta;
+        paceMisses = paceAverage > budget * 1.3 ? paceMisses + 1 : 0;
+        if (paceMisses > 45) highRefresh = false;
+      }
+      // Resolution only drops when even 60 fps cannot be held.
+      if (quality.observe(delta, Math.max(budget, 1000 / 60), now))
+        applyQuality();
 
       if (import.meta.env.DEV) {
         frameIntervals.push(delta);
@@ -1833,6 +1900,8 @@ export function createGalaxy(
             sorted[Math.floor((sorted.length - 1) * 0.95)].toFixed(1);
           host.dataset.geometries = String(renderer.info.memory.geometries);
           host.dataset.textures = String(renderer.info.memory.textures);
+          host.dataset.refresh = displayInterval.toFixed(2);
+          host.dataset.highRefresh = String(highRefresh);
         }
       }
       const dt = Math.min(delta / 1000, 0.05);
@@ -2070,6 +2139,7 @@ export function createGalaxy(
     requestPaint();
   };
   const onScroll = () => {
+    lastScroll = performance.now();
     updateLayoutRects();
     requestPaint();
   };
@@ -2184,6 +2254,57 @@ export function createGalaxy(
       composite: compositePass.material.uniforms,
       gas: nebulaGas.material.uniforms,
       paint: () => paint(0.016),
+      objects: { dust, haze, stars, trails, distantStars },
+      bloomPass,
+      nebulaGas,
+      /**
+       * Paints back to back with the GPU saturated, so clocks are up and the
+       * result is throughput rather than a mostly idle GPU's latency.
+       */
+      bench: async (frames = 120, stages = false) => {
+        const gl = renderer.getContext();
+        const pixel = new Uint8Array(4);
+        // readPixels blocks until every queued frame has finished on the GPU.
+        const sync = () => {
+          renderer.setRenderTarget(null);
+          gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+        };
+        for (let i = 0; i < 20; i++) paint(1 / 60);
+        sync();
+        profiler?.reset();
+        if (profiler) profiler.active = stages;
+        const start = performance.now();
+        for (let i = 0; i < frames; i++) paint(1 / 60);
+        sync();
+        const perFrame = (performance.now() - start) / frames;
+        if (profiler) profiler.active = false;
+        await new Promise(resolve => setTimeout(resolve, 150));
+        profiler?.poll();
+        return {
+          perFrame: Math.round(perFrame * 1000) / 1000,
+          ...(stages ? profiler?.report() : {}),
+          buffer: `${renderer.domElement.width}x${renderer.domElement.height}`,
+        };
+      },
+      /** Mean GPU ms per stage and CPU ms per paint over a sampling window. */
+      profile: async (ms = 3000) => {
+        if (!profiler?.supported) return { unsupported: true };
+        profiler.reset();
+        paintCpuSum = paintCpuCount = 0;
+        profiler.active = true;
+        await new Promise(resolve => setTimeout(resolve, ms));
+        profiler.active = false;
+        await new Promise(resolve => setTimeout(resolve, 100));
+        profiler.poll();
+        return {
+          ...profiler.report(),
+          cpuPaint:
+            Math.round((paintCpuSum / Math.max(1, paintCpuCount)) * 1000) /
+            1000,
+          frames: paintCpuCount,
+          buffer: `${renderer.domElement.width}x${renderer.domElement.height}`,
+        };
+      },
     };
   }
   return {

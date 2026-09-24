@@ -19,22 +19,27 @@ const QUAD_VERTEX = /* glsl */ `
   }
 `;
 
-// First tap of the pyramid: box downsample of the scene with a soft-knee
-// luminance gate, mirroring the smoothstep threshold of pmndrs' LuminanceMaterial.
+// First tap of the pyramid: four bilinear taps, each a 2×2 average, gated by
+// a soft-knee luminance threshold (pmndrs' LuminanceMaterial smoothstep)
+// before they are averaged. Gating per tap keeps a small bright star above
+// the threshold however far the first level shrinks the frame, so the
+// pyramid can start at a quarter of the canvas width and height.
 const LUMINANCE_DOWNSAMPLE = /* glsl */ `
   uniform sampler2D inputBuffer;
   uniform vec2 texelSize;
   uniform float threshold;
   uniform float knee;
   varying vec2 vUv;
+  vec3 gate(vec3 color) {
+    float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
+    return color * smoothstep(threshold, threshold + knee, luminance);
+  }
   void main() {
-    vec4 color = texture2D(inputBuffer, vUv + vec2(-texelSize.x, -texelSize.y));
-    color += texture2D(inputBuffer, vUv + vec2(texelSize.x, -texelSize.y));
-    color += texture2D(inputBuffer, vUv + vec2(-texelSize.x, texelSize.y));
-    color += texture2D(inputBuffer, vUv + vec2(texelSize.x, texelSize.y));
-    color *= 0.25;
-    float luminance = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
-    gl_FragColor = vec4(color.rgb * smoothstep(threshold, threshold + knee, luminance), 1.0);
+    vec3 color = gate(texture2D(inputBuffer, vUv + vec2(-texelSize.x, -texelSize.y)).rgb);
+    color += gate(texture2D(inputBuffer, vUv + vec2(texelSize.x, -texelSize.y)).rgb);
+    color += gate(texture2D(inputBuffer, vUv + vec2(-texelSize.x, texelSize.y)).rgb);
+    color += gate(texture2D(inputBuffer, vUv + vec2(texelSize.x, texelSize.y)).rgb);
+    gl_FragColor = vec4(color * 0.25, 1.0);
   }
 `;
 
