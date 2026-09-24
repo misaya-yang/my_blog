@@ -652,6 +652,7 @@ export function createGalaxy(
     uPagePose: { value: new Vector3() },
     uPreviousPointer: { value: new Vector2(4, 4) },
     uEnergy: { value: 0 },
+    uTrailGate: { value: 1 },
     uLight: { value: light ? 1 : 0 },
     uPointer: { value: new Vector2(4, 4) },
     uHover: { value: 0 },
@@ -1077,9 +1078,9 @@ export function createGalaxy(
         gl_Position = projectionMatrix * center;
       }`,
     fragmentShader: `varying float vAge; varying float vEdge; varying vec3 vColor; varying float vMotion; varying float vIntroTrail;
-      uniform float uLight; uniform float uDisperse; uniform float uEnergy;
+      uniform float uLight; uniform float uDisperse; uniform float uEnergy; uniform float uTrailGate;
       void main() {
-        float alpha = pow(1.0 - vAge, 1.8) * (1.0 - vEdge * vEdge) * mix(0.506,0.42,uLight) * (1.0 - uDisperse * 0.255) * vIntroTrail;
+        float alpha = pow(1.0 - vAge, 1.8) * (1.0 - vEdge * vEdge) * mix(0.506,0.42,uLight) * (1.0 - uDisperse * 0.255) * vIntroTrail * uTrailGate;
         gl_FragColor = lightOutput(vColor, vec3(0.12, 0.26, 0.48), alpha*max(0.12+uEnergy*0.88,vMotion));
         #include <colorspace_fragment>
       }`,
@@ -1657,9 +1658,12 @@ export function createGalaxy(
     previousPointer.lerp(pointer, 1 - Math.exp(-dt * 2.2));
     uniforms.uPreviousPointer.value.copy(previousPointer);
     uniforms.uEnergy.value +=
-      (Math.min(1, rotation.speed / 3 + flowSpeed * 0.65) -
-        uniforms.uEnergy.value) *
-      smoothing;
+      (Math.min(1, flowSpeed * 0.65) - uniforms.uEnergy.value) * smoothing;
+    // A turning rose streaks its outer stars into combs of hairlines: trails
+    // step aside while the hand or a glide turns it, and return at rest.
+    uniforms.uTrailGate.value +=
+      ((rotation.phase === "idle" ? 1 : 0) - uniforms.uTrailGate.value) *
+      (paused ? 1 : 1 - Math.exp(-dt * 10));
     // Pointer speed is deliberately NOT energy: global trail response to a
     // flick made the whole rose streak. Trails only follow real particle motion.
 

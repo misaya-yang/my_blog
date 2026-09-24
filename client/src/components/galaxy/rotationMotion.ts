@@ -56,10 +56,14 @@ export class RotationMotion {
   readonly target = new Vector2();
   /** The heart's current turn, easing toward the target. */
   readonly spin = new Vector2();
-  /** Petal layers, outermost first; the outer ones follow later. */
+  /**
+   * Petal layers, outermost first; the outer ones follow later. Astra's
+   * per-orbit lag, 0.18 + 0.17·i: the heart-most layer barely trails and the
+   * outermost trails by 0.69, so the rose stays one body while it turns.
+   */
   readonly layers: Layer[] = Array.from({ length: PETAL_TRACKS }, (_, row) => ({
     spin: new Vector2(),
-    lag: 0.18 + 0.17 * (PETAL_TRACKS - row),
+    lag: 0.18 + 0.17 * (PETAL_TRACKS - 1 - row),
   }));
   phase: RotationPhase = "idle";
   /** Angular speed of the heart, rad/s. */
@@ -89,10 +93,7 @@ export class RotationMotion {
   /** Turns the target by x (tip) and y (sideways) radians. */
   turn(x: number, y: number) {
     if (this.phase !== "dragging") return;
-    this.target.set(
-      clampTurn(this.target.x + x),
-      clampTurn(this.target.y + y)
-    );
+    this.target.set(clampTurn(this.target.x + x), clampTurn(this.target.y + y));
   }
 
   /**
