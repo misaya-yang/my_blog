@@ -1295,14 +1295,12 @@
     color: var(--public-text) !important;
   }
 
+  /* The footer sits on the page's paper, set off by its rule alone: a
+     tinted band of its own read as a second, greyer paper. */
   .space-page > footer {
     border-color: var(--public-border) !important;
-    background: oklch(0.885 0.006 250 / 76%) !important;
+    background: transparent !important;
     color: var(--public-muted) !important;
-  }
-
-  .dark .space-page > footer {
-    background: oklch(0.075 0.012 252 / 88%) !important;
   }
 
   .space-page > footer p {

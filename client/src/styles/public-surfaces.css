@@ -148,11 +148,15 @@
   .public-universe .observatory-primary {
     border-bottom: 0 !important;
   }
+  /* The header is cut from the page's own paper in both themes and fades
+     into it below, so it never reads as a band of a slightly different
+     colour. Opaque, it needs no backdrop blur recomputed every frame over
+     the moving star field. */
   html[data-route-kind] .public-universe .space-page .site-header {
-    background: linear-gradient(rgb(244 246 250), rgb(244 246 250)) !important;
+    background: var(--observatory-bg) !important;
     border-bottom: 0 !important;
     box-shadow: none !important;
-    backdrop-filter: blur(16px);
+    backdrop-filter: none !important;
   }
   html[data-route-kind] .public-universe .space-page .site-header::after {
     content: "";
@@ -160,15 +164,7 @@
     inset: 100% 0 auto;
     height: 20px;
     pointer-events: none;
-    background: linear-gradient(rgb(244 246 250), transparent);
-  }
-  html.dark[data-route-kind] .public-universe .space-page .site-header::after {
-    background: linear-gradient(rgb(8 10 15), transparent);
-  }
-  html.dark[data-route-kind] .public-universe .space-page .site-header {
-    background: linear-gradient(rgb(8 10 15), rgb(8 10 15)) !important;
-    border-bottom: 0 !important;
-    box-shadow: none !important;
+    background: linear-gradient(var(--observatory-bg), transparent);
   }
   html[data-route-kind]
     .public-universe

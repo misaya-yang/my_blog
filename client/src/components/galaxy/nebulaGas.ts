@@ -60,9 +60,10 @@ function gaussian(random: () => number) {
 const NIGHT_RAMP = ["#ffcf9e", "#dfe9ff", "#7fb6ea", "#2f5f9c"].map(
   value => new Color(value)
 );
-// Day inks for the same ramp: a faint warm grey at the heart, then cool
-// slate toward the rim. Low chroma, so the wash reads as tone, not tint.
-const DAY_RAMP = ["#b9aa98", "#b0b9c7", "#98a6bb", "#7f8ea8"].map(
+// Day inks for the same ramp: a pale wash of the page's own navy ink,
+// lightest at the heart and a little deeper toward the rim. Grey inks here
+// read as smudges on the paper; a hint of the ink's hue reads as a wash.
+const DAY_RAMP = ["#cbd8e8", "#b9c9dc", "#a5b8cf", "#91a7c2"].map(
   value => new Color(value)
 );
 

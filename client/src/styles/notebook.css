@@ -20,10 +20,11 @@
      two-tone control rather than a washed-out tint. */
   --v2-on-accent: oklch(0.16 0.03 210);
 
-  /* Paper tint for the light theme. The baseline light canvas was a flat
-     blue-grey; a hair of warmth makes the serif read as ink on paper and
-     separates the notebook from every cool-grey SaaS dashboard. */
-  --v2-paper-warm: oklch(0.973 0.005 85);
+  /* Paper for the light theme: the one ground every light surface is cut
+     from. It is the public pages' #f8fafc, which the star field's canvas
+     also paints; a warmer body behind a cooler page read as two papers
+     side by side, so there is one. */
+  --v2-paper-warm: oklch(0.984 0.003 248);
 
   /* Rule weights. Hairlines already exist; these are the deliberate,
      visible ones the editorial layout needs. */
@@ -51,7 +52,7 @@
 
 /* The light theme had two canvases: `body` painted one colour and
    `.space-page` painted another, leaving a visible seam down the page. Every
-   token that paints the light ground is re-pointed at one warm paper so the
+   token that paints the light ground is re-pointed at one paper so the
    canvas is a single surface. */
 html:not(.dark) {
   /* Measured against the painted page: the inherited light accent rendered
@@ -62,20 +63,20 @@ html:not(.dark) {
   --v2-on-accent: oklch(0.99 0 0);
   --ring: oklch(0.46 0.13 205);
   --v2-bg: var(--v2-paper-warm);
-  --v2-bg-lower: oklch(0.945 0.006 85);
-  --v2-solid-reading: oklch(0.988 0.004 85);
-  --v2-solid-data: oklch(0.956 0.005 85);
+  --v2-bg-lower: oklch(0.955 0.005 248);
+  --v2-solid-reading: oklch(0.992 0.002 248);
+  --v2-solid-data: oklch(0.962 0.004 248);
   --bg: var(--v2-bg);
-  --bg-elevated: oklch(0.988 0.004 85);
+  --bg-elevated: oklch(0.992 0.002 248);
   --background: var(--v2-bg);
-  --card: oklch(0.99 0.003 85);
-  --popover: oklch(0.99 0.003 85);
-  --surface-card: oklch(0.99 0.003 85);
-  --muted: oklch(0.946 0.005 85);
-  --secondary: oklch(0.936 0.006 85);
+  --card: oklch(0.995 0.002 248);
+  --popover: oklch(0.995 0.002 248);
+  --surface-card: oklch(0.995 0.002 248);
+  --muted: oklch(0.955 0.005 248);
+  --secondary: oklch(0.945 0.006 248);
   --public-bg: var(--v2-bg);
   --public-bg-lower: var(--v2-bg-lower);
-  --public-header-bg: oklch(0.973 0.005 85 / 88%);
+  --public-header-bg: oklch(0.984 0.003 248 / 88%);
   --primary: var(--v2-accent);
   --primary-foreground: var(--v2-on-accent);
   --primary-hover: oklch(0.4 0.13 205);

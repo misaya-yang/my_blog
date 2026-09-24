@@ -277,20 +277,20 @@ export function createGalaxy(
   const palette = ["#9ad8ff", "#e3f3ff", "#ffb878", "#b5d4ff"].map(
     value => new Color(value)
   );
-  // Day is line art, not inverted light: one pen family on paper. Outer
-  // petals are drawn in indigo, darkening toward an iron-gall black at the
-  // heart; the signature is the darkest line, and a rare sepia touch stands
-  // in for the warm stars.
-  const layerInks = ["#2b4577", "#253a63", "#252f4c", "#221f2e"].map(
+  // Day is line art, not inverted light: one pen family on paper, the same
+  // navy as the page's ink. Outer petals are drawn lighter, darkening toward
+  // the heart; the signature is the darkest line, and the site's teal accent
+  // stands in for the warm stars instead of an off-palette sepia.
+  const layerInks = ["#2d4a6f", "#26405f", "#1f3350", "#18263b"].map(
     value => new Color(value)
   );
-  const signatureInk = new Color("#11151f");
-  const sepiaInk = new Color("#7a5a3c");
+  const signatureInk = new Color("#0f1826");
+  const accentInk = new Color("#12617a");
   const dayInk = (trackId: number, color: number, i: number) =>
     trackId >= PETAL_TRACKS
       ? signatureInk
       : color === 2 && i % 5 === 0
-        ? sepiaInk
+        ? accentInk
         : layerInks[trackId];
   const petalLength = tracks
     .slice(0, PETAL_TRACKS)
@@ -653,6 +653,8 @@ export function createGalaxy(
     uPreviousPointer: { value: new Vector2(4, 4) },
     uEnergy: { value: 0 },
     uTrailGate: { value: 1 },
+    // Presence of the home figure, 0..1; zero everywhere else.
+    uFigure: { value: 0 },
     uLight: { value: light ? 1 : 0 },
     uPointer: { value: new Vector2(4, 4) },
     uHover: { value: 0 },
@@ -815,7 +817,7 @@ export function createGalaxy(
         float core = 1.0-smoothstep(mix(0.055,0.12,uLight),mix(0.20,0.30,uLight),r);
         float glow = exp(-r*r*14.0)*mix(0.10,0.0,uLight);
         float warm = smoothstep(0.05,0.45,vColor.r-vColor.b);
-        vec3 day = mix(vec3(0.18,0.34,0.56),vec3(0.51,0.36,0.21),warm);
+        vec3 day = mix(vec3(0.2,0.33,0.5),vec3(0.07,0.38,0.48),warm);
         float sparkle = mix(vTwinkle,0.70+vTwinkle*0.30,uLight);
         gl_FragColor = lightOutput(vColor,day,(core+glow)*sparkle*0.88);
         #include <colorspace_fragment>
@@ -840,7 +842,8 @@ export function createGalaxy(
         // Day draws the petals as pen lines: motes on the ridge carry the ink,
         // the drifting ones fade to a light stipple. The signature is a line.
         bool signatureMote = aOrbit.x >= ${PETAL_TRACKS}.0;
-        vLine = signatureMote ? 1.0 : 1.0 - smoothstep(0.035, 0.14, abs(aOrbit.w));
+        // A constellation is drawn wholly in line: its motes are the stroke.
+        vLine = signatureMote ? 1.0 : mix(1.0 - smoothstep(0.035, 0.14, abs(aOrbit.w)), 1.0, particle.ambient * 0.85);
         vFlow = particle.flow;
         vColor = mix(color, aDayColor, uLight);
         vBright = aBright;
@@ -893,6 +896,9 @@ export function createGalaxy(
             * energy * vFlow * (1.0 - uDisperse * 0.25) * vIntro
             * ambientAlpha * vCoverage / (grow * grow * 0.7 + 0.3)
             * mix(1.0, mix(0.22, 1.15, vLine), uLight)
+            // On paper a figure's sparse motes need more ink than the dense
+            // rose to read as a drawn line rather than a grey dusting.
+            * mix(1.0, 1.8, vAmbient * uLight)
         );
         #include <colorspace_fragment>
       }`,
@@ -1081,7 +1087,7 @@ export function createGalaxy(
       uniform float uLight; uniform float uDisperse; uniform float uEnergy; uniform float uTrailGate;
       void main() {
         float alpha = pow(1.0 - vAge, 1.8) * (1.0 - vEdge * vEdge) * mix(0.506,0.42,uLight) * (1.0 - uDisperse * 0.255) * vIntroTrail * uTrailGate;
-        gl_FragColor = lightOutput(vColor, vec3(0.12, 0.26, 0.48), alpha*max(0.12+uEnergy*0.88,vMotion));
+        gl_FragColor = lightOutput(vColor, vec3(0.14, 0.25, 0.4), alpha*max(0.12+uEnergy*0.88,vMotion));
         #include <colorspace_fragment>
       }`,
   });
@@ -1139,7 +1145,9 @@ export function createGalaxy(
 
   material.fragmentShader = material.fragmentShader.replace(
     "float d = length(gl_PointCoord",
-    "if (fract(sin(vSeed)*43758.5453) > mix(1.0,0.38,uReading)*mix(1.0,0.65,vAmbient)*readableArea()) discard;\n        float d = length(gl_PointCoord"
+    // Behind reading the dust thins out; the home figure stands in open sky
+    // and keeps every mote its stroke retained.
+    "if (fract(sin(vSeed)*43758.5453) > mix(mix(1.0,0.38,uReading)*mix(1.0,0.65,vAmbient),1.0,uFigure)*readableArea()) discard;\n        float d = length(gl_PointCoord"
   );
   material.vertexShader = material.vertexShader
     .replace(
@@ -1150,7 +1158,8 @@ export function createGalaxy(
       "vFlow = particle.flow;",
       "vSeed = dot(position,vec3(12.3,8.1,3.7)); vFlow = particle.flow;"
     );
-  material.fragmentShader = "varying float vSeed;\n" + material.fragmentShader;
+  material.fragmentShader =
+    "varying float vSeed; uniform float uFigure;\n" + material.fragmentShader;
 
   const totalParticles = count + starCount;
   const fieldPositions = new Float32Array(totalParticles * 3);
@@ -1241,7 +1250,7 @@ export function createGalaxy(
       inkBleed: 0.06,
       vignette: 0.5,
       // Hundreds of splats overlap; these bring the summed veil to a haze.
-      nebulaStrength: (light ? 0.019 : 0.01) * (mobile ? 0.75 : 1),
+      nebulaStrength: (light ? 0.015 : 0.01) * (mobile ? 0.75 : 1),
     };
   }
 
@@ -1615,6 +1624,8 @@ export function createGalaxy(
             );
     figure = placeFigure(scrollY, smoothY);
     if (pageScene.mode === "home") ambientTarget = figure;
+    uniforms.uFigure.value =
+      pageScene.mode === "home" ? uniforms.uAmbientBlend.value : 0;
     const motion = getScrollMotion(scrollProgress, 0, motionScratch);
     const split = pageScene.mode === "author" ? 0.45 : motion.split;
     uniforms.uSplit.value = split;
