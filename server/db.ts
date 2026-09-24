@@ -172,6 +172,37 @@ export async function getPostBySlug(slug: string) {
   return result[0] || null;
 }
 
+/**
+ * A post with its category and tags in one round trip: the post and its
+ * category come from a single join, the tags from a parallel query keyed by
+ * the same slug, so neither waits for the other.
+ */
+export async function getPostWithRelationsBySlug(slug: string) {
+  const db = await getDb();
+  if (!db) return null;
+  const [rows, tagRows] = await Promise.all([
+    db
+      .select({ post: posts, category: categories })
+      .from(posts)
+      .leftJoin(categories, eq(posts.categoryId, categories.id))
+      .where(eq(posts.slug, slug))
+      .limit(1),
+    db
+      .select({ tag: tags })
+      .from(postTags)
+      .innerJoin(posts, eq(postTags.postId, posts.id))
+      .innerJoin(tags, eq(postTags.tagId, tags.id))
+      .where(eq(posts.slug, slug)),
+  ]);
+  const row = rows[0];
+  if (!row) return null;
+  return {
+    ...row.post,
+    category: row.category ?? null,
+    tags: tagRows.map((r) => r.tag),
+  };
+}
+
 export async function updatePost(id: number, post: Partial<InsertPost>) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");

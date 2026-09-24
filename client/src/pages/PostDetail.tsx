@@ -46,14 +46,29 @@ import {
 } from "lucide-react";
 import { Link, useParams } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { normalizeMarkdownMath } from "@shared/markdown-math";
+import { hasMarkdownMath, normalizeMarkdownMath } from "@shared/markdown-math";
+import { readInlineArticle } from "@/lib/inlineArticle";
+import type { inferRouterOutputs } from "@trpc/server";
+import type { AppRouter } from "../../../server/routers";
 import { langAttr } from "@/lib/contentLang";
-import { lazy, Suspense, useEffect, useState, useCallback } from "react";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 
 import { toast } from "sonner";
 
-const loadMarkdownRenderer = () => import("@/components/MarkdownRenderer");
-const MarkdownRenderer = lazy(loadMarkdownRenderer);
+// Formulas bring KaTeX; articles without them get the lighter renderer.
+const loadPlainRenderer = () => import("@/components/MarkdownRenderer");
+const loadMathRenderer = () => import("@/components/MathMarkdownRenderer");
+const loadMarkdownRenderer = (math: boolean): Promise<unknown> =>
+  math ? loadMathRenderer() : loadPlainRenderer();
+const MarkdownRenderer = lazy(loadPlainRenderer);
+const MathMarkdownRenderer = lazy(loadMathRenderer);
 
 function postVisualVariant(slug?: string) {
   if (
@@ -493,14 +508,16 @@ export default function PostDetail() {
   const { isAdmin } = useAuth();
   const { language, t } = useLanguage();
   const siteUrl = getClientSiteUrl();
-  // Fetch renderer, formulas and styles concurrently with the article request.
-  useEffect(() => {
-    void loadMarkdownRenderer().catch(() => undefined);
-  }, []);
-
+  // The first view reads the article the server inlined into the page.
+  const inline = slug
+    ? readInlineArticle<inferRouterOutputs<AppRouter>["posts"]["getBySlug"]>(
+        slug
+      )
+    : undefined;
   const { data: post, isLoading } = trpc.posts.getBySlug.useQuery(slug || "", {
     enabled: Boolean(slug),
     retry: false,
+    initialData: inline,
     staleTime: query =>
       query.state.data?.visibility === "public" &&
       query.state.data?.status === "published"
@@ -508,6 +525,29 @@ export default function PostDetail() {
         : 0,
     refetchOnWindowFocus: query => query.state.data?.visibility !== "public",
   });
+  const math = post?.content ? hasMarkdownMath(post.content) : false;
+  // Fetch the renderer (with formulas only when needed) as early as known.
+  useEffect(() => {
+    if (post?.content) void loadMarkdownRenderer(math).catch(() => undefined);
+  }, [post?.content, math]);
+  // Views are counted apart from reading the article, once it is idle.
+  const recordView = trpc.posts.recordView.useMutation();
+  const recordViewRef = useRef(recordView.mutate);
+  recordViewRef.current = recordView.mutate;
+  const countable =
+    post?.status === "published" && post?.visibility === "public"
+      ? post.slug
+      : null;
+  useEffect(() => {
+    if (!countable) return;
+    const count = () => recordViewRef.current(countable);
+    if ("requestIdleCallback" in window) {
+      const idle = window.requestIdleCallback(count, { timeout: 4000 });
+      return () => window.cancelIdleCallback(idle);
+    }
+    const timer = setTimeout(count, 1500);
+    return () => clearTimeout(timer);
+  }, [countable]);
   const { data: postContext } = trpc.discovery.postContext.useQuery(
     { slug: slug || "" },
     {
@@ -985,13 +1025,23 @@ export default function PostDetail() {
               <Suspense
                 fallback={<div className="h-24 rounded-lg bg-muted/40" />}
               >
-                <MarkdownRenderer
-                  content={readableContent}
-                  headings={headings}
-                  copyCodeLabel={t("post.copyCode")}
-                  tableLabel={t("post.scrollableTable")}
-                  onCopyCode={copyCode}
-                />
+                {math ? (
+                  <MathMarkdownRenderer
+                    content={readableContent}
+                    headings={headings}
+                    copyCodeLabel={t("post.copyCode")}
+                    tableLabel={t("post.scrollableTable")}
+                    onCopyCode={copyCode}
+                  />
+                ) : (
+                  <MarkdownRenderer
+                    content={readableContent}
+                    headings={headings}
+                    copyCodeLabel={t("post.copyCode")}
+                    tableLabel={t("post.scrollableTable")}
+                    onCopyCode={copyCode}
+                  />
+                )}
               </Suspense>
             </div>
 

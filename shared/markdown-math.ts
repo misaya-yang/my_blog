@@ -44,3 +44,15 @@ export function normalizeMarkdownMath(content: string): string {
     (_, index: string) => protectedCode[Number(index)]
   );
 }
+
+/**
+ * Whether Markdown needs the formula renderer: any $…$ or $$ outside code,
+ * after the LaTeX delimiters above are converted. It may say yes to a pair of
+ * prices; it must never say no to a formula.
+ */
+export function hasMarkdownMath(content: string): boolean {
+  const prose = normalizeMarkdownMath(content)
+    .replace(/^ {0,3}(`{3,}|~{3,})[^\n]*\n[\s\S]*?^ {0,3}\1[^\n]*$/gm, "")
+    .replace(/(`+)(?:[^`]|(?!\1)`)*?\1/g, "");
+  return /\$\$|\$[^$\n]+\$/.test(prose);
+}

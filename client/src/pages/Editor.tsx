@@ -93,7 +93,9 @@ import {
 import { Link as RouterLink, useParams, useLocation } from "wouter";
 import { toast } from "sonner";
 
-const MarkdownRenderer = lazy(() => import("@/components/MarkdownRenderer"));
+const MarkdownRenderer = lazy(
+  () => import("@/components/MathMarkdownRenderer")
+);
 
 // 工具栏按钮组件
 function ToolbarButton({

@@ -41,6 +41,40 @@ vi.mock("./db", () => ({
   getPostBySlug: vi.fn(async (slug: string) =>
     slug === seededPost.slug ? seededPost : slug === adminVisiblePost.slug ? adminVisiblePost : null
   ),
+  getPostWithRelationsBySlug: vi.fn(async (slug: string) => {
+    const post =
+      slug === seededPost.slug
+        ? seededPost
+        : slug === adminVisiblePost.slug
+          ? adminVisiblePost
+          : null;
+    if (!post) return null;
+    return {
+      ...post,
+      category:
+        post.categoryId === 1
+          ? {
+              id: 1,
+              name: "Deep Learning",
+              slug: "deep-learning",
+              description: null,
+              createdAt: new Date("2026-01-01T00:00:00.000Z"),
+              updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+            }
+          : null,
+      tags:
+        post.id === seededPost.id
+          ? [
+              {
+                id: 1,
+                name: "Transformer",
+                slug: "transformer",
+                createdAt: new Date("2026-01-01T00:00:00.000Z"),
+              },
+            ]
+          : [],
+    };
+  }),
   getPostTags: vi.fn(async (postId: number) =>
     postId === seededPost.id
       ? [
@@ -307,6 +341,22 @@ describe("posts router", () => {
         },
       ],
     });
+  });
+
+  it("counts views apart from reading, and only for public posts", async () => {
+    const { ctx } = createAnonymousContext();
+    const caller = appRouter.createCaller(ctx);
+    vi.mocked(db.incrementViewCount).mockClear();
+    await caller.posts.getBySlug("evq-cosh-frequency-allocation");
+    expect(db.incrementViewCount).not.toHaveBeenCalled();
+    await expect(
+      caller.posts.recordView("evq-cosh-frequency-allocation")
+    ).resolves.toEqual({ counted: true });
+    expect(db.incrementViewCount).toHaveBeenCalledWith(1);
+    await expect(caller.posts.recordView("owner-draft")).resolves.toEqual({
+      counted: false,
+    });
+    expect(db.incrementViewCount).toHaveBeenCalledTimes(1);
   });
 
   it("hides admin-visible posts from anonymous readers", async () => {

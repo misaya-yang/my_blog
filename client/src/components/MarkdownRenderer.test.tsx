@@ -2,7 +2,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import MarkdownRenderer from "./MarkdownRenderer";
+import MarkdownRenderer from "./MathMarkdownRenderer";
 
 const richArticleFixture = [
   "## Method",

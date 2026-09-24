@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeMarkdownMath } from "./markdown-math";
+import { hasMarkdownMath, normalizeMarkdownMath } from "./markdown-math";
 
 describe("LaTeX delimiter compatibility", () => {
   it("normalizes display math before a standalone equals sign becomes a setext heading", () => {
@@ -31,5 +31,24 @@ f(x)
       String.raw`\[x\]`,
     ].join("\n");
     expect(normalizeMarkdownMath(content)).toBe(content);
+  });
+});
+
+describe("hasMarkdownMath", () => {
+  it("finds inline, display and LaTeX-delimited formulas", () => {
+    expect(hasMarkdownMath("Energy $E=mc^2$ is conserved.")).toBe(true);
+    expect(hasMarkdownMath("$$\n\\sum_i p_i = 1\n$$")).toBe(true);
+    expect(hasMarkdownMath("A rate \\(r_t\\) per step.")).toBe(true);
+    expect(hasMarkdownMath("\\[x^2\\]")).toBe(true);
+    expect(hasMarkdownMath("$ spaced $ still counts")).toBe(true);
+  });
+
+  it("ignores dollars inside code and prose without formulas", () => {
+    expect(hasMarkdownMath("Plain prose, no formulas.")).toBe(false);
+    expect(hasMarkdownMath("Run `echo $HOME` and `$PATH`.")).toBe(false);
+    expect(
+      hasMarkdownMath("```bash\nexport A=$HOME\necho $A\n```\nDone.")
+    ).toBe(false);
+    expect(hasMarkdownMath("It costs $5.")).toBe(false);
   });
 });

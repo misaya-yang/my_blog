@@ -15,6 +15,10 @@ import { ENV } from "./_core/env.js";
 import * as db from "./db.js";
 import { engagementRouter } from "./engagement.router.js";
 import { getPublicSeedArticleBySlug } from "./publicSeedPosts.js";
+import {
+  invalidatePublicArticles,
+  loadPublicArticle,
+} from "./publicArticle.js";
 import { recordSearchMiss } from "./searchMisses.js";
 import { verifyAdminSession } from "./auth.js";
 
@@ -51,6 +55,8 @@ function normalizeDiscoveryQuery(query: string | undefined) {
 }
 
 async function refreshAgentKnowledgeAfterPostMutation(action: string) {
+  // Every post mutation passes through here: kept public copies are stale.
+  invalidatePublicArticles();
   try {
     await reindexPublicKnowledgeChunks();
     return { status: "fresh" as const };
@@ -225,26 +231,15 @@ export const appRouter = router({
     getBySlug: publicProcedure
       .input(z.string())
       .query(async ({ input, ctx }) => {
-        if (!ENV.isProduction) {
-          const seedArticle = await getPublicSeedArticleBySlug(input);
-          if (seedArticle) return seedArticle;
-        }
-
+        // Public articles come from the shared one-round-trip cache.
+        const article = await loadPublicArticle(input).catch(() =>
+          getPublicSeedArticleBySlug(input)
+        );
+        if (article) return article;
+        // Drafts and owner-only posts: read fresh, and only for the owner.
         const post = await db.getPostBySlug(input).catch(() => null);
-        if (!post) {
-          const seedArticle = await getPublicSeedArticleBySlug(input);
-          if (seedArticle) return seedArticle;
+        if (!post || !(await verifyAdminSession(ctx.req))) {
           throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
-        }
-        const isAdmin = await verifyAdminSession(ctx.req);
-        if (
-          (post.status !== "published" || post.visibility !== "public") &&
-          !isAdmin
-        ) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
-        }
-        if (post.status === "published" && post.visibility === "public") {
-          await db.incrementViewCount(post.id);
         }
         const [category, tags] = await Promise.all([
           post.categoryId
@@ -257,6 +252,19 @@ export const appRouter = router({
           category,
           tags,
         };
+      }),
+
+    /**
+     * Counts a public read. Separate from getBySlug, so the article itself can
+     * arrive inlined in the page or from the cache without a write in its path.
+     */
+    recordView: publicProcedure
+      .input(z.string().trim().min(1).max(200))
+      .mutation(async ({ input }) => {
+        const article = await loadPublicArticle(input).catch(() => null);
+        if (article && article.id > 0)
+          await db.incrementViewCount(article.id).catch(() => undefined);
+        return { counted: Boolean(article && article.id > 0) };
       }),
 
     create: blogAdminProcedure

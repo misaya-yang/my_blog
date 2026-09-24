@@ -43,6 +43,22 @@ describe("route preload tags", () => {
     expect(buildRoutePreloadTags({}, "/")).toBe("");
   });
 
+  it("adds a page's own lazy modules, such as its renderer", () => {
+    const withRenderer: ViteManifest = {
+      ...manifest,
+      "src/components/MarkdownRenderer.tsx": {
+        file: "assets/MarkdownRenderer-f.js",
+        imports: ["_app-vendor.js"],
+      },
+    };
+    const tags = buildRoutePreloadTags(withRenderer, "/post/some-slug", [
+      "src/components/MarkdownRenderer.tsx",
+    ]);
+    expect(tags).toContain("PostDetail-e.js");
+    expect(tags).toContain("MarkdownRenderer-f.js");
+    expect(tags).not.toContain("app-vendor");
+  });
+
   it("injects tags before the closing head", () => {
     const html = injectPreloadTags(
       "<html><head><title>x</title></head></html>",

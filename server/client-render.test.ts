@@ -1,3 +1,4 @@
+import superjson from "superjson";
 import { describe, expect, it } from "vitest";
 import {
   classifyClientRoute,
@@ -95,6 +96,56 @@ describe("client shell renderability", () => {
       '<meta property="og:type" content="article" />'
     );
     expect(rendered.html).toContain('"@type":"BlogPosting"');
+  });
+
+  it("inlines the article as data the client can read without asking again", async () => {
+    const withMarkup = {
+      ...article,
+      content: "Ends a script </script><script>alert(1)</script> here.",
+    };
+    const rendered = await renderClientShellHtml({
+      baseUrl: "https://example.com",
+      rawHtml: baseHtml,
+      urlPath: "/post/agent-harness-engine",
+      loadArticle: async () => withMarkup,
+    });
+    const match =
+      /<script id="article-data" type="application\/json" data-slug="agent-harness-engine">([^<]*)<\/script>/.exec(
+        rendered.html
+      );
+    expect(match).not.toBeNull();
+    // No markup in the article can close the data script early.
+    expect(rendered.html.match(/<\/script>/g)?.length).toBe(
+      rendered.html.match(/<script[\s>]/g)?.length
+    );
+    const data = superjson.parse<typeof withMarkup>(match![1]);
+    expect(data.content).toBe(withMarkup.content);
+    expect(data.publishedAt).toBeInstanceOf(Date);
+    expect(rendered.preloadModules).toEqual([
+      "src/components/MarkdownRenderer.tsx",
+    ]);
+    const formula = await renderClientShellHtml({
+      baseUrl: "https://example.com",
+      rawHtml: baseHtml,
+      urlPath: "/post/agent-harness-engine",
+      loadArticle: async () => ({ ...article, content: "Loss $L=-\\log p$." }),
+    });
+    expect(formula.preloadModules).toEqual([
+      "src/components/MathMarkdownRenderer.tsx",
+    ]);
+  });
+
+  it("gives a slow database a bounded wait by default", async () => {
+    const started = Date.now();
+    const rendered = await renderClientShellHtml({
+      baseUrl: "https://example.com",
+      rawHtml: baseHtml,
+      urlPath: "/post/slow-article",
+      loadArticle: () => new Promise(() => undefined),
+    });
+    expect(Date.now() - started).toBeLessThan(2500);
+    expect(rendered.html).not.toContain("article-data");
+    expect(rendered.cacheControl).toContain("s-maxage=10");
   });
 
   it("returns a client shell when article snapshot loading is unavailable", async () => {

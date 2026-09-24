@@ -36,7 +36,9 @@ function collectEntryFiles(manifest: ViteManifest) {
 
 export function buildRoutePreloadTags(
   manifest: ViteManifest,
-  pathname: string
+  pathname: string,
+  /** Lazy modules this particular page needs at once (e.g. its renderer). */
+  extraModules: string[] = []
 ): string {
   const moduleKey = routeModules.find(([pattern]) =>
     pattern.test(pathname)
@@ -53,6 +55,7 @@ export function buildRoutePreloadTags(
     chunk.imports?.forEach(visit);
   };
   visit(moduleKey);
+  extraModules.forEach(visit);
 
   return files
     .map(

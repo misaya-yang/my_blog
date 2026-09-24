@@ -7,15 +7,15 @@ import {
   type RouteMetadata,
   type SeoPost,
 } from "../shared/metadata.js";
+import superjson from "superjson";
+import { hasMarkdownMath } from "../shared/markdown-math.js";
 import { siteConfig } from "../shared/site.js";
-import { ENV } from "./_core/env.js";
-import * as db from "./db.js";
+import { loadPublicArticle } from "./publicArticle.js";
 import {
   buildRoutePreloadTags,
   injectPreloadTags,
   loadViteManifest,
 } from "./routePreload.js";
-import { getPublicSeedArticleBySlug } from "./publicSeedPosts.js";
 import { resolveSiteUrl, type SiteUrlRequest } from "./seo.js";
 
 type ClientRequest = SiteUrlRequest & {
@@ -56,12 +56,15 @@ type RenderedClientShell = {
   status: 200 | 404;
   html: string;
   cacheControl: string;
+  /** Lazy modules this page needs at once, announced as modulepreloads. */
+  preloadModules: string[];
 };
 
 // Public pages are identical for every reader, so the edge can answer them
 // without a function cold start. The stale window stays short so publishing
 // or hiding a post is visible within minutes.
-const PUBLIC_HTML_CACHE = "public, max-age=0, s-maxage=60, stale-while-revalidate=600";
+const PUBLIC_HTML_CACHE =
+  "public, max-age=0, s-maxage=60, stale-while-revalidate=600";
 const DEGRADED_HTML_CACHE = "public, max-age=0, s-maxage=10";
 const PRIVATE_HTML_CACHE = "private, no-store";
 type KnownRouteMetadata = {
@@ -86,7 +89,11 @@ const staticClientRoutes = new Set<string>([
 ]);
 
 const slugSegment = "[^/?#]+";
-const DEFAULT_ARTICLE_SNAPSHOT_TIMEOUT_MS = 2500;
+// A slow database must not hold the page: past this, the shell goes out
+// without the article and the client fetches it.
+const DEFAULT_ARTICLE_SNAPSHOT_TIMEOUT_MS = 1500;
+const PLAIN_RENDERER = "src/components/MarkdownRenderer.tsx";
+const MATH_RENDERER = "src/components/MathMarkdownRenderer.tsx";
 const dynamicKnownRoutePatterns = [
   new RegExp(`^/tags/${slugSegment}$`),
   new RegExp(`^/categories/${slugSegment}$`),
@@ -157,6 +164,7 @@ export async function renderClientShellHtml({
   const route = classifyClientRoute(pathname);
   let status: 200 | 404 = 200;
   let html = rawHtml;
+  const preloadModules: string[] = [];
   let cacheControl = isOwnerPath(pathname)
     ? PRIVATE_HTML_CACHE
     : PUBLIC_HTML_CACHE;
@@ -217,6 +225,12 @@ export async function renderClientShellHtml({
         html,
         renderPublicArticleSnapshotMarkup(snapshot.article)
       );
+      html = injectArticleData(html, route.slug, snapshot.article);
+      preloadModules.push(
+        hasMarkdownMath(snapshot.article.content || "")
+          ? MATH_RENDERER
+          : PLAIN_RENDERER
+      );
     }
   } else {
     html = injectRouteMetadata(html, buildKnownRouteMetadata(baseUrl, urlPath));
@@ -227,7 +241,7 @@ export async function renderClientShellHtml({
     : html;
   if (status === 404 && cacheControl === PUBLIC_HTML_CACHE)
     cacheControl = DEGRADED_HTML_CACHE;
-  return { status, html: transformedHtml, cacheControl };
+  return { status, html: transformedHtml, cacheControl, preloadModules };
 }
 
 function isOwnerPath(pathname: string) {
@@ -350,7 +364,11 @@ export function createClientRenderMiddleware(
       const html = injectPreloadTags(
         rendered.html,
         manifest
-          ? buildRoutePreloadTags(manifest, normalizePathname(req.path))
+          ? buildRoutePreloadTags(
+              manifest,
+              normalizePathname(req.path),
+              rendered.preloadModules
+            )
           : ""
       );
 
@@ -375,7 +393,7 @@ async function loadArticleSnapshot(
   | { status: "resolved"; article: SeoPost | null }
   | { status: "unavailable"; reason: "timeout" | "error" }
 > {
-  if (timeoutMs >= DEFAULT_ARTICLE_SNAPSHOT_TIMEOUT_MS) {
+  if (!Number.isFinite(timeoutMs)) {
     try {
       return { status: "resolved", article: await loadArticle(slug) };
     } catch {
@@ -432,30 +450,21 @@ export function shouldBypassClientRender(urlPath: string) {
   return false;
 }
 
-async function loadPublicArticleSnapshot(
-  slug: string
-): Promise<SeoPost | null> {
-  if (!ENV.isProduction) {
-    const seedArticle = await getPublicSeedArticleBySlug(slug);
-    if (seedArticle) return seedArticle;
-  }
+function loadPublicArticleSnapshot(slug: string): Promise<SeoPost | null> {
+  return loadPublicArticle(slug);
+}
 
-  const post = await db.getPostBySlug(slug).catch(() => null);
-  if (!post) return await getPublicSeedArticleBySlug(slug);
-  if (post.status !== "published" || post.visibility !== "public") return null;
-
-  const [category, tags] = await Promise.all([
-    post.categoryId
-      ? db.getCategoryById(post.categoryId)
-      : Promise.resolve(null),
-    db.getPostTags(post.id),
-  ]);
-
-  return {
-    ...post,
-    category,
-    tags,
-  };
+/**
+ * The article's data rides along in the page, so the client renders it at
+ * once instead of asking the API for what the server has just read. Script
+ * content cannot contain "<", so no markup inside the article can end it.
+ */
+function injectArticleData(html: string, slug: string, article: SeoPost) {
+  const data = superjson.stringify(article).replace(/</g, "\\u003c");
+  return injectBeforeBodyEnd(
+    html,
+    `<script id="article-data" type="application/json" data-slug="${escapeAttribute(slug)}">${data}</script>`
+  );
 }
 
 function injectRouteMetadata(
@@ -519,7 +528,7 @@ function injectRouteMetadata(
   if (jsonLd) {
     nextHtml = injectBeforeHeadEnd(
       nextHtml,
-      `<script type="application/ld+json" data-server-rendered="true">${JSON.stringify(jsonLd)}</script>`
+      `<script type="application/ld+json" data-server-rendered="true">${JSON.stringify(jsonLd).replace(/</g, "\\u003c")}</script>`
     );
   }
 
@@ -571,6 +580,12 @@ function upsertLink(html: string, rel: string, href: string) {
   );
   if (pattern.test(html)) return html.replace(pattern, tag);
   return injectBeforeHeadEnd(html, tag);
+}
+
+function injectBeforeBodyEnd(html: string, tag: string) {
+  if (html.includes("</body>"))
+    return html.replace("</body>", `  ${tag}\n  </body>`);
+  return `${html}\n${tag}`;
 }
 
 function injectBeforeHeadEnd(html: string, tag: string) {

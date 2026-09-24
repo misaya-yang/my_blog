@@ -1,13 +1,19 @@
 import { normalizeMarkdownMath } from "@shared/markdown-math";
 import { Check, Copy } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { type Options } from "react-markdown";
 import { readingHighlight } from "@/lib/readingHighlight";
 import "highlight.js/styles/github-dark.min.css";
-import "katex/dist/katex.min.css";
-import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
+
+type Pluggable = NonNullable<Options["remarkPlugins"]>[number];
+
+/**
+ * Formula support (KaTeX, with its fonts and styles) is a third of this
+ * renderer's weight, so it lives in MathMarkdownRenderer and arrives only
+ * for text that has formulas.
+ */
+export type MarkdownMath = { remark: Pluggable; rehype: Pluggable };
 
 type MarkdownHeading = {
   id: string;
@@ -25,6 +31,7 @@ type MarkdownRendererProps = {
     code: string,
     id: string
   ) => void | boolean | Promise<void | boolean>;
+  math?: MarkdownMath;
 };
 
 function MarkdownRenderer({
@@ -34,13 +41,16 @@ function MarkdownRenderer({
   copyCodeLabel = "Copy code",
   tableLabel = "Scrollable table",
   onCopyCode,
+  math,
 }: MarkdownRendererProps) {
   const headingIdResolver = createHeadingIdResolver(headings);
 
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkGfm, remarkMath]}
-      rehypePlugins={[rehypeKatex, readingHighlight]}
+      remarkPlugins={math ? [remarkGfm, math.remark] : [remarkGfm]}
+      rehypePlugins={
+        math ? [math.rehype, readingHighlight] : [readingHighlight]
+      }
       components={{
         h1: createHeadingComponent(
           "h1",
