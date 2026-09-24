@@ -3,7 +3,9 @@ import {
   AMBIENT_ENDPOINT_FADE,
   bakeAmbientTracks,
   getAmbientProfile,
+  getHomeFigureProfile,
 } from "./ambientScene";
+import { HOME_FIGURE_MOTIFS } from "./articleConstellations";
 import { PETAL_TRACKS, TRACK_SAMPLES } from "./roseTracks";
 
 const profiles = [
@@ -130,6 +132,35 @@ describe("per-article ambient constellation", () => {
             ),
           ]);
       });
+    }
+  });
+});
+
+describe("home figure", () => {
+  it("picks among every home motif, never the one shown last", () => {
+    const seen = new Set<string>();
+    for (let seed = 1; seed < 400; seed++) {
+      const profile = getHomeFigureProfile(seed, "spiral");
+      expect(profile.family).toBe("constellation");
+      expect(profile.motif).not.toBe("spiral");
+      seen.add(profile.motif!);
+    }
+    expect(seen).toEqual(
+      new Set(HOME_FIGURE_MOTIFS.filter(motif => motif !== "spiral"))
+    );
+    expect(getHomeFigureProfile(7, null, "orion").motif).toBe("orion");
+  });
+
+  it("draws one figure twice over rather than a mirrored pair", () => {
+    const profile = getHomeFigureProfile(11, null, "cassiopeia");
+    // Rows 0/2/4 and 1/3/5 trace the same strokes, a few hundredths apart.
+    for (let stroke = 0; stroke < 3; stroke++) {
+      const a = profile.rows[stroke * 2].points;
+      const b = profile.rows[stroke * 2 + 1].points;
+      let gap = 0;
+      for (let i = 0; i <= TRACK_SAMPLES; i += 16)
+        gap = Math.max(gap, distance(a[i], b[i]));
+      expect(gap).toBeLessThan(0.25);
     }
   });
 });

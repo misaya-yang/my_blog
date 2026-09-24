@@ -53,6 +53,8 @@ export interface ParticleBaseOptions {
   ambientDrift: Vector3;
   /** Article motifs: two NDC centers/scales, replacing narrow side-bank compression. */
   constellationLayout?: ConstellationLayout;
+  /** Percentage of particles a constellation keeps; defaults to the article 24. */
+  constellationRetain?: number;
   /** 1 while the rose faces the reader: the signature then stands upright. */
   facing?: number;
   /** Per petal layer, its turn relative to the heart as a quaternion (xyzw). */
@@ -116,6 +118,7 @@ export function sampleParticleBases(
     aspect,
     ambientDrift,
     constellationLayout,
+    constellationRetain,
     brights,
     layerTwists,
     navigationFrom,
@@ -341,7 +344,7 @@ export function sampleParticleBases(
       vy = mix(vy, (layout.y + y * layout.w) * halfHeight, ambientBlend);
       flow *= mix(
         1,
-        retainConstellationParticle(row, originPhase),
+        retainConstellationParticle(row, originPhase, constellationRetain),
         ambientBlend
       );
     } else {

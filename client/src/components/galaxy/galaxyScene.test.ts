@@ -497,7 +497,11 @@ describe("scene inputs, layout, quality and lifetime", () => {
     );
     expect(copy.inert).toBe(true);
     expect(foot.inert).toBe(true);
-    expect(host.style.opacity).toBe("0.72");
+    // The field recedes in the composite; the canvas itself stays opaque.
+    const composite = () =>
+      renderObjects().composer.passes.find((pass: any) => "fade" in pass);
+    expect(composite().fade).toBeCloseTo(0.72, 6);
+    expect(host.style.opacity).toBe("1");
     expect(frames.size).toBe(0);
     win.scrollY = 0;
     hero.top = 68;
@@ -509,8 +513,99 @@ describe("scene inputs, layout, quality and lifetime", () => {
     );
     expect(copy.inert).toBe(false);
     expect(foot.inert).toBe(false);
-    expect(host.style.opacity).toBe("1");
+    expect(composite().fade).toBe(1);
     expect(host.dataset.elapsed).toBe(frozen);
+  });
+
+  it("gathers the scattered field into a figure in the open sky beside the directions", () => {
+    const home = new Surface(),
+      hero = new Surface(),
+      stage = new Surface(),
+      directions = new Surface(),
+      grid = new Surface();
+    hero.clientHeight = 900;
+    stage.clientHeight = 800;
+    directions.left = 180;
+    directions.top = 1800;
+    directions.clientWidth = 920;
+    directions.clientHeight = 560;
+    grid.left = 180;
+    grid.top = 1900;
+    grid.clientWidth = 320;
+    grid.clientHeight = 260;
+    home.queries.set(".observatory-hero-scroll", hero);
+    home.queries.set(".observatory-hero", stage);
+    home.queries.set(".observatory-directions", directions);
+    home.queries.set(
+      ".observatory-directions .observatory-direction-grid",
+      grid
+    );
+    queries.set(".public-universe .observatory-home", home);
+    scene.setPage("/");
+    pump(60);
+    const { stars } = renderObjects();
+    const uniforms = (stars.material as ShaderMaterial).uniforms;
+    expect(uniforms.uConstellation.value).toBe(1);
+    expect(uniforms.uAmbientBlend.value).toBeLessThan(0.01);
+    // Scroll the section to the middle of the screen: the figure gathers.
+    win.scrollY = 1800 + 280 - 400;
+    win.dispatchEvent(new Event("scroll"));
+    pump(120);
+    expect(uniforms.uAmbientBlend.value).toBeGreaterThan(0.95);
+    const box = uniforms.uConstellationLayout.value[0];
+    // In the open sky right of the text, centred on the section.
+    expect(box.x).toBeGreaterThan(0.1);
+    expect(box.y).toBeCloseTo(0, 2);
+    expect(uniforms.uConstellationLayout.value[1].toArray()).toEqual(
+      box.toArray()
+    );
+    // It travels with its section and scatters again as the section leaves.
+    win.scrollY = 1800 + 280 - 400 + 200;
+    win.dispatchEvent(new Event("scroll"));
+    pump();
+    expect(box.y).toBeCloseTo(0.5, 2);
+    win.scrollY = 3400;
+    win.dispatchEvent(new Event("scroll"));
+    pump(120);
+    expect(uniforms.uAmbientBlend.value).toBeLessThan(0.05);
+  });
+
+  it("glides wheel steps through a spring that settles without overshoot", () => {
+    const home = new Surface(),
+      hero = new Surface(),
+      stage = new Surface(),
+      copy = new Surface();
+    hero.clientHeight = 1600;
+    stage.clientHeight = 800;
+    copy.clientWidth = 400;
+    copy.clientHeight = 300;
+    home.queries.set(".observatory-hero-scroll", hero);
+    home.queries.set(".observatory-hero", stage);
+    home.queries.set(".observatory-hero-copy", copy);
+    queries.set(".public-universe .observatory-home", home);
+    scene.setPage("/");
+    pump(30);
+    const copyY = () =>
+      Number(
+        (stage.style.setProperty.mock.calls as [string, string][])
+          .filter(([name]) => name === "--hero-copy-y")
+          .at(-1)?.[1]
+          .replace("px", "") ?? 0
+      );
+    win.scrollY = 400;
+    win.dispatchEvent(new Event("scroll"));
+    pump();
+    const first = copyY();
+    // One frame in, the choreography has started but not jumped the step.
+    expect(first).toBeLessThan(0);
+    expect(first).toBeGreaterThan(-32 * 0.9);
+    let previous = first;
+    for (let i = 0; i < 40; i++) {
+      pump();
+      expect(copyY()).toBeLessThanOrEqual(previous + 1e-9);
+      previous = copyY();
+    }
+    expect(previous).toBeCloseTo(-32, 0);
   });
 
   it("keeps reduced quality consistent across theme and viewport changes", () => {
@@ -608,10 +703,13 @@ describe("scene inputs, layout, quality and lifetime", () => {
     const boxes = (stars.material as ShaderMaterial).uniforms.uQuietBoxes.value;
     expect(boxes[0].toArray()).toEqual([0.0625, 0.625, 0.3125, 0.75]);
     expect(boxes[1].toArray()).toEqual([-2, -2, -1, -1]);
-    text.top = 400;
+    // Scrolling offsets the measured document layout without reading it.
+    const rect = vi.spyOn(text, "getBoundingClientRect");
+    win.scrollY = 200;
     win.dispatchEvent(new Event("scroll"));
     pump();
-    expect(boxes[0].toArray()).toEqual([0.0625, 0.375, 0.3125, 0.5]);
+    expect(rect).not.toHaveBeenCalled();
+    expect(boxes[0].toArray()).toEqual([0.0625, 0.875, 0.3125, 1]);
   });
 
   it("clears stale quiet boxes after text leaves the viewport", () => {
@@ -626,11 +724,11 @@ describe("scene inputs, layout, quality and lifetime", () => {
     const { stars } = renderObjects();
     const boxes = (stars.material as ShaderMaterial).uniforms.uQuietBoxes.value;
     expect(boxes[0].x).toBeGreaterThanOrEqual(0);
-    text.top = 1000;
+    win.scrollY = 1000;
     win.dispatchEvent(new Event("scroll"));
     pump();
     expect(boxes.map((box: any) => box.toArray())).toEqual(
-      Array.from({ length: 4 }, () => [-2, -2, -1, -1])
+      Array.from({ length: 6 }, () => [-2, -2, -1, -1])
     );
   });
 
@@ -698,15 +796,20 @@ describe("scene inputs, layout, quality and lifetime", () => {
     expect(frames.size).toBe(0);
   });
 
-  it("avoids per-frame layout reads but refreshes geometry on scroll", () => {
+  it("never reads layout per frame or on scroll, only when layout can change", () => {
     const rect = vi.spyOn(host, "getBoundingClientRect");
     pump(30);
     expect(rect).not.toHaveBeenCalled();
+    win.scrollY = 400;
     win.dispatchEvent(new Event("scroll"));
-    expect(rect).toHaveBeenCalledTimes(1);
-    rect.mockClear();
     pump(30);
     expect(rect).not.toHaveBeenCalled();
+    resizeCallback();
+    expect(rect).toHaveBeenCalledTimes(1);
+    rect.mockClear();
+    mutationCallback();
+    pump();
+    expect(rect).toHaveBeenCalledTimes(1);
   });
 
   it("releases active input and resumes correctly after context loss", () => {

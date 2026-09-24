@@ -2,7 +2,8 @@ import { TRACK_SAMPLES, PETAL_TRACKS } from "./roseTracks";
 import { CatmullRomCurve3, Vector3 } from "three";
 import {
   createArticleConstellation,
-  type ArticleConstellationMotif,
+  HOME_FIGURE_MOTIFS,
+  type FigureMotif,
 } from "./articleConstellations";
 
 export const AMBIENT_ROWS = PETAL_TRACKS + 2;
@@ -20,8 +21,8 @@ export type AmbientTrack = Contour & {
 
 export type AmbientProfile = {
   family: "rhodonea" | "lissajous" | "orbits" | "ribbon" | "constellation";
-  /** Present only on article routes; independent of query/hash parameters. */
-  motif?: ArticleConstellationMotif;
+  /** Present on article routes and the home figure. */
+  motif?: FigureMotif;
   driftX: number;
   driftY: number;
   driftSpeed: number;
@@ -61,34 +62,8 @@ const lerp = ([a, b]: Range, t: number) => a + (b - a) * t;
  */
 export function getAmbientProfile(path: string): AmbientProfile {
   const random = mulberry32(hashPath(path, 0x9e3779b9));
-  if (/^\/post\/[^/]+\/?$/.test(path.split(/[?#]/)[0])) {
-    const figure = createArticleConstellation(random);
-    const rows = figure.rows.map(points => {
-      const curve = new CatmullRomCurve3(
-        points.map(point => new Vector3(...point)),
-        false,
-        "centripetal"
-      );
-      const scratch = new Vector3();
-      return {
-        closed: false,
-        points: contour(
-          t => curve.getPoint(t, scratch).toArray() as AmbientPoint,
-          false
-        ),
-      };
-    });
-    return {
-      family: "constellation",
-      motif: figure.motif,
-      driftX: lerp([-0.035, 0.035], random()),
-      driftY: lerp([-0.025, 0.025], random()),
-      driftSpeed: lerp([0.025, 0.05], random()),
-      twinkle: lerp([0.8, 1.15], random()),
-      glow: 0.5,
-      rows: describeContours(rows),
-    };
-  }
+  if (/^\/post\/[^/]+\/?$/.test(path.split(/[?#]/)[0]))
+    return constellationProfile(random, createArticleConstellation(random));
   const families: AmbientProfile["family"][] = [
     "rhodonea",
     "lissajous",
@@ -214,6 +189,59 @@ export function getAmbientProfile(path: string): AmbientProfile {
     twinkle: lerp([0.8, 1.35], random()),
     glow: lerp([0.35, 1], random()),
     rows: describeContours([...outer, ...inner]),
+  };
+}
+
+/**
+ * The home page's figure for one visit: a random motif, never the one the
+ * previous visit in this tab showed, drawn as a single figure.
+ */
+export function getHomeFigureProfile(
+  seed: number,
+  previous?: string | null,
+  forced?: FigureMotif
+): AmbientProfile {
+  const random = mulberry32(seed);
+  const choices = HOME_FIGURE_MOTIFS.filter(motif => motif !== previous);
+  const pick =
+    choices[
+      Math.min(choices.length - 1, Math.floor(random() * choices.length))
+    ];
+  const motif = forced ?? pick;
+  return constellationProfile(
+    random,
+    createArticleConstellation(random, { motif, pair: "echo" })
+  );
+}
+
+function constellationProfile(
+  random: () => number,
+  figure: ReturnType<typeof createArticleConstellation>
+): AmbientProfile {
+  const rows = figure.rows.map(points => {
+    const curve = new CatmullRomCurve3(
+      points.map(point => new Vector3(...point)),
+      false,
+      "centripetal"
+    );
+    const scratch = new Vector3();
+    return {
+      closed: false,
+      points: contour(
+        t => curve.getPoint(t, scratch).toArray() as AmbientPoint,
+        false
+      ),
+    };
+  });
+  return {
+    family: "constellation",
+    motif: figure.motif,
+    driftX: lerp([-0.035, 0.035], random()),
+    driftY: lerp([-0.025, 0.025], random()),
+    driftSpeed: lerp([0.025, 0.05], random()),
+    twinkle: lerp([0.8, 1.15], random()),
+    glow: 0.5,
+    rows: describeContours(rows),
   };
 }
 

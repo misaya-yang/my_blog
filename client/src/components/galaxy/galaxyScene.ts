@@ -36,14 +36,25 @@ import { RotationMotion } from "./rotationMotion";
 import { ParticleField } from "./particleField";
 import { PARTING_PX, PARTING_RADIUS_PX } from "./particleMotion";
 import { sampleParticleBases } from "./sampleParticleBase";
-import { calculateConstellationLayout } from "./constellationLayout";
+import {
+  ARTICLE_RETAIN_PERCENT,
+  calculateConstellationLayout,
+  CONSTELLATION_LOCAL_RADIUS,
+  HOME_RETAIN_PERCENT,
+} from "./constellationLayout";
 import { createPhaseSampler, ribbonWidth } from "./particleDistribution";
-import { bakeAmbientTracks, getAmbientProfile } from "./ambientScene";
+import {
+  bakeAmbientTracks,
+  getAmbientProfile,
+  getHomeFigureProfile,
+  type AmbientProfile,
+} from "./ambientScene";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { CompositePass } from "./compositePass";
 import { BloomPyramidPass } from "./bloomPyramid";
 import { getPageScene } from "./pageScene";
+import { HOME_FIGURE_MOTIFS, type FigureMotif } from "./articleConstellations";
 import { GpuProfiler } from "./gpuProfiler";
 import { getScrollMotion, type MotionState } from "./scrollMotion";
 import { RenderQuality } from "./renderQuality";
@@ -66,6 +77,13 @@ const KEY_TURN = Math.PI / 10;
 const KEY_HOLD = 1.4;
 /** The bloom's outer petals sit back from the heart; let the fit reach them. */
 const ROSE_MAX_SCALE = 1.2;
+/** The hero rose rises at this fraction of the page's speed as it scrolls away. */
+const ROSE_PARALLAX = 0.3;
+/** Scroll spring stiffness, rad/s: a 100 px wheel step settles in ~0.25 s. */
+const SCROLL_SPRING = 18;
+/** Text regions the particles give way to, in view at once. */
+const QUIET_SLOTS = 6;
+const FIGURE_KEY = "galaxy-home-figure";
 
 function smoothstep01(x: number) {
   const t = Math.min(1, Math.max(0, x));
@@ -381,6 +399,7 @@ export function createGalaxy(
     uniform float uAmbientBlend;
     uniform float uConstellation;
     uniform vec4 uConstellationLayout[2];
+    uniform float uRetain;
     uniform vec3 uAmbientDrift;
     uniform float uAmbientTwinkle;
     vec4 trackPoint(float phase) {
@@ -553,7 +572,7 @@ export function createGalaxy(
         vec2 target = projected*(-view.z)/vec2(projectionMatrix[0][0],projectionMatrix[1][1]);
         view.xy = mix(view.xy,target,uAmbientBlend);
         float id = floor(clamp(aOrbit.y,0.0,1.0)*65536.0);
-        float retained = mod(id*37.0+floor(aOrbit.x)*17.0,100.0)<24.0 ? 1.0 : 0.0;
+        float retained = mod(id*37.0+floor(aOrbit.x)*17.0,100.0)<uRetain ? 1.0 : 0.0;
         result.flow *= mix(1.0,retained,uAmbientBlend);
       } else {
         view.x = mix(view.x,bank*0.82*(-view.z)/projectionMatrix[0][0]+view.x*0.13,uAmbientBlend);
@@ -610,7 +629,10 @@ export function createGalaxy(
     uCopyBounds: { value: new Vector4(-2, -2, -1, -1) },
     uCopyOpacity: { value: 1 },
     uQuietBoxes: {
-      value: Array.from({ length: 4 }, () => new Vector4(-2, -2, -1, -1)),
+      value: Array.from(
+        { length: QUIET_SLOTS },
+        () => new Vector4(-2, -2, -1, -1)
+      ),
     },
     uReading: { value: 0 },
     uGatherZone: { value: new Vector2(-2, -1) },
@@ -653,6 +675,10 @@ export function createGalaxy(
     uAmbientBlend: { value: 0 },
     uConstellation: { value: 0 },
     uConstellationLayout: { value: [new Vector4(), new Vector4()] },
+    uRetain: { value: ARTICLE_RETAIN_PERCENT },
+    // Article figures recede behind the reading; the home figure stands in
+    // open sky at nearly full strength.
+    uAmbientDim: { value: 0.6 },
     uAmbientDrift: { value: new Vector3() },
     uAmbientTwinkle: { value: 1 },
     uAmbientGlow: { value: 1 },
@@ -663,9 +689,44 @@ export function createGalaxy(
   let ambientTarget = 0;
   // One bake per navigation: six contour rows sampled on the CPU (microseconds),
   // uploaded into the ambient texture; everything downstream stays on the GPU.
+  // One home figure per visit, never the one this tab showed last time.
+  let homeFigure: AmbientProfile | null = null;
+  const homeFigureProfile = () => {
+    if (homeFigure) return homeFigure;
+    let previous: string | null = null;
+    try {
+      previous = sessionStorage.getItem(FIGURE_KEY);
+    } catch {
+      previous = null;
+    }
+    // DEV: ?figure=<motif> pins the figure for look development.
+    const forced = import.meta.env.DEV
+      ? (new URLSearchParams(window.location?.search ?? "").get(
+          "figure"
+        ) as FigureMotif | null)
+      : null;
+    homeFigure = getHomeFigureProfile(
+      Math.floor(Math.random() * 2 ** 32),
+      previous,
+      forced && HOME_FIGURE_MOTIFS.includes(forced) ? forced : undefined
+    );
+    try {
+      if (homeFigure.motif)
+        sessionStorage.setItem(FIGURE_KEY, homeFigure.motif);
+    } catch {
+      // Private windows may refuse storage; the figure is still random.
+    }
+    return homeFigure;
+  };
   const applyAmbient = (path: string) => {
-    const profile = getAmbientProfile(path);
-    uniforms.uConstellation.value = /^\/post\/[^/?#]+/.test(path) ? 1 : 0;
+    const home = getPageScene(path).mode === "home";
+    const profile = home ? homeFigureProfile() : getAmbientProfile(path);
+    uniforms.uConstellation.value =
+      home || /^\/post\/[^/?#]+/.test(path) ? 1 : 0;
+    uniforms.uRetain.value = home
+      ? HOME_RETAIN_PERCENT
+      : ARTICLE_RETAIN_PERCENT;
+    uniforms.uAmbientDim.value = home ? 0.95 : 0.6;
     const blend = uniforms.uAmbientMorph.value;
     for (let i = 0; i < ambientData.length; i++)
       ambientFromData[i] += (ambientData[i] - ambientFromData[i]) * blend;
@@ -691,7 +752,7 @@ export function createGalaxy(
     );
     uniforms.uAmbientTwinkle.value = profile.twinkle;
     uniforms.uAmbientGlow.value = profile.glow;
-    ambientTarget = getPageScene(path).mode === "home" ? 0 : 1;
+    ambientTarget = home ? 0 : 1;
   };
   applyAmbient(page);
   ambientFromData.set(ambientData);
@@ -807,7 +868,7 @@ export function createGalaxy(
         vCoverage = (gl_PointSize * gl_PointSize) / (footprint * footprint);
         gl_PointSize = footprint;
       }`,
-    fragmentShader: `varying vec3 vColor; varying float vFlow; varying float vBright; varying float vIntro; varying float vAmbient; uniform float uDisperse; uniform float uLight;
+    fragmentShader: `varying vec3 vColor; varying float vFlow; varying float vBright; varying float vIntro; varying float vAmbient; uniform float uDisperse; uniform float uLight; uniform float uAmbientDim;
       varying float vDefocus; varying float vCoverage; varying float vLine;
       void main() {
         float d = length(gl_PointCoord - 0.5) * 2.0;
@@ -818,7 +879,7 @@ export function createGalaxy(
         // deposits the same mote's ink; its density comes from the alpha.
         float highlight = smoothstep(1.7, 2.2, vBright) * 0.6;
         vec3 emission = mix(vColor, vec3(1.0), highlight) * (1.0 + vBright * 0.22);
-        float ambientAlpha = mix(1.0, 0.6, vAmbient);
+        float ambientAlpha = mix(1.0, uAmbientDim, vAmbient);
         float energy = mix(0.38,0.88,smoothstep(0.35,2.0,vBright));
         // A hard disc a couple of pixels wide rasterizes as a cross on
         // paper; day motes use a soft Gaussian dot of the same ink mass.
@@ -1048,7 +1109,7 @@ export function createGalaxy(
         vec3 absorbance = -log(clamp(ink, vec3(0.015), vec3(0.98)));
         return vec4(mix(emission, absorbance * uInkWeight, uLight), alpha);
       }
-      uniform vec4 uQuietBoxes[4];
+      uniform vec4 uQuietBoxes[${QUIET_SLOTS}];
       uniform float uReading; uniform vec2 uGatherZone;
       uniform vec2 uCanvasSize;
       float readableArea() {
@@ -1058,7 +1119,7 @@ export function createGalaxy(
         float edge = mix(mix(0.12,0.16,uLight),mix(0.85,0.9,uLight),smoothstep(0.44,0.90,abs(p.x-0.5)*2.0));
         float openBand = smoothstep(uGatherZone.x,uGatherZone.x+0.06,p.y) * (1.0-smoothstep(uGatherZone.y-0.06,uGatherZone.y,p.y));
         float quiet = 1.0;
-        for (int i=0;i<4;i++) {
+        for (int i=0;i<${QUIET_SLOTS};i++) {
           vec4 b = uQuietBoxes[i];
           float qx = smoothstep(b.x-0.05,b.x-0.01,p.x)*(1.0-smoothstep(b.z+0.01,b.z+0.05,p.x));
           float qy = smoothstep(b.y-0.03,b.y-0.005,p.y)*(1.0-smoothstep(b.w+0.005,b.w+0.03,p.y));
@@ -1240,12 +1301,21 @@ export function createGalaxy(
     hero = home?.querySelector(".observatory-hero-scroll") ?? null;
     stage = home?.querySelector(".observatory-hero") ?? null;
     gatherTarget = home?.querySelector(".observatory-directions") ?? null;
+    directionText =
+      home?.querySelector(
+        ".observatory-directions .observatory-direction-grid"
+      ) ?? null;
     foot = home?.querySelector(".observatory-hero-foot") ?? null;
     copy = home?.querySelector(".observatory-hero-copy") ?? null;
   }
   let quietNodes: Element[] = [];
-  let gather = 0;
   let scrollProgress = pageScene.mode === "home" ? 0 : 1;
+  // Scroll drives the choreography through a critically damped spring on the
+  // scroll position: a mouse wheel's 100 px steps glide instead of jumping,
+  // and the spring settles without overshoot the moment the page stops.
+  const scrollSpring = { y: 0, velocity: 0, primed: false };
+  // How present the home figure is, 0..1.
+  let figure = 0;
   let lastFlowSample = 0;
   const frameIntervals: number[] = [];
   let statsAt = 0;
@@ -1256,7 +1326,6 @@ export function createGalaxy(
   const rotatedPivot = new Vector3();
   let artworkRadius = 100;
 
-  // Cached layout state to eliminate forced synchronous reflows in paint() (BUG-05)
   const bounds = {
     left: 0,
     top: 0,
@@ -1265,21 +1334,35 @@ export function createGalaxy(
     width: 1280,
     height: 800,
   };
-  let heroTop = 0;
-  let heroHeight = 0;
-  let hasHero = false;
-  let stageHeight = 800;
-  // Stage and foot row positions at rest (scrollY = 0), relative to the canvas.
-  let stageRestTop = 68;
-  let footRestTop = 700;
-  let targetTop = -10000;
-  let targetBottom = -9999;
-  let targetHeight = 1;
-  let copyRight = 0;
-  let hasCopy = false;
+  // Layout in document coordinates relative to the canvas, measured only when
+  // it can change (resize, content, route, fonts) and offset by the scroll
+  // position every frame. A scroll never reads layout, so it never reflows.
+  type DocRect = {
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
+    present: boolean;
+  };
+  const docRect = (): DocRect => ({
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    present: false,
+  });
+  const layout = {
+    hero: docRect(),
+    stage: docRect(),
+    foot: docRect(),
+    directions: docRect(),
+    directionText: docRect(),
+    copy: docRect(),
+    quiet: [] as DocRect[],
+  };
+  let directionText: Element | null = null;
   let lastCopyOpacity = -1;
   let lastCopyY = -9999;
-  let lastHostOpacity = -1;
   let observedCopy: HTMLElement | null = null;
   const motionScratch: MotionState = {
     approach: 0,
@@ -1289,7 +1372,21 @@ export function createGalaxy(
     split: 0,
   };
 
-  function updateLayoutRects() {
+  function measure(node: Element | null, out: DocRect, scrollY: number) {
+    if (!node?.isConnected) {
+      out.present = false;
+      return out;
+    }
+    const rect = node.getBoundingClientRect();
+    out.left = rect.left - bounds.left;
+    out.right = rect.right - bounds.left;
+    out.top = rect.top - bounds.top + scrollY;
+    out.bottom = rect.bottom - bounds.top + scrollY;
+    out.present = rect.width > 0 && rect.height > 0;
+    return out;
+  }
+
+  function measureLayout() {
     if (disposed) return;
     if (pageScene.mode === "home" && !stage?.isConnected) bindHome();
     if (pageScene.mode === "author" && !copy?.isConnected)
@@ -1308,8 +1405,9 @@ export function createGalaxy(
     bounds.bottom = b.bottom;
     bounds.width = b.width;
     bounds.height = b.height;
+    const scrollY = window.scrollY;
 
-    if (uniforms.uConstellation.value > 0.5) {
+    if (uniforms.uConstellation.value > 0.5 && pageScene.mode !== "home") {
       const columns = Array.from(
         document.querySelectorAll(
           ".public-universe :is(.paper-reader-main,.paper-toc-rail)"
@@ -1329,7 +1427,7 @@ export function createGalaxy(
             bounds.right - Math.max(...columns.map(rect => rect.right)) - 12
           )
         : bounds.width * 0.15;
-      const layout = calculateConstellationLayout({
+      const constellation = calculateConstellationLayout({
         width: bounds.width,
         height: bounds.height,
         leftGutter,
@@ -1337,93 +1435,104 @@ export function createGalaxy(
         seedPhase: pageScene.phase / (Math.PI * 2),
       });
       uniforms.uConstellationLayout.value.forEach((value, side) =>
-        value.copy(layout[side])
+        value.copy(constellation[side])
       );
     }
 
-    stageHeight = stage?.clientHeight || bounds.height;
-    if (stage?.isConnected) {
-      stageRestTop =
-        stage.getBoundingClientRect().top + window.scrollY - bounds.top;
-      footRestTop = foot?.isConnected
-        ? foot.getBoundingClientRect().top + window.scrollY - bounds.top
-        : stageRestTop + stageHeight;
-    }
-
-    if (hero?.isConnected) {
-      const hr = hero.getBoundingClientRect();
-      heroTop = hr.top;
-      heroHeight = hr.height;
-      hasHero = true;
-    } else {
-      hasHero = false;
-      heroTop = 0;
-      heroHeight = 0;
-    }
-
-    if (gatherTarget?.isConnected) {
-      const gr = gatherTarget.getBoundingClientRect();
-      targetTop = gr.top;
-      targetBottom = gr.bottom;
-      targetHeight = gr.height;
-    } else {
-      targetTop = -10000;
-      targetBottom = -9999;
-      targetHeight = 1;
-    }
-
-    if (copy?.isConnected) {
-      const cr = copy.getBoundingClientRect();
-      copyRight = cr.right;
-      hasCopy = true;
-      uniforms.uCopyBounds.value.set(
-        (cr.left - bounds.left) / bounds.width,
-        1 - (cr.bottom - bounds.top) / bounds.height,
-        (cr.right - bounds.left) / bounds.width,
-        1 - (cr.top - bounds.top) / bounds.height
-      );
-    } else {
-      copyRight = bounds.left;
-      hasCopy = false;
-      uniforms.uCopyBounds.value.set(-2, -2, -1, -1);
-    }
+    measure(hero, layout.hero, scrollY);
+    measure(stage, layout.stage, scrollY);
+    measure(foot, layout.foot, scrollY);
+    measure(gatherTarget, layout.directions, scrollY);
+    measure(directionText, layout.directionText, scrollY);
+    measure(copy, layout.copy, scrollY);
 
     if (!quietNodes.length || quietNodes.some(node => !node.isConnected)) {
       quietNodes = Array.from(
         document.querySelectorAll(
-          ".public-universe :is(.paper-reader-main,.paper-toc-rail,.public-search-form,.search-results-surface,.archive-timeline,.observatory-featured,.observatory-notes,.track-article-ledger,.track-path-section,.page-hero,.taxonomy-notes-surface,.taxonomy-side-panel,.about-focus-ledger,.about-links-rail)"
+          ".public-universe :is(.paper-reader-main,.paper-toc-rail,.public-search-form,.search-results-surface,.archive-timeline,.observatory-featured,.observatory-direction-grid,.observatory-notes,.observatory-about,.track-article-ledger,.track-path-section,.page-hero,.taxonomy-notes-surface,.taxonomy-side-panel,.about-focus-ledger,.about-links-rail)"
         )
       );
     }
+    layout.quiet = quietNodes
+      .map(node => measure(node, docRect(), scrollY))
+      .filter(rect => rect.present);
+  }
 
-    let quietIndex = 0;
-    for (let i = 0; i < quietNodes.length; i++) {
-      const node = quietNodes[i];
-      const r = node.getBoundingClientRect();
-      if (
-        !r.width ||
-        !r.height ||
-        r.bottom < bounds.top ||
-        r.top > bounds.bottom ||
-        quietIndex >= 4
-      ) {
-        continue;
-      }
-      uniforms.uQuietBoxes.value[quietIndex++].set(
-        (r.left - bounds.left) / bounds.width,
-        1 - (r.bottom - bounds.top) / bounds.height,
-        (r.right - bounds.left) / bounds.width,
-        1 - (r.top - bounds.top) / bounds.height
-      );
-    }
-    for (; quietIndex < 4; quietIndex++) {
-      uniforms.uQuietBoxes.value[quietIndex].set(-2, -2, -1, -1);
-    }
-
-    uniforms.uGatherZone.value.set(
-      1 - (targetBottom - bounds.top) / bounds.height,
-      1 - (targetTop - bounds.top) / bounds.height
+  const offscreen = (out: Vector4) => out.set(-2, -2, -1, -1);
+  /** A document rectangle as normalized canvas bounds at this scroll. */
+  function canvasBox(rect: DocRect, scrollY: number, out: Vector4) {
+    return out.set(
+      rect.left / bounds.width,
+      1 - (rect.bottom - scrollY) / bounds.height,
+      rect.right / bounds.width,
+      1 - (rect.top - scrollY) / bounds.height
     );
+  }
+
+  /** Text protection follows the real scroll position, frame for frame. */
+  function placeLayout(scrollY: number) {
+    if (layout.copy.present)
+      canvasBox(layout.copy, scrollY, uniforms.uCopyBounds.value);
+    else offscreen(uniforms.uCopyBounds.value);
+    let slot = 0;
+    for (const rect of layout.quiet) {
+      if (slot >= QUIET_SLOTS) break;
+      if (rect.bottom - scrollY < 0 || rect.top - scrollY > bounds.height)
+        continue;
+      canvasBox(rect, scrollY, uniforms.uQuietBoxes.value[slot++]);
+    }
+    for (; slot < QUIET_SLOTS; slot++)
+      offscreen(uniforms.uQuietBoxes.value[slot]);
+    const zone = layout.directions;
+    uniforms.uGatherZone.value.set(
+      zone.present ? 1 - (zone.bottom - scrollY) / bounds.height : -2,
+      zone.present ? 1 - (zone.top - scrollY) / bounds.height : -1
+    );
+  }
+
+  /**
+   * Beside the research directions the page leaves open sky; there the
+   * scattered particles gather into this visit's figure. It sits in that open
+   * space and travels with its section, like an illustration beside the
+   * text, and gathers or scatters with how centred the section is (read from
+   * the smoothed scroll). Returns its presence.
+   */
+  function placeFigure(scrollY: number, smoothY: number) {
+    const section = layout.directions;
+    if (
+      pageScene.mode !== "home" ||
+      mobile ||
+      reducedMotion ||
+      !section.present
+    )
+      return 0;
+    const textRight = layout.directionText.present
+      ? layout.directionText.right
+      : section.left + 360;
+    const left = Math.max(textRight + 56, bounds.width * 0.46);
+    const right = bounds.width - 56;
+    if (right - left < 260) return 0;
+    const height = section.bottom - section.top;
+    const radius = Math.min((right - left) / 2, height * 0.46, 300);
+    const x = (left + right) / 2;
+    const y = (section.top + section.bottom) / 2 - scrollY;
+    for (const box of uniforms.uConstellationLayout.value)
+      box.set(
+        (x / bounds.width) * 2 - 1,
+        1 - (y / bounds.height) * 2,
+        (2 * radius) / (bounds.width * CONSTELLATION_LOCAL_RADIUS),
+        (2 * radius) / (bounds.height * CONSTELLATION_LOCAL_RADIUS)
+      );
+    // The open band of the text protection follows the figure, not the text.
+    uniforms.uGatherZone.value.set(
+      1 - (y + radius * 1.1) / bounds.height,
+      1 - (y - radius * 1.1) / bounds.height
+    );
+    const centre = (section.top + section.bottom) / 2 - smoothY;
+    const distance = Math.abs(centre - bounds.height / 2) / bounds.height;
+    // A narrow band: halfway between field and figure is a clump, so the
+    // gathering happens over a short stretch of scrolling.
+    return smoothstep01((0.5 - distance) / 0.18);
   }
   field = new ParticleField(renderer, {
     forceCPU:
@@ -1464,42 +1573,58 @@ export function createGalaxy(
       host.dataset.scrollSpeed = flowSpeed.toFixed(3);
       host.dataset.pointerInfluence = hover.toFixed(2);
     }
-    const travel = hasHero ? heroHeight - stageHeight : 0;
-    const progress =
+    const scrollY = window.scrollY;
+    if (
+      paused ||
+      reducedMotion ||
+      !scrollSpring.primed ||
+      Math.abs(scrollY - scrollSpring.y) > bounds.height * 3
+    ) {
+      scrollSpring.y = scrollY;
+      scrollSpring.velocity = 0;
+      scrollSpring.primed = true;
+    } else {
+      // Exact critically damped step: the same glide at any frame rate.
+      const decay = Math.exp(-SCROLL_SPRING * dt);
+      const error = scrollSpring.y - scrollY;
+      const slope = scrollSpring.velocity + SCROLL_SPRING * error;
+      scrollSpring.y = scrollY + (error + slope * dt) * decay;
+      scrollSpring.velocity =
+        (scrollSpring.velocity - SCROLL_SPRING * slope * dt) * decay;
+    }
+    const smoothY = scrollSpring.y;
+    placeLayout(scrollY);
+    const stageHeight = layout.stage.present
+      ? layout.stage.bottom - layout.stage.top
+      : bounds.height;
+    const heroHeight = layout.hero.bottom - layout.hero.top;
+    const travel = layout.hero.present ? heroHeight - stageHeight : 0;
+    scrollProgress =
       pageScene.mode !== "home"
         ? 1
-        : reducedMotion || !hasHero
+        : reducedMotion || !layout.hero.present
           ? 0
           : Math.min(
               1,
-              Math.max(0, (68 - heroTop) / (travel > 20 ? travel : stageHeight))
+              Math.max(
+                0,
+                (68 - (layout.hero.top - smoothY + bounds.top)) /
+                  (travel > 20 ? travel : stageHeight)
+              )
             );
-    scrollProgress +=
-      (progress - scrollProgress) *
-      (paused || reducedMotion ? 1 : 1 - Math.exp(-dt * 14));
-    const distance =
-      Math.abs(
-        targetTop + targetHeight / 2 - (bounds.top + bounds.height / 2)
-      ) / bounds.height;
-    const proximity =
-      reducedMotion || mobile
-        ? 0
-        : Math.max(0, Math.min(1, (0.75 - distance) / 0.5));
-    const gatherGoal = proximity * proximity * (3 - 2 * proximity);
-    gather +=
-      (gatherGoal - gather) *
-      (paused || reducedMotion ? 1 : 1 - Math.exp(-dt * 14));
-    const motion = getScrollMotion(scrollProgress, gather, motionScratch);
+    figure = placeFigure(scrollY, smoothY);
+    if (pageScene.mode === "home") ambientTarget = figure;
+    const motion = getScrollMotion(scrollProgress, 0, motionScratch);
     const split = pageScene.mode === "author" ? 0.45 : motion.split;
     uniforms.uSplit.value = split;
     uniforms.uPagePose.value.lerp(pagePose, smoothing);
     uniforms.uPreviousSplit.value +=
       (split - uniforms.uPreviousSplit.value) * (1 - Math.exp(-dt * 8));
     uniforms.uReading.value = motion.expansion;
-    uniforms.uDisperse.value = motion.expansion * 0.1 * (1 - gather);
+    uniforms.uDisperse.value = motion.expansion * 0.1 * (1 - figure);
     uniforms.uCopyOpacity.value =
       pageScene.mode === "author" ? 1 : motion.copyOpacity;
-    camera.position.z = 10.4 - motion.approach * 0.2 + gather * 3.6;
+    camera.position.z = 10.4 - motion.approach * 0.2;
     uniforms.uSideX.value =
       Math.tan((camera.fov * Math.PI) / 360) *
       camera.position.z *
@@ -1516,11 +1641,9 @@ export function createGalaxy(
       lastCopyY = motion.copyY;
       stage.style.setProperty("--hero-copy-y", `${motion.copyY}px`);
     }
-    const currentHostOpacity = 1 - motion.split * 0.28;
-    if (Math.abs(currentHostOpacity - lastHostOpacity) > 0.005) {
-      lastHostOpacity = currentHostOpacity;
-      host.style.opacity = String(currentHostOpacity);
-    }
+    // The dispersed field recedes a little behind the reading; the composite
+    // does it, so the canvas stays one opaque layer.
+    compositePass.fade = 1 - motion.split * 0.28;
     const copyHidden = pageScene.mode === "home" && motion.copyOpacity < 0.01;
     if (copy && copy.inert !== copyHidden) copy.inert = copyHidden;
     if (foot && foot.inert !== copyHidden) foot.inert = copyHidden;
@@ -1579,12 +1702,16 @@ export function createGalaxy(
     // Fit the complete rose beside the copy instead of hiding overlapping petals.
     const roseLeft = Math.max(
       bounds.width * 0.43,
-      copyRight - bounds.left + 24
+      (layout.copy.present ? layout.copy.right : 0) + 24
     );
     const roseRight = bounds.width - 30;
     // The rose sits inside the first screen: under the header, above the
     // foot row, and to the right of the copy, measured as projected.
     // A margin of empty sky around it keeps the rose from crowding the page.
+    const stageRestTop = layout.stage.present ? layout.stage.top : 68;
+    const footRestTop = layout.foot.present
+      ? layout.foot.top
+      : stageRestTop + stageHeight;
     const available = Math.max(
       160,
       footRestTop - 16 - Math.max(stageRestTop, 68)
@@ -1619,10 +1746,10 @@ export function createGalaxy(
       ? 0
       : pageScene.mode === "author"
         ? 2.8
-        : homeX * homeComposition +
-          (1.0 + gather * 1.8) * (1 - homeComposition);
-    const mobileBottom = hasCopy
-      ? (1 - uniforms.uCopyBounds.value.w) * bounds.height - 28
+        : homeX * homeComposition + 1.0 * (1 - homeComposition);
+    // On a phone the rose rests between the header and the copy below it.
+    const mobileBottom = layout.copy.present
+      ? layout.copy.top - scrollY - 28
       : bounds.height * 0.44;
     const mobileHeight = Math.max(140, mobileBottom - 96);
     const mobileScale = Math.min(
@@ -1634,15 +1761,18 @@ export function createGalaxy(
         ? mobileScale * homeComposition + splitBlend
         : homeScale * homeComposition + (1 - homeComposition)
     );
-    // On desktop the rose leaves with the hero: it rises with the scrolled
-    // distance, a touch slower than the page, while it disperses.
+    // On desktop the rose stays in the sky while the hero scrolls away: it
+    // rises with a slow parallax and disperses in place, rather than riding
+    // the page and lagging a frame behind it.
+    const parallax =
+      pageScene.mode === "home"
+        ? (Math.max(0, smoothY) * ROSE_PARALLAX * worldHeight) / bounds.height
+        : 0;
     group.position.y = mobile
       ? (0.5 - (96 + mobileBottom) / 2 / bounds.height) *
         worldHeight *
         (1 - splitBlend)
-      : (homeFit.y +
-          (scrollProgress * stageHeight * 0.85 * worldHeight) / bounds.height) *
-        homeComposition;
+      : (homeFit.y + parallax) * homeComposition;
     group.position.z = 0;
     pivotOffset.set(0, 0, HEART_Z).applyQuaternion(initialOrientation);
     rotatedPivot.set(0, 0, HEART_Z).applyQuaternion(pose);
@@ -1743,6 +1873,7 @@ export function createGalaxy(
               uniforms.uConstellation.value > 0.5
                 ? (uniforms.uConstellationLayout.value as [Vector4, Vector4])
                 : undefined,
+            constellationRetain: uniforms.uRetain.value,
             navigationFrom: uniforms.uNavigationFrom.value?.image?.data as
               | Float32Array
               | undefined,
@@ -1972,9 +2103,14 @@ export function createGalaxy(
     host.dataset.quality = String(profile.tier);
     host.dataset.renderScale = quality.scale.toFixed(2);
   }
+  // Content that grows or shrinks moves everything below it: measure again.
+  const contentResize = new ResizeObserver(() => {
+    measureLayout();
+    requestPaint();
+  });
   const resize = new ResizeObserver(() => {
     cancelInput();
-    updateLayoutRects();
+    measureLayout();
     const width = bounds.width;
     const height = bounds.height;
     if (!width || !height || lost) return;
@@ -2001,13 +2137,16 @@ export function createGalaxy(
             layoutFrame = 0;
             if (disposed) return;
             quietNodes = [];
-            updateLayoutRects();
+            measureLayout();
             requestPaint();
           });
         });
   const contentRoot = document.getElementById?.("root");
-  if (contentRoot)
+  if (contentRoot) {
     contentObserver?.observe(contentRoot, { childList: true, subtree: true });
+    contentResize.observe(contentRoot);
+  }
+  let settleTimer: ReturnType<typeof setTimeout> | undefined;
   const move = (event: PointerEvent) => {
     noteInteraction();
     if (reducedMotion) return;
@@ -2067,7 +2206,6 @@ export function createGalaxy(
       artworkRadius * 1.15
     )
       return;
-    updateLayoutRects();
     dragRadius = artworkRadius;
     dragLast.set(event.clientX - bounds.left, event.clientY - bounds.top);
     brush.active = false;
@@ -2138,13 +2276,13 @@ export function createGalaxy(
     }
     requestPaint();
   };
+  // Scrolling only offsets the measured layout; it never reads it.
   const onScroll = () => {
     lastScroll = performance.now();
-    updateLayoutRects();
     requestPaint();
   };
   const onWindowResize = () => {
-    updateLayoutRects();
+    measureLayout();
     requestPaint();
   };
   window.addEventListener("scroll", onScroll, { passive: true });
@@ -2223,7 +2361,7 @@ export function createGalaxy(
 
     // 5. Clear pointer wake & layout
     cancelInput();
-    updateLayoutRects();
+    measureLayout();
     paint();
     sync();
   };
@@ -2234,7 +2372,12 @@ export function createGalaxy(
   host.dataset.mode = pageScene.mode;
   host.dataset.variant = pageScene.phase.toFixed(6);
   if (pageScene.mode === "home") pagePose.set(0, 0, 1);
-  updateLayoutRects();
+  measureLayout();
+  // Web fonts change line wrapping, and with it every position below.
+  document.fonts?.ready.then(() => {
+    measureLayout();
+    requestPaint();
+  });
   sync();
   // Dev-only tuning hook: lets tooling drive the reveal timeline while the
   // render loop is throttled (occluded panes), without touching shipping paths.
@@ -2327,8 +2470,14 @@ export function createGalaxy(
       pageScene = getPageScene(path);
       applyAmbient(path);
       quietNodes = [];
-      hero = stage = gatherTarget = foot = copy = null;
-      updateLayoutRects();
+      hero = stage = gatherTarget = foot = copy = directionText = null;
+      measureLayout();
+      // Route entrances animate their content in; measure where it settles.
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(() => {
+        measureLayout();
+        requestPaint();
+      }, 450);
       pagePose.set(
         pageScene.mode === "home" ? 0 : pageScene.phase,
         pageScene.mode === "home" ? 0 : pageScene.tilt,
@@ -2368,6 +2517,8 @@ export function createGalaxy(
       disposed = true;
       sync();
       resize.disconnect();
+      contentResize.disconnect();
+      clearTimeout(settleTimer);
       intersection.disconnect();
       contentObserver?.disconnect();
       cancelAnimationFrame(layoutFrame);

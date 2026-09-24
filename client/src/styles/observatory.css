@@ -1641,11 +1641,16 @@
   background: transparent;
   box-shadow: none;
 }
+/* The open sky beside the directions is where the particles gather into
+   this visit's figure; the section holds the screen long enough for it. */
 .observatory-home .observatory-directions {
   margin-block: 32px;
   padding-block: 36px;
   border: 0;
-  min-height: 390px;
+  min-height: clamp(420px, 72vh, 700px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .observatory-home .observatory-direction-grid {
   max-width: 315px;

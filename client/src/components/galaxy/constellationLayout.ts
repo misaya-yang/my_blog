@@ -49,16 +49,22 @@ export function calculateConstellationLayout({
   ];
 }
 
+/** Article figures sit behind the reading and keep a sparse 24%. */
+export const ARTICLE_RETAIN_PERCENT = 24;
+/** The home figure stands alone in open sky and keeps more of its strokes. */
+export const HOME_RETAIN_PERCENT = 42;
+
 /**
- * Stable 24% selection, shared by dust, stars and their historical positions.
- * The integer range is exactly representable by GLSL highp float; unlike a
- * sine hash this selects identical IDs on CPU and GPU.
- * GLSL: mod(floor(clamp(phase,0.,1.)*65536.)*37.+floor(row)*17.,100.)<24.
+ * Stable percentage selection, shared by dust, stars and their historical
+ * positions. The integer range is exactly representable by GLSL highp float;
+ * unlike a sine hash this selects identical IDs on CPU and GPU.
+ * GLSL: mod(floor(clamp(phase,0.,1.)*65536.)*37.+floor(row)*17.,100.)<percent.
  */
 export function retainConstellationParticle(
   row: number,
-  phase: number
+  phase: number,
+  percent = ARTICLE_RETAIN_PERCENT
 ): number {
   const id = Math.floor(Math.max(0, Math.min(1, phase)) * 65536);
-  return (id * 37 + Math.floor(row) * 17) % 100 < 24 ? 1 : 0;
+  return (id * 37 + Math.floor(row) * 17) % 100 < percent ? 1 : 0;
 }

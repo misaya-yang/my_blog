@@ -35,6 +35,7 @@ const COMPOSITE_FRAGMENT = /* glsl */ `
   uniform float uInkDensity;
   uniform float uInkBleed;
   uniform float uVignette;
+  uniform float uFade;
   uniform float uTime;
   uniform vec2 uResolution;
   uniform vec2 uPartCursor;
@@ -102,7 +103,10 @@ const COMPOSITE_FRAGMENT = /* glsl */ `
     vec3 night = uBackground + acesFilmic((accumulated + bloom) * vignette);
     vec3 density = (accumulated + bloom * uInkBleed) * uInkDensity;
     vec3 day = uBackground * exp(-density);
-    vec3 color = srgbEncode(clamp(mix(night, day, uLight), 0.0, 1.0));
+    vec3 linear = clamp(mix(night, day, uLight), 0.0, 1.0);
+    // The whole field recedes toward the page, as CSS opacity would, without
+    // making the canvas a translucent layer the compositor has to blend.
+    vec3 color = srgbEncode(mix(uBackground, linear, uFade));
 
     // ±1.2/255 of animated grain dithers the soft gradients against banding.
     float grain = fract(sin(dot(gl_FragCoord.xy + uTime * 61.7, vec2(12.9898, 78.233))) * 43758.5453);
@@ -141,6 +145,8 @@ export class CompositePass extends Pass {
    * rose is seen edge-on, so the scene thins it as the rose turns away.
    */
   nebulaVisibility = 1;
+  /** How far the field recedes toward the page background, 0..1. */
+  fade = 1;
   private nebulaStrength = 1;
   private readonly quad: FullScreenQuad;
   private readonly blackTexture: Texture;
@@ -162,6 +168,7 @@ export class CompositePass extends Pass {
         uInkDensity: { value: 1 },
         uInkBleed: { value: 0.35 },
         uVignette: { value: 0.5 },
+        uFade: { value: 1 },
         uTime: { value: 0 },
         uResolution: { value: new Vector2(1, 1) },
         uPartCursor: { value: new Vector2() },
@@ -230,6 +237,7 @@ export class CompositePass extends Pass {
     uniforms.tNebula.value = this.nebulaTexture ?? this.blackTexture;
     uniforms.uNebulaStrength.value =
       this.nebulaStrength * this.nebulaVisibility;
+    uniforms.uFade.value = this.fade;
     renderer.setRenderTarget(this.renderToScreen ? null : writeBuffer);
     this.quad.render(renderer);
   }
