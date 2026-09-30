@@ -477,10 +477,12 @@ Run:
 
 ```bash
 git diff --check
-rg -n "password|token|secret|api[_-]?key|credential|123456|HrqHsBKEoNSndwozGlmAMQJ6" client/src/lib/articleLayout.ts client/src/pages/PostDetail.tsx client/src/pages/PostDetail.test.ts client/src/styles/visual-refresh.css docs/superpowers/plans/2026-07-09-article-continuation-density-slice.md docs/product_optimization/reports/article-continuation-density-slice-2026-07-09
+rg -n "password|token|secret|api[_-]?key|credential|123456|ADMIN_PASSWORD" client/src/lib/articleLayout.ts client/src/pages/PostDetail.tsx client/src/pages/PostDetail.test.ts client/src/styles/visual-refresh.css docs/superpowers/plans/2026-07-09-article-continuation-density-slice.md docs/product_optimization/reports/article-continuation-density-slice-2026-07-09
 ```
 
 Expected: whitespace check passes; sensitive scan returns no actual credentials. Mentions of "credential" inside the plan constraints are acceptable.
+
+Configure `ADMIN_PASSWORD` only in the ignored `.env.local` file for local development or in the deployment environment. Never include its value in committed commands, plans, or reports.
 
 - [x] **Step 5: Commit**
 
