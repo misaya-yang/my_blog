@@ -51,24 +51,15 @@ import { readInlineArticle } from "@/lib/inlineArticle";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { AppRouter } from "../../../server/routers";
 import { langAttr } from "@/lib/contentLang";
-import {
-  lazy,
-  Suspense,
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-} from "react";
+import { Suspense, useEffect, useRef, useState, useCallback } from "react";
 
 import { toast } from "sonner";
 
-// Formulas bring KaTeX; articles without them get the lighter renderer.
-const loadPlainRenderer = () => import("@/components/MarkdownRenderer");
-const loadMathRenderer = () => import("@/components/MathMarkdownRenderer");
-const loadMarkdownRenderer = (math: boolean): Promise<unknown> =>
-  math ? loadMathRenderer() : loadPlainRenderer();
-const MarkdownRenderer = lazy(loadPlainRenderer);
-const MathMarkdownRenderer = lazy(loadMathRenderer);
+import {
+  MarkdownRenderer,
+  MathMarkdownRenderer,
+  preloadMarkdownRenderer,
+} from "@/components/markdownRenderers";
 
 function postVisualVariant(slug?: string) {
   if (
@@ -528,7 +519,8 @@ export default function PostDetail() {
   const math = post?.content ? hasMarkdownMath(post.content) : false;
   // Fetch the renderer (with formulas only when needed) as early as known.
   useEffect(() => {
-    if (post?.content) void loadMarkdownRenderer(math).catch(() => undefined);
+    if (post?.content)
+      void preloadMarkdownRenderer(math).catch(() => undefined);
   }, [post?.content, math]);
   // Views are counted apart from reading the article, once it is idle.
   const recordView = trpc.posts.recordView.useMutation();

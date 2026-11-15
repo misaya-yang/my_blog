@@ -1,0 +1,172 @@
+/*
+ * The star field's place on the page, and the palette the page shares with it.
+ *
+ * The canvas paints the whole page ground, so the grounds below are the same
+ * colours as NIGHT_SKY and DAY_PAPER in components/starfield/scene.ts.
+ */
+
+/* --- The canvas ---------------------------------------------------------- */
+.starfield {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  contain: strict;
+}
+.starfield canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 600ms ease-out;
+}
+.starfield canvas[data-ready="true"] {
+  opacity: 1;
+}
+
+/* --- Where pages put their figure --------------------------------------- */
+.rose-anchor {
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.rose-anchor--home {
+  position: absolute;
+  right: 2%;
+  top: 12%;
+  width: min(46vw, 78vh);
+  aspect-ratio: 1;
+}
+/* On a phone the rose takes the open sky above the title. */
+@media (max-width: 720px) {
+  .rose-anchor--home {
+    top: 100px;
+    right: 50%;
+    translate: 50% 0;
+    width: min(86vw, 46vh);
+  }
+}
+
+/* Inner pages: the figure rises at the page's right edge, in the margin
+   beside the text, on screens wide enough to have one. Half of it shows on a
+   laptop and most of it on a wide display. The box takes no presses; the
+   artwork is still found by where it is drawn. */
+.public-universe {
+  overflow-x: clip;
+}
+.rose-anchor--page {
+  display: none;
+  position: absolute;
+  z-index: -1;
+  top: 124px;
+  aspect-ratio: 1;
+  pointer-events: none;
+}
+@media (min-width: 1360px) {
+  /* Beside the table of contents. */
+  .rose-anchor--page[data-figure="reader"] {
+    display: block;
+    left: calc(50vw + 514px);
+    width: clamp(340px, calc(100vw - 1028px), 560px);
+  }
+  /* The author's page carries the signed rose whole, as a seal. */
+  .rose-anchor--page[data-figure="seal"] {
+    display: block;
+    top: 150px;
+    left: calc(50vw + 500px);
+    width: clamp(196px, calc(50vw - 514px), 400px);
+  }
+}
+@media (min-width: 1400px) {
+  /* Beside the list pages' wider column. */
+  .rose-anchor--page[data-figure="list"] {
+    display: block;
+    left: calc(50vw + 576px);
+    width: clamp(300px, calc(100vw - 1152px), 560px);
+  }
+}
+
+/* Hovering the artwork offers the hand; dragging it closes the hand and
+   keeps the drag from selecting text on the way. */
+html[data-rose-hover] {
+  cursor: grab;
+}
+html[data-rose-dragging],
+html[data-rose-dragging] * {
+  cursor: grabbing !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+/* The small native control owns keyboard focus, never the canvas. */
+.starfield-toggle {
+  position: fixed;
+  z-index: 35;
+  left: 20px;
+  bottom: 20px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--observatory-muted);
+  opacity: 0.72;
+  cursor: pointer;
+  transition:
+    opacity 160ms ease-out,
+    background-color 160ms ease-out,
+    color 160ms ease-out;
+}
+.starfield-toggle:hover {
+  color: var(--observatory-ink);
+  background: var(--reader-card-hover);
+  opacity: 1;
+}
+.starfield-toggle:focus-visible {
+  outline: 2px solid var(--reader-focus);
+  outline-offset: 4px;
+  opacity: 1;
+}
+
+/* --- Night: one sky ------------------------------------------------------ */
+html.dark:has(.public-universe) {
+  background: #07080b;
+}
+.dark .public-universe,
+.dark .public-universe .space-page:not(.owner-dark-scope) {
+  --observatory-bg: #07080b;
+}
+
+/* --- Day: paper and ink --------------------------------------------------
+   Rice paper, blue-black ink for text, indigo for what can be followed, and
+   warm hairlines. The artwork is drawn in the same inks: blue-black and
+   indigo on the outer petals, plum and madder toward the heart, and the
+   signature alone in a seal's cinnabar, which the interface leaves to it. */
+html:not(.dark):has(.public-universe) {
+  --v2-paper-warm: #f4f0e8;
+  background: #f4f0e8;
+}
+html:not(.dark) .public-universe,
+html:not(.dark) .public-universe .space-page:not(.owner-dark-scope) {
+  --observatory-bg: #f4f0e8;
+  --observatory-surface: #ebe6da;
+  --observatory-ink: #1b1f2e;
+  --observatory-muted: #565a6b;
+  --observatory-accent: #27457a;
+  --observatory-line: #d8d1c2;
+  --v2-bg: #f4f0e8;
+  --v2-solid-reading: #f4f0e8;
+  --v2-solid-data: #ebe6da;
+  --reader-hover-border: #8d8776;
+  --reader-focus: #2f55a0;
+  --reader-current-bg: rgb(39 69 122 / 8%);
+  --reader-card-hover: rgb(27 31 46 / 4.5%);
+  --reader-card-border: rgb(27 31 46 / 18%);
+  --reader-row-hover: rgb(39 69 122 / 5.5%);
+}
+html:not(.dark) .public-universe ::selection {
+  background: rgb(39 69 122 / 18%);
+}

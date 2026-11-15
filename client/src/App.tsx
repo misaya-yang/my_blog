@@ -1,14 +1,26 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { Route, Switch, useLocation } from "wouter";
+import { Route, Router as LocationRouter, Switch, useLocation } from "wouter";
+import { useRouteDataPrefetch } from "@/lib/routeData";
+import { useStagedLocation } from "@/lib/routeTransition";
+import {
+  About,
+  AlgorithmsPage,
+  ApplicationsPage,
+  Archive,
+  CategoryPage,
+  Home,
+  PostDetail,
+  Search,
+  TagPage,
+} from "./routePages";
 import { ScrollRestoration } from "./components/ScrollRestoration";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider, useLanguage } from "./contexts/LanguageContext";
 import { trackPageView } from "@/lib/analytics";
-import { GalaxyHero } from "./components/galaxy/GalaxyHero";
+import { Starfield } from "./components/starfield/Starfield";
 import { BrandMark, SpaceBackdrop } from "@/components/ResearchShell";
 
-const Home = lazy(() => import("./pages/Home"));
 const BlogAgentRoot = lazy(() =>
   import("@/components/agent/BlogAgentRoot").then(module => ({
     default: module.BlogAgentRoot,
@@ -17,29 +29,11 @@ const BlogAgentRoot = lazy(() =>
 const Toaster = lazy(() =>
   import("@/components/ui/sonner").then(module => ({ default: module.Toaster }))
 );
-const PostDetail = lazy(() => import("./pages/PostDetail"));
 const Editor = lazy(() => import("./pages/Editor"));
 const Manage = lazy(() => import("./pages/Manage"));
 const ManageAgent = lazy(() => import("./pages/ManageAgent"));
 const Login = lazy(() => import("./pages/Login"));
-const Archive = lazy(() => import("./pages/Archive"));
-const Search = lazy(() => import("./pages/Search"));
-const About = lazy(() => import("./pages/About"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-const AlgorithmsPage = lazy(() =>
-  import("./pages/Track").then(module => ({ default: module.AlgorithmsPage }))
-);
-const ApplicationsPage = lazy(() =>
-  import("./pages/Track").then(module => ({ default: module.ApplicationsPage }))
-);
-const TagPage = lazy(() =>
-  import("./pages/TaxonomyPage").then(module => ({ default: module.TagPage }))
-);
-const CategoryPage = lazy(() =>
-  import("./pages/TaxonomyPage").then(module => ({
-    default: module.CategoryPage,
-  }))
-);
 
 function RouteLoading() {
   const { t } = useLanguage();
@@ -79,7 +73,11 @@ function Router() {
         <Route path="/tags/:slug" component={TagPage} />
         <Route path="/categories/:slug" component={CategoryPage} />
         <Route path="/about" component={About} />
-        <Route path="/post/:slug" component={PostDetail} />
+        {/* Keyed by slug: going from one article to the next is a new page,
+            with its own entrance, not the old one refilled in place. */}
+        <Route path="/post/:slug">
+          {params => <PostDetail key={params.slug} />}
+        </Route>
         <Route path="/write" component={Editor} />
         <Route path="/write/:slug" component={Editor} />
         <Route path="/manage/agent" component={ManageAgent} />
@@ -132,7 +130,24 @@ function PublicSurface() {
   if (!publicPage) return <Router />;
   return (
     <div className="public-universe">
-      <GalaxyHero />
+      <Starfield />
+      {kind !== "home" && (
+        // Inner pages keep their figure in the right margin, clear of the text.
+        <div
+          className="rose-anchor rose-anchor--page"
+          data-figure={
+            kind === "reader"
+              ? "reader"
+              : location.startsWith("/about")
+                ? "seal"
+                : "list"
+          }
+          data-rose-anchor
+          data-rose-follow="0.6"
+          data-rose-presence={location.startsWith("/about") ? "0.9" : "0.72"}
+          aria-hidden="true"
+        />
+      )}
       <Router />
     </div>
   );
@@ -141,6 +156,7 @@ function PublicSurface() {
 function RouteEffectController() {
   const [location] = useLocation();
   const didMount = useRef(false);
+  useRouteDataPrefetch();
 
   useEffect(() => {
     const root = document.documentElement;
@@ -218,14 +234,16 @@ function App() {
     <ThemeProvider defaultTheme="dark" switchable>
       <LanguageProvider>
         <ErrorBoundary>
-          <Suspense fallback={null}>
-            <Toaster />
-          </Suspense>
-          <AnalyticsRouteTracker />
-          <RouteEffectController />
-          <ScrollRestoration />
-          <PublicSurface />
-          <DeferredAgent />
+          <LocationRouter hook={useStagedLocation}>
+            <Suspense fallback={null}>
+              <Toaster />
+            </Suspense>
+            <AnalyticsRouteTracker />
+            <RouteEffectController />
+            <ScrollRestoration />
+            <PublicSurface />
+            <DeferredAgent />
+          </LocationRouter>
         </ErrorBoundary>
       </LanguageProvider>
     </ThemeProvider>

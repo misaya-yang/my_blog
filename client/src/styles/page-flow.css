@@ -1,0 +1,169 @@
+/*
+ * How public pages sit on one measure, and how one page hands over to the
+ * next. The script half of the hand-over is lib/routeTransition.ts.
+ */
+
+/* --- Changing pages ------------------------------------------------------
+   Leaving: the page's content dims the moment a link is followed, holds
+   while the next page's code and content load, then fades as the routes
+   swap. The header and the sky are not part of it. Opacity only, so nothing
+   inside loses its sticky or fixed footing. */
+.public-universe .space-page > :is(main, .paper-reader-container) {
+  transition: opacity 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+html[data-route-phase="pending"]
+  .public-universe
+  .space-page
+  > :is(main, .paper-reader-container) {
+  opacity: 0.45;
+  transition: opacity 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+html[data-route-phase="leave"]
+  .public-universe
+  .space-page
+  > :is(main, .paper-reader-container) {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms cubic-bezier(0.4, 0, 1, 1);
+}
+html[data-route-phase="pending"] {
+  cursor: progress;
+}
+
+/* Arriving: each block of the new page rises into place, one after another.
+   Tied to the blocks being inserted, so an article that finishes loading a
+   moment after its page makes the same entrance. `translate`, not
+   `transform`: blocks that already carry a transform keep it. */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    translate: 0 16px;
+  }
+}
+html[data-route-nav]
+  .public-universe
+  :is(
+    .observatory-hero-copy,
+    .observatory-hero-foot,
+    .observatory-content > *,
+    .space-page:not(.observatory-home) > main > *,
+    .reading-surface > *,
+    .paper-toc-rail,
+    .paper-brief-rail
+  ) {
+  animation: page-enter 560ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+
+  &:nth-child(2) {
+    animation-delay: 60ms;
+  }
+  &:nth-child(3) {
+    animation-delay: 120ms;
+  }
+  &:nth-child(n + 4) {
+    animation-delay: 180ms;
+  }
+}
+/* The older whole-page fade would double the entrance. */
+html[data-route-motion="enter"] .public-universe .space-page > main {
+  animation: none;
+}
+
+/* A route whose code is already on its way should not flash a loading page:
+   the placeholder only shows itself if the wait is long enough to notice. */
+@keyframes route-loading-in {
+  from {
+    opacity: 0;
+  }
+}
+.public-universe .route-loading-page .route-loading-shell {
+  animation: route-loading-in 240ms 320ms ease-out backwards;
+}
+
+/* A short page has no scrollbar and a long one does; without a reserved
+   gutter everything, header included, sits a few pixels further right on
+   the short ones. */
+html:has(.public-universe) {
+  scrollbar-gutter: stable;
+}
+
+/* --- One measure ----------------------------------------------------------
+   The home page used a narrower column than every other page, so the header
+   and the left edge shifted on every visit to it. One measure: 1180px wide,
+   32px gutters, the same as the inner pages. (The home header's own rule
+   lives with the other header rules in observatory.css.) */
+@media (min-width: 900px) {
+  html .public-universe .observatory-home .observatory-content,
+  html .public-universe .observatory-home .observatory-footer {
+    max-width: 1180px !important;
+    padding-inline: 32px !important;
+  }
+  html .public-universe .observatory-home .observatory-hero-copy {
+    left: max(32px, calc((100% - 1180px) / 2 + 32px));
+    width: min(430px, 36vw);
+  }
+  html .public-universe .observatory-home .observatory-hero-foot {
+    inset-inline: max(32px, calc((100% - 1180px) / 2 + 32px));
+    /* Both notes sit under the title; the rose keeps its side to itself. */
+    justify-content: flex-start;
+    gap: 36px;
+  }
+  /* The rose is centred in the hero's height and stays inside it. */
+  .rose-anchor--home {
+    top: 50%;
+    right: max(1%, calc((100% - 1180px) / 2 - 64px));
+    translate: 0 -51%;
+    width: min(44vw, 72vh);
+  }
+
+  /* Section headings and their lists start on the page's left edge; list
+     rows keep their padding as a hover surface that reaches into the
+     gutter. */
+  html .public-universe .observatory-home .observatory-featured-heading {
+    padding-inline: 0;
+  }
+  html .public-universe .observatory-home .observatory-paper-picker {
+    margin-left: -36px;
+  }
+  html .public-universe .observatory-home .observatory-notes {
+    padding-inline: 0;
+  }
+
+  /* Research directions: two columns across the measure, not a narrow stack
+     in a tall, mostly empty band. */
+  html .public-universe .observatory-home .observatory-directions {
+    display: block;
+    min-height: 0;
+    margin-block: 88px;
+    padding-block: 40px 48px;
+  }
+  html .public-universe .observatory-home .observatory-direction-grid {
+    grid-template-columns: 1fr 1fr;
+    max-width: none;
+    gap: 72px;
+  }
+  html .public-universe .observatory-home .observatory-direction {
+    grid-template-columns: minmax(0, 1fr) 24px;
+  }
+}
+
+/* Titles and excerpts in note lists use the room they have: a comfortable
+   line, not a narrow column beside empty space. */
+.public-universe .article-card .article-title {
+  max-width: 34em;
+}
+.public-universe .article-card .article-excerpt {
+  max-width: 44em;
+}
+
+/* The note cards' text starts on the page edge; their padding is a hover
+   surface reaching into the gutter. Older rules pin these with !important
+   from the components layer, and among important declarations an earlier
+   layer wins, hence the base layer here. */
+@layer base {
+  @media (min-width: 900px) {
+    html .public-universe .observatory-home .observatory-notes .article-card {
+      margin-inline: -24px !important;
+      padding-inline: 24px !important;
+    }
+  }
+}

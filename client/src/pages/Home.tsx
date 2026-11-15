@@ -140,6 +140,11 @@ export default function Home() {
                 </Link>
               </div>
             </div>
+            <div
+              className="rose-anchor rose-anchor--home"
+              data-rose-anchor
+              data-rose-follow="0.8"
+            />
             <div className="observatory-hero-foot">
               <span>{zh ? "研究与实践" : "Research & practice"}</span>
               <a href="#featured">
