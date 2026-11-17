@@ -43,8 +43,8 @@ html[data-route-phase="pending"] {
 html[data-route-nav]
   .public-universe
   :is(
-    .observatory-hero-copy,
-    .observatory-hero-foot,
+    .cosmos-hero-copy,
+    .cosmos-hero-base,
     .observatory-content > *,
     .space-page:not(.observatory-home) > main > *,
     .reading-surface > *,
@@ -96,16 +96,6 @@ html:has(.public-universe) {
   html .public-universe .observatory-home .observatory-footer {
     max-width: 1180px !important;
     padding-inline: 32px !important;
-  }
-  html .public-universe .observatory-home .observatory-hero-copy {
-    left: max(32px, calc((100% - 1180px) / 2 + 32px));
-    width: min(430px, 36vw);
-  }
-  html .public-universe .observatory-home .observatory-hero-foot {
-    inset-inline: max(32px, calc((100% - 1180px) / 2 + 32px));
-    /* Both notes sit under the title; the rose keeps its side to itself. */
-    justify-content: flex-start;
-    gap: 36px;
   }
   /* The rose is centred in the hero's height and stays inside it. */
   .rose-anchor--home {

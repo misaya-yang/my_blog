@@ -1,6 +1,6 @@
 # Self-hosted typefaces
 
-All three families are SIL Open Font License 1.1 (OFL), which permits web
+All families are SIL Open Font License 1.1 (OFL), which permits web
 embedding and redistribution. Files are the `latin` and `latin-ext`
 `unicode-range` slices of the variable builds served by Google Fonts; the
 `latin-ext` slices only download when the page actually renders those
@@ -8,14 +8,21 @@ codepoints.
 
 | File | Family | Axes | Role |
 |---|---|---|---|
-| `fraunces-*.woff2` | Fraunces | `opsz` 9–144, `wght` 300–900, `SOFT` 0–100, `WONK` 0–1 | display + long-form reading |
-| `instrument-sans-*.woff2` | Instrument Sans | `wdth` 75–100, `wght` 400–700 | UI, navigation, metadata |
-| `jetbrains-mono-*.woff2` | JetBrains Mono | `wght` 400–700 | code and technical labels |
+| `unbounded-*.woff2` | Unbounded | `wght` 200–900 | public display: brand, page titles, section heads |
+| `geist-*.woff2` | Geist | `wght` 100–900 | text: reading, interface, article titles (site-wide) |
+| `geist-mono-*.woff2` | Geist Mono | `wght` 100–900 | kickers, dates, counts, tags, code |
+| `jetbrains-mono-*.woff2` | JetBrains Mono | `wght` 400–700 | fallback for glyphs Geist Mono lacks |
+
+`fraunces-*` and `instrument-sans-*` are no longer declared by any
+stylesheet (the earlier serif/instrument system); they are kept only until
+someone deletes them.
 
 Chinese is intentionally **not** a webfont: a usable Han family is several MB
-even sliced. The CJK families are named explicitly per role instead of relying
-on `system-ui`, which resolves to a different face on every platform — 宋体
-(Songti SC / Source Han Serif SC) for display and reading to match the serif
-skeleton, 黑体 (PingFang SC / Source Han Sans SC) for UI.
+even sliced. Every role names the platform Hei faces (PingFang SC, Hiragino
+Sans GB, Source Han Sans SC, Noto Sans CJK SC, Microsoft YaHei) explicitly,
+Latin family first, so Latin glyphs never come from a Han face.
 
-Re-fetch with the commands recorded in `docs/frontend-upgrade-2026-08.md`.
+Re-fetch: request
+`https://fonts.googleapis.com/css2?family=Unbounded:wght@200..900&family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap`
+with a modern browser user agent and download the `latin` and `latin-ext`
+`src` URLs it lists.

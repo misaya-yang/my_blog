@@ -812,7 +812,10 @@ export default function PostDetail() {
           </aside>
 
           {/* Main Content */}
-          <article className="reading-surface solid-reading paper-reader-main p-5 sm:p-8 lg:p-10">
+          <article
+            className="reading-surface solid-reading paper-reader-main p-5 sm:p-8 lg:p-10"
+            data-rose-quiet
+          >
             {/* Post Header */}
             <div className="article-reading-header">
               <h1 className="article-page-title mb-5" {...langAttr(post.title)}>

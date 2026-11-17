@@ -324,7 +324,7 @@
 .agent-panel-shell,
 .agent-liquid-launcher {
   --font-sans:
-    "Source Sans 3 Variable", "PingFang SC", "Source Han Sans SC",
+    "Geist", "PingFang SC", "Source Han Sans SC",
     "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
   --font-caption: var(--font-sans);
   --fg: #1d2b39;

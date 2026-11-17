@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight } from "lucide-react";
 import { ArticleCard, type ArticleCardPost } from "@/components/ArticleCard";
 import { SiteHeader } from "@/components/ResearchShell";
 import { Reveal } from "@/components/Reveal";
@@ -101,6 +101,19 @@ export default function Home() {
       ?.slice(0, 3)
       .map(heading => heading.replace(/^##\s+/, "")) ??
     [];
+  // The hero's index line reads from the same list the page shows.
+  const noteCount = isLoading
+    ? "—"
+    : String(data?.total ?? posts.length).padStart(2, "0");
+  const latestTime = posts[0] ? getPostPublishedTime(posts[0]) : 0;
+  const latestDate = latestTime
+    ? new Date(latestTime).toLocaleDateString(zh ? "zh-CN" : "en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        timeZone: "UTC",
+      })
+    : "—";
   useSeo(
     buildRouteMetadata(siteUrl, {
       title: t("home.title"),
@@ -115,45 +128,64 @@ export default function Home() {
     <div className="space-page observatory-home">
       <SiteHeader active="home" />
       <main>
-        <div className="observatory-hero-scroll">
-          <section
-            className="observatory-hero observatory-container"
-            aria-labelledby="hero-title"
-          >
-            <div className="observatory-hero-copy">
-              <h1 id="hero-title" lang="en">
-                Misaya Notes
-              </h1>
-              <p>
-                {zh
-                  ? "模型机制、长上下文与智能体工程。记录推导、实验，以及真正运行过的系统。"
-                  : "Model mechanics, long context, and agents. Derivations, experiments, and systems put to the test."}
-              </p>
-              <div className="observatory-actions">
-                <a className="observatory-primary" href="#featured">
-                  {zh ? "阅读笔记" : "Read the notes"}
-                  <ArrowRight size={18} />
-                </a>
-                <Link className="observatory-text-link" href="/about">
-                  {zh ? "关于我" : "About me"}
-                  <ArrowUpRight size={17} />
-                </Link>
-              </div>
-            </div>
-            <div
-              className="rose-anchor rose-anchor--home"
-              data-rose-anchor
-              data-rose-follow="0.8"
-            />
-            <div className="observatory-hero-foot">
-              <span>{zh ? "研究与实践" : "Research & practice"}</span>
-              <a href="#featured">
-                {zh ? "向下探索" : "Scroll to explore"}
-                <ArrowRight size={14} />
+        <section className="cosmos-hero" aria-labelledby="hero-title">
+          <div className="cosmos-hero-copy">
+            <p className="cosmos-kicker">
+              <span className="cosmos-kicker-pulse" aria-hidden="true" />
+              {zh
+                ? "研究笔记 · 机器智能"
+                : "Research notebook · Machine intelligence"}
+            </p>
+            <h1 id="hero-title" className="cosmos-hero-title" lang="en">
+              <span>Misaya</span>
+              <span className="cosmos-hero-title-glow">Notes</span>
+            </h1>
+            <p className="cosmos-hero-lead">
+              {zh
+                ? "模型机制、长上下文与智能体工程。记录推导、实验，以及真正运行过的系统。"
+                : "Model mechanics, long context, and agents. Derivations, experiments, and systems put to the test."}
+            </p>
+            <div className="cosmos-hero-actions">
+              <a className="cosmos-cta" href="#featured">
+                <span>{zh ? "阅读笔记" : "Read the notes"}</span>
+                <ArrowRight size={17} aria-hidden="true" />
               </a>
+              <Link className="cosmos-link" href="/about">
+                {zh ? "关于我" : "About me"}
+                <ArrowUpRight size={16} aria-hidden="true" />
+              </Link>
             </div>
-          </section>
-        </div>
+          </div>
+          <div className="cosmos-hero-base">
+            <dl className="cosmos-hero-index">
+              <div>
+                <dt>{zh ? "笔记" : "Notes"}</dt>
+                <dd>{noteCount}</dd>
+              </div>
+              <div>
+                <dt>{zh ? "最近更新" : "Latest"}</dt>
+                <dd>{latestDate}</dd>
+              </div>
+              <div className="cosmos-hero-fields">
+                <dt>{zh ? "方向" : "Fields"}</dt>
+                <dd>
+                  {zh
+                    ? "模型机制 / 长上下文 / 智能体"
+                    : "Mechanics / Long context / Agents"}
+                </dd>
+              </div>
+            </dl>
+            <a className="cosmos-scroll" href="#featured">
+              <span>{zh ? "向下" : "Scroll"}</span>
+              <ArrowDown size={14} aria-hidden="true" />
+            </a>
+          </div>
+          <div
+            className="rose-anchor rose-anchor--home"
+            data-rose-anchor
+            data-rose-follow="0.8"
+          />
+        </section>
 
         <div className="observatory-container observatory-content">
           <Reveal>

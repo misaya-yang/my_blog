@@ -131,6 +131,60 @@ html[data-rose-dragging] * {
   opacity: 1;
 }
 
+/* --- Surfaces over the sky ----------------------------------------------
+   The sky now has light of its own, so a solid strip of page colour shows as
+   a box cut out of it. The header is frosted instead, its lower edge fading
+   out rather than ruling a line across the nebula. The base layer is the
+   one whose !important outranks the older component rules. */
+@layer base {
+  html[data-route-kind] .public-universe .space-page .toc-surface > h3 {
+    margin-top: 0 !important;
+  }
+  .public-universe .space-page:not(.owner-dark-scope) .site-header {
+    background: transparent !important;
+    border-bottom-color: transparent !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+.public-universe .space-page:not(.owner-dark-scope) .site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 -22px;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    color-mix(in srgb, var(--observatory-bg) 88%, transparent),
+    color-mix(in srgb, var(--observatory-bg) 64%, transparent) 70%,
+    transparent
+  );
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  -webkit-mask-image: linear-gradient(#000 68%, transparent);
+  mask-image: linear-gradient(#000 68%, transparent);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .public-universe .space-page:not(.owner-dark-scope) .site-header::before {
+    inset: 0;
+    background: var(--observatory-bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+/* The contents title no longer sits on a solid strip that hid the list
+   scrolling under it; the title scrolls with the list, and rows fade out at
+   the rail's top edge instead of passing under the title. */
+html[data-route-kind] .public-universe .space-page .toc-surface > h3 {
+  position: static;
+  background: none;
+}
+.public-universe .paper-toc-rail .toc-surface {
+  -webkit-mask-image: linear-gradient(transparent, #000 14px);
+  mask-image: linear-gradient(transparent, #000 14px);
+}
+
 /* --- Night: one sky ------------------------------------------------------ */
 html.dark:has(.public-universe) {
   background: #07080b;
@@ -140,33 +194,38 @@ html.dark:has(.public-universe) {
   --observatory-bg: #07080b;
 }
 
-/* --- Day: paper and ink --------------------------------------------------
-   Rice paper, blue-black ink for text, indigo for what can be followed, and
-   warm hairlines. The artwork is drawn in the same inks: blue-black and
-   indigo on the outer petals, plum and madder toward the heart, and the
-   signature alone in a seal's cinnabar, which the interface leaves to it. */
+/* --- Day: a star atlas ---------------------------------------------------
+   A crisp, cool white with the faintest blue in it, deep-space ink for text,
+   and one electric cobalt for everything that can be followed. The sky is
+   printed in the same inks: navy and indigo stars, a periwinkle wash for the
+   nebula, and the rose running from indigo through violet to a rose-magenta
+   heart, the signature alone in crimson. No warm paper, no ochre: on a warm
+   ground the coloured specks read as stains. */
 html:not(.dark):has(.public-universe) {
-  --v2-paper-warm: #f4f0e8;
-  background: #f4f0e8;
+  --v2-paper-warm: #f5f7fc;
+  background: #f5f7fc;
 }
 html:not(.dark) .public-universe,
 html:not(.dark) .public-universe .space-page:not(.owner-dark-scope) {
-  --observatory-bg: #f4f0e8;
-  --observatory-surface: #ebe6da;
-  --observatory-ink: #1b1f2e;
-  --observatory-muted: #565a6b;
-  --observatory-accent: #27457a;
-  --observatory-line: #d8d1c2;
-  --v2-bg: #f4f0e8;
-  --v2-solid-reading: #f4f0e8;
-  --v2-solid-data: #ebe6da;
-  --reader-hover-border: #8d8776;
-  --reader-focus: #2f55a0;
-  --reader-current-bg: rgb(39 69 122 / 8%);
-  --reader-card-hover: rgb(27 31 46 / 4.5%);
-  --reader-card-border: rgb(27 31 46 / 18%);
-  --reader-row-hover: rgb(39 69 122 / 5.5%);
+  --observatory-bg: #f5f7fc;
+  --observatory-surface: #eceff8;
+  --observatory-ink: #0b1020;
+  --observatory-muted: #4a5368;
+  --observatory-accent: #3247e0;
+  --observatory-line: #dbe0ec;
+  --v2-bg: #f5f7fc;
+  --v2-solid-reading: #f5f7fc;
+  --v2-solid-data: #eceff8;
+  --v2-accent: #3247e0;
+  --primary: #3247e0;
+  --ring: #3247e0;
+  --reader-hover-border: #8a93ab;
+  --reader-focus: #3247e0;
+  --reader-current-bg: rgb(50 71 224 / 8%);
+  --reader-card-hover: rgb(11 16 32 / 4%);
+  --reader-card-border: rgb(11 16 32 / 14%);
+  --reader-row-hover: rgb(50 71 224 / 6%);
 }
 html:not(.dark) .public-universe ::selection {
-  background: rgb(39 69 122 / 18%);
+  background: rgb(50 71 224 / 16%);
 }

@@ -1,3 +1,5 @@
+import { BAND_GLSL, SKY_MARGIN } from "./sky";
+
 /** Points in the chain that trails the pointer; the dust reacts to each. */
 export const TRAIL_SAMPLES = 5;
 /** Camera distance in rose radii; sets how strongly depth reads. */
@@ -50,8 +52,6 @@ export const PARTICLE_VERTEX = /* glsl */ `
   uniform float uWarmth;
   uniform float uScriptZ;
 
-  uniform vec2 uSkyShift;
-  uniform float uSkyDim;
   uniform vec4 uQuiet;
   uniform vec4 uTrail[TRAIL];
   uniform vec2 uTrailVel[TRAIL];
@@ -127,19 +127,19 @@ export const PARTICLE_VERTEX = /* glsl */ `
     return color;
   }
 
-  // Day: the same points as ink on paper, written as absorbance, so that
-  // overlapping ink deepens and keeps its hue instead of greying. Blue-black
-  // on the outer rims, through indigo and plum, to madder at the heart; each
+  // Day: the same points printed on a cool white, written as absorbance, so
+  // overlapping ink deepens and keeps its hue instead of greying. Navy on
+  // the outer rims, through indigo and violet, to a rose-magenta heart; each
   // point sits a little to one side of its neighbours' hue, and a few are
-  // set apart in ochre or ultramarine. The signature is a seal's cinnabar.
+  // set apart in cyan or ultramarine. The signature is crimson.
   vec3 inkColor(float s, float temperature, float tint, float seal) {
     float w = clamp(s + uWarmth * 0.34 + temperature * 0.1 + (tint - 0.5) * 0.22, 0.0, 1.0);
-    vec3 ink = mix(vec3(3.1, 2.6, 1.55), vec3(2.45, 2.3, 1.0), smoothstep(0.0, 0.3, w));
-    ink = mix(ink, vec3(1.5, 2.3, 1.3), smoothstep(0.28, 0.66, w));
-    ink = mix(ink, vec3(0.55, 2.2, 1.7), smoothstep(0.62, 1.0, w));
-    ink = mix(ink, vec3(0.42, 1.25, 2.6), step(1.5, temperature));
-    ink = mix(ink, vec3(2.9, 1.5, 0.45), step(1.5, -temperature));
-    return mix(ink, vec3(0.3, 2.3, 2.4), seal);
+    vec3 ink = mix(vec3(3.0, 2.6, 1.25), vec3(2.5, 2.4, 0.8), smoothstep(0.0, 0.3, w));
+    ink = mix(ink, vec3(1.75, 2.5, 0.9), smoothstep(0.28, 0.66, w));
+    ink = mix(ink, vec3(0.8, 2.4, 1.2), smoothstep(0.62, 1.0, w));
+    ink = mix(ink, vec3(2.6, 0.95, 0.7), step(1.5, temperature));
+    ink = mix(ink, vec3(2.9, 1.9, 0.35), step(1.5, -temperature));
+    return mix(ink, vec3(0.35, 2.5, 1.6), seal);
   }
 
   void main() {
@@ -148,7 +148,6 @@ export const PARTICLE_VERTEX = /* glsl */ `
     float temperature = aLook.z;
     float alpha = 1.0;
     float s = 0.0;
-    float figure = 1.0;
     vec3 p = vec3(0.0);
     vec4 q = uQuatHeart;
     vec2 px;
@@ -209,8 +208,6 @@ export const PARTICLE_VERTEX = /* glsl */ `
       alpha *= smoothstep(0.35, 1.0, uGrow) * (1.0 - smoothstep(1.7, 2.4, radius) * 0.7);
       q = uQuatRim;
       mass *= 0.7;
-    } else if (kind < 4.5) {
-      figure = 0.0;
     } else if (kind < 5.5) {
       p = vec3(
         aParam.x + 0.16 * sin(uTime * 0.05 * aLook.w + aSeed.x * TAU),
@@ -228,42 +225,32 @@ export const PARTICLE_VERTEX = /* glsl */ `
       mass = 50.0;
     }
 
-    float persp = 1.0;
-    if (figure > 0.5) {
-      // Leaving the page, the figure loosens into drifting dust.
-      float scatter = uDisperse * (0.5 + 0.95 * aSeed.x);
-      vec3 away = normalize(aSeed.yzw - 0.5 + 1e-3);
-      p = p * (1.0 + 0.42 * scatter) + away * scatter * (0.2 + 0.85 * aSeed.w);
-      alpha *= 1.0 - 0.82 * uDisperse;
+    // Leaving the page, the figure loosens into drifting dust.
+    float scatter = uDisperse * (0.5 + 0.95 * aSeed.x);
+    vec3 away = normalize(aSeed.yzw - 0.5 + 1e-3);
+    p = p * (1.0 + 0.42 * scatter) + away * scatter * (0.2 + 0.85 * aSeed.w);
+    alpha *= 1.0 - 0.82 * uDisperse;
 
-      vec3 view = rotate(q, p);
-      depth = view.z;
-      // Nearer points catch a little more light.
-      bright *= 1.0 + 0.4 * clamp(view.z, -0.5, 0.6);
-      persp = CAMERA / (CAMERA - view.z);
-      px = uCenter + view.xy * persp * uRadius;
-      alpha *= uPresence;
+    vec3 view = rotate(q, p);
+    depth = view.z;
+    // Nearer points catch a little more light.
+    bright *= 1.0 + 0.4 * clamp(view.z, -0.5, 0.6);
+    float persp = CAMERA / (CAMERA - view.z);
+    px = uCenter + view.xy * persp * uRadius;
+    alpha *= uPresence;
 
-      // The pointer's wake: a short chain of soft points trails the hand.
-      // Each parts the dust around it and carries it a little way along. The
-      // parting is zero under the hand itself and falls away smoothly, so
-      // nothing snaps; light dust yields most, bright stars hardly at all.
-      vec2 push = vec2(0.0);
-      for (int i = 0; i < TRAIL; i++) {
-        vec4 node = uTrail[i];
-        vec2 delta = (px - node.xy) / node.w;
-        float fall = exp(-dot(delta, delta) * 1.5) * node.z;
-        push += (delta * node.w * 0.4 + uTrailVel[i]) * fall;
-      }
-      px += push * min(1.7, 1.0 / mass);
-    } else {
-      // The far sky: fixed to the page, drifting slightly against it.
-      vec2 extent = uResolution * 0.5 + 60.0 * uDpr;
-      px = aParam.xy * extent + uSkyShift * aParam.z;
-      px = mod(px + extent, 2.0 * extent) - extent;
-      alpha *= uSkyDim * mix(1.0, 0.5, uLight);
-      s = aSeed.z * 0.5;
+    // The pointer's wake: a short chain of soft points trails the hand.
+    // Each parts the dust around it and carries it a little way along. The
+    // parting is zero under the hand itself and falls away smoothly, so
+    // nothing snaps; light dust yields most, bright stars hardly at all.
+    vec2 push = vec2(0.0);
+    for (int i = 0; i < TRAIL; i++) {
+      vec4 node = uTrail[i];
+      vec2 delta = (px - node.xy) / node.w;
+      float fall = exp(-dot(delta, delta) * 1.5) * node.z;
+      push += (delta * node.w * 0.4 + uTrailVel[i]) * fall;
     }
+    px += push * min(1.7, 1.0 / mass);
 
     // Text columns stay quiet.
     float column = 1.0 - smoothstep(uQuiet.y, uQuiet.y + uQuiet.z, abs(px.x - uQuiet.x));
@@ -272,12 +259,11 @@ export const PARTICLE_VERTEX = /* glsl */ `
     // A soft light follows the pointer through the dust.
     vec2 toPointer = px - uPointer.xy;
     float lit = uPointer.z * exp(-dot(toPointer, toPointer) / (uDpr * uDpr * 11000.0));
-    bright *= 1.0 + figure * lit * mix(0.85, 0.2, smoothstep(0.6, 3.0, bright));
+    bright *= 1.0 + lit * mix(0.85, 0.2, smoothstep(0.6, 3.0, bright));
 
     float prominence = smoothstep(1.1, 8.5, bright);
     float star = smoothstep(0.94, 1.02, aLook.y);
     float scale = clamp(pow(uRadius / (uDpr * 330.0), 0.5), 0.55, 1.2);
-    scale = mix(1.0, scale, figure);
     // Dark dots on a light ground read thinner than light on dark.
     float core = aLook.y * uDpr * mix(1.0, persp, 0.85) * scale * mix(1.0, 1.12, uLight);
     float ext = mix(2.4, mix(5.0, 9.5, prominence), star);
@@ -297,7 +283,7 @@ export const PARTICLE_VERTEX = /* glsl */ `
     // Depth of field: the whole flower sits inside the focal band and stays
     // sharp; dust well off it spreads and dims, and the few motes near the
     // lens open into discs.
-    float blur = max(0.0, abs(depth - uFocus) - 0.22) * uAperture * uRadius * figure;
+    float blur = max(0.0, abs(depth - uFocus) - 0.22) * uAperture * uRadius;
     if (kind > 4.5 && kind < 5.5) blur *= 4.6;
     float spread = sqrt(core * core + blur * blur);
     float bokeh = smoothstep(1.4, 3.6, blur / core) * step(kind, 5.5);
@@ -380,6 +366,212 @@ export const PARTICLE_FRAGMENT = /* glsl */ `
   }
 `;
 
+/**
+ * The deep sky's stars: one camera-facing quad each, placed in a wrapping
+ * tile that the camera pans across. Nearer stars move further for the same
+ * pan, scroll or pointer travel, which is what gives the field its depth.
+ * Shares PARTICLE_FRAGMENT with the figure, so a star of the sky and a star
+ * of the rose are drawn the same way.
+ */
+export const SKY_VERTEX = /* glsl */ `
+  #define TAU 6.28318530718
+
+  attribute vec4 aParam;
+  attribute vec4 aSeed;
+  attribute vec4 aLook;
+
+  uniform vec2 uResolution;
+  uniform vec2 uView;
+  uniform float uDpr;
+  uniform float uTile;
+  uniform vec2 uOffset;
+  uniform float uTime;
+  uniform float uMotion;
+  uniform float uLight;
+  uniform float uGain;
+  uniform float uLevel;
+  uniform vec4 uQuiet;
+
+  varying vec2 vUv;
+  varying vec3 vColor;
+  varying float vHot;
+  varying vec4 vShape;
+  varying vec2 vEdge;
+
+  void main() {
+    float depth = aParam.z;
+    float bright = aLook.x;
+    float temperature = aLook.z;
+
+    // Where the tile puts the star on screen, in CSS px from the top left.
+    vec2 s = mod(aParam.xy * uTile - uOffset * depth, uTile) - ${SKY_MARGIN.toFixed(1)};
+    vec2 px = vec2(s.x - uView.x * 0.5, uView.y * 0.5 - s.y) * uDpr;
+
+    // Behind a text column the sky is calmer: dimmer, it holds still, and no
+    // star there is bright enough to flare between the lines.
+    float column = 1.0 - smoothstep(uQuiet.y, uQuiet.y + uQuiet.z, abs(px.x - uQuiet.x));
+    column *= step(0.001, uQuiet.w);
+    float calm = uQuiet.w * column;
+    bright = mix(bright, min(bright, 0.55), column);
+
+    // Scintillation comes and goes: a quick flicker under a slow swell, so
+    // only a few stars are visibly twinkling at any moment.
+    float swell = smoothstep(0.2, 1.0, sin(uTime * (0.09 + 0.16 * aSeed.z) + aSeed.w * TAU));
+    float flicker = sin(uTime * (0.8 + 2.1 * aSeed.x) + aSeed.y * TAU);
+    float twinkle = 1.0 + aLook.w * uMotion * swell * flicker * (1.0 - column);
+
+    float prominence = smoothstep(1.1, 6.5, bright);
+    float star = smoothstep(0.95, 1.15, aLook.y);
+    float core = aLook.y * uDpr * mix(1.0, 1.12, uLight);
+    float floorPx = mix(0.62, 0.8, smoothstep(1.0, 2.0, uDpr));
+    float drawn = max(core, floorPx);
+    float energy = (core * core) / (drawn * drawn);
+    float soft = smoothstep(1.1, 2.2, drawn / uDpr) * mix(1.0, 0.3, uLight);
+
+    float ext = mix(2.4, mix(5.0, 9.0, prominence), star);
+    float halo = star * mix(0.05, 0.16, prominence);
+    float spike = smoothstep(4.0, 7.5, bright);
+    ext = mix(ext, mix(2.4, 3.6, prominence), uLight);
+    halo *= mix(1.0, 0.22, uLight);
+    spike *= mix(1.0, 0.5, uLight);
+
+    float alpha = uLevel * (1.0 - calm);
+
+    // Night: cool blue-white through to warm, the band's own stars blushed.
+    float w = clamp(0.5 + temperature * 0.35, 0.0, 1.0);
+    vec3 night = mix(vec3(0.62, 0.74, 1.0), vec3(1.0, 0.86, 0.74), smoothstep(0.2, 0.8, w));
+    night = mix(night, vec3(1.0, 0.62, 0.38), step(1.5, temperature));
+    night = mix(night, vec3(0.42, 0.56, 1.0), step(1.5, -temperature));
+    night = mix(night, vec3(1.0, 0.8, 0.9), 0.3 * aParam.w);
+    night = mix(night, vec3(1.0), 0.3 * prominence);
+    float glow = bright * alpha * energy * twinkle;
+
+    // Day: crisp navy points, the band's in violet, a few in cyan. Faint
+    // dust stays faint: on a light ground a field of dark specks reads as
+    // dirt, not depth.
+    vec3 ink = mix(vec3(3.0, 2.6, 1.2), vec3(1.9, 2.5, 0.9), aParam.w * 0.8);
+    ink = mix(ink, vec3(2.6, 1.0, 0.8), step(1.5, temperature));
+    float speck = pow(bright, 0.95) * alpha * energy * 1.25;
+
+    vColor = mix(night * glow, ink * speck, uLight) * uGain;
+    vHot = glow * prominence * 0.7 * (1.0 - uLight) * uGain;
+    vShape = vec4(ext, halo, spike, 0.0);
+    vEdge = vec2(drawn, soft);
+    vUv = position.xy;
+
+    vec2 corner = px + position.xy * drawn * ext;
+    float visible = step(0.0008, max(glow * (1.0 - uLight), speck * uLight));
+    gl_Position = vec4(corner / (uResolution * 0.5), 0.0, 1.0);
+    if (visible < 0.5) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+  }
+`;
+
+/**
+ * The nebula, rendered small and drawn smooth. One band of glowing gas
+ * crosses the sky: a broad cool glow, a rose-violet body with a brighter
+ * spine, and dark lanes of dust across it. By day the same shapes are a
+ * thin wash of ink on the paper. The target stores emission (night) or
+ * absorbance (day), divided by uRange.
+ */
+export const NEBULA_FRAGMENT = /* glsl */ `
+  #define TAU 6.28318530718
+  #define PI 3.14159265359
+
+  uniform vec2 uView;
+  uniform float uTile;
+  uniform vec2 uOffset;
+  uniform vec2 uMorph;
+  uniform float uLight;
+  uniform float uLevel;
+  uniform float uRange;
+  varying vec2 vUv;
+
+  ${BAND_GLSL}
+
+  vec2 gradient(vec2 cell, vec2 period) {
+    cell = mod(cell, period);
+    float a = fract(sin(dot(cell, vec2(127.1, 311.7))) * 43758.5453) * TAU;
+    return vec2(cos(a), sin(a));
+  }
+
+  // Gradient noise that wraps every 'period' cells on each axis.
+  float noise(vec2 p, vec2 period) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    vec2 w = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
+    float a = dot(gradient(i, period), f);
+    float b = dot(gradient(i + vec2(1.0, 0.0), period), f - vec2(1.0, 0.0));
+    float c = dot(gradient(i + vec2(0.0, 1.0), period), f - vec2(0.0, 1.0));
+    float d = dot(gradient(i + vec2(1.0, 1.0), period), f - vec2(1.0, 1.0));
+    return mix(mix(a, b, w.x), mix(c, d, w.x), w.y);
+  }
+
+  // Five octaves at whole frequencies per axis, so it wraps with the tile;
+  // about 0..1. Unequal frequencies stretch it into streaks.
+  float fbm(vec2 p, vec2 frequency) {
+    float sum = 0.0;
+    float amplitude = 0.5;
+    vec2 shift = vec2(0.0);
+    for (int i = 0; i < 5; i++) {
+      sum += amplitude * noise(p * frequency + shift, frequency);
+      frequency *= 2.0;
+      amplitude *= 0.5;
+      shift += vec2(7.31, 3.17);
+    }
+    return clamp(0.5 + sum * 1.1, 0.0, 1.0);
+  }
+
+  void main() {
+    vec2 s = vec2(vUv.x, 1.0 - vUv.y) * uView;
+    vec2 u = fract((s + ${SKY_MARGIN.toFixed(1)} + uOffset) / uTile);
+
+    // Band coordinates: along the band, and across it (with its wander).
+    // Whole-number combinations of the tile's axes, so they wrap with it.
+    vec2 ab = vec2(u.x - u.y, u.x + u.y + bandWarp(u));
+    float across = sin(PI * ab.y);
+    float a2 = across * across;
+    float spine = exp(-a2 / 0.012);
+    float band = exp(-a2 / 0.055);
+    float glow = exp(-a2 / 0.32);
+
+    // The gas churns slowly: its folds are pushed around by a field that
+    // itself drifts across the tile.
+    vec2 fold = vec2(
+      fbm(ab + uMorph, vec2(2.0)),
+      fbm(ab - uMorph.yx + 0.37, vec2(2.0))) - 0.5;
+    float cloud = fbm(ab + fold * 0.12, vec2(4.0));
+    float detail = fbm(ab + fold * 0.2, vec2(12.0));
+    // Filaments and rifts run with the band, as dust lanes do.
+    float streak = fbm(ab + fold * 0.08, vec2(3.0, 16.0));
+    float ridge = 1.0 - abs(2.0 * streak - 1.0);
+    ridge *= ridge * ridge;
+    float lanes = smoothstep(0.5, 0.7, fbm(ab + fold * 0.22 + 0.61, vec2(4.0, 20.0)));
+
+    float body = pow(cloud, 1.4) * (0.5 + 1.0 * ridge) * (0.7 + 0.6 * detail);
+    float density = glow * (0.16 + 0.42 * cloud) * 0.3
+      + band * body
+      + spine * cloud * (0.35 + 1.1 * ridge);
+    density *= 1.0 - 0.86 * lanes * smoothstep(0.05, 0.6, band);
+    // Knots: small bright clumps along the body, where the gas is lit from
+    // within.
+    float knot = band * cloud * smoothstep(0.64, 0.86, detail) * (1.0 - lanes);
+
+    // Cool at the edges, rose-violet in the body, warm in the knots.
+    float heat = band * cloud;
+    vec3 night = mix(vec3(0.1, 0.2, 1.0), vec3(0.46, 0.27, 1.0), smoothstep(0.08, 0.42, heat));
+    night = mix(night, vec3(1.0, 0.33, 0.62), smoothstep(0.34, 0.8, heat));
+    night = night * density + vec3(1.0, 0.62, 0.62) * knot * 0.9;
+
+    // Ink: a periwinkle wash at the edges, lavender in the body, a touch of
+    // rose in the knots.
+    vec3 day = mix(vec3(0.62, 0.48, 0.14), vec3(0.46, 0.62, 0.16), smoothstep(0.15, 0.7, heat));
+    day = day * density + vec3(0.2, 0.6, 0.32) * knot * 0.6;
+
+    vec3 value = mix(night, day, uLight) * uLevel;
+    gl_FragColor = vec4(clamp(value / uRange, 0.0, 1.0), 1.0);
+  }
+`;
+
 export const QUAD_VERTEX = /* glsl */ `
   varying vec2 vUv;
   void main() {
@@ -395,6 +587,10 @@ export const QUAD_VERTEX = /* glsl */ `
 export const COMPOSITE_FRAGMENT = /* glsl */ `
   uniform sampler2D tScene;
   uniform sampler2D tBloom;
+  uniform sampler2D tNebula;
+  uniform vec2 uNebulaSize;
+  uniform float uNebulaRange;
+  uniform vec4 uQuiet;
   uniform float uBloom;
   uniform float uBleed;
   uniform float uInk;
@@ -432,6 +628,26 @@ export const COMPOSITE_FRAGMENT = /* glsl */ `
       pow(linear, vec3(0.41666)) * 1.055 - 0.055,
       step(vec3(0.0031308), linear));
   }
+  // Cubic B-spline filtering from four bilinear taps: the small nebula
+  // target upscales without the diamond pattern of plain bilinear.
+  vec3 smoothSample(sampler2D tex, vec2 uv, vec2 size) {
+    vec2 st = uv * size - 0.5;
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+    vec2 f2 = f * f;
+    vec2 f3 = f2 * f;
+    vec2 w0 = (-f3 + 3.0 * f2 - 3.0 * f + 1.0) / 6.0;
+    vec2 w1 = (3.0 * f3 - 6.0 * f2 + 4.0) / 6.0;
+    vec2 w2 = (-3.0 * f3 + 3.0 * f2 + 3.0 * f + 1.0) / 6.0;
+    vec2 w3 = f3 / 6.0;
+    vec2 g0 = w0 + w1;
+    vec2 g1 = w2 + w3;
+    vec2 h0 = (i - 0.5 + w1 / g0) / size;
+    vec2 h1 = (i + 1.5 + w3 / g1) / size;
+    return g0.y * (g0.x * texture2D(tex, h0).rgb + g1.x * texture2D(tex, vec2(h1.x, h0.y)).rgb)
+      + g1.y * (g0.x * texture2D(tex, vec2(h0.x, h1.y)).rgb + g1.x * texture2D(tex, h1).rgb);
+  }
+
   float hash(vec2 p) {
     return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
   }
@@ -444,8 +660,19 @@ export const COMPOSITE_FRAGMENT = /* glsl */ `
     vec2 fromGlow = (gl_FragCoord.xy - uResolution * 0.5 - uGlow.xy) / max(uGlow.z, 1.0);
     float air = exp(-dot(fromGlow, fromGlow));
 
-    vec3 night = uNight + uAir * air + aces((scene + bloom * uBloom) * uExposure);
-    vec3 day = uPaper * exp(-(scene * uInk + bloom * uBleed));
+    // The nebula, calmer behind the text column, and never so bright there
+    // that muted text loses its contrast: by night its light is capped, by
+    // day its ink.
+    vec3 nebula = smoothSample(tNebula, vUv, uNebulaSize) * uNebulaRange;
+    float column = 1.0 - smoothstep(uQuiet.y, uQuiet.y + uQuiet.z, abs(gl_FragCoord.x - uQuiet.x));
+    column *= step(0.001, uQuiet.w);
+    nebula *= 1.0 - uQuiet.w * column;
+    float strength = dot(nebula, vec3(0.2126, 0.7152, 0.0722));
+    float cap = mix(1.0, mix(0.012, 0.05, uLight), column);
+    nebula *= min(1.0, cap / max(strength, 1e-5));
+
+    vec3 night = uNight + uAir * air + nebula + aces((scene + bloom * uBloom) * uExposure);
+    vec3 day = uPaper * exp(-(scene * uInk + bloom * uBleed + nebula));
     vec3 color = encode(clamp(mix(night, day, uLight), 0.0, 1.0));
 
     // Triangular dither keeps the soft gradients free of banding.

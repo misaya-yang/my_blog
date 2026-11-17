@@ -144,7 +144,7 @@ function PublicSurface() {
           }
           data-rose-anchor
           data-rose-follow="0.6"
-          data-rose-presence={location.startsWith("/about") ? "0.9" : "0.72"}
+          data-rose-presence={location.startsWith("/about") ? "0.92" : "0.84"}
           aria-hidden="true"
         />
       )}

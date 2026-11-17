@@ -108,7 +108,7 @@ export function BrandMark({
   return (
     <span className="inline-flex min-h-11 items-center gap-3">
       {glyph}
-      <span className="text-base font-[650] tracking-normal text-foreground sm:text-lg">
+      <span className="brand-wordmark text-base font-[650] tracking-normal text-foreground sm:text-lg">
         Misaya Notes
       </span>
     </span>
@@ -178,7 +178,7 @@ export function SiteHeader({
           ) : (
             <Link href="/" className="flex min-h-11 items-center gap-3">
               <BrandMark />
-              <span className="text-base font-semibold tracking-normal text-foreground sm:text-lg">
+              <span className="brand-wordmark text-base font-semibold tracking-normal text-foreground sm:text-lg">
                 {t("nav.brand")}
               </span>
             </Link>

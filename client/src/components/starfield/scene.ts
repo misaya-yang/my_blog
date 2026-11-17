@@ -30,6 +30,8 @@ import { RenderQuality } from "./quality";
 import {
   FORM_KEYS,
   formForPath,
+  hashPath,
+  mulberry32,
   normalizePath,
   openingAt,
   outerRadius,
@@ -37,16 +39,19 @@ import {
 } from "./roseForm";
 import {
   COMPOSITE_FRAGMENT,
+  NEBULA_FRAGMENT,
   PARTICLE_FRAGMENT,
   PARTICLE_VERTEX,
   QUAD_VERTEX,
+  SKY_VERTEX,
   TRAIL_SAMPLES,
 } from "./shaders";
+import { NEBULA_DEPTH, buildSky, panThrough, skyShare, skyTile } from "./sky";
 import { TurnMotion } from "./turnMotion";
 
 /** Page colours behind the field. Keep in sync with styles/starfield.css. */
 export const NIGHT_SKY = "#07080b";
-export const DAY_PAPER = "#f4f0e8";
+export const DAY_PAPER = "#f5f7fc";
 
 /** Where a page wants its figure: the box's inscribed circle is the footprint. */
 export const ANCHOR_SELECTOR = "[data-rose-anchor]";
@@ -63,6 +68,21 @@ const INTERACTIVE =
 /** How quickly each point of the pointer's chain closes on the one ahead. */
 const CHAIN_RATES = [24, 12, 8.5, 6.4, 5];
 const CHAIN_WEIGHTS = [0.5, 0.42, 0.34, 0.26, 0.18];
+/** The sky drifts along its band, in CSS px per second for the nearest stars. */
+const SKY_DRIFT = { x: 0.9, y: -0.9 };
+/** Scrolling moves the nearest stars at this share of the page's speed. */
+const SKY_SCROLL = 0.2;
+/** A sky with nothing else moving twinkles at this rate, not the display's. */
+const SKY_FPS = 30;
+/** Nebula emission (night) or absorbance (day) that fills its 8-bit target. */
+const NEBULA_RANGE = 0.1;
+/** Nebula strength: emitted light at night, ink absorbance by day. */
+const NEBULA_NIGHT = 0.04;
+const NEBULA_DAY = 0.15;
+/** How much a text column calms each layer: [wide screens, phones]. */
+const QUIET_FIGURE = 0.86;
+const QUIET_STARS = [0.62, 0.35];
+const QUIET_NEBULA = [0.58, 0.25];
 
 /** Whether the element itself carries text a reader might want to select. */
 const hasOwnText = (element: Element | null) => {
@@ -198,8 +218,6 @@ export function createStarfield(
     uSignature: { value: 1 },
     uWarmth: { value: 0 },
     uScriptZ: { value: 0.2 },
-    uSkyShift: { value: new Vector2() },
-    uSkyDim: { value: 1 },
     uQuiet: { value: new Vector4(0, 0, 1, 0) },
     uTrail: { value: trail },
     uTrailVel: { value: trailVelocity },
@@ -221,9 +239,79 @@ export function createStarfield(
   });
   const mesh = new Mesh(geometry, material);
   mesh.frustumCulled = false;
+
+  // The deep sky: its own stars, drawn with the figure's fragment shader.
+  const sky = buildSky();
+  const skyGeometry = new InstancedBufferGeometry();
+  skyGeometry.setAttribute("position", geometry.getAttribute("position"));
+  skyGeometry.setIndex(geometry.getIndex());
+  skyGeometry.setAttribute(
+    "aParam",
+    new InstancedBufferAttribute(sky.param, 4)
+  );
+  skyGeometry.setAttribute("aSeed", new InstancedBufferAttribute(sky.seed, 4));
+  skyGeometry.setAttribute("aLook", new InstancedBufferAttribute(sky.look, 4));
+  skyGeometry.instanceCount = 0;
+  const skyUniforms = {
+    uResolution: uniforms.uResolution,
+    uDpr: uniforms.uDpr,
+    uView: { value: new Vector2(1, 1) },
+    uTile: { value: 2000 },
+    uOffset: { value: new Vector2() },
+    uTime: uniforms.uTime,
+    uMotion: { value: reduced ? 0 : 1 },
+    uLight: uniforms.uLight,
+    uGain: uniforms.uGain,
+    uLevel: { value: 1 },
+    uQuiet: { value: new Vector4(0, 0, 1, 0) },
+  };
+  const skyMaterial = new ShaderMaterial({
+    vertexShader: SKY_VERTEX,
+    fragmentShader: PARTICLE_FRAGMENT,
+    uniforms: skyUniforms,
+    blending: CustomBlending,
+    blendEquation: AddEquation,
+    blendSrc: OneFactor,
+    blendDst: OneFactor,
+    depthTest: false,
+    depthWrite: false,
+    transparent: true,
+  });
+  const skyMesh = new Mesh(skyGeometry, skyMaterial);
+  skyMesh.frustumCulled = false;
+
   const scene = new Scene();
+  scene.add(skyMesh);
   scene.add(mesh);
   const camera = new Camera();
+
+  // The nebula is soft, so it is rendered small and filtered up.
+  const nebulaTarget = new WebGLRenderTarget(1, 1, {
+    type: UnsignedByteType,
+    depthBuffer: false,
+    stencilBuffer: false,
+    minFilter: LinearFilter,
+    magFilter: LinearFilter,
+  });
+  const nebulaUniforms = {
+    uView: skyUniforms.uView,
+    uTile: skyUniforms.uTile,
+    uOffset: { value: new Vector2() },
+    uMorph: { value: new Vector2() },
+    uLight: uniforms.uLight,
+    uLevel: { value: NEBULA_NIGHT },
+    uRange: { value: NEBULA_RANGE },
+  };
+  const nebula = new FullScreenQuad(
+    new ShaderMaterial({
+      vertexShader: QUAD_VERTEX,
+      fragmentShader: NEBULA_FRAGMENT,
+      uniforms: nebulaUniforms,
+      depthTest: false,
+      depthWrite: false,
+      blending: NoBlending,
+    })
+  );
 
   const target = new WebGLRenderTarget(1, 1, {
     type: hdr ? HalfFloatType : UnsignedByteType,
@@ -247,6 +335,10 @@ export function createStarfield(
   const compositeUniforms = {
     tScene: { value: target.texture },
     tBloom: { value: black as DataTexture | WebGLRenderTarget["texture"] },
+    tNebula: { value: nebulaTarget.texture },
+    uNebulaSize: { value: new Vector2(1, 1) },
+    uNebulaRange: { value: NEBULA_RANGE },
+    uQuiet: { value: new Vector4(0, 0, 1, 0) },
     uBloom: { value: 0.58 },
     uBleed: { value: 0.2 },
     uInk: { value: 1.4 },
@@ -306,6 +398,19 @@ export function createStarfield(
   const quietBox = { x: 0, half: 0, strength: 0 };
   let quietStrength = 0;
 
+  // The sky: the camera's pan across its tile, carried by a critically
+  // damped spring, so a page change glides to the new view and settles.
+  let tile = 2000;
+  let tileSet = false;
+  const pan = { x: 0, y: 0, vx: 0, vy: 0 };
+  const panTarget = { x: 0, y: 0 };
+  let panSet = false;
+  let skyLive = false;
+  let lastDraw = 0;
+  let draws = 0;
+  let liveReasons: Record<string, boolean> = {};
+  const startedAt = performance.now();
+
   const pointer = { x: 0, y: 0, seen: false, fine: true, moved: -100 };
   const parallax = new Vector2();
   let pointerLight = 0;
@@ -350,6 +455,7 @@ export function createStarfield(
         }
       }
     }
+    aimSky();
     if (!quiet || !quiet.isConnected)
       quiet = document.querySelector<HTMLElement>(QUIET_SELECTOR);
     if (quiet) {
@@ -360,6 +466,30 @@ export function createStarfield(
     } else quietBox.strength = 0;
     invalidate();
   };
+
+  /**
+   * Where this page looks into the sky. The band runs through the page's
+   * figure, or through a point of the page's own toward the upper right,
+   * and the view slides a little along the band from page to page.
+   */
+  function aimSky() {
+    const random = mulberry32(hashPath(page) ^ 0x9e3779b9);
+    const along = (random() - 0.5) * 0.12 * tile;
+    const ownX = width * (0.7 + 0.22 * random());
+    const ownY = 60 + 200 * random();
+    const cx = anchorShown ? placeTarget.x : ownX;
+    const cy = anchorShown ? placeTarget.y : ownY;
+    const next = panThrough(cx, cy, along, tile, panSet ? panTarget : pan);
+    panTarget.x = next.x;
+    panTarget.y = next.y;
+    // The first view, and any view without motion, is taken at once.
+    if (!panSet || reduced || paused || performance.now() - startedAt < 1500) {
+      pan.x = next.x;
+      pan.y = next.y;
+      pan.vx = pan.vy = 0;
+      panSet = true;
+    }
+  }
 
   const resize = () => {
     // The host's own box, not the window: a scrollbar narrows the page, and
@@ -380,6 +510,31 @@ export function createStarfield(
     const share = compact ? 0.56 : 1;
     geometry.instanceCount =
       particles.fixed + Math.floor((particles.count - particles.fixed) * share);
+
+    // The sky's tile keeps its size through small changes, such as a phone's
+    // address bar coming and going, so its stars stay put.
+    const ideal = skyTile(width, height);
+    if (
+      !tileSet ||
+      tile < Math.max(width, height) + 120 ||
+      ideal < tile * 0.75
+    ) {
+      tile = ideal;
+      tileSet = true;
+      panSet = false;
+    }
+    skyUniforms.uTile.value = tile;
+    skyUniforms.uView.value.set(width, height);
+    skyGeometry.instanceCount = skyShare(tile);
+    const nebulaScale = Math.min(1 / 3, 640 / width);
+    nebulaTarget.setSize(
+      Math.max(64, Math.round(width * nebulaScale)),
+      Math.max(64, Math.round(height * nebulaScale))
+    );
+    compositeUniforms.uNebulaSize.value.set(
+      nebulaTarget.width,
+      nebulaTarget.height
+    );
     measure();
   };
 
@@ -584,6 +739,7 @@ export function createStarfield(
       ? place.level * (1 - smooth(0.62, 1, progress))
       : 0;
     presence = approach(presence, presenceTarget, 4 * settle, dt);
+    if (Math.abs(presence - presenceTarget) < 1e-4) presence = presenceTarget;
     quietStrength = approach(quietStrength, quietBox.strength, 4 * settle, dt);
 
     // Turning: the hand, then a little life of its own.
@@ -680,17 +836,65 @@ export function createStarfield(
       (place.x - window.scrollX - width / 2) * scale,
       (height / 2 - (place.y - scrollY * place.follow)) * scale
     );
-    u.uSkyShift.value.set(
-      -parallax.x * 14 * scale,
-      (scrollY * 0.16 + parallax.y * 10) * scale
-    );
-    u.uSkyDim.value = 1;
+    const compact = width < 720 ? 1 : 0;
     u.uQuiet.value.set(
       quietBox.x * scale,
       quietBox.half * scale,
       90 * scale,
-      quietStrength * (0.86 + 0.1 * light)
+      quietStrength * (QUIET_FIGURE + 0.1 * light)
     );
+    skyUniforms.uQuiet.value.set(
+      quietBox.x * scale,
+      quietBox.half * scale,
+      110 * scale,
+      quietStrength * QUIET_STARS[compact]
+    );
+    compositeUniforms.uQuiet.value.set(
+      (quietBox.x + width / 2) * scale,
+      quietBox.half * scale,
+      160 * scale,
+      quietStrength * QUIET_NEBULA[compact]
+    );
+
+    // The sky: the spring carries the view to this page's, the band drifts
+    // on, and scroll and the pointer move nearer stars further.
+    if (moving) {
+      const omega = 3.2;
+      const ax = omega * omega * (panTarget.x - pan.x) - 2 * omega * pan.vx;
+      const ay = omega * omega * (panTarget.y - pan.y) - 2 * omega * pan.vy;
+      pan.vx += ax * dt;
+      pan.vy += ay * dt;
+      pan.x += pan.vx * dt;
+      pan.y += pan.vy * dt;
+    } else {
+      pan.x = panTarget.x;
+      pan.y = panTarget.y;
+      pan.vx = pan.vy = 0;
+    }
+    const panMoving =
+      Math.abs(panTarget.x - pan.x) + Math.abs(panTarget.y - pan.y) > 0.25 ||
+      Math.abs(pan.vx) + Math.abs(pan.vy) > 0.25;
+    if (!panMoving) {
+      pan.x = panTarget.x;
+      pan.y = panTarget.y;
+      pan.vx = pan.vy = 0;
+    }
+    const offsetX = pan.x + SKY_DRIFT.x * time + parallax.x * 18;
+    const offsetY =
+      pan.y +
+      SKY_DRIFT.y * time +
+      (reduced ? 0 : scrollY * SKY_SCROLL) +
+      parallax.y * 12;
+    skyUniforms.uOffset.value.set(offsetX, offsetY);
+    skyUniforms.uLevel.value = 1 - 0.3 * light;
+    nebulaUniforms.uOffset.value.set(
+      offsetX * NEBULA_DEPTH,
+      offsetY * NEBULA_DEPTH
+    );
+    nebulaUniforms.uMorph.value.set((time * 0.0005) % 1, (time * 0.00031) % 1);
+    nebulaUniforms.uLevel.value =
+      NEBULA_NIGHT + (NEBULA_DAY - NEBULA_NIGHT) * light;
+    skyLive = moving;
 
     // Pointer: a chain of points trails the hand, each easing after the one
     // ahead. Their own speed is what stirs the dust, so the wake rises with
@@ -702,6 +906,7 @@ export function createStarfield(
         : 0;
     const step = Math.max(dt, 1e-3);
     hover = approach(hover, hovering * presence, hovering ? 7 : 4, dt);
+    if (hover < 1e-4) hover = 0;
     wakeGate = approach(wakeGate, press?.turning ? 0 : 1, 14, dt);
     if (!chainPlaced && pointer.seen) {
       for (const node of chain) {
@@ -733,7 +938,9 @@ export function createStarfield(
         stirred > node.energy ? 11 : 2.3,
         dt
       );
-      if (node.energy < 1e-3 && stirred === 0) node.energy = 0;
+      // Exponential easing never reaches zero on its own; a wake this faint
+      // is gone, and must not keep the loop drawing.
+      if (node.energy < 1e-3 && stirred < 1e-3) node.energy = 0;
       if (node.energy > 0 || speed > 2) trailLive = true;
       toField(node.x, node.y, scratch);
       trail[i].set(
@@ -769,20 +976,45 @@ export function createStarfield(
 
     // Keep drawing while anything is still moving.
     const figureLive = presence > 0.004 && moving;
+    const turning = moving && turn.active;
+    const themeMoving = light !== lightTarget;
+    const presenceMoving = Math.abs(presence - presenceTarget) > 0.002;
+    // The pointer's light falls only on the figure.
+    const pointerLit = pointerLight * presence > 0.004;
+    const introLive = moving && intro < INTRO_SECONDS + 0.5;
+    if (import.meta.env.DEV)
+      liveReasons = {
+        figure: figureLive,
+        pan: panMoving,
+        trail: trailLive,
+        turn: turning,
+        form: formMoving,
+        turnOver: turnOver > 0,
+        theme: themeMoving,
+        presence: presenceMoving,
+        pointer: pointerLit,
+        intro: introLive,
+      };
     return (
       figureLive ||
+      panMoving ||
       trailLive ||
-      (moving && turn.active) ||
+      turning ||
       formMoving ||
       turnOver > 0 ||
-      light !== lightTarget ||
-      Math.abs(presence - presenceTarget) > 0.002 ||
-      pointerLight > 0.004 ||
-      (moving && intro < INTRO_SECONDS + 0.5)
+      themeMoving ||
+      presenceMoving ||
+      pointerLit ||
+      introLive
     );
   };
 
   const draw = () => {
+    draws++;
+    renderer.setRenderTarget(nebulaTarget);
+    nebula.render(renderer);
+    // A figure scrolled away costs nothing.
+    mesh.visible = uniforms.uPresence.value > 0.002;
     renderer.setRenderTarget(target);
     renderer.setClearColor(0x000000, 0);
     renderer.clear();
@@ -803,12 +1035,16 @@ export function createStarfield(
     const frameMs = last ? now - last : 16.7;
     last = now;
     const live = update(dt);
-    if (live || dirty) {
+    // With nothing but the sky moving, it is drawn at a gentler rate.
+    const skyFps = width < 720 ? 24 : SKY_FPS;
+    const skyDue = skyLive && now - lastDraw >= 1000 / skyFps - 4;
+    if (live || dirty || skyDue) {
       draw();
+      lastDraw = now;
       dirty = false;
       canvas.dataset.ready = "true";
       if (live && !reduced && quality.observe(frameMs, now)) resize();
-    } else last = 0;
+    } else if (!skyLive) last = 0;
     schedule();
   };
   function schedule() {
@@ -824,9 +1060,27 @@ export function createStarfield(
     (window as unknown as Record<string, unknown>).__starfield = {
       uniforms,
       compositeUniforms,
+      skyUniforms,
+      nebulaUniforms,
       turn,
       get state() {
-        return { time, intro, presence, place, form, page, dpr, light };
+        return {
+          time,
+          intro,
+          presence,
+          place,
+          form,
+          page,
+          dpr,
+          light,
+          tile,
+          pan: { ...pan },
+          panTarget: { ...panTarget },
+          skyStars: skyGeometry.instanceCount,
+          draws,
+          figureDrawn: mesh.visible,
+          live: Object.keys(liveReasons).filter(key => liveReasons[key]),
+        };
       },
       /** Jumps the intro to a point in seconds. */
       setIntro(seconds: number) {
@@ -896,6 +1150,11 @@ export function createStarfield(
       root.removeAttribute("data-rose-hover");
       geometry.dispose();
       material.dispose();
+      skyGeometry.dispose();
+      skyMaterial.dispose();
+      nebulaTarget.dispose();
+      nebula.material.dispose();
+      nebula.dispose();
       target.dispose();
       bloom.dispose();
       black.dispose();

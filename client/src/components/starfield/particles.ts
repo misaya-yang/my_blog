@@ -18,8 +18,7 @@ export const KIND = {
   SCRIPT: 2,
   /** Loose dust orbiting the rose. */
   POLLEN: 3,
-  /** The far sky. */
-  SKY: 4,
+  // 4 was the far sky, which now has its own layer (sky.ts).
   /** A few out-of-focus motes close to the lens. */
   BOKEH: 5,
   /** The soft glow in the heart. */
@@ -33,7 +32,6 @@ export interface ParticleCounts {
   script: number;
   scriptBeads: number;
   pollen: number;
-  sky: number;
   bokeh: number;
 }
 
@@ -44,7 +42,6 @@ export const DESKTOP_COUNTS: ParticleCounts = {
   script: 230,
   scriptBeads: 14,
   pollen: 2000,
-  sky: 620,
   bokeh: 8,
 };
 
@@ -229,21 +226,6 @@ export function buildParticles(
       rare ? 1.0 + 0.5 * random() : 0.4 + 0.5 * random(),
       temperature(0.08, 0.14),
       0.4 + random() * 1.2,
-    ]);
-  }
-
-  // Sky: far stars across the whole page, in screen space.
-  for (let i = 0; i < counts.sky; i++) {
-    const u = random();
-    body.push([
-      random() * 2 - 1,
-      random() * 2 - 1,
-      0.25 + 0.75 * random(),
-      KIND.SKY,
-      0.07 + 1.5 * Math.pow(u, 9),
-      0.42 + 0.75 * Math.pow(u, 6),
-      temperature(0.1, 0.12),
-      0,
     ]);
   }
 

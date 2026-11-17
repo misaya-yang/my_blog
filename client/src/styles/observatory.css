@@ -957,7 +957,7 @@
 @layer components {
   html[data-route-kind] .space-page:not(.owner-dark-scope) {
     --font-sans:
-      "Source Sans 3 Variable", "PingFang SC", "Source Han Sans SC",
+      "Geist", "PingFang SC", "Source Han Sans SC",
       "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
     font-family: var(--font-sans);
     --v2-radius: 0px;
