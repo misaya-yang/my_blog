@@ -28,14 +28,6 @@ function readStoredTheme(): Theme | null {
   }
 }
 
-function readSystemTheme(): Theme | null {
-  if (typeof window === "undefined" || !window.matchMedia) return null;
-
-  if (window.matchMedia("(prefers-color-scheme: light)").matches) return "light";
-  if (window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
-  return null;
-}
-
 function writeStoredTheme(theme: Theme) {
   if (typeof window === "undefined") return;
 
@@ -54,37 +46,14 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({
   children,
-  defaultTheme = "light",
+  defaultTheme = "dark",
   switchable = false,
 }: ThemeProviderProps) {
-  // Precedence: the reader's own stored choice, then the operating system
-  // preference, then the site's canonical theme. Before this the app ignored
-  // prefers-color-scheme entirely, so the light theme only ever appeared if
-  // someone found the toggle -- which is also why it had gone unverified.
+  // Use the site's default until the reader explicitly chooses a theme.
   const [theme, setTheme] = useState<Theme>(() => {
     if (!switchable) return defaultTheme;
-    return readStoredTheme() ?? readSystemTheme() ?? defaultTheme;
+    return readStoredTheme() ?? defaultTheme;
   });
-
-  // Follow the OS while the reader has not expressed a preference of their own.
-  useEffect(() => {
-    if (!switchable) return;
-    if (typeof window === "undefined" || !window.matchMedia) return;
-    if (readStoredTheme()) return;
-
-    const query = window.matchMedia("(prefers-color-scheme: light)");
-    const handleChange = () => {
-      if (readStoredTheme()) return;
-      // Re-derive rather than reading `event.matches`: a move to
-      // `no-preference` also fires this with matches === false, and that is
-      // not the same thing as an explicit dark preference. Resolving through
-      // readSystemTheme keeps change and mount on the same rule.
-      setTheme(readSystemTheme() ?? defaultTheme);
-    };
-
-    query.addEventListener("change", handleChange);
-    return () => query.removeEventListener("change", handleChange);
-  }, [switchable, defaultTheme]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -101,8 +70,7 @@ export function ThemeProvider({
   const toggleTheme = useCallback(() => {
     setTheme(prev => {
       const next = prev === "light" ? "dark" : "light";
-      // Persist only on an explicit toggle. Writing on every render would pin
-      // the first computed theme forever and silently disable the OS link.
+      // Persist only the reader's explicit choice.
       writeStoredTheme(next);
       return next;
     });

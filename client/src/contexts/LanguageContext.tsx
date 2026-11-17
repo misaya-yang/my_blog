@@ -24,18 +24,23 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("blog-language");
-      if (saved === "en" || saved === "zh") return saved;
-      // Auto-detect from browser
-      const browserLang = navigator.language.toLowerCase();
-      return browserLang.startsWith("zh") ? "zh" : "en";
+      try {
+        const saved = window.localStorage.getItem("blog-language");
+        if (saved === "en" || saved === "zh") return saved;
+      } catch {
+        // Use English when browser storage is unavailable.
+      }
     }
     return "en";
   });
 
   const setLanguage = useCallback((lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem("blog-language", lang);
+    try {
+      window.localStorage.setItem("blog-language", lang);
+    } catch {
+      // The language still changes for this visit when storage is unavailable.
+    }
   }, []);
 
   // Single source of truth for <html lang>. Screen-reader voice selection,

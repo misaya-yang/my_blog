@@ -8,26 +8,22 @@
          class in an effect, so the un-hydrated document matched
          `html:not(.dark)` and painted the full light canvas for every reader,
          dark ones included. Mirrors ThemeContext's precedence exactly: stored
-         choice, then OS, then the site's canonical dark. Keep in sync with
+         choice, then the site's canonical dark. Keep in sync with
          client/src/contexts/ThemeContext.tsx and the `defaultTheme` that
          App.tsx passes to ThemeProvider. -->
     <script>
       (function () {
+        var theme = "dark";
         try {
           var stored = localStorage.getItem("theme");
-          var theme =
-            stored === "light" || stored === "dark"
-              ? stored
-              : window.matchMedia("(prefers-color-scheme: light)").matches
-                ? "light"
-                : "dark";
-          var root = document.documentElement;
-          root.classList.toggle("dark", theme === "dark");
-          root.dataset.theme = theme;
-          root.style.colorScheme = theme;
+          if (stored === "light" || stored === "dark") theme = stored;
         } catch (error) {
-          /* Private browsing can throw on localStorage; the effect will run. */
+          /* Storage is optional; the first paint still uses the default. */
         }
+        var root = document.documentElement;
+        root.classList.toggle("dark", theme === "dark");
+        root.dataset.theme = theme;
+        root.style.colorScheme = theme;
       })();
     </script>
     <meta
