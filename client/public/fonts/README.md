@@ -13,10 +13,6 @@ codepoints.
 | `geist-mono-*.woff2` | Geist Mono | `wght` 100–900 | kickers, dates, counts, tags, code |
 | `jetbrains-mono-*.woff2` | JetBrains Mono | `wght` 400–700 | fallback for glyphs Geist Mono lacks |
 
-`fraunces-*` and `instrument-sans-*` are no longer declared by any
-stylesheet (the earlier serif/instrument system); they are kept only until
-someone deletes them.
-
 Chinese is intentionally **not** a webfont: a usable Han family is several MB
 even sliced. Every role names the platform Hei faces (PingFang SC, Hiragino
 Sans GB, Source Han Sans SC, Noto Sans CJK SC, Microsoft YaHei) explicitly,

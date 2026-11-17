@@ -130,25 +130,26 @@ function PublicSurface() {
   if (!publicPage) return <Router />;
   return (
     <div className="public-universe">
-      <Starfield />
-      {kind !== "home" && (
-        // Inner pages keep their figure in the right margin, clear of the text.
-        <div
-          className="rose-anchor rose-anchor--page"
-          data-figure={
-            kind === "reader"
-              ? "reader"
-              : location.startsWith("/about")
-                ? "seal"
-                : "list"
-          }
-          data-rose-anchor
-          data-rose-follow="0.6"
-          data-rose-presence={location.startsWith("/about") ? "0.92" : "0.84"}
-          aria-hidden="true"
-        />
-      )}
-      <Router />
+      <Starfield>
+        {kind !== "home" && (
+          // Inner pages keep their figure in the right margin, clear of the text.
+          <div
+            className="rose-anchor rose-anchor--page"
+            data-figure={
+              kind === "reader"
+                ? "reader"
+                : location.startsWith("/about")
+                  ? "seal"
+                  : "list"
+            }
+            data-rose-anchor
+            data-rose-follow="0.6"
+            data-rose-presence={location.startsWith("/about") ? "0.92" : "0.84"}
+            aria-hidden="true"
+          />
+        )}
+        <Router />
+      </Starfield>
     </div>
   );
 }

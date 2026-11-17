@@ -1,4 +1,9 @@
-# Test Infrastructure: WebGL Rose Galaxy Cinematic Upgrade
+# Historical Test Infrastructure: WebGL Rose Galaxy Cinematic Upgrade
+
+> Historical reference only. The unused `components/galaxy/` renderer and its
+> dedicated test suites have been removed. Current starfield tests live in
+> `client/src/components/starfield/`; run them and the application tests with
+> `pnpm test`. The coverage claims below describe the retired implementation.
 
 ## 1. Test Philosophy & Framework Architecture
 

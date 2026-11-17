@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { StarfieldMenuControl } from "@/components/starfield/Starfield";
 import {
   Sheet,
   SheetClose,
@@ -298,6 +299,7 @@ export function SiteHeader({
                 ))}
               </div>
               <div className="site-mobile-sheet-actions grid gap-2 px-4 py-5">
+                <StarfieldMenuControl />
                 {canToggleTheme ? (
                   <button
                     type="button"

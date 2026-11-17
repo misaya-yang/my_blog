@@ -17,60 +17,7 @@ try {
       errors.push(m.text());
   });
   await page.goto(process.env.BASE_URL || "http://localhost:3000/");
-  await page.locator("[data-return-angle]").waitFor();
-  const host = page.locator("[data-return-angle]");
-  const controls = page.locator(".galaxy-visual");
-  const drag = async () => {
-    await page.mouse.move(940, 320);
-    await page.mouse.down();
-    await page.mouse.move(730, 470, { steps: 15 });
-  };
-  await drag();
-  assert.equal(await controls.getAttribute("data-dragging"), "true");
-  await page.screenshot({ path: ".cache/rose-ui-qa/13-active-trail.png" });
-  await page.mouse.up();
-  assert.equal(await controls.getAttribute("data-dragging"), "false");
-  await page.mouse.move(1100, 200, { steps: 20 });
-  assert.equal(await controls.getAttribute("data-dragging"), "false");
-  await page.waitForFunction(
-    () =>
-      Number(
-        document.querySelector("[data-return-angle]").dataset.returnAngle
-      ) < 0.002,
-    {},
-    { timeout: 10000 }
-  );
-  await drag();
-  await page.mouse.up();
-  await page.waitForTimeout(150);
-  await drag();
-  assert.equal(await controls.getAttribute("data-dragging"), "true");
-  await page.mouse.up();
-  // Browser losing capture, focus, or the pointerup event must never latch dragging.
-  for (const kind of ["lostpointercapture", "blur", "buttons"]) {
-    await drag();
-    if (kind === "blur")
-      await page.evaluate(() => window.dispatchEvent(new Event("blur")));
-    else if (kind === "lostpointercapture")
-      await controls.evaluate(n =>
-        n.dispatchEvent(
-          new PointerEvent("lostpointercapture", { pointerId: 1 })
-        )
-      );
-    else
-      await page.evaluate(() =>
-        window.dispatchEvent(
-          new PointerEvent("pointermove", {
-            pointerId: 1,
-            buttons: 0,
-            clientX: 900,
-            clientY: 300,
-          })
-        )
-      );
-    assert.equal(await controls.getAttribute("data-dragging"), "false", kind);
-    await page.mouse.up();
-  }
+  // The legacy galaxy controls were retired; retain the public UI checks.
   const button = page.locator(".observatory-paper-picker button").nth(4);
   await button.scrollIntoViewIfNeeded();
   await button.hover();
@@ -117,11 +64,6 @@ try {
   assert.ok(focusStyle.offset >= 6 && focusStyle.radius >= 10);
   console.log(
     JSON.stringify({
-      dragRelease: true,
-      regrab: true,
-      lostCapture: true,
-      blur: true,
-      missingPointerUp: true,
       hover: { on, off },
       seriesSpacing: stepStyle,
       keyboardSpacing: focusStyle,

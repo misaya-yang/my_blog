@@ -1,16 +1,33 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { Pause, Play } from "lucide-react";
 import { useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import type { StarfieldHandle } from "./scene";
 
+const MotionControlContext = createContext<ReactNode>(null);
+
+/** The mobile menu uses the same control and scene state as the desktop. */
+export function StarfieldMenuControl() {
+  const control = useContext(MotionControlContext);
+  return control ? (
+    <div className="starfield-menu-control">{control}</div>
+  ) : null;
+}
+
 /**
  * The site's sky: one fixed canvas behind every public page. Pages say where
  * their figure goes with a `data-rose-anchor` box; this component only owns
  * the canvas's life and the controls that go with it.
  */
-export function Starfield() {
+export function Starfield({ children }: { children: ReactNode }) {
   const [page] = useLocation();
   const { theme } = useTheme();
   const { language } = useLanguage();
@@ -92,8 +109,38 @@ export function Starfield() {
     scene.current?.setPaused(paused);
   }, [paused]);
 
+  const label = zh
+    ? paused
+      ? "继续星场动画"
+      : "暂停星场动画"
+    : paused
+      ? "Resume star field motion"
+      : "Pause star field motion";
+  const control =
+    !reduced && !fallback ? (
+      <button
+        type="button"
+        className="starfield-toggle"
+        aria-label={label}
+        aria-describedby="starfield-keys"
+        aria-pressed={paused}
+        onClick={() => setPaused(value => !value)}
+        onKeyDown={event => {
+          if (event.key.startsWith("Arrow") || event.key === "Escape")
+            scene.current?.handleKey(event.nativeEvent);
+        }}
+      >
+        {paused ? (
+          <Play size={14} aria-hidden="true" />
+        ) : (
+          <Pause size={14} aria-hidden="true" />
+        )}
+        <span className="starfield-toggle-label">{label}</span>
+      </button>
+    ) : null;
+
   return (
-    <>
+    <MotionControlContext.Provider value={control}>
       <div
         className="starfield"
         ref={host}
@@ -105,34 +152,8 @@ export function Starfield() {
           ? "方向键转动玫瑰，Escape 恢复姿态。"
           : "Arrow keys turn the rose, Escape restores its pose."}
       </span>
-      {!reduced && !fallback && (
-        <button
-          type="button"
-          className="starfield-toggle"
-          aria-label={
-            zh
-              ? paused
-                ? "继续星场动画"
-                : "暂停星场动画"
-              : paused
-                ? "Resume star field motion"
-                : "Pause star field motion"
-          }
-          aria-describedby="starfield-keys"
-          aria-pressed={paused}
-          onClick={() => setPaused(value => !value)}
-          onKeyDown={event => {
-            if (event.key.startsWith("Arrow") || event.key === "Escape")
-              scene.current?.handleKey(event.nativeEvent);
-          }}
-        >
-          {paused ? (
-            <Play size={14} aria-hidden="true" />
-          ) : (
-            <Pause size={14} aria-hidden="true" />
-          )}
-        </button>
-      )}
-    </>
+      <div className="starfield-desktop-control">{control}</div>
+      {children}
+    </MotionControlContext.Provider>
   );
 }
