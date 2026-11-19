@@ -1,77 +1,639 @@
 @reference "../index.css";
 
 /* ---------------------------------------------------------------------------
-   Assistant surfaces — launcher button and panel shell.
+   The reading assistant: its launcher and its panel.
 
-   These are the only visual definitions for the notes assistant chrome.
-   The three stable hooks are .agent-liquid-launcher (entry button),
-   .agent-launcher-orb (icon tile inside it), and .agent-liquid-panel (the
-   panel section). Everything inside the panel is styled with Tailwind
-   utilities against the site tokens, so this file stays deliberately small:
-   one pill entry, one quiet elevated panel. No glass, no glow, no gradients;
-   light/dark comes free from the site tokens, which resolve automatically
-   under .dark. Geometry (fixed positioning, offsets, responsive wrapper) is
-   owned by the component markup, not this file.
+   It belongs to the same night sky and star atlas as the pages: a pane of
+   glass over the sky, the site's inks (periwinkle by night, cobalt by day),
+   Geist for what it says and Geist Mono for its labels, and the star of the
+   sky as its mark.
+
+   Stable hooks (used by the QA scripts): .agent-liquid-launcher,
+   .agent-launcher-orb, .agent-liquid-panel. Geometry (fixed position,
+   offsets, the phone sheet) belongs to the component markup.
+
+   The panel's own markup uses Tailwind utilities against the tokens below.
+   Chrome rules that must win over those utilities are unlayered: the
+   utilities layer outranks every other layer, and unlayered rules outrank it.
 --------------------------------------------------------------------------- */
 
-@layer components {
+/* --- Tokens ------------------------------------------------------------- */
+.agent-panel-shell,
+.agent-liquid-launcher {
+  --font-sans:
+    "Geist", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC",
+    "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+  --font-mono:
+    "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+  --font-display:
+    "Unbounded", "Geist", "PingFang SC", "Source Han Sans SC", sans-serif;
+  --font-caption: var(--font-sans);
+
+  /* Day: porcelain glass, cobalt ink. */
+  --fg: #0b1020;
+  --fg-muted: #4a5368;
+  --fg-faint: #6b7389;
+  --bg-elevated: #ffffff;
+  --card: #f4f6fc;
+  --border: #e1e5f0;
+  --border-strong: #b7c0d8;
+  --primary: #3247e0;
+  --primary-hover: #2536c4;
+  --primary-foreground: #ffffff;
+  --ring: #3247e0;
+  --surface-inline: #eef1fa;
+  --secondary: #eef1ff;
+  --secondary-foreground: #0b1020;
+  --danger-ink: #b42357;
+
+  --glass: rgb(251 252 255 / 0.88);
+  --glass-edge: rgb(28 40 110 / 0.13);
+  --glass-highlight: rgb(255 255 255 / 0.9);
+  --glass-shadow:
+    0 32px 80px -32px rgb(24 34 110 / 0.38), 0 2px 8px rgb(16 24 64 / 0.06);
+  --orb: radial-gradient(
+    circle at 34% 28%,
+    #a9b8ff 0%,
+    #3247e0 52%,
+    #1b1c86 100%
+  );
+  --orb-glow: rgb(50 71 224 / 0.38);
+  --orb-ink: #ffffff;
+  --field: #ffffff;
+  --bubble: #eef1ff;
+  --bubble-edge: rgb(50 71 224 / 0.14);
+  font-family: var(--font-sans);
+}
+.dark .agent-panel-shell,
+.dark .agent-liquid-launcher {
+  /* Night: smoked glass, periwinkle ink. */
+  --fg: #e8ecf8;
+  --fg-muted: #a3acc2;
+  --fg-faint: #7d87a0;
+  --bg-elevated: #0d1019;
+  --card: #121624;
+  --border: rgb(160 178 255 / 0.12);
+  --border-strong: rgb(160 178 255 / 0.3);
+  --primary: #a9b8ff;
+  --primary-hover: #c6d0ff;
+  --primary-foreground: #0b1020;
+  --ring: #a9b8ff;
+  --surface-inline: rgb(160 178 255 / 0.08);
+  --secondary: rgb(142 162 255 / 0.14);
+  --secondary-foreground: #e8ecf8;
+  --danger-ink: #ff9fbd;
+
+  --glass: rgb(9 11 19 / 0.84);
+  --glass-edge: rgb(170 186 255 / 0.15);
+  --glass-highlight: rgb(255 255 255 / 0.06);
+  --glass-shadow:
+    0 40px 100px -32px rgb(0 0 0 / 0.9), 0 0 0 1px rgb(0 0 0 / 0.35);
+  --orb: radial-gradient(
+    circle at 34% 28%,
+    #e9edff 0%,
+    #8ea2ff 38%,
+    #4b3bd6 78%,
+    #2a1d8c 100%
+  );
+  --orb-glow: rgb(128 146 255 / 0.55);
+  --orb-ink: #0b1020;
+  --field: rgb(255 255 255 / 0.035);
+  --bubble: rgb(142 162 255 / 0.13);
+  --bubble-edge: rgb(170 186 255 / 0.18);
+}
+
+/* --- The mark ----------------------------------------------------------- */
+.agent-glyph {
+  display: block;
+  overflow: visible;
+}
+.agent-glyph-companion {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* --- Launcher ----------------------------------------------------------- */
+.agent-liquid-launcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 7px 0 7px;
+  border: 1px solid var(--glass-edge);
+  border-radius: 999px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 14px 34px -14px var(--orb-glow);
+  color: var(--fg);
+  font-size: 13.5px;
+  font-weight: 540;
+  letter-spacing: -0.006em;
+  cursor: pointer;
+  transition:
+    translate 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+/* While the panel is open its header owns Close; the markup's `hidden`
+   utility would lose to the display above, so it is restated here. */
+.agent-liquid-launcher[aria-expanded="true"] {
+  display: none;
+}
+.agent-liquid-launcher .agent-launcher-label {
+  padding-left: 2px;
+}
+.agent-launcher-orb {
+  position: relative;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--orb);
+  color: var(--orb-ink);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.18),
+    0 0 18px var(--orb-glow);
+}
+.agent-launcher-orb .agent-glyph {
+  width: 16px;
+  height: 16px;
+}
+/* A signal from the orb as the page settles: three pulses, then still. */
+.agent-launcher-orb::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid var(--primary);
+  opacity: 0;
+  pointer-events: none;
+  animation: agent-signal 2.6s 1.2s cubic-bezier(0.16, 1, 0.3, 1) 3;
+}
+@keyframes agent-signal {
+  0% {
+    opacity: 0.75;
+    scale: 0.85;
+  }
+  70%,
+  100% {
+    opacity: 0;
+    scale: 1.55;
+  }
+}
+.agent-launcher-key {
+  display: none;
+  min-width: 34px;
+  padding: 4px 7px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--fg-faint);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+@media (min-width: 640px) {
   .agent-liquid-launcher {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    height: 2.75rem;
-    padding: 0 0.9rem;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: var(--card);
-    color: var(--fg);
-    box-shadow: var(--shadow-card);
-    font-family: var(--font-caption, inherit);
-    font-size: 0.875rem;
-    font-weight: 600;
-    transition:
-      transform var(--dur-fast) var(--ease-standard),
-      border-color var(--dur-fast) var(--ease-standard),
-      box-shadow var(--dur-fast) var(--ease-standard);
+    padding-right: 8px;
   }
-
-  @media (hover: hover) and (pointer: fine) {
-    .agent-liquid-launcher:hover {
-      border-color: var(--primary);
-      transform: translateY(-1px);
-    }
+  .agent-launcher-key {
+    display: inline-block;
   }
-
-  .agent-liquid-launcher[aria-expanded="true"] {
-    background: var(--secondary);
+}
+@media (hover: hover) and (pointer: fine) {
+  .agent-liquid-launcher:hover {
+    translate: 0 -1px;
+    border-color: color-mix(in srgb, var(--primary) 45%, transparent);
+    box-shadow:
+      inset 0 1px 0 var(--glass-highlight),
+      0 18px 42px -14px var(--orb-glow);
   }
+  .agent-liquid-launcher:hover .agent-glyph-companion {
+    animation: agent-twinkle 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+@keyframes agent-twinkle {
+  40% {
+    scale: 1.6;
+    opacity: 0.6;
+  }
+}
+.agent-liquid-launcher:focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 3px;
+}
 
-  .agent-launcher-orb {
-    display: grid;
-    width: 2rem;
-    height: 2rem;
-    place-items: center;
-    background: transparent;
+/* --- Panel -------------------------------------------------------------- */
+.agent-liquid-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--fg);
+}
+.agent-panel-shell .agent-liquid-panel {
+  border: 1px solid var(--glass-edge);
+  border-radius: 20px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(22px) saturate(1.35);
+  backdrop-filter: blur(22px) saturate(1.35);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    var(--glass-shadow);
+  outline: none;
+  transform-origin: 100% 100%;
+  animation: agent-panel-in 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes agent-panel-in {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+    scale: 0.975;
+  }
+}
+.agent-panel-shell .agent-liquid-panel:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
+/* Header */
+.agent-panel-shell .agent-panel-header {
+  height: calc(62px + env(safe-area-inset-top));
+  padding-inline: 14px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.agent-panel-shell .agent-header-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--orb);
+  color: var(--orb-ink);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.18),
+    0 0 14px var(--orb-glow);
+}
+.agent-panel-shell .agent-header-mark .agent-glyph {
+  width: 15px;
+  height: 15px;
+}
+.agent-panel-shell .agent-panel-header h2 {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 1.25;
+}
+.agent-panel-shell .agent-panel-header p {
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+.agent-panel-shell .agent-header-action {
+  width: 34px;
+  height: 34px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--fg-muted);
+}
+.agent-panel-shell .agent-header-action[aria-expanded="true"] {
+  border-color: var(--border);
+  background: var(--surface-inline);
+  color: var(--fg);
+}
+
+/* What the assistant is reading */
+.agent-panel-shell .agent-context-row {
+  margin: 0;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.agent-panel-shell .agent-context-row p {
+  display: grid;
+  gap: 5px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.agent-panel-shell .agent-context-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.agent-panel-shell .agent-context-label::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+.agent-panel-shell .agent-context-title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: var(--fg);
+  font-weight: 500;
+}
+
+/* Conversation */
+.agent-panel-shell .agent-message-scroller {
+  padding: 22px 20px 28px;
+}
+.agent-panel-shell .agent-empty-state {
+  gap: 22px;
+  padding-top: 10px;
+}
+.agent-panel-shell .agent-empty-state h3 {
+  margin-bottom: 10px;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+html[lang^="zh"] .agent-panel-shell .agent-empty-state h3 {
+  letter-spacing: 0;
+}
+.agent-panel-shell .agent-empty-state p {
+  font-size: 14px !important;
+  line-height: 1.7;
+}
+.agent-panel-shell .agent-empty-state > div:last-child {
+  gap: 0;
+  border-top: 1px solid var(--border);
+}
+.agent-panel-shell .agent-prompt-row {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 13px 6px;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  color: var(--fg);
+  font-size: 14px;
+  line-height: 1.5;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+.agent-panel-shell .agent-prompt-index {
+  color: var(--fg-faint);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+.agent-panel-shell .agent-prompt-row::after {
+  content: "↗";
+  color: var(--fg-faint);
+  font-size: 13px;
+  text-align: right;
+  transition:
+    translate 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 160ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .agent-panel-shell .agent-prompt-row:hover {
+    background: var(--surface-inline);
+  }
+  .agent-panel-shell .agent-prompt-row:hover .agent-prompt-index,
+  .agent-panel-shell .agent-prompt-row:hover::after {
     color: var(--primary);
   }
-
-  .agent-liquid-panel {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden;
-    isolation: isolate;
-    border: 1px solid var(--border);
-    border-radius: 0.72rem;
-    background: var(--bg-elevated);
-    color: var(--fg);
-    box-shadow: var(--shadow-panel);
+  .agent-panel-shell .agent-prompt-row:hover::after {
+    translate: 2px -2px;
   }
+  .agent-panel-shell .agent-header-action:hover {
+    border-color: var(--border);
+    background: var(--surface-inline);
+    color: var(--fg);
+  }
+}
 
-  /* The desktop/tablet panel is anchored at its bottom-right edge, so its
-     resize control lives on the opposite corner. The visual is deliberately
-     only a small corner mark while the 44px hit target remains comfortable
-     for touch and pen input. */
+.agent-panel-shell .agent-message-user > div {
+  border: 1px solid var(--bubble-edge);
+  border-radius: 16px 16px 5px 16px;
+  background: var(--bubble);
+  color: var(--fg);
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+
+/* Composer */
+.agent-panel-shell .agent-composer {
+  padding: 12px 14px 12px;
+  border-top: 1px solid var(--border);
+  background: transparent;
+}
+.agent-panel-shell .agent-composer-field {
+  align-items: flex-end;
+  gap: 6px;
+  padding: 6px 6px 6px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+  background: var(--field);
+  transition:
+    border-color 160ms ease,
+    outline-color 160ms ease;
+  outline: 3px solid transparent;
+}
+.agent-panel-shell .agent-composer-field:focus-within {
+  border-color: var(--ring);
+  outline-color: color-mix(in srgb, var(--ring) 18%, transparent);
+}
+.agent-panel-shell .agent-composer textarea {
+  min-height: 40px;
+  padding: 9px 6px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  font-size: 15px !important;
+  line-height: 1.5;
+}
+.agent-panel-shell .agent-composer button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: 0 6px 16px -6px var(--orb-glow);
+  transition:
+    background-color 160ms ease,
+    scale 160ms ease;
+}
+.agent-panel-shell .agent-composer button:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+.agent-panel-shell .agent-composer button:active:not(:disabled) {
+  scale: 0.94;
+}
+.agent-panel-shell .agent-composer button:disabled {
+  background: var(--surface-inline);
+  color: var(--fg-faint);
+  box-shadow: none;
+  opacity: 1;
+}
+.agent-panel-shell .agent-composer-hint {
+  margin: 8px 6px 0;
+  color: var(--fg-faint);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+}
+
+/* History */
+.agent-panel-shell .agent-history-panel {
+  margin: 10px 14px 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+}
+.agent-panel-shell .agent-history-panel > div:first-child {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+}
+.agent-panel-shell .agent-history-panel button {
+  border-color: transparent;
+  background: transparent;
+}
+
+/* Sources and follow-up questions */
+.agent-panel-shell .agent-sources {
+  border-top: 0;
+  padding-top: 4px;
+}
+.agent-panel-shell .agent-sources > div:first-child {
+  gap: 10px;
+}
+.agent-panel-shell .agent-sources span[class*="border"] {
+  border-color: var(--border) !important;
+  background: transparent;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+.agent-panel-shell .agent-source-list > div {
+  border-color: var(--border) !important;
+  border-radius: 12px;
+  background: var(--card) !important;
+}
+.agent-panel-shell .agent-source-heading {
+  display: flex !important;
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: 6px;
+}
+.agent-panel-shell .agent-source-actions {
+  width: 100%;
+  min-width: 0;
+}
+.agent-panel-shell .agent-source-actions a {
+  width: 34px !important;
+  height: 34px !important;
+  margin-left: auto;
+  border-color: var(--border);
+}
+.agent-panel-shell .agent-related-questions {
+  border-top: 0;
+}
+.agent-panel-shell .agent-related-questions > div:first-child {
+  font-family: var(--font-mono);
+  letter-spacing: 0.16em;
+}
+.agent-panel-shell .agent-related-questions button {
+  border-color: var(--border);
+  border-radius: 999px;
+  background: transparent;
+  padding-inline: 12px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .agent-panel-shell
+    :is(
+      .agent-source-list > div,
+      .agent-related-questions button,
+      .agent-source-actions a
+    ):hover {
+    border-color: var(--border-strong) !important;
+  }
+}
+
+/* Keyboard focus: the panel's controls carry focus-visible:outline-none
+   utilities and the site resets drop ring shadows, so a real outline. */
+.agent-panel-shell :is(button, a, summary):focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 2px;
+  box-shadow: none !important;
+}
+
+/* Phones: the panel is a sheet over the whole viewport. */
+@media (max-width: 767.98px) {
+  /* A sheet over the whole page is solid: glass over running text only
+     blurs it into a smudge. */
+  .agent-panel-shell .agent-liquid-panel {
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    background: var(--bg-elevated);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    animation-name: agent-sheet-in;
+  }
+  .agent-panel-shell .agent-header-action {
+    width: 42px;
+    height: 42px;
+  }
+  .agent-panel-shell .agent-composer {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .agent-panel-shell .agent-composer-hint {
+    display: none;
+  }
+  .agent-panel-shell .agent-composer textarea {
+    font-size: 16px !important;
+  }
+}
+@keyframes agent-sheet-in {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .agent-liquid-launcher,
+  .agent-panel-shell .agent-liquid-panel {
+    background: var(--bg-elevated);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* --- Inside the panel: prose, resizing, scrollbars ------------------------ */
+@layer components {
+  /* The desktop panel is anchored at its bottom right, so its resize control
+     sits on the opposite corner: a small corner mark in a 44px hit area. */
   .agent-panel-resize-handle {
     position: absolute;
     z-index: 2;
@@ -82,12 +644,11 @@
     padding: 0;
     border: 0;
     background: transparent;
-    color: var(--fg-muted);
+    color: var(--fg-faint);
     cursor: nwse-resize;
     touch-action: none;
     -webkit-tap-highlight-color: transparent;
   }
-
   .agent-panel-resize-handle::before {
     position: absolute;
     top: 1.08rem;
@@ -96,533 +657,174 @@
     height: 0.72rem;
     border-block-start: 2px solid currentColor;
     border-inline-start: 2px solid currentColor;
-    border-start-start-radius: 0.2rem;
+    border-start-start-radius: 0.3rem;
     content: "";
-    opacity: 0.72;
+    opacity: 0.6;
     transition:
       color var(--dur-fast) var(--ease-standard),
       opacity var(--dur-fast) var(--ease-standard);
   }
-
   @media (hover: hover) and (pointer: fine) {
     .agent-panel-resize-handle:hover {
       color: var(--primary);
     }
-
     .agent-panel-resize-handle:hover::before {
       opacity: 1;
     }
   }
-
   .agent-panel-resize-handle:active {
     color: var(--primary);
   }
-
   .agent-panel-resize-handle:focus-visible {
     border-radius: 0.45rem;
     outline: 2px solid var(--ring);
     outline-offset: -0.2rem;
   }
 
-  /* Thin scrollbars and a tinted selection inside the panel. The standard
-     properties cover supporting engines; the webkit pair is a fallback for
-     engines without scrollbar-width. */
   .agent-liquid-panel,
   .agent-liquid-panel * {
     scrollbar-width: thin;
-    scrollbar-color: color-mix(in oklch, var(--fg-faint) 55%, transparent)
+    scrollbar-color: color-mix(in oklch, var(--fg-faint) 45%, transparent)
       transparent;
   }
-
   .agent-liquid-panel ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
-
   .agent-liquid-panel ::-webkit-scrollbar-thumb {
     border-radius: 999px;
-    background: color-mix(in oklch, var(--fg-faint) 55%, transparent);
+    background: color-mix(in oklch, var(--fg-faint) 45%, transparent);
   }
-
   .agent-liquid-panel ::-webkit-scrollbar-track {
     background: transparent;
   }
-
   .agent-liquid-panel ::selection {
-    background: color-mix(in oklch, var(--primary) 24%, transparent);
+    background: color-mix(in oklch, var(--primary) 26%, transparent);
   }
 
   .agent-answer-prose {
     color: var(--fg);
     font-family: var(--font-sans);
-    font-size: 0.96rem;
+    font-size: 15px;
     font-weight: 400;
-    letter-spacing: 0.004em;
+    letter-spacing: 0;
     line-break: strict;
-    line-height: 1.75;
+    line-height: 1.78;
     overflow-wrap: anywhere;
     text-wrap: pretty;
   }
-
   html:lang(zh) .agent-answer-prose {
     letter-spacing: 0.012em;
-    line-height: 1.82;
+    line-height: 1.85;
   }
-
   .agent-answer-prose :where(p, ul, ol, blockquote, pre, table) {
     margin-block: 0 0.95em;
   }
-
   .agent-answer-prose :where(h1, h2, h3, h4) {
     margin-block: 1.35em 0.55em;
     color: var(--fg);
-    font-family: var(--font-caption);
-    font-weight: 650;
-    letter-spacing: 0;
-    line-height: 1.42;
+    font-family: var(--font-sans);
+    font-weight: 620;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
     text-wrap: pretty;
   }
-
   .agent-answer-prose :where(h1, h2) {
-    font-size: 1.08rem;
+    font-size: 1.06rem;
   }
-
   .agent-answer-prose :where(h3, h4) {
     font-size: 1rem;
   }
-
   .agent-answer-prose > :first-child {
     margin-top: 0;
   }
-
   .agent-answer-prose > :last-child {
     margin-bottom: 0;
   }
-
   .agent-answer-prose :where(ul, ol) {
     display: grid;
     gap: 0.42em;
     padding-inline-start: 1.3rem;
   }
-
   .agent-answer-prose li::marker {
     color: var(--primary);
   }
-
   .agent-answer-prose strong {
     color: var(--fg);
-    font-weight: 650;
+    font-weight: 620;
   }
-
   .agent-answer-prose a {
     color: var(--primary);
     text-decoration: underline;
     text-decoration-color: color-mix(in oklch, var(--primary) 45%, transparent);
     text-underline-offset: 0.2em;
   }
-
   .agent-answer-prose blockquote {
     padding-block: 0.15rem;
     padding-inline-start: 0.9rem;
     border-inline-start: 2px solid var(--primary);
     color: var(--fg-muted);
   }
-
-  .agent-answer-prose pre,
-  .agent-answer-prose table {
+  .agent-answer-prose :is(pre, table, .katex-display) {
     display: block;
     max-width: 100%;
     overflow-x: auto;
   }
-
+  .agent-answer-prose .katex {
+    color: inherit;
+  }
   .agent-answer-prose pre {
     padding: 0.85rem;
     border: 1px solid var(--border);
-    border-radius: 0.55rem;
+    border-radius: 0.7rem;
     background: var(--card);
     font-family: var(--font-mono);
     font-size: 0.82rem;
     line-height: 1.65;
   }
-
   .agent-answer-prose table {
     width: 100%;
     border-collapse: collapse;
-    font-family: var(--font-caption);
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     line-height: 1.55;
   }
-
   .agent-answer-prose :where(th, td) {
     padding: 0.45rem 0.55rem;
     border-bottom: 1px solid var(--border);
     text-align: start;
     vertical-align: top;
   }
-
   .agent-answer-prose hr {
     margin-block: 1.25rem;
     border-color: var(--border);
   }
 
   .agent-message-enter {
-    animation: agent-message-enter 180ms var(--ease-standard) both;
+    animation: agent-message-enter 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }
-
   @keyframes agent-message-enter {
     from {
       opacity: 0;
-      transform: translateY(4px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
+      translate: 0 6px;
     }
   }
 
-  /* Keyboard focus visibility for assistant controls. The site-wide
-     interactive-focus outline (liquid-materials' :focus-visible rule) never
-     reaches these controls: the panel's focusable elements carry
-     focus-visible:outline-none utilities, and the ring utilities never
-     render here because the site resets kill box-shadow. Re-establish a real
-     outline. !important is required to win against both the outline-none
-     utilities and the site reset specificity layered on top of this rule. */
-  .agent-liquid-launcher:focus-visible,
-  .agent-liquid-panel :focus-visible {
-    outline: 2px solid var(--ring) !important;
-    outline-offset: 2px;
-  }
-
-  /* Mobile: the wrapper becomes a full-screen sheet, so the panel drops its
-     chrome and fills the dynamic viewport edge to edge. */
   @media (max-width: 767.98px) {
-    .agent-liquid-panel {
-      height: 100dvh;
-      border: 0;
-      border-radius: 0;
-    }
-
     .agent-answer-prose {
-      font-size: 1rem;
+      font-size: 16px;
       line-height: 1.82;
     }
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    .agent-panel-resize-handle::before {
-      transition: none;
-    }
-
-    .agent-message-enter {
-      animation: none;
-    }
-  }
 }
 
-/* Reading assistant: same typography and blue-gray palette as the public reader. */
-.agent-panel-shell,
-.agent-liquid-launcher {
-  --font-sans:
-    "Geist", "PingFang SC", "Source Han Sans SC",
-    "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
-  --font-caption: var(--font-sans);
-  --fg: #1d2b39;
-  --fg-muted: #536677;
-  --fg-faint: #687b8b;
-  --bg-elevated: #f8fafc;
-  --card: #f1f5f8;
-  --border: #d3dfe7;
-  --border-strong: #819aa9;
-  --primary: #12647e;
-  --primary-hover: #0e5268;
-  --primary-foreground: #ffffff;
-  --ring: #0b7594;
-  --surface-inline: #e9f0f5;
-  --secondary: #e7eff5;
-  --secondary-foreground: #233c50;
-  font-family: var(--font-sans);
-}
-.dark .agent-panel-shell,
-.dark .agent-liquid-launcher {
-  --fg: #e4edf4;
-  --fg-muted: #a4b5c3;
-  --fg-faint: #8196a6;
-  --bg-elevated: #0e171f;
-  --card: #14222c;
-  --border: #2a3c49;
-  --border-strong: #637f91;
-  --primary: #89d0e5;
-  --primary-hover: #a7ddec;
-  --primary-foreground: #10222c;
-  --ring: #8cd6ec;
-  --surface-inline: #1a2c38;
-  --secondary: #1b3343;
-  --secondary-foreground: #e4edf4;
-}
-@layer components {
-  .agent-panel-shell .agent-liquid-panel {
-    border-radius: 18px;
-    background: var(--bg-elevated);
-    box-shadow: 0 18px 60px rgb(7 20 31 / 18%);
-    outline: none;
-  }
-  .agent-panel-shell .agent-liquid-panel:focus-visible {
-    outline: 2px solid var(--ring);
-    outline-offset: -2px;
-  }
-  .agent-panel-shell .agent-panel-header {
-    height: calc(68px + env(safe-area-inset-top));
-    padding-inline: 18px;
-    border-bottom: 0;
-  }
-  .agent-panel-shell .agent-panel-header h2 {
-    font-size: 17px;
-    font-weight: 600;
-  }
-  .agent-panel-shell .agent-panel-header p {
-    font-size: 12px;
-  }
-  .agent-panel-shell .agent-header-mark {
-    border: 0;
-    background: transparent;
-    color: var(--primary);
-  }
-  .agent-panel-shell .agent-header-mark svg {
-    width: 22px;
-    height: 22px;
-  }
-  .agent-panel-shell .agent-header-action {
-    width: 36px;
-    height: 36px;
-    border: 1px solid transparent;
-    border-radius: 9px;
-  }
-  .agent-panel-shell .agent-context-row {
-    margin: 0 20px 6px;
-    padding: 8px 0 12px;
-    border-bottom: 1px solid var(--border);
-  }
-  .agent-panel-shell .agent-context-row p {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    font-size: 13px;
-    line-height: 1.5;
-  }
-  .agent-panel-shell .agent-message-scroller {
-    padding: 18px 20px 24px;
-  }
-  .agent-panel-shell .agent-empty-state {
-    padding-top: 28px;
-    gap: 24px;
-  }
-  .agent-panel-shell .agent-empty-state h3 {
-    margin-bottom: 10px;
-    font-size: 22px;
-    font-weight: 500;
-    letter-spacing: 0;
-  }
-  .agent-panel-shell .agent-empty-state p {
-    font-size: 15px;
-    line-height: 1.75;
-  }
-  .agent-panel-shell .agent-prompt-row {
-    margin-block: 3px;
-    padding: 10px 12px;
-    border: 1px solid transparent;
-    border-radius: 10px;
-    color: var(--fg);
-  }
-  .agent-panel-shell .agent-prompt-row > span {
-    display: none;
-  }
-  .agent-panel-shell .agent-prompt-row::after {
-    content: "↗";
-    margin-left: auto;
-    color: var(--fg-faint);
-  }
-  .agent-panel-shell .agent-header-action[aria-expanded="true"] {
-    background: var(--surface-inline);
-    color: var(--fg);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .agent-panel-shell :is(.agent-header-action, .agent-prompt-row):hover {
-      border-color: var(--border-strong);
-      background: var(--surface-inline);
-    }
-  }
-  .agent-panel-shell :is(button, a, summary):focus-visible,
-  .agent-liquid-launcher:focus-visible {
-    outline: 2px solid var(--ring) !important;
-    outline-offset: 2px;
-    box-shadow: none !important;
-  }
-  .agent-panel-shell .agent-composer {
-    padding: 10px 16px 12px;
-    border-top: 0;
-  }
-  .agent-panel-shell .agent-composer-field {
-    align-items: flex-end;
-    padding: 8px;
-    gap: 6px;
-    border: 1px solid var(--border-strong);
-    border-radius: 14px;
-    background: var(--card);
-  }
-  .agent-panel-shell .agent-composer-field:focus-within {
-    outline: 2px solid var(--ring);
-    outline-offset: 1px;
-  }
-  .agent-panel-shell .agent-composer textarea {
-    border: 0 !important;
-    border-radius: 0;
-    padding: 8px 6px;
-    background: transparent !important;
-    box-shadow: none !important;
-    outline: none !important;
-    font-size: 16px;
-    line-height: 1.5;
-    min-height: 40px;
-  }
-  .agent-panel-shell .agent-composer button {
-    border-radius: 10px;
-    width: 40px;
-    height: 40px;
-  }
-  .agent-panel-shell .agent-composer-hint {
-    margin: 8px 4px 0;
-    font-size: 11px;
-    line-height: 1.4;
-    color: var(--fg-faint);
-  }
-  .agent-panel-shell .agent-answer-prose {
-    font-size: 15px;
-    line-height: 1.8;
-    letter-spacing: 0;
-  }
-  .agent-panel-shell .agent-message-user > div {
-    border-radius: 13px 13px 4px 13px;
-    font-size: 15px;
-    line-height: 1.7;
-  }
-  .agent-panel-shell .agent-history-panel {
-    margin: 2px 16px 0;
-    padding: 12px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: var(--card);
-  }
-  .agent-panel-shell .agent-history-panel button {
-    background: transparent;
-    border-color: transparent;
-  }
-  .agent-panel-shell .agent-answer-prose :is(pre, table, .katex-display) {
-    max-width: 100%;
-    overflow-x: auto;
-  }
-  .agent-panel-shell .agent-answer-prose .katex {
-    color: inherit;
-  }
-  @media (max-width: 767px) {
-    .agent-panel-shell .agent-liquid-panel {
-      border-radius: 0;
-      border: 0;
-    }
-    .agent-panel-shell .agent-header-action {
-      width: 40px;
-      height: 40px;
-    }
-    .agent-panel-shell .agent-composer {
-      padding-bottom: max(12px, env(safe-area-inset-bottom));
-    }
-    .agent-panel-shell .agent-composer-hint {
-      display: none;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .agent-panel-shell *,
-    .agent-liquid-launcher {
-      animation: none !important;
-      transition: none !important;
-    }
-  }
-}
-@layer components {
-  .agent-panel-shell .agent-sources {
-    border-top: 0;
-    padding-top: 4px;
-  }
-  .agent-panel-shell .agent-sources > div:first-child {
-    gap: 10px;
-  }
-  .agent-panel-shell .agent-sources span[class*="border"] {
-    border-color: transparent;
-    background: var(--surface-inline);
-  }
-  .agent-panel-shell .agent-source-list > div {
-    border-color: transparent;
-    background: var(--card);
-    border-radius: 10px;
-  }
-  .agent-panel-shell .agent-source-list a {
-    width: 36px;
-    height: 36px;
-    border-color: transparent;
-  }
-  .agent-panel-shell .agent-source-list a:hover {
-    border-color: var(--border-strong);
-  }
-}
-@layer components {
-  .agent-panel-shell .agent-composer textarea {
-    font-size: 16px !important;
-    border-radius: 0 !important;
-  }
-  .agent-panel-shell .agent-empty-state p {
-    font-size: 15px !important;
-  }
-}
-@layer components {
-  .agent-panel-shell .agent-composer-field:focus-within {
-    border-color: var(--ring);
-    outline-offset: -1px;
-  }
-  .agent-panel-shell .agent-source-heading {
-    display: flex !important;
-    flex-direction: column;
-    align-items: stretch !important;
-    gap: 6px;
-  }
-  .agent-panel-shell .agent-source-actions {
-    width: 100%;
-    min-width: 0;
-  }
-  .agent-panel-shell .agent-source-actions a {
-    margin-left: auto;
-    width: 36px !important;
-    height: 36px !important;
-  }
-  .agent-panel-shell .agent-source-list > div {
-    border-color: transparent !important;
-    background: var(--card) !important;
-  }
-  .agent-panel-shell .agent-sources span[class*="border"] {
-    border-color: transparent !important;
-  }
-  .agent-panel-shell .agent-related-questions {
-    border-top: 0;
-  }
-  .agent-panel-shell .agent-related-questions button {
-    border-color: transparent;
-    background: var(--card);
-    border-radius: 10px;
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .agent-panel-shell
-      :is(.agent-source-list > div, .agent-related-questions button):hover {
-      border-color: var(--border-strong) !important;
-    }
+@media (prefers-reduced-motion: reduce) {
+  .agent-panel-shell *,
+  .agent-panel-shell .agent-liquid-panel,
+  .agent-liquid-launcher,
+  .agent-liquid-launcher *,
+  .agent-liquid-launcher::after,
+  .agent-launcher-orb::after {
+    animation: none !important;
+    transition: none !important;
   }
 }

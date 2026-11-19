@@ -17,14 +17,13 @@ import {
 import { useLocation } from "wouter";
 import {
   AlertCircle,
-  BookOpen,
+  ArrowUp,
   ExternalLink,
   FileText,
   History,
   Loader2,
   LogIn,
   RotateCcw,
-  Send,
   Square,
   SquarePen,
   X,
@@ -37,6 +36,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useIsMobile } from "@/hooks/useMobile";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
+import { COVERED_ATTRIBUTE } from "@/lib/skyEvents";
 import "@/styles/agent-surfaces.css";
 import {
   buildRouteContext,
@@ -368,6 +368,15 @@ export function BlogAgentRoot() {
     return () =>
       window.removeEventListener(BLOG_AGENT_OPEN_EVENT, handleExternalOpen);
   }, []);
+
+  // On a phone the panel is a sheet over the whole viewport: the sky under
+  // it has nothing to show, so it stops drawing until the sheet closes.
+  useEffect(() => {
+    if (!open || !isMobile || hiddenOnRoute) return;
+    const root = document.documentElement;
+    root.setAttribute(COVERED_ATTRIBUTE, "true");
+    return () => root.removeAttribute(COVERED_ATTRIBUTE);
+  }, [open, isMobile, hiddenOnRoute]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -916,10 +925,50 @@ export function AgentLauncher({
       )}
     >
       <span className="agent-launcher-orb grid h-8 w-8 place-items-center">
-        <BookOpen className="h-4 w-4" />
+        <AgentGlyph />
       </span>
-      <span className="hidden sm:inline">{label}</span>
+      <span className="agent-launcher-label hidden sm:inline">{label}</span>
+      <kbd className="agent-launcher-key" aria-hidden="true">
+        {shortcutLabel()}
+      </kbd>
     </button>
+  );
+}
+
+/** The shortcut that toggles the assistant, as this platform writes it. */
+function shortcutLabel() {
+  const platform =
+    typeof navigator === "undefined"
+      ? ""
+      : ((navigator as Navigator & { userAgentData?: { platform?: string } })
+          .userAgentData?.platform ?? navigator.platform);
+  return /mac|iphone|ipad/i.test(platform) ? "⌘I" : "Ctrl I";
+}
+
+/**
+ * The assistant's mark: a four-pointed star with a small companion, drawn
+ * like the bright stars of the sky behind it.
+ */
+export function AgentGlyph({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn("agent-glyph", className)}
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M10 2.5c.5 4.6 2.4 6.5 7 7-4.6.5-6.5 2.4-7 7-.5-4.6-2.4-6.5-7-7 4.6-.5 6.5-2.4 7-7Z"
+        fill="currentColor"
+      />
+      <path
+        className="agent-glyph-companion"
+        d="M18.5 14.5c.24 2.1 1.1 2.96 3.2 3.2-2.1.24-2.96 1.1-3.2 3.2-.24-2.1-1.1-2.96-3.2-3.2 2.1-.24 2.96-1.1 3.2-3.2Z"
+        fill="currentColor"
+      />
+    </svg>
   );
 }
 
@@ -1081,7 +1130,7 @@ export function AgentPanel({
           className="agent-header-mark grid h-8 w-8 shrink-0 place-items-center"
           aria-hidden="true"
         >
-          <BookOpen className="h-4 w-4" />
+          <AgentGlyph />
         </span>
         <div className="min-w-0 flex-1">
           <h2 id={titleId} className="truncate font-semibold text-[var(--fg)]">
@@ -1116,19 +1165,16 @@ export function AgentPanel({
         <p title={postTitle} className="text-xs text-[var(--fg-muted)]">
           {isPostRoute && postTitle ? (
             <>
-              <span className="text-[var(--fg-faint)]">
+              <span className="agent-context-label">
                 {t("agent.context.currentReading")}
               </span>
-              <span
-                className="mx-1.5 text-[var(--fg-faint)]"
-                aria-hidden="true"
-              >
-                ·
-              </span>
-              {postTitle}
+              <span className="sr-only">: </span>
+              <span className="agent-context-title">{postTitle}</span>
             </>
           ) : (
-            t("agent.context.siteWide")
+            <span className="agent-context-label">
+              {t("agent.context.siteWide")}
+            </span>
           )}
         </p>
       </div>
@@ -1197,10 +1243,9 @@ export function AgentPanel({
                   onClick={() => onPrompt(prompt)}
                   className="agent-prompt-row group flex items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-sm leading-6 text-[var(--fg-muted)] transition-colors hover:text-[var(--fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:opacity-60"
                 >
-                  <span
-                    aria-hidden="true"
-                    className="h-3.5 w-px shrink-0 bg-[var(--border)] transition-colors group-hover:bg-[var(--primary)]"
-                  />
+                  <span aria-hidden="true" className="agent-prompt-index">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
                   {isPostRoute && index === 0
                     ? t("agent.prompts.postAbstraction")
                     : prompt}
@@ -1361,9 +1406,9 @@ export function AgentPanel({
             className="h-11 w-11 shrink-0 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-hover)] sm:h-10 sm:w-10"
           >
             {sending ? (
-              <Square className="h-4 w-4" />
+              <Square className="h-3.5 w-3.5" fill="currentColor" />
             ) : (
-              <Send className="h-4 w-4" />
+              <ArrowUp className="h-4 w-4" strokeWidth={2.4} />
             )}
           </Button>
         </div>

@@ -177,7 +177,9 @@ export default function Home() {
             </dl>
             <a className="cosmos-scroll" href="#featured">
               <span>{zh ? "向下" : "Scroll"}</span>
-              <ArrowDown size={14} aria-hidden="true" />
+              <span className="cosmos-scroll-arrow" aria-hidden="true">
+                <ArrowDown size={14} />
+              </span>
             </a>
           </div>
           <div

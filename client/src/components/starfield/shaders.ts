@@ -64,6 +64,7 @@ export const PARTICLE_VERTEX = /* glsl */ `
   varying float vHot;
   varying vec4 vShape;
   varying vec2 vEdge;
+  varying vec3 vStreak;
 
   vec3 rotate(vec4 q, vec3 v) {
     return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
@@ -128,17 +129,19 @@ export const PARTICLE_VERTEX = /* glsl */ `
   }
 
   // Day: the same points printed on a cool white, written as absorbance, so
-  // overlapping ink deepens and keeps its hue instead of greying. Navy on
-  // the outer rims, through indigo and violet, to a rose-magenta heart; each
+  // overlapping ink deepens and keeps its hue instead of greying. Cobalt on
+  // the outer rims, through indigo and violet, to a magenta heart; each
   // point sits a little to one side of its neighbours' hue, and a few are
-  // set apart in cyan or ultramarine. The signature is crimson.
+  // set apart in rose or ultramarine. Every ink leaves most of the blue
+  // channel open, so dense beads stay a saturated blue rather than going
+  // black. The signature is crimson.
   vec3 inkColor(float s, float temperature, float tint, float seal) {
     float w = clamp(s + uWarmth * 0.34 + temperature * 0.1 + (tint - 0.5) * 0.22, 0.0, 1.0);
-    vec3 ink = mix(vec3(3.0, 2.6, 1.25), vec3(2.5, 2.4, 0.8), smoothstep(0.0, 0.3, w));
-    ink = mix(ink, vec3(1.75, 2.5, 0.9), smoothstep(0.28, 0.66, w));
-    ink = mix(ink, vec3(0.8, 2.4, 1.2), smoothstep(0.62, 1.0, w));
-    ink = mix(ink, vec3(2.6, 0.95, 0.7), step(1.5, temperature));
-    ink = mix(ink, vec3(2.9, 1.9, 0.35), step(1.5, -temperature));
+    vec3 ink = mix(vec3(2.9, 2.45, 0.42), vec3(2.45, 2.5, 0.4), smoothstep(0.0, 0.3, w));
+    ink = mix(ink, vec3(1.6, 2.6, 0.48), smoothstep(0.28, 0.66, w));
+    ink = mix(ink, vec3(0.62, 2.5, 0.95), smoothstep(0.62, 1.0, w));
+    ink = mix(ink, vec3(0.5, 2.3, 1.0), step(1.5, temperature));
+    ink = mix(ink, vec3(2.8, 1.75, 0.24), step(1.5, -temperature));
     return mix(ink, vec3(0.35, 2.5, 1.6), seal);
   }
 
@@ -311,8 +314,11 @@ export const PARTICLE_VERTEX = /* glsl */ `
     float day = pow(aLook.x, 0.42) * alpha * energy * (kind > 5.5 ? 0.05 : 1.15 * load)
       * mix(1.0, 1.2, lit);
     ext = mix(ext, mix(2.4, 3.6, prominence), uLight * step(kind, 5.5));
-    halo *= mix(1.0, 0.22, uLight);
-    spike *= mix(1.0, 0.55, uLight);
+    // A soft ring of ink round a dense core reads as a burn: by day a bright
+    // point keeps a clean edge and a fine cross.
+    halo *= 1.0 - uLight;
+    spike *= mix(1.0, 0.6, uLight);
+    day = min(day, 1.25);
 
     vec3 nightColor = mix(starColor(s, temperature), vec3(1.0), 0.3 * prominence) * night;
     float seal = kind > 1.5 && kind < 2.5 ? uSignature : 0.0;
@@ -324,6 +330,7 @@ export const PARTICLE_VERTEX = /* glsl */ `
     vShape = vec4(reach, halo, spike, bokeh);
     vEdge = vec2(drawn, soft);
     vUv = position.xy;
+    vStreak = vec3(1.0, 0.0, 0.0);
 
     float size = drawn * reach;
     vec2 corner = px + position.xy * size;
@@ -340,9 +347,16 @@ export const PARTICLE_FRAGMENT = /* glsl */ `
   varying float vHot;
   varying vec4 vShape;
   varying vec2 vEdge;
+  // A point in motion is drawn as a short streak: xy is the screen direction
+  // of the quad's long axis, z the half length of the streak in quad units.
+  varying vec3 vStreak;
 
   void main() {
-    float d2 = dot(vUv, vUv);
+    // Distance from the streak's segment, not its centre: at rest the
+    // segment is a point and this is the plain radial profile.
+    vec2 q = vUv;
+    q.x = sign(q.x) * max(0.0, abs(q.x) - vStreak.z);
+    float d2 = dot(q, q);
     if (d2 > 1.0) discard;
     float d = sqrt(d2);
     float x = d * vShape.x;
@@ -354,7 +368,8 @@ export const PARTICLE_FRAGMENT = /* glsl */ `
     float gauss = exp(-x * x * 0.5);
     float core = mix(1.4 * pip + 0.1 * gauss, gauss, vEdge.y);
     float halo = vShape.y * exp(-x * 0.62);
-    vec2 a = abs(vUv);
+    // Spikes stay on the screen's axes whichever way the streak runs.
+    vec2 a = abs(vStreak.xy * q.x + vec2(-vStreak.y, vStreak.x) * q.y);
     float spike = vShape.z * 0.42 * (
       exp(-a.y * vShape.x * 1.5) * exp(-a.x * 4.2) +
       exp(-a.x * vShape.x * 1.5) * exp(-a.y * 4.2));
@@ -391,12 +406,18 @@ export const SKY_VERTEX = /* glsl */ `
   uniform float uGain;
   uniform float uLevel;
   uniform vec4 uQuiet;
+  // The camera's travel: velocity (CSS px/s for the nearest layer, screen
+  // axes, y down) times the exposure, and the forward push of a page change
+  // about a focal point (CSS px from the top left).
+  uniform vec2 uSmear;
+  uniform vec3 uPush;
 
   varying vec2 vUv;
   varying vec3 vColor;
   varying float vHot;
   varying vec4 vShape;
   varying vec2 vEdge;
+  varying vec3 vStreak;
 
   void main() {
     float depth = aParam.z;
@@ -405,6 +426,8 @@ export const SKY_VERTEX = /* glsl */ `
 
     // Where the tile puts the star on screen, in CSS px from the top left.
     vec2 s = mod(aParam.xy * uTile - uOffset * depth, uTile) - ${SKY_MARGIN.toFixed(1)};
+    // Travelling into a new page, nearer stars stream outward further.
+    s = uPush.xy + (s - uPush.xy) * (1.0 + uPush.z * depth);
     vec2 px = vec2(s.x - uView.x * 0.5, uView.y * 0.5 - s.y) * uDpr;
 
     // Behind a text column the sky is calmer: dimmer, it holds still, and no
@@ -431,11 +454,22 @@ export const SKY_VERTEX = /* glsl */ `
     float ext = mix(2.4, mix(5.0, 9.0, prominence), star);
     float halo = star * mix(0.05, 0.16, prominence);
     float spike = smoothstep(4.0, 7.5, bright);
-    ext = mix(ext, mix(2.4, 3.6, prominence), uLight);
-    halo *= mix(1.0, 0.22, uLight);
-    spike *= mix(1.0, 0.5, uLight);
+    // In print a star is a clean dot, a bright one with a fine cross; a soft
+    // ring of ink round a dark core reads as a burn, not a star.
+    ext = mix(ext, mix(2.4, 4.2, prominence), uLight);
+    halo *= 1.0 - uLight;
+    spike *= mix(1.0, 0.7, uLight);
 
     float alpha = uLevel * (1.0 - calm);
+
+    // Moving fast, a point smears along its path: the exposure of one frame.
+    // Nearer stars travel further and streak longer; the light spreads over
+    // the streak rather than adding to it.
+    vec2 smear = vec2(uSmear.x, -uSmear.y) * depth * uDpr;
+    float run = min(length(smear), 26.0 * uDpr);
+    vec2 axis = run > 1e-3 ? normalize(smear) : vec2(1.0, 0.0);
+    float reach = 0.5 * run;
+    float spread = drawn / (drawn + reach);
 
     // Night: cool blue-white through to warm, the band's own stars blushed.
     float w = clamp(0.5 + temperature * 0.35, 0.0, 1.0);
@@ -444,22 +478,32 @@ export const SKY_VERTEX = /* glsl */ `
     night = mix(night, vec3(0.42, 0.56, 1.0), step(1.5, -temperature));
     night = mix(night, vec3(1.0, 0.8, 0.9), 0.3 * aParam.w);
     night = mix(night, vec3(1.0), 0.3 * prominence);
-    float glow = bright * alpha * energy * twinkle;
+    float glow = bright * alpha * energy * twinkle * spread;
 
-    // Day: crisp navy points, the band's in violet, a few in cyan. Faint
-    // dust stays faint: on a light ground a field of dark specks reads as
-    // dirt, not depth.
-    vec3 ink = mix(vec3(3.0, 2.6, 1.2), vec3(1.9, 2.5, 0.9), aParam.w * 0.8);
-    ink = mix(ink, vec3(2.6, 1.0, 0.8), step(1.5, temperature));
-    float speck = pow(bright, 0.95) * alpha * energy * 1.25;
+    // Day: a star atlas in cobalt. The field is printed as clean cobalt
+    // points, the brightest in deep indigo, the band's and the warm ones in
+    // violet, the cool ones in ultramarine; the unresolved dust is left
+    // unprinted except as a fine violet grain along the band. Every ink
+    // keeps its blue channel open, so even the darkest point is a saturated
+    // blue, never black. (Red specks on white read as confetti, not stars.)
+    vec3 ink = mix(vec3(2.9, 2.4, 0.32), vec3(3.2, 3.0, 0.75), prominence);
+    ink = mix(ink, vec3(1.7, 2.6, 0.38), aParam.w * 0.85);
+    ink = mix(ink, vec3(1.35, 2.5, 0.4), step(1.5, temperature));
+    ink = mix(ink, vec3(2.8, 1.75, 0.22), step(1.5, -temperature));
+    float printed = mix(smoothstep(0.14, 0.42, bright), 0.55 * smoothstep(0.03, 0.16, bright), aParam.w * step(bright, 0.24));
+    float speck = min(1.15, pow(bright, 0.9) * 1.3) * printed * alpha * energy * spread;
 
     vColor = mix(night * glow, ink * speck, uLight) * uGain;
     vHot = glow * prominence * 0.7 * (1.0 - uLight) * uGain;
     vShape = vec4(ext, halo, spike, 0.0);
     vEdge = vec2(drawn, soft);
-    vUv = position.xy;
 
-    vec2 corner = px + position.xy * drawn * ext;
+    float size = drawn * ext;
+    vec2 side = vec2(-axis.y, axis.x);
+    vec2 corner = px + axis * position.x * (size + reach) + side * position.y * size;
+    vUv = vec2(position.x * (size + reach) / size, position.y);
+    vStreak = vec3(axis, reach / size);
+
     float visible = step(0.0008, max(glow * (1.0 - uLight), speck * uLight));
     gl_Position = vec4(corner / (uResolution * 0.5), 0.0, 1.0);
     if (visible < 0.5) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
@@ -477,7 +521,10 @@ export const NEBULA_FRAGMENT = /* glsl */ `
   #define TAU 6.28318530718
   #define PI 3.14159265359
 
-  uniform vec2 uView;
+  // The target covers the view and a margin round it, so small moves of the
+  // sky are a shift of this texture rather than a fresh render.
+  uniform vec2 uArea;
+  uniform float uMargin;
   uniform float uTile;
   uniform vec2 uOffset;
   uniform vec2 uMorph;
@@ -522,7 +569,7 @@ export const NEBULA_FRAGMENT = /* glsl */ `
   }
 
   void main() {
-    vec2 s = vec2(vUv.x, 1.0 - vUv.y) * uView;
+    vec2 s = vec2(vUv.x, 1.0 - vUv.y) * uArea - uMargin;
     vec2 u = fract((s + ${SKY_MARGIN.toFixed(1)} + uOffset) / uTile);
 
     // Band coordinates: along the band, and across it (with its wander).
@@ -562,10 +609,13 @@ export const NEBULA_FRAGMENT = /* glsl */ `
     night = mix(night, vec3(1.0, 0.33, 0.62), smoothstep(0.34, 0.8, heat));
     night = night * density + vec3(1.0, 0.62, 0.62) * knot * 0.9;
 
-    // Ink: a periwinkle wash at the edges, lavender in the body, a touch of
-    // rose in the knots.
-    vec3 day = mix(vec3(0.62, 0.48, 0.14), vec3(0.46, 0.62, 0.16), smoothstep(0.15, 0.7, heat));
-    day = day * density + vec3(0.2, 0.6, 0.32) * knot * 0.6;
+    // By day, a watercolour of light rather than a smudge of grey: periwinkle
+    // at the edges, lilac in the body, rose where it is densest. Each wash
+    // takes red and green but leaves the blue channel almost untouched, which
+    // is what keeps it clear and luminous on the white instead of muddy.
+    vec3 day = mix(vec3(0.56, 0.4, 0.015), vec3(0.34, 0.6, 0.03), smoothstep(0.1, 0.5, heat));
+    day = mix(day, vec3(0.1, 0.56, 0.2), smoothstep(0.45, 0.85, heat));
+    day = day * density + vec3(0.06, 0.5, 0.22) * knot * 0.7;
 
     vec3 value = mix(night, day, uLight) * uLevel;
     gl_FragColor = vec4(clamp(value / uRange, 0.0, 1.0), 1.0);
@@ -589,6 +639,11 @@ export const COMPOSITE_FRAGMENT = /* glsl */ `
   uniform sampler2D tBloom;
   uniform sampler2D tNebula;
   uniform vec2 uNebulaSize;
+  // Where this frame's view falls in the (possibly older, larger) nebula
+  // target: uv * xy + zw; and the push about a focal point (xy in uv, z the
+  // scale), the same push the stars take, at the nebula's depth.
+  uniform vec4 uNebulaMap;
+  uniform vec3 uNebulaPush;
   uniform float uNebulaRange;
   uniform vec4 uQuiet;
   uniform float uBloom;
@@ -663,7 +718,8 @@ export const COMPOSITE_FRAGMENT = /* glsl */ `
     // The nebula, calmer behind the text column, and never so bright there
     // that muted text loses its contrast: by night its light is capped, by
     // day its ink.
-    vec3 nebula = smoothSample(tNebula, vUv, uNebulaSize) * uNebulaRange;
+    vec2 nebulaUv = uNebulaPush.xy + (vUv - uNebulaPush.xy) / uNebulaPush.z;
+    vec3 nebula = smoothSample(tNebula, nebulaUv * uNebulaMap.xy + uNebulaMap.zw, uNebulaSize) * uNebulaRange;
     float column = 1.0 - smoothstep(uQuiet.y, uQuiet.y + uQuiet.z, abs(gl_FragCoord.x - uQuiet.x));
     column *= step(0.001, uQuiet.w);
     nebula *= 1.0 - uQuiet.w * column;
@@ -672,7 +728,12 @@ export const COMPOSITE_FRAGMENT = /* glsl */ `
     nebula *= min(1.0, cap / max(strength, 1e-5));
 
     vec3 night = uNight + uAir * air + nebula + aces((scene + bloom * uBloom) * uExposure);
-    vec3 day = uPaper * exp(-(scene * uInk + bloom * uBleed + nebula));
+    // By day the paper is lit like porcelain: even across the middle, the far
+    // corners a breath cooler, which gives the white some depth.
+    vec2 fromMiddle = (vUv - 0.5) * vec2(uResolution.x / uResolution.y, 1.0);
+    float corner = smoothstep(0.5, 1.3, length(fromMiddle));
+    vec3 paper = uPaper * (1.0 - corner * vec3(0.05, 0.036, 0.004));
+    vec3 day = paper * exp(-(scene * uInk + bloom * uBleed + nebula));
     vec3 color = encode(clamp(mix(night, day, uLight), 0.0, 1.0));
 
     // Triangular dither keeps the soft gradients free of banding.

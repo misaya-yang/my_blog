@@ -215,7 +215,9 @@ html[lang^="zh"]
   border-radius: 50%;
   border: 1px solid currentColor;
   opacity: 0;
-  animation: cosmos-ping 2.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  /* A signal as the page arrives, then a steady light: an endless loop
+     would keep the page restyling every frame for an effect long seen. */
+  animation: cosmos-ping 2.8s cubic-bezier(0.16, 1, 0.3, 1) 6;
 }
 @keyframes cosmos-ping {
   0% {
@@ -379,8 +381,11 @@ html[lang^="zh"] .public-universe .cosmos-hero-lead {
   text-transform: uppercase;
   text-decoration: none;
 }
-.public-universe .cosmos-scroll svg {
-  animation: cosmos-nudge 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+/* The nudge moves a wrapper, not the icon: an SVG's transform cannot run on
+   the compositor, so animating it would restyle the page every frame. */
+.public-universe .cosmos-scroll-arrow {
+  display: inline-grid;
+  animation: cosmos-nudge 2.4s cubic-bezier(0.45, 0, 0.55, 1) 6;
 }
 @keyframes cosmos-nudge {
   0%,
@@ -448,7 +453,7 @@ html[lang^="zh"] .public-universe .cosmos-hero-lead {
 
 @media (prefers-reduced-motion: reduce) {
   .public-universe .cosmos-kicker-pulse::after,
-  .public-universe .cosmos-scroll svg {
+  .public-universe .cosmos-scroll-arrow {
     animation: none;
   }
   .public-universe :is(.cosmos-cta, .cosmos-cta svg, .cosmos-link) {

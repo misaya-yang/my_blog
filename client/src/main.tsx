@@ -17,6 +17,7 @@ import "./styles/public-surfaces.css";
 import "./styles/starfield.css";
 import "./styles/page-flow.css";
 import "./styles/cosmos.css";
+import "./styles/surfaces.css";
 import { initAnalytics } from "./lib/analytics";
 
 const queryClient = new QueryClient();

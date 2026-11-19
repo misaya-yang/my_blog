@@ -197,10 +197,12 @@ html.dark:has(.public-universe) {
 /* --- Day: a star atlas ---------------------------------------------------
    A crisp, cool white with the faintest blue in it, deep-space ink for text,
    and one electric cobalt for everything that can be followed. The sky is
-   printed in the same inks: navy and indigo stars, a periwinkle wash for the
-   nebula, and the rose running from indigo through violet to a rose-magenta
-   heart, the signature alone in crimson. No warm paper, no ochre: on a warm
-   ground the coloured specks read as stains. */
+   printed in the same inks (shaders.ts): clean cobalt points with only the
+   brighter stars printed, a lilac-to-rose watercolour for the nebula, and
+   the rose running from cobalt through violet to a magenta heart, the
+   signature alone in crimson. Every ink leaves the blue channel open, so
+   nothing prints black or grey. No warm paper, no ochre: on a warm ground
+   the coloured specks read as stains. */
 html:not(.dark):has(.public-universe) {
   --v2-paper-warm: #f5f7fc;
   background: #f5f7fc;

@@ -46,6 +46,8 @@ import {
   SKY_VERTEX,
   TRAIL_SAMPLES,
 } from "./shaders";
+import { COVERED_ATTRIBUTE, DEPART_EVENT } from "@/lib/skyEvents";
+import { SkyFlight, pageLevel } from "./flight";
 import { NEBULA_DEPTH, buildSky, panThrough, skyShare, skyTile } from "./sky";
 import { TurnMotion } from "./turnMotion";
 
@@ -57,6 +59,7 @@ export const DAY_PAPER = "#f5f7fc";
 export const ANCHOR_SELECTOR = "[data-rose-anchor]";
 /** A text column the sky stays out of. */
 export const QUIET_SELECTOR = "[data-rose-quiet]";
+
 
 const KEY_TURN = Math.PI / 12;
 const INTRO_SECONDS = 4.2;
@@ -76,13 +79,32 @@ const SKY_SCROLL = 0.2;
 const SKY_FPS = 30;
 /** Nebula emission (night) or absorbance (day) that fills its 8-bit target. */
 const NEBULA_RANGE = 0.1;
+const NEBULA_RANGE_DAY = 0.26;
 /** Nebula strength: emitted light at night, ink absorbance by day. */
 const NEBULA_NIGHT = 0.04;
-const NEBULA_DAY = 0.15;
+const NEBULA_DAY = 0.34;
 /** How much a text column calms each layer: [wide screens, phones]. */
 const QUIET_FIGURE = 0.86;
 const QUIET_STARS = [0.62, 0.35];
 const QUIET_NEBULA = [0.58, 0.25];
+/**
+ * A scroll this far in one frame is a jump (a new page starting at its top,
+ * a restored position), not a scroll: it is folded into the pan so the sky
+ * does not cut.
+ */
+const SCROLL_JUMP = 480;
+/** Exposure of one frame, in seconds: how long a moving star smears. */
+const SHUTTER = 1 / 110;
+/**
+ * The forward push of a page change, as a share of the nearest stars'
+ * distance from the focal point: going deeper (home → index → note), across,
+ * or back up.
+ */
+const PUSH = { deeper: 0.075, across: 0.05, up: 0.032 };
+/** The nebula target reaches this share of the view past each edge. */
+const NEBULA_REACH = 0.14;
+/** Even at rest the gas churns; it is re-rendered at least this often. */
+const NEBULA_REFRESH_MS = 700;
 
 /** Whether the element itself carries text a reader might want to select. */
 const hasOwnText = (element: Element | null) => {
@@ -264,6 +286,8 @@ export function createStarfield(
     uGain: uniforms.uGain,
     uLevel: { value: 1 },
     uQuiet: { value: new Vector4(0, 0, 1, 0) },
+    uSmear: { value: new Vector2() },
+    uPush: { value: new Vector3() },
   };
   const skyMaterial = new ShaderMaterial({
     vertexShader: SKY_VERTEX,
@@ -294,7 +318,8 @@ export function createStarfield(
     magFilter: LinearFilter,
   });
   const nebulaUniforms = {
-    uView: skyUniforms.uView,
+    uArea: { value: new Vector2(1, 1) },
+    uMargin: { value: 0 },
     uTile: skyUniforms.uTile,
     uOffset: { value: new Vector2() },
     uMorph: { value: new Vector2() },
@@ -337,10 +362,12 @@ export function createStarfield(
     tBloom: { value: black as DataTexture | WebGLRenderTarget["texture"] },
     tNebula: { value: nebulaTarget.texture },
     uNebulaSize: { value: new Vector2(1, 1) },
+    uNebulaMap: { value: new Vector4(1, 1, 0, 0) },
+    uNebulaPush: { value: new Vector3(0.5, 0.5, 1) },
     uNebulaRange: { value: NEBULA_RANGE },
     uQuiet: { value: new Vector4(0, 0, 1, 0) },
     uBloom: { value: 0.58 },
-    uBleed: { value: 0.2 },
+    uBleed: { value: 0.12 },
     uInk: { value: 1.4 },
     uLight: { value: options.light ? 1 : 0 },
     uExposure: { value: 1.05 },
@@ -385,9 +412,12 @@ export function createStarfield(
   let form: RoseForm = { ...formForPath(page) };
   let formTarget: RoseForm = formForPath(page);
 
-  // The figure's place on the page, in document CSS pixels.
+  // The figure's place on the page, in document CSS pixels. Position and
+  // size glide on a critically damped spring, so a figure moving between
+  // pages sets off and lands without a jolt.
   const place = { x: 0, y: 0, size: 0, follow: 1, level: 1 };
   const placeTarget = { x: 0, y: 0, size: 0, follow: 1, level: 1 };
+  const placeVelocity = { x: 0, y: 0, size: 0 };
   let placed = false;
   let anchor: HTMLElement | null = null;
   // An anchor the layout has hidden (display: none) asks for no figure.
@@ -398,13 +428,38 @@ export function createStarfield(
   const quietBox = { x: 0, half: 0, strength: 0 };
   let quietStrength = 0;
 
-  // The sky: the camera's pan across its tile, carried by a critically
-  // damped spring, so a page change glides to the new view and settles.
+  // The sky: the camera's pan across its tile. A page change flies it to the
+  // new page's view along one smooth curve (flight.ts).
   let tile = 2000;
   let tileSet = false;
-  const pan = { x: 0, y: 0, vx: 0, vy: 0 };
-  const panTarget = { x: 0, y: 0 };
+  const flight = new SkyFlight();
   let panSet = false;
+  // Scroll jumps folded into the pan since the last page change, in pan px.
+  let folded = 0;
+  let lastScrollY = 0;
+  let scrollSeen = false;
+  let scrollVelocity = 0;
+  let pageChangedAt = -Infinity;
+  // Where along the band this page looks, in pan px; chosen once per page.
+  let pageAlong: number | null = null;
+  // The forward push of a page change, and where it pushes from.
+  let push = 0;
+  let pushAmount = PUSH.across;
+  let departedAt = -Infinity;
+  const focal = { x: 0, y: 0 };
+  const smear = new Vector2();
+  let covered = root().hasAttribute(COVERED_ATTRIBUTE);
+  // What the nebula target was last rendered for.
+  const nebulaDrawn = {
+    valid: false,
+    x: 0,
+    y: 0,
+    at: 0,
+    level: -1,
+    light: -1,
+    margin: 0,
+  };
+  let nebulaRenders = 0;
   let skyLive = false;
   let lastDraw = 0;
   let draws = 0;
@@ -429,7 +484,9 @@ export function createStarfield(
     turning: boolean;
   } | null = null;
   let grabbable = false;
-  const root = host.ownerDocument.documentElement;
+  function root() {
+    return host.ownerDocument.documentElement;
+  }
 
   const invalidate = () => {
     dirty = true;
@@ -474,21 +531,39 @@ export function createStarfield(
    */
   function aimSky() {
     const random = mulberry32(hashPath(page) ^ 0x9e3779b9);
-    const along = (random() - 0.5) * 0.12 * tile;
+    if (pageAlong === null) pageAlong = (random() - 0.5) * 0.5 * tile;
+    else random();
+    const along = pageAlong;
     const ownX = width * (0.7 + 0.22 * random());
     const ownY = 60 + 200 * random();
     const cx = anchorShown ? placeTarget.x : ownX;
     const cy = anchorShown ? placeTarget.y : ownY;
-    const next = panThrough(cx, cy, along, tile, panSet ? panTarget : pan);
-    panTarget.x = next.x;
-    panTarget.y = next.y;
+    focal.x = Math.min(width, Math.max(0, cx));
+    focal.y = Math.min(height, Math.max(0, cy));
+    const from = panSet
+      ? { x: flight.targetX, y: flight.targetY }
+      : { x: flight.x, y: flight.y };
+    const next = panThrough(cx, cy, along, tile, from);
+    const now = performance.now();
     // The first view, and any view without motion, is taken at once.
-    if (!panSet || reduced || paused || performance.now() - startedAt < 1500) {
-      pan.x = next.x;
-      pan.y = next.y;
-      pan.vx = pan.vy = 0;
+    if (!panSet || reduced || paused || now - startedAt < 1500) {
+      flight.jump(next.x, next.y);
       panSet = true;
-    }
+    } else flight.aim(next.x, next.y, now);
+  }
+
+  /**
+   * Scroll jumps since the last page change live in `folded`; a new page
+   * takes them into its pan before choosing its view, so the trip starts
+   * from what is on screen and finds the nearest way to the new view.
+   */
+  function foldScroll() {
+    if (!folded) return;
+    flight.shift(0, folded);
+    // The page's place along the band moves with the frame, so a fold that
+    // lands after the trip is planned does not shorten it.
+    if (pageAlong !== null) pageAlong -= folded / 2;
+    folded = 0;
   }
 
   const resize = () => {
@@ -522,15 +597,25 @@ export function createStarfield(
       tile = ideal;
       tileSet = true;
       panSet = false;
+      pageAlong = null;
     }
     skyUniforms.uTile.value = tile;
     skyUniforms.uView.value.set(width, height);
     skyGeometry.instanceCount = skyShare(tile);
-    const nebulaScale = Math.min(1 / 3, 640 / width);
+    // The nebula target covers the view and a margin round it, at about a
+    // third of the CSS size: the gas is soft, and it is filtered up.
+    const margin = Math.round(NEBULA_REACH * Math.max(width, height));
+    const areaWidth = width + 2 * margin;
+    const areaHeight = height + 2 * margin;
+    const nebulaScale = Math.min(1 / 3, 720 / areaWidth);
     nebulaTarget.setSize(
-      Math.max(64, Math.round(width * nebulaScale)),
-      Math.max(64, Math.round(height * nebulaScale))
+      Math.max(64, Math.round(areaWidth * nebulaScale)),
+      Math.max(64, Math.round(areaHeight * nebulaScale))
     );
+    nebulaUniforms.uArea.value.set(areaWidth, areaHeight);
+    nebulaUniforms.uMargin.value = margin;
+    nebulaDrawn.valid = false;
+    nebulaDrawn.margin = margin;
     compositeUniforms.uNebulaSize.value.set(
       nebulaTarget.width,
       nebulaTarget.height
@@ -582,8 +667,8 @@ export function createStarfield(
   const setGrabbable = (next: boolean) => {
     if (next === grabbable) return;
     grabbable = next;
-    if (next) root.setAttribute("data-rose-hover", "true");
-    else root.removeAttribute("data-rose-hover");
+    if (next) root().setAttribute("data-rose-hover", "true");
+    else root().removeAttribute("data-rose-hover");
   };
 
   const onPointerMove = (event: PointerEvent) => {
@@ -599,11 +684,11 @@ export function createStarfield(
         press.x = event.clientX;
         press.y = event.clientY;
         turn.begin();
-        root.setAttribute("data-rose-dragging", "true");
+        root().setAttribute("data-rose-dragging", "true");
         host.ownerDocument.getSelection()?.removeAllRanges();
         // Keep the drag when the hand leaves the window.
         try {
-          root.setPointerCapture(event.pointerId);
+          root().setPointerCapture(event.pointerId);
         } catch {
           /* The pointer is already gone; pointerup still ends the drag. */
         }
@@ -640,9 +725,9 @@ export function createStarfield(
     press = null;
     if (!turning) return;
     turn.release();
-    root.removeAttribute("data-rose-dragging");
+    root().removeAttribute("data-rose-dragging");
     try {
-      root.releasePointerCapture(id);
+      root().releasePointerCapture(id);
     } catch {
       /* Already released. */
     }
@@ -680,9 +765,48 @@ export function createStarfield(
   };
   const onContextRestored = () => {
     contextLost = false;
+    nebulaDrawn.valid = false;
     resize();
     schedule();
   };
+  /** How hard a trip from the current page to `next` pushes forward. */
+  const pushFor = (next: string) => {
+    const change = pageLevel(next) - pageLevel(page);
+    return change > 0 ? PUSH.deeper : change < 0 ? PUSH.up : PUSH.across;
+  };
+  // A link to another page has been followed: the old page dims while the
+  // next one loads, and the sky starts to lean toward it, and the figure to
+  // loosen, at once.
+  const onDepart = (event: Event) => {
+    if (reduced || paused) return;
+    const to = (event as CustomEvent<{ to?: string }>).detail?.to;
+    if (!to) return;
+    let next: string;
+    try {
+      next = normalizePath(new URL(to, location.href).pathname);
+    } catch {
+      return;
+    }
+    if (next === page) return;
+    pushAmount = pushFor(next);
+    departedAt = performance.now();
+    if (turnOver < 0.05) turnOver = 1;
+    invalidate();
+    schedule();
+  };
+  const coverObserver =
+    typeof MutationObserver === "function"
+      ? new MutationObserver(() => {
+          const next = root().hasAttribute(COVERED_ATTRIBUTE);
+          if (next === covered) return;
+          covered = next;
+          if (!covered) {
+            invalidate();
+            schedule();
+          }
+        })
+      : null;
+  coverObserver?.observe(root(), { attributeFilter: [COVERED_ATTRIBUTE] });
 
   window.addEventListener("resize", resize);
   window.addEventListener("scroll", onScroll, { passive: true });
@@ -699,12 +823,13 @@ export function createStarfield(
   document.addEventListener("visibilitychange", onVisibility);
   canvas.addEventListener("webglcontextlost", onContextLost);
   canvas.addEventListener("webglcontextrestored", onContextRestored);
+  window.addEventListener(DEPART_EVENT, onDepart);
 
   // --- Frame ---------------------------------------------------------------
   const heartQuat = uniforms.uQuatHeart.value;
   const rimQuat = uniforms.uQuatRim.value;
 
-  const update = (dt: number) => {
+  const update = (dt: number, now: number) => {
     const moving = !reduced && !paused;
     if (moving) {
       time += dt;
@@ -730,9 +855,54 @@ export function createStarfield(
     const hasAnchor =
       placed &&
       (!anchorMissingSince || performance.now() - anchorMissingSince < 500);
-    for (const key of ["x", "y", "size", "follow", "level"] as const)
+    for (const key of ["x", "y", "size"] as const) {
+      if (reduced) {
+        place[key] = placeTarget[key];
+        placeVelocity[key] = 0;
+        continue;
+      }
+      // Critically damped: sets off smoothly, lands without overshoot.
+      const omega = 7;
+      const pull =
+        omega * omega * (placeTarget[key] - place[key]) -
+        2 * omega * placeVelocity[key];
+      placeVelocity[key] += pull * dt;
+      place[key] += placeVelocity[key] * dt;
+      if (
+        Math.abs(placeTarget[key] - place[key]) < 0.05 &&
+        Math.abs(placeVelocity[key]) < 0.5
+      ) {
+        place[key] = placeTarget[key];
+        placeVelocity[key] = 0;
+      }
+    }
+    for (const key of ["follow", "level"] as const)
       place[key] = approach(place[key], placeTarget[key], 5 * settle, dt);
+    const placeMoving =
+      placeVelocity.x !== 0 || placeVelocity.y !== 0 || placeVelocity.size !== 0;
     const scrollY = window.scrollY;
+    // A jump of the scroll (a new page starting at its top, a restored
+    // position) would cut the sky by a fifth of its length. It is folded into
+    // the pan instead, and a page just changed takes it into its trip.
+    if (scrollSeen && !reduced) {
+      const jump = scrollY - lastScrollY;
+      if (Math.abs(jump) > Math.max(SCROLL_JUMP, height * 0.6)) {
+        folded -= jump * SKY_SCROLL;
+        if (now - pageChangedAt < 2500) {
+          foldScroll();
+          aimSky();
+        }
+      } else
+        scrollVelocity = approach(
+          scrollVelocity,
+          jump / Math.max(dt, 1e-3),
+          18,
+          dt
+        );
+    }
+    if (Math.abs(scrollVelocity) < 4 || reduced) scrollVelocity = 0;
+    lastScrollY = scrollY;
+    scrollSeen = true;
     const leave = Math.max(1, (place.y + place.size * 0.5) / place.follow);
     const progress = clamp01(scrollY / leave);
     const presenceTarget = hasAnchor
@@ -847,7 +1017,9 @@ export function createStarfield(
       quietBox.x * scale,
       quietBox.half * scale,
       110 * scale,
-      quietStrength * QUIET_STARS[compact]
+      // By day a speck between the lines reads as dirt, not depth: the
+      // column is almost clear of stars.
+      quietStrength * (QUIET_STARS[compact] + (0.94 - QUIET_STARS[compact]) * light)
     );
     compositeUniforms.uQuiet.value.set(
       (quietBox.x + width / 2) * scale,
@@ -856,32 +1028,15 @@ export function createStarfield(
       quietStrength * QUIET_NEBULA[compact]
     );
 
-    // The sky: the spring carries the view to this page's, the band drifts
+    // The sky: the flight carries the view to this page's, the band drifts
     // on, and scroll and the pointer move nearer stars further.
-    if (moving) {
-      const omega = 3.2;
-      const ax = omega * omega * (panTarget.x - pan.x) - 2 * omega * pan.vx;
-      const ay = omega * omega * (panTarget.y - pan.y) - 2 * omega * pan.vy;
-      pan.vx += ax * dt;
-      pan.vy += ay * dt;
-      pan.x += pan.vx * dt;
-      pan.y += pan.vy * dt;
-    } else {
-      pan.x = panTarget.x;
-      pan.y = panTarget.y;
-      pan.vx = pan.vy = 0;
-    }
-    const panMoving =
-      Math.abs(panTarget.x - pan.x) + Math.abs(panTarget.y - pan.y) > 0.25 ||
-      Math.abs(pan.vx) + Math.abs(pan.vy) > 0.25;
-    if (!panMoving) {
-      pan.x = panTarget.x;
-      pan.y = panTarget.y;
-      pan.vx = pan.vy = 0;
-    }
-    const offsetX = pan.x + SKY_DRIFT.x * time + parallax.x * 18;
+    if (moving) flight.advance(now);
+    else if (flight.active) flight.jump(flight.targetX, flight.targetY);
+    const panMoving = flight.active;
+    const offsetX = flight.x + SKY_DRIFT.x * time + parallax.x * 18;
     const offsetY =
-      pan.y +
+      flight.y +
+      folded +
       SKY_DRIFT.y * time +
       (reduced ? 0 : scrollY * SKY_SCROLL) +
       parallax.y * 12;
@@ -894,6 +1049,36 @@ export function createStarfield(
     nebulaUniforms.uMorph.value.set((time * 0.0005) % 1, (time * 0.00031) % 1);
     nebulaUniforms.uLevel.value =
       NEBULA_NIGHT + (NEBULA_DAY - NEBULA_NIGHT) * light;
+    nebulaUniforms.uRange.value =
+      NEBULA_RANGE + (NEBULA_RANGE_DAY - NEBULA_RANGE) * light;
+
+    // Travel shows: fast-moving stars smear over one frame's exposure, and a
+    // page change pushes the view forward toward where the new page looks,
+    // nearer stars streaming outward faster, then settles.
+    if (moving) {
+      smear.set(
+        flight.vx * SHUTTER,
+        (flight.vy + scrollVelocity * SKY_SCROLL) * SHUTTER
+      );
+      const departing = now - departedAt < 900 && !flight.active;
+      const pushAim = departing
+        ? pushAmount * 0.3
+        : pushAmount * smooth(0, 1400, flight.speed);
+      push = approach(push, pushAim, departing ? 2.5 : 5, dt);
+      if (push < 1e-4 && pushAim === 0) push = 0;
+    } else {
+      smear.set(0, 0);
+      push = 0;
+    }
+    skyUniforms.uSmear.value.copy(smear);
+    skyUniforms.uPush.value.set(focal.x, focal.y, push);
+    const nebulaScale = 1 + push * NEBULA_DEPTH;
+    compositeUniforms.uNebulaPush.value.set(
+      focal.x / width,
+      1 - focal.y / height,
+      nebulaScale
+    );
+    const smearing = smear.x !== 0 || smear.y !== 0 || push > 0;
     skyLive = moving;
 
     // Pointer: a chain of points trails the hand, each easing after the one
@@ -974,8 +1159,11 @@ export function createStarfield(
       0.0042 * air
     );
 
-    // Keep drawing while anything is still moving.
-    const figureLive = presence > 0.004 && moving;
+    // Keep drawing at the display's rate while anything moves visibly. The
+    // figure's own idle drift (spiral flow, sway, twist) stays under about
+    // 15 px/s, sub-pixel at the sky's gentler rate, so it is drawn with the
+    // sky; only the pen's sweep along the signature needs every frame.
+    const figureLive = presence > 0.004 && moving && pen > -0.5;
     const turning = moving && turn.active;
     const themeMoving = light !== lightTarget;
     const presenceMoving = Math.abs(presence - presenceTarget) > 0.002;
@@ -994,10 +1182,14 @@ export function createStarfield(
         presence: presenceMoving,
         pointer: pointerLit,
         intro: introLive,
+        smear: smearing,
+        place: placeMoving,
       };
     return (
       figureLive ||
       panMoving ||
+      smearing ||
+      placeMoving ||
       trailLive ||
       turning ||
       formMoving ||
@@ -1009,10 +1201,52 @@ export function createStarfield(
     );
   };
 
-  const draw = () => {
+  /**
+   * The gas moves slowly, so its target is kept while the view only shifts
+   * within the target's margin; the composite samples it shifted. It is
+   * rendered afresh when the shift outgrows the margin, when its colours
+   * change, and every so often for its slow churn.
+   */
+  const drawNebula = (now: number) => {
+    const offset = nebulaUniforms.uOffset.value;
+    const margin = nebulaDrawn.margin;
+    const level = nebulaUniforms.uLevel.value;
+    const stale =
+      !nebulaDrawn.valid ||
+      Math.abs(offset.x - nebulaDrawn.x) > margin * 0.8 ||
+      Math.abs(offset.y - nebulaDrawn.y) > margin * 0.8 ||
+      level !== nebulaDrawn.level ||
+      uniforms.uLight.value !== nebulaDrawn.light ||
+      (skyLive && now - nebulaDrawn.at > NEBULA_REFRESH_MS);
+    if (stale) {
+      renderer.setRenderTarget(nebulaTarget);
+      nebula.render(renderer);
+      nebulaDrawn.valid = true;
+      nebulaDrawn.x = offset.x;
+      nebulaDrawn.y = offset.y;
+      nebulaDrawn.at = now;
+      nebulaDrawn.level = level;
+      nebulaDrawn.light = uniforms.uLight.value;
+      // The composite reads the target with the range it was written with.
+      compositeUniforms.uNebulaRange.value = nebulaUniforms.uRange.value;
+      nebulaRenders++;
+    }
+    // Where this view sits in the target (see COMPOSITE_FRAGMENT).
+    const areaWidth = width + 2 * margin;
+    const areaHeight = height + 2 * margin;
+    const dx = offset.x - nebulaDrawn.x;
+    const dy = offset.y - nebulaDrawn.y;
+    compositeUniforms.uNebulaMap.value.set(
+      width / areaWidth,
+      height / areaHeight,
+      (dx + margin) / areaWidth,
+      1 - (height + dy + margin) / areaHeight
+    );
+  };
+
+  const draw = (now: number) => {
     draws++;
-    renderer.setRenderTarget(nebulaTarget);
-    nebula.render(renderer);
+    drawNebula(now);
     // A figure scrolled away costs nothing.
     mesh.visible = uniforms.uPresence.value > 0.002;
     renderer.setRenderTarget(target);
@@ -1030,16 +1264,21 @@ export function createStarfield(
   const tick = (now: number) => {
     frame = 0;
     if (disposed) return;
-    if (contextLost || document.hidden) return;
+    // Hidden, or under a sheet that covers the whole viewport: nothing to
+    // draw. The loop resumes when that changes.
+    if (contextLost || document.hidden || covered) {
+      last = 0;
+      return;
+    }
     const dt = last ? Math.min(0.1, (now - last) / 1000) : 1 / 60;
     const frameMs = last ? now - last : 16.7;
     last = now;
-    const live = update(dt);
+    const live = update(dt, now);
     // With nothing but the sky moving, it is drawn at a gentler rate.
     const skyFps = width < 720 ? 24 : SKY_FPS;
     const skyDue = skyLive && now - lastDraw >= 1000 / skyFps - 4;
     if (live || dirty || skyDue) {
-      draw();
+      draw(now);
       lastDraw = now;
       dirty = false;
       canvas.dataset.ready = "true";
@@ -1074,8 +1313,12 @@ export function createStarfield(
           dpr,
           light,
           tile,
-          pan: { ...pan },
-          panTarget: { ...panTarget },
+          pan: { x: flight.x, y: flight.y, vx: flight.vx, vy: flight.vy },
+          panTarget: { x: flight.targetX, y: flight.targetY },
+          folded,
+          push,
+          smear: { x: smear.x, y: smear.y },
+          nebulaRenders,
           skyStars: skyGeometry.instanceCount,
           draws,
           figureDrawn: mesh.visible,
@@ -1102,14 +1345,33 @@ export function createStarfield(
     setPage(path) {
       const key = normalizePath(path);
       if (key === page) return;
+      // A trip already announced by its departure keeps its push and its
+      // loosening; one that was not (back, forward) starts both now.
+      if (performance.now() - departedAt > 1200) {
+        pushAmount = pushFor(key);
+        turnOver = 1;
+      } else if (turnOver < 0.05) turnOver = 1;
+      departedAt = -Infinity;
+      // Every page change is a journey along the band: deeper pages lie one
+      // way, the way back the other, and pages at the same depth to either
+      // side by the order of their addresses, so a trip and its return
+      // mirror each other. Its length is the new page's own.
+      const level = pageLevel(key) - pageLevel(page);
+      const side =
+        level !== 0 ? Math.sign(level) : hashPath(key) > hashPath(page) ? 1 : -1;
+      const reach = 0.2 + 0.2 * mulberry32(hashPath(key) ^ 0x51ed27)();
+      foldScroll();
+      const currentAlong = (flight.targetX - flight.targetY) / 2;
+      pageAlong = currentAlong + side * reach * tile;
       page = key;
+      pageChangedAt = performance.now();
       formTarget = formForPath(key);
-      turnOver = 1;
       anchor = null;
       quiet = null;
       turn.home();
       measure();
       invalidate();
+      schedule();
     },
     setPaused(next) {
       paused = next;
@@ -1138,6 +1400,8 @@ export function createStarfield(
       window.removeEventListener("pointerup", onPointerUp, true);
       window.removeEventListener("pointercancel", onPointerUp, true);
       window.removeEventListener("blur", onBlur);
+      window.removeEventListener(DEPART_EVENT, onDepart);
+      coverObserver?.disconnect();
       document.removeEventListener("selectstart", onSelectStart);
       document.documentElement.removeEventListener(
         "pointerleave",
@@ -1146,8 +1410,8 @@ export function createStarfield(
       document.removeEventListener("visibilitychange", onVisibility);
       canvas.removeEventListener("webglcontextlost", onContextLost);
       canvas.removeEventListener("webglcontextrestored", onContextRestored);
-      root.removeAttribute("data-rose-dragging");
-      root.removeAttribute("data-rose-hover");
+      root().removeAttribute("data-rose-dragging");
+      root().removeAttribute("data-rose-hover");
       geometry.dispose();
       material.dispose();
       skyGeometry.dispose();

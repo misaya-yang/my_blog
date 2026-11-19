@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import type { BaseLocationHook } from "wouter";
 import { useBrowserLocation } from "wouter/use-browser-location";
 import { preloadPage } from "@/routePages";
+import { announceDeparture } from "./skyEvents";
 
 /**
  * Changing pages in three beats: the page being left dims while the next
@@ -103,6 +104,8 @@ export function stageNavigation(to: string, go: () => void) {
   }
   const ready = preloadRoute(to, true);
   pending = go;
+  // The sky starts toward the next page at once, under the dimming page.
+  announceDeparture(to);
   if (staging) return;
   staging = true;
   root.dataset.routePhase = "pending";
